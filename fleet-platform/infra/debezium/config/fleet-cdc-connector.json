@@ -1,0 +1,38 @@
+{
+  "name": "fleet-cdc-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+
+    "database.hostname": "master",
+    "database.port": "5432",
+    "database.user": "fleet_cdc",
+    "database.password": "fleet_cdc_2024",
+    "database.dbname": "fleet_oltp",
+
+    "topic.prefix": "fleet-cdc",
+
+    "plugin.name": "pgoutput",
+
+    "publication.name": "fleet_cdc_publication",
+
+    "slot.name": "fleet_cdc_slot",
+
+    "table.include.list": "public.heads,public.parts_inventory,public.customers,public.work_orders,public.invoices,public.components,public.work_order_items",
+
+    "snapshot.mode": "initial",
+
+    "tombstones.on.delete": "true",
+
+    "heartbeat.interval.ms": "10000",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "true",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "true",
+
+    "decimal.handling.mode": "double",
+
+    "time.precision.mode": "connect"
+  }
+}

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Platform — Live Executive Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary: #38bdf8;
+            --success: #10b981;
+            --accent: #f59e0b;
+            --purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .title-group h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title-group p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--card-border);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ef4444; /* default disconnected */
+        }
+
+        .status-dot.connected {
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 10px 0 4px 0;
+            color: var(--primary);
+        }
+
+        .card-subtext {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .grid-charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-charts { grid-template-columns: 1fr; }
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+
+        }
+
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .log-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .log-box {
+            background: #020617;
+            border-radius: 8px;
+            padding: 14px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #38bdf8;
+            height: 140px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="title-group">
+            <h1>Fleet Platform — Executive Dashboard</h1>
+            <p>Real-Time Push Serving Layer (WebSocket + Redis Pub/Sub)</p>
+        </div>
+        <div class="status-badge">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Connecting to WebSocket...</span>
+        </div>
+    </header>
+
+    <!-- KPI Metric Cards -->
+    <div class="grid-cards">
+        <div class="card">
+            <div class="card-label">Tổng Doanh Thu</div>
+            <div class="card-value" id="valTotalRevenue">0 ₫</div>
+            <div class="card-subtext">Cập nhật qua WebSocket push</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Doanh Thu Dịch Vụ</div>
+            <div class="card-value" id="valServiceRevenue" style="color: #10b981;">0 ₫</div>
+            <div class="card-subtext">Công sửa chữa (Labor)</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Doanh Thu Linh Kiện</div>
+            <div class="card-value" id="valPartsRevenue" style="color: #f59e0b;">0 ₫</div>
+            <div class="card-subtext">Xuất kho linh kiện</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Tỉ Suất Lợi Nhuận</div>
+            <div class="card-value" id="valProfitMargin" style="color: #a855f7;">0.0%</div>
+            <div class="card-subtext">Ước tính lợi nhuận gộp</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid-charts">
+        <div class="chart-container">
+            <div class="chart-title">
+                <span>Cơ Cấu Doanh Thu Báo Cáo</span>
+                <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);" id="lastUpdateTs">Chưa nhận dữ liệu</span>
+            </div>
+            <canvas id="revenueChart" height="110"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Tỉ Lệ Doanh Thu</div>
+            <canvas id="pieChart" height="180"></canvas>
+        </div>
+    </div>
+
+    <!-- Live WebSocket Push Log Stream -->
+    <div class="log-section">
+        <div class="chart-title">Nhật Ký Tín Hiệu Push (WebSocket Stream)</div>
+        <div class="log-box" id="logBox">
+            <div class="log-entry">[System] Initializing WebSocket client connection to ws://master:8765...</div>
+        </div>
+    </div>
+
+    <script>
+        const WS_URL = 'ws://' + (window.location.hostname || 'master') + ':8765';
+        let ws;
+
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const logBox = document.getElementById('logBox');
+
+        const valTotalRevenue = document.getElementById('valTotalRevenue');
+        const valServiceRevenue = document.getElementById('valServiceRevenue');
+        const valPartsRevenue = document.getElementById('valPartsRevenue');
+        const valProfitMargin = document.getElementById('valProfitMargin');
+        const lastUpdateTs = document.getElementById('lastUpdateTs');
+
+        // Setup Chart.js
+        const ctxBar = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Dịch vụ (Labor)', 'Linh kiện (Parts)', 'Lợi nhuận ước tính'],
+                datasets: [{
+                    label: 'Số tiền (VNĐ)',
+                    data: [0, 0, 0],
+                    backgroundColor: ['#10b981', '#f59e0b', '#a855f7'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        const pieChart = new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Dịch vụ', 'Linh kiện'],
+                datasets: [{
+                    data: [50, 50],
+                    backgroundColor: ['#10b981', '#f59e0b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#94a3b8' } } }
+            }
+        });
+
+        function appendLog(msg) {
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerText = `[${time}] ${msg}`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function formatVND(val) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0);
+        }
+
+        function updateDashboardUI(data) {
+            if (!data) return;
+
+            const total = data.total_revenue || 0;
+            const service = data.service_revenue || 0;
+            const parts = data.parts_revenue || 0;
+            const profit = data.estimated_profit || 0;
+            const margin = data.profit_margin_pct || 0;
+
+            valTotalRevenue.innerText = formatVND(total);
+            valServiceRevenue.innerText = formatVND(service);
+            valPartsRevenue.innerText = formatVND(parts);
+            valProfitMargin.innerText = margin + '%';
+            lastUpdateTs.innerText = 'Lần cuối: ' + (data.generated_at || new Date().toLocaleTimeString());
+
+            // Update charts
+            revenueChart.data.datasets[0].data = [service, parts, profit];
+            revenueChart.update();
+
+            pieChart.data.datasets[0].data = [service, parts];
+            pieChart.update();
+        }
+
+        function connectWebSocket() {
+            appendLog(`Connecting to WebSocket Server: ${WS_URL}`);
+            ws = new WebSocket(WS_URL);
+
+            ws.onopen = () => {
+                statusDot.className = 'status-dot connected';
+                statusText.innerText = 'Connected (Push Ready)';
+                appendLog('✅ WebSocket Connection Established. Live Push updates enabled.');
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                appendLog(`⚡ PUSH EVENT RECEIVED [${msg.type}]: ${event.data.substring(0, 100)}...`);
+
+                if (msg.type === 'INITIAL_STATE') {
+                    const monthlyData = msg.data.monthly || msg.data.weekly;
+                    updateDashboardUI(monthlyData);
+                } else if (msg.type === 'REPORT_UPDATE') {
+                    updateDashboardUI(msg.data);
+                }
+            };
+
+            ws.onclose = () => {
+                statusDot.className = 'status-dot';
+                statusText.innerText = 'Disconnected. Reconnecting...';
+                appendLog('⚠ WebSocket Connection Closed. Retrying in 3 seconds...');
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            ws.onerror = (err) => {
+                appendLog('❌ WebSocket Error detected.');
+            };
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', connectWebSocket);
+    </script>
+</body>
+</html>

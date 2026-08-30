@@ -1,0 +1,303 @@
+CÀI ĐẶT HADOOP MULTI-NOTE --WORKSTATION 17
+
+
+I. Cài đặt môi trường cho máy ảo kết nối nhau:
+
+CHUẨN BỊ 3 MÁY ẢO, CÀI ĐẶT CÁC THÔNG TIN SAU : 
+Khi setup ubuntu Cả 3 máy có hostname lần lượt là : master, slave1, slave2
+Cài đặt 1 user chung cho cả 3 máy : aiguystory / 123456@@@
+
+Hoặc có thể tạo user mới cho cả 3 máy : 
+E.g:
+sudo adduser hadoop
+sudo usermode -aG sudo hadoop
+su - hadoop
+
+
+Lệnh kiểm tra xem user đã thuộc nhóm sudo chưa ? 
+groups <user-name>
+
+
+Nếu hostname chưa đúng ý, đặt lại hostname bằng lệnh sau : 
+sudo hostnamectl set-hostname <hostname-mong-muốn>
+
+
+1. Set cấu hình cho /etc/hosts trên cả 3 máy :
+sudo nano /etc/hosts
+
+Thêm các thông tin sau : 
+ip-máy-master master
+ip-máy-slave1 slave1
+ip-máy-slave2 slave3
+
+...
+
+
+2. Xử lý trên máy master , cấu hình SSH không mật khẩu trên máy master:
+sudo apt install openssh-server -y
+
+ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
+ssh-copy-id <username>@master
+ssh-copy-id <username>@slave1
+ssh-copy-id <username>@slave2
+...
+ssh-copy-id <username>@slaveN
+
+
+3. Test lại kết nối, không được hỏi mật khẩu:
+ssh master date
+ssh slave1 date
+ssh slave2 date
+
+
+4. Cài java 11 trên cả 3 máy
+sudo apt install openjdk-11-jdk -y
+
+Lấy đường dẫn java-home : readlink -f $(which java) # Thường là: /usr/lib/jvm/java-11-openjdk-amd64
+
+
+5. Cài SSH và cấu hình SSH không mật khẩu 
+
+
+
+II. Tải và cài đặt hadoop
+wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+
+tar -xzvf hadoop-3.3.6.tar.gz
+sudo mv hadoop-3.3.6 /usr/local/hadoop
+
+sudo chown -R aiguystory:aiguystory /usr/local/hadoop
+
+
+** Check log:
+tail -n 50 /usr/local/hadoop/logs/hadoop-aiguystory-datanode-slave1.log
+**
+
+sudo nano /etc/hosts
+XÓA hoặc comment dòng 127.0.1.1 <hostname>
+127.0.0.1       localhost
+# 127.0.1.1     slave1        <-- COMMENT HOẶC XÓA DÒNG NÀY
+# 127.0.1.1     slave2        <-- COMMENT HOẶC XÓA DÒNG NÀY
+
+192.168.x.101   master
+192.168.x.102   slave1
+192.168.x.103   slave2
+
+
+
+***** CẤU HÌNH CÁC THÀNH PHẦN CỦA HADOOP TRÊN CẢ 3 MÁY : master, slave1, slave2 ***** 
+nano ~/.bashrc
+
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH
+
+export HADOOP_HOME=/usr/local/hadoop
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+
+export SPARK_HOME=/usr/local/spark        # sửa đúng path Spark của bạn nếu có
+export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+
+
+source ~/.bashrc
+
+
+nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+
+--- Nếu có Spark, sửa thêm spark-env.sh ---
+cd $SPARK_HOME/conf
+cp spark-env.sh.template spark-env.sh   # nếu chưa có
+nano spark-env.sh
+
+'''
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
+export YARN_CONF_DIR=/usr/local/hadoop/etc/hadoop
+export SPARK_DIST_CLASSPATH=$(/usr/local/hadoop/bin/hadoop classpath)
+'''
+
+
+
+Tất cả nằm ở $HADOOP_HOME/etc/hadoop/
+
+core-site.xml
+<configuration>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://master:9000</value>
+  </property>
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/usr/local/hadoop/tmpdata</value>
+  </property>
+</configuration>
+
+
+hdfs-site.xml
+<configuration>
+  <property>
+    <name>dfs.replication</name>
+    <value>2</value>
+  </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>file:///usr/local/hadoop/hdfs/namenode</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>file:///usr/local/hadoop/hdfs/datanode</value>
+  </property>
+  <property>
+    <name>dfs.datanode.du.reserved</name>
+    <value>2147483648</value>
+  </property>
+</configuration>
+
+
+mapred-site.xml
+<configuration>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+  <property>
+    <name>mapreduce.application.classpath</name>
+    <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+  </property>
+  <property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+  </property>
+  <property>
+    <name>mapreduce.map.env</name>
+    <value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+  </property>
+  <property>
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+  </property>
+</configuration>
+
+
+yarn-site.xml
+<configuration>
+  <property>
+    <name>yarn.resourcemanager.hostname</name>
+    <value>master</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.resource.memory-mb</name>
+    <value>3072</value>
+  </property>
+  <property>
+    <name>yarn.scheduler.minimum-allocation-mb</name>
+    <value>512</value>
+  </property>
+  <property>
+    <name>yarn.scheduler.maximum-allocation-mb</name>
+    <value>3072</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.resource.cpu-vcores</name>
+    <value>2</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.delete.debug-delay-sec</name>
+    <value>600</value>
+  </property>
+  <property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value>
+  </property>
+</configuration>
+
+
+nano $HADOOP_HOME/etc/hadoop/workers
+Xóa localhost, thay bằng: 
+slave1
+slave2
+
+
+Tạo thư mục lưu dữ liệu (trên CẢ 3 máy)
+mkdir -p /usr/local/hadoop/hdfs/namenode
+mkdir -p /usr/local/hadoop/hdfs/datanode
+mkdir -p /usr/local/hadoop/tmpdata
+
+
+** Format HDFS — CHỈ LÀM 1 LẦN DUY NHẤT lúc đầu:
+hdfs namenode -format
+
+start-dfs.sh
+start-yarn.sh
+
+** Kiểm tra tiến trình
+
+Master (jps):
+
+NameNode
+SecondaryNameNode
+ResourceManager
+
+** Mỗi slave (ssh slave1 jps / ssh slave2 jps):
+
+DataNode
+NodeManager
+
+
+--- PHẦN 5: Kiểm tra hoạt động ---
+5.1. Web UI
+HDFS NameNode: http://master:9870
+YARN ResourceManager: http://master:8088
+
+Nếu không mở được từ Windows: thử bằng IP trực tiếp (http://<IP>:9870) trước. Nếu IP vào được mà tên master không vào được → thêm dòng <IP> master (và slave1, slave2) vào file C:\Windows\System32\drivers\etc\hosts trên Windows.
+
+5.2. Test HDFS — dùng file KHÔNG bắt đầu bằng dấu chấm (Lỗi #2)
+bash
+hdfs dfs -mkdir /test
+echo "hello world hello hadoop test hadoop cluster" > sample.txt
+hdfs dfs -put sample.txt /test/sample.txt
+hdfs dfs -ls /test
+5.3. Test MapReduce (wordcount)
+bash
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar wordcount /test/sample.txt /test/output
+hdfs dfs -cat /test/output/part-r-00000
+
+
+
+Một vài log cần lưu ý: 
+1 - File input bắt đầu bằng . (bị coi là ẩn) -- Dùng tên file không có dấu chấm ở đầu
+"""Input path does not exist"""
+
+2 - Thiếu HADOOP_MAPRED_HOME trong mapred-site.xml, bổ sung 3 options bên dưới:
+<property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+</property>
+<property>
+	<name>mapreduce.map.env</name>
+	<value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+</property>
+<property>
+	<name>mapreduce.reduce.env</name>
+	<value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+</property>
+
+""" Could not find or load main class MRAppMaster """
+
+3 - Nếu lỗi thì check log: 
+tail -n 60 /usr/local/hadoop/logs/hadoop-aiguystory-datanode-slave1.log
+
+4 - Ubuntu tự thêm 127.0.1.1 <hostname> vào /etc/hosts, sudo nano /etc/hosts 
+--> xóa dòng đó đi 
+"""Connection refused ... 127.0.1.1"""
+

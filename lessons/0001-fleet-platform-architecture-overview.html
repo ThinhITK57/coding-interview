@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Lesson 1: System Architecture & Data Flow Masterclass</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+  <h1>Lesson 1: System Architecture & Data Flow Masterclass</h1>
+  <div class="subtitle">Fleet Maintenance & Repair Data Platform — Interview Mastery Series</div>
+
+  <div class="card">
+    <span class="badge">MISSION GROUNDING</span>
+    <strong>Goal:</strong> Thấu hiểu toàn bộ kiến trúc 9 bước, tự tin trả lời phỏng vấn DE đỉnh cao (MB Bank, VPBank, VNPost, KiotViet) và chuẩn bị cho bước triển khai Ticket 1 (Docker Compose).
+  </div>
+
+  <h2>1. Bối cảnh & 2 Nguồn Doanh Thu Cốt Lõi</h2>
+  <p>Khi mở đầu phỏng vấn DE, <strong>luôn bắt đầu bằng mục tiêu kinh doanh</strong> chứ không nhảy vào công cụ ngay lập tức:</p>
+  <ul>
+    <li><strong>Nguồn 1:</strong> Doanh thu bán dịch vụ sửa chữa/bảo dưỡng chăm sóc khách hàng sau bán xe.</li>
+    <li><strong>Nguồn 2:</strong> Doanh thu bán linh kiện thay thế.</li>
+  </ul>
+  <p>Toàn bộ pipeline — từ Kafka telemetry, matching Head trên Redis, đến báo cáo tỉ suất lợi nhuận SCD Type 2 — đều nhằm tối ưu 2 nguồn doanh thu này.</p>
+
+  <h2>2. Luồng Dữ Liệu 9 Bước (Vẽ trên Bảng Trắng Phỏng Vấn)</h2>
+  <pre>
+[Truck Sensors/App] ──► (Kafka) ──► [Spark Streaming] ──► [MinIO/HDFS Data Lake (Parquet)]
+                                          │
+                                          ▼ (Extract Location & Issue)
+[Odoo OLTP Postgres] ──► (Debezium CDC) ──► (Kafka) ──► [Redis Sync] ──► [Redis GEO + Hash (Matching)]
+                                                                                │ (Atomic Booking)
+                                                                                ▼
+                                                                       [Driver Matching Service]
+
+[Data Lake + CDC Topics] ──► [Spark Batch Jobs (Airflow)] ──► [Star Schema DW] ──► [Redis Aggregates]
+                                                                                        │ (Pub/Sub)
+                                                                                        ▼
+                                                                              [WebSocket Backend]
+                                                                                        │ (Push)
+                                                                                        ▼
+                                                                               [PowerBI Dashboard]
+  </pre>
+
+  <h2>3. 4 Quyết Định Kiến Trúc Đỉnh Cao (ADRs)</h2>
+  <div class="card">
+    <h3>ADR 0001: Log-Based CDC (Debezium) vs DB Polling</h3>
+    <p><strong>Trả lời phỏng vấn:</strong> Polling <code>SELECT ... WHERE updated_at > t</code> làm tăng tải lên DB Odoo OLTP đang chạy nghiệp vụ, không bắt được DELETE, và có độ trễ. Debezium đọc trực tiếp WAL (Write-Ahead Log) của Postgres, zero-impact lên DB nguồn, capture 100% mutation.</p>
+    <a href="../docs/adr/0001-log-based-cdc-with-debezium.md">Xem chi tiết ADR 0001 &rarr;</a>
+  </div>
+
+  <div class="card">
+    <h3>ADR 0002: Multi-Role Redis Architecture</h3>
+    <p><strong>Trả lời phỏng vấn:</strong> Redis đóng 3 vai trò tách biệt: (1) GEO + Hash cho Head Matching sub-second; (2) Concurrency Control (Atomic slot reservation chống overbooking với TTL); (3) Cache & Pub/Sub layer báo hiệu cho tầng backend.</p>
+    <a href="../docs/adr/0002-redis-multi-role-architecture.md">Xem chi tiết ADR 0002 &rarr;</a>
+  </div>
+
+  <div class="card">
+    <h3>ADR 0003: Push-Based Serving Layer (WebSocket)</h3>
+    <p><strong>Trả lời phỏng vấn:</strong> PowerBI không poll Redis trực tiếp. Một WebSocket server trung gian subscribe Redis Pub/Sub channel; khi Spark/Airflow ghi xong báo cáo, backend đẩy (push) JSON xuống dashboard ngay lập tức. Giảm độ trễ về ~0s và loại bỏ query lặp lại.</p>
+    <a href="../docs/adr/0003-push-based-websocket-reporting-layer.md">Xem chi tiết ADR 0003 &rarr;</a>
+  </div>
+
+  <h2>4. Lộ Trình Triển Khai (Tracer-Bullet Tickets)</h2>
+  <ol>
+    <li><strong>Ticket 1:</strong> Khởi tạo hạ tầng 9 Services với Docker Compose (`docker-compose.yml`).</li>
+    <li><strong>Ticket 2:</strong> Tạo OLTP Postgres Schema & Cấu hình Debezium CDC Connector.</li>
+    <li><strong>Ticket 3:</strong> Viết Spark Structured Streaming nạp Telemetry & Repair Requests vào Data Lake (Parquet).</li>
+    <li><strong>Ticket 4:</strong> Xây dựng Redis Sync Worker, Search Matching Engine (Redis GEO) & Atomic Slot Booking (Lua/TTL).</li>
+    <li><strong>Ticket 5:</strong> Xây dựng Star Schema DWH (Spark Batch + Airflow) với SCD Type 2 cho Customer Dimension.</li>
+    <li><strong>Ticket 6:</strong> Xây dựng WebSocket Backend Server & Dashboard Mockup hiển thị Real-time Push.</li>
+  </ol>
+
+  <div class="quiz-container">
+    <h3>Kiểm tra kiến thức nhanh (Interactive Check)</h3>
+    <p><strong>Câu hỏi: Tại sao cùng 1 luồng Debezium CDC lại được tiêu thụ bởi cả Redis Sync Job lẫn Spark Batch Job?</strong></p>
+    <div class="quiz-option" onclick="alert('ĐÚNG! Đây là Multi-Consumer CDC Pattern. 1 Producer (Kafka topic), 2 Consumer với SLA độ trễ khác nhau.')">
+      A. Vì đây là Pub-Sub pattern: Redis cần độ trễ thấp (vài giây) để matching, trong khi Spark Batch cần đầy đủ lịch sử để tổng hợp báo cáo.
+    </div>
+    <div class="quiz-option" onclick="alert('SAI. Cả 2 job đều đọc từ cùng 1 Kafka topic CDC.')">
+      B. Vì Odoo bắt buộc phải tạo 2 database khác nhau.
+    </div>
+  </div>
+
+  <footer>
+    <p>Tài liệu ôn luyện thuộc dự án Fleet Data Platform. Xem file gốc: <a href="../de-interview-prep-fleet-platform.md">de-interview-prep-fleet-platform.md</a></p>
+  </footer>
+
+</body>
+</html>

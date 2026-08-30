@@ -1,0 +1,54 @@
+# =============================================================================
+# Fleet Data Platform — LOCAL Environment Configuration
+# =============================================================================
+# Dành cho: Máy phát triển cá nhân, Minikube, Docker Compose local sandbox.
+# Ghi đè: base.yaml
+# Kích hoạt: APP_ENV=local hoặc --env local
+
+env: "local"
+
+# --- Storage (MinIO giả lập S3/HDFS trên local) ---
+storage:
+  type: "local"                              # "hdfs" | "s3" | "local"
+  endpoint: "http://localhost:9000"          # MinIO endpoint
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+  warehouse_path: "./data/warehouse"         # Local filesystem fallback
+
+# --- Database (PostgreSQL container trên Minikube / Docker) ---
+database:
+  host: "localhost"
+  port: 5432
+  name: "fleet_oltp"
+  user: "fleet_app"
+  password: "local_dev_pass"
+  jdbc_url: "jdbc:postgresql://localhost:5432/fleet_oltp"
+
+# --- Hive Metastore (Tắt khi chạy local — dùng Spark InMemory Catalog) ---
+hive:
+  enabled: false
+  metastore_uris: ""
+
+# --- Kafka (Redpanda hoặc Kafka container trên local) ---
+kafka:
+  bootstrap_servers: "localhost:9092"
+
+# --- Redis (Container local) ---
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+
+# --- Spark Override (Local mode — sử dụng ít tài nguyên) ---
+spark:
+  master: "local[2]"                         # Chỉ dùng 2 cores trên máy dev
+  driver_memory: "1g"
+  executor_memory: "1g"
+  shuffle_partitions: 4                      # Override xuống 4 cho tập dữ liệu nhỏ
+  salt_buckets: 4
+
+# --- Monitoring (Tắt khi chạy local) ---
+monitoring:
+  prometheus_pushgateway: ""
+  grafana_url: ""
+  alerting_enabled: false

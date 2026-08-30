@@ -1,6 +1,17 @@
 .idea
 *.iml
 personal-9894.md
+github-token.md
+.env
+.env.local
+*.log
+
+# Python & testing cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Targets Windows & Unix temporary files
 ~$*
