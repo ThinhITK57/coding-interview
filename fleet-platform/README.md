@@ -117,6 +117,7 @@ fleet-platform/
 │       └── init-metastore.sql      # Hive Metastore database init
 │
 ├── docs/                           # Professional DE guides & environment setup
+│   ├── LAZYVIM-DATA-ENGINEERING-SETUP.md # Neovim + LazyVim + PySpark/SQL LSP + TUI Tools
 │   ├── MINIKUBE-COMPLETE-GUIDE.md  # Comprehensive Minikube handbook for Data Engineers
 │   ├── VMWARE-DEV-ENVIRONMENT-SETUP.md # Ubuntu Server VM + i3 + Terminator + Minikube
 │   └── Cài dặt Terminator để làm việc chuyên nghiệp.txt # Dotfiles & Gruvbox setup
@@ -226,6 +227,7 @@ APP_ENV=prod python3 -m src.jobs.scd2_customer_job
 
 | Guide | Description |
 |---|---|
+| [LAZYVIM-DATA-ENGINEERING-SETUP.md](docs/LAZYVIM-DATA-ENGINEERING-SETUP.md) | Terminal IDE master guide: Neovim + LazyVim + PySpark/SQL LSP + Harlequin + pgcli + VisiData. |
 | [MINIKUBE-COMPLETE-GUIDE.md](docs/MINIKUBE-COMPLETE-GUIDE.md) | Comprehensive 12-section Minikube handbook, K8s concepts, gotchas & production strategy. |
 | [VMWARE-DEV-ENVIRONMENT-SETUP.md](docs/VMWARE-DEV-ENVIRONMENT-SETUP.md) | Ubuntu Server VM + i3 + Terminator + Docker + Minikube developer setup. |
 | [SYSTEM-DESIGN-SPEC.md](SYSTEM-DESIGN-SPEC.md) | Full architectural design, data models, scale math & trade-off analysis. |
