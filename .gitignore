@@ -6,6 +6,13 @@ github-token.md
 .env.local
 *.log
 
+# Media & Binaries
+*.mp3
+*.mp4
+*.wav
+*.zip
+*.tar.gz
+
 # Python & testing cache
 __pycache__/
 *.py[cod]

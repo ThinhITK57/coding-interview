@@ -1,0 +1,3413 @@
+{
+  "language_code": null,
+  "segments": [
+    {
+      "text": "Khi ch\u1ea1y container, ch\u00fang ta th\u01b0\u1eddng \u0111\u01b0\u1ee3c khuy\u00ean r\u1eb1ng \u1ee9ng d\u1ee5ng c\u1ee9 ghi log ra standard output v\u00e0 standard error l\u00e0 \u0111\u01b0\u1ee3c. \u0110i\u1ec1u \u0111\u00f3 \u0111\u00fang v\u1ec1 c\u00e1ch logging trong container th\u01b0\u1eddng \u0111\u01b0\u1ee3c thi\u1ebft k\u1ebf, nh\u01b0ng c\u00f3 m\u1ed9t chi ti\u1ebft r\u1ea5t d\u1ec5 b\u1ecb b\u1ecf qua. Nh\u1eefng d\u00f2ng log \u0111\u00f3 cu\u1ed1i c\u00f9ng v\u1eabn ph\u1ea3i \u0111\u01b0\u1ee3c l\u01b0u \u1edf \u0111\u00e2u \u0111\u00f3. Tr\u00ean Kubernetes, container runtime s\u1ebd ghi log xu\u1ed1ng file system c\u1ee7a node, c\u00f2n Kubelet ch\u1ecbu tr\u00e1ch nhi\u1ec7m qu\u1ea3n l\u00fd nh\u1eefng file log n\u00e0y. Kubelet c\u00f3 c\u01a1 ch\u1ebf log rotation, v\u00ec v\u1eady kh\u00f4ng ph\u1ea3i c\u1ee9 c\u00f3 m\u1ed9t file log duy nh\u1ea5t r\u1ed3i n\u00f3 t\u0103ng m\u00e3i kh\u00f4ng gi\u1edbi h\u1ea1n. Tuy nhi\u00ean, \u0111i\u1ec1u \u0111\u00f3 c\u0169ng kh\u00f4ng c\u00f3 ngh\u0129a l\u00e0 logging s\u1ebd kh\u00f4ng bao gi\u1edd g\u00e2y ra v\u1ea5n \u0111\u1ec1 v\u1ec1 storage. H\u00e3y t\u01b0\u1edfng t\u01b0\u1ee3ng tr\u00ean m\u1ed9t node c\u00f3 r\u1ea5t nhi\u1ec1u pod c\u00f9ng t\u1ea1o log v\u1edbi t\u1ed1c \u0111\u1ed9 cao. M\u1ed7i container gi\u1eef m\u1ed9t s\u1ed1 file log, trong khi \u1ee9ng d\u1ee5ng c\u00f3 th\u1ec3 c\u00f2n t\u1ea1o th\u00eam file trong writable layer ho\u1eb7c local volume. Khi c\u1ed9ng t\u1ea5t c\u1ea3 nh\u1eefng th\u1ee9 \u0111\u00f3 l\u1ea1i, l\u01b0\u1ee3ng storage b\u1ecb s\u1eed d\u1ee5ng tr\u00ean node v\u1eabn c\u00f3 th\u1ec3 t\u0103ng r\u1ea5t nhanh. \u0110\u1ebfn m\u1ed9t th\u1eddi \u0111i\u1ec3m n\u00e0o \u0111\u00f3, file system b\u1eaft \u0111\u1ea7u thi\u1ebfu dung l\u01b0\u1ee3ng ho\u1eb7c inode. Kubelet ph\u00e1t hi\u1ec7n t\u00ecnh tr\u1ea1ng n\u00e0y v\u00e0 node c\u00f3 th\u1ec3 chuy\u1ec3n sang disk pressure. L\u00fac \u0111\u00f3 Kubelet s\u1ebd c\u1ed1 g\u1eafng reclaim storage tr\u01b0\u1edbc, nh\u01b0ng n\u1ebfu v\u1eabn kh\u00f4ng \u0111\u1ee7, m\u1ed9t s\u1ed1 pod c\u00f3 th\u1ec3 b\u1ecb evict \u0111\u1ec3 gi\u1ea3i ph\u00f3ng t\u00e0i nguy\u00ean. V\u1eady l\u00e0, m\u1ed9t v\u1ea5n \u0111\u1ec1 ban \u0111\u1ea7u ch\u1ec9 b\u1eaft \u0111\u1ea7u t\u1eeb vi\u1ec7c \u1ee9ng d\u1ee5ng t\u1ea1o qu\u00e1 nhi\u1ec1u log cu\u1ed1i c\u00f9ng l\u1ea1i tr\u1edf th\u00e0nh m\u1ed9t storage incident \u1ea3nh h\u01b0\u1edfng t\u1edbi c\u1ea3 workload tr\u00ean node. Cho n\u00ean khi x\u00e2y logging pipeline, \u0111\u1eebng ch\u1ec9 h\u1ecfi log \u0111\u00e3 \u0111\u01b0\u1ee3c g\u1eedi l\u00ean Loki, Elasticsearch hay h\u1ec7 th\u1ed1ng t\u1eadp trung hay ch\u01b0a. ",
+      "start_time": 0.299,
+      "end_time": 86.019,
+      "speaker": {
+        "id": "speaker_0",
+        "name": "Speaker 0"
+      },
+      "words": [
+        {
+          "text": "Khi",
+          "start_time": 0.299,
+          "end_time": 0.419
+        },
+        {
+          "text": " ",
+          "start_time": 0.419,
+          "end_time": 0.479
+        },
+        {
+          "text": "ch\u1ea1y",
+          "start_time": 0.479,
+          "end_time": 0.659
+        },
+        {
+          "text": " ",
+          "start_time": 0.659,
+          "end_time": 0.699
+        },
+        {
+          "text": "container,",
+          "start_time": 0.699,
+          "end_time": 1.199
+        },
+        {
+          "text": " ",
+          "start_time": 1.199,
+          "end_time": 1.559
+        },
+        {
+          "text": "ch\u00fang",
+          "start_time": 1.559,
+          "end_time": 1.679
+        },
+        {
+          "text": " ",
+          "start_time": 1.679,
+          "end_time": 1.719
+        },
+        {
+          "text": "ta",
+          "start_time": 1.719,
+          "end_time": 1.819
+        },
+        {
+          "text": " ",
+          "start_time": 1.819,
+          "end_time": 1.879
+        },
+        {
+          "text": "th\u01b0\u1eddng",
+          "start_time": 1.879,
+          "end_time": 2.039
+        },
+        {
+          "text": " ",
+          "start_time": 2.039,
+          "end_time": 2.079
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 2.079,
+          "end_time": 2.159
+        },
+        {
+          "text": " ",
+          "start_time": 2.159,
+          "end_time": 2.18
+        },
+        {
+          "text": "khuy\u00ean",
+          "start_time": 2.18,
+          "end_time": 2.319
+        },
+        {
+          "text": " ",
+          "start_time": 2.319,
+          "end_time": 2.419
+        },
+        {
+          "text": "r\u1eb1ng",
+          "start_time": 2.419,
+          "end_time": 2.579
+        },
+        {
+          "text": " ",
+          "start_time": 2.579,
+          "end_time": 3.019
+        },
+        {
+          "text": "\u1ee9ng",
+          "start_time": 3.019,
+          "end_time": 3.119
+        },
+        {
+          "text": " ",
+          "start_time": 3.119,
+          "end_time": 3.179
+        },
+        {
+          "text": "d\u1ee5ng",
+          "start_time": 3.179,
+          "end_time": 3.379
+        },
+        {
+          "text": " ",
+          "start_time": 3.379,
+          "end_time": 3.439
+        },
+        {
+          "text": "c\u1ee9",
+          "start_time": 3.439,
+          "end_time": 3.519
+        },
+        {
+          "text": " ",
+          "start_time": 3.519,
+          "end_time": 3.539
+        },
+        {
+          "text": "ghi",
+          "start_time": 3.539,
+          "end_time": 3.679
+        },
+        {
+          "text": " ",
+          "start_time": 3.679,
+          "end_time": 3.719
+        },
+        {
+          "text": "log",
+          "start_time": 3.72,
+          "end_time": 3.939
+        },
+        {
+          "text": " ",
+          "start_time": 3.939,
+          "end_time": 3.999
+        },
+        {
+          "text": "ra",
+          "start_time": 4.0,
+          "end_time": 4.139
+        },
+        {
+          "text": " ",
+          "start_time": 4.139,
+          "end_time": 4.219
+        },
+        {
+          "text": "standard",
+          "start_time": 4.219,
+          "end_time": 4.719
+        },
+        {
+          "text": " ",
+          "start_time": 4.719,
+          "end_time": 4.859
+        },
+        {
+          "text": "output",
+          "start_time": 4.859,
+          "end_time": 5.239
+        },
+        {
+          "text": " ",
+          "start_time": 5.239,
+          "end_time": 5.659
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 5.659,
+          "end_time": 5.819
+        },
+        {
+          "text": " ",
+          "start_time": 5.819,
+          "end_time": 5.899
+        },
+        {
+          "text": "standard",
+          "start_time": 5.9,
+          "end_time": 6.379
+        },
+        {
+          "text": " ",
+          "start_time": 6.379,
+          "end_time": 6.439
+        },
+        {
+          "text": "error",
+          "start_time": 6.44,
+          "end_time": 6.819
+        },
+        {
+          "text": " ",
+          "start_time": 6.819,
+          "end_time": 6.879
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 6.879,
+          "end_time": 6.96
+        },
+        {
+          "text": " ",
+          "start_time": 6.96,
+          "end_time": 7.019
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c.",
+          "start_time": 7.019,
+          "end_time": 7.219
+        },
+        {
+          "text": " ",
+          "start_time": 7.219,
+          "end_time": 7.799
+        },
+        {
+          "text": "\u0110i\u1ec1u",
+          "start_time": 7.799,
+          "end_time": 7.899
+        },
+        {
+          "text": " ",
+          "start_time": 7.899,
+          "end_time": 7.959
+        },
+        {
+          "text": "\u0111\u00f3",
+          "start_time": 7.96,
+          "end_time": 8.079
+        },
+        {
+          "text": " ",
+          "start_time": 8.079,
+          "end_time": 8.139
+        },
+        {
+          "text": "\u0111\u00fang",
+          "start_time": 8.139,
+          "end_time": 8.34
+        },
+        {
+          "text": " ",
+          "start_time": 8.34,
+          "end_time": 8.399
+        },
+        {
+          "text": "v\u1ec1",
+          "start_time": 8.399,
+          "end_time": 8.479
+        },
+        {
+          "text": " ",
+          "start_time": 8.479,
+          "end_time": 8.539
+        },
+        {
+          "text": "c\u00e1ch",
+          "start_time": 8.539,
+          "end_time": 8.679
+        },
+        {
+          "text": " ",
+          "start_time": 8.679,
+          "end_time": 8.739
+        },
+        {
+          "text": "logging",
+          "start_time": 8.739,
+          "end_time": 9.119
+        },
+        {
+          "text": " ",
+          "start_time": 9.119,
+          "end_time": 9.159
+        },
+        {
+          "text": "trong",
+          "start_time": 9.159,
+          "end_time": 9.319
+        },
+        {
+          "text": " ",
+          "start_time": 9.319,
+          "end_time": 9.359
+        },
+        {
+          "text": "container",
+          "start_time": 9.359,
+          "end_time": 9.819
+        },
+        {
+          "text": " ",
+          "start_time": 9.819,
+          "end_time": 9.899
+        },
+        {
+          "text": "th\u01b0\u1eddng",
+          "start_time": 9.899,
+          "end_time": 10.039
+        },
+        {
+          "text": " ",
+          "start_time": 10.039,
+          "end_time": 10.099
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 10.099,
+          "end_time": 10.199
+        },
+        {
+          "text": " ",
+          "start_time": 10.199,
+          "end_time": 10.219
+        },
+        {
+          "text": "thi\u1ebft",
+          "start_time": 10.219,
+          "end_time": 10.38
+        },
+        {
+          "text": " ",
+          "start_time": 10.38,
+          "end_time": 10.439
+        },
+        {
+          "text": "k\u1ebf,",
+          "start_time": 10.439,
+          "end_time": 10.639
+        },
+        {
+          "text": " ",
+          "start_time": 10.639,
+          "end_time": 11.199
+        },
+        {
+          "text": "nh\u01b0ng",
+          "start_time": 11.199,
+          "end_time": 11.34
+        },
+        {
+          "text": " ",
+          "start_time": 11.34,
+          "end_time": 11.399
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 11.399,
+          "end_time": 11.46
+        },
+        {
+          "text": " ",
+          "start_time": 11.46,
+          "end_time": 11.519
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 11.519,
+          "end_time": 11.619
+        },
+        {
+          "text": " ",
+          "start_time": 11.619,
+          "end_time": 11.659
+        },
+        {
+          "text": "chi",
+          "start_time": 11.659,
+          "end_time": 11.779
+        },
+        {
+          "text": " ",
+          "start_time": 11.779,
+          "end_time": 11.839
+        },
+        {
+          "text": "ti\u1ebft",
+          "start_time": 11.84,
+          "end_time": 12.059
+        },
+        {
+          "text": " ",
+          "start_time": 12.059,
+          "end_time": 12.119
+        },
+        {
+          "text": "r\u1ea5t",
+          "start_time": 12.119,
+          "end_time": 12.239
+        },
+        {
+          "text": " ",
+          "start_time": 12.239,
+          "end_time": 12.319
+        },
+        {
+          "text": "d\u1ec5",
+          "start_time": 12.319,
+          "end_time": 12.42
+        },
+        {
+          "text": " ",
+          "start_time": 12.42,
+          "end_time": 12.479
+        },
+        {
+          "text": "b\u1ecb",
+          "start_time": 12.479,
+          "end_time": 12.579
+        },
+        {
+          "text": " ",
+          "start_time": 12.579,
+          "end_time": 12.639
+        },
+        {
+          "text": "b\u1ecf",
+          "start_time": 12.639,
+          "end_time": 12.779
+        },
+        {
+          "text": " ",
+          "start_time": 12.779,
+          "end_time": 12.84
+        },
+        {
+          "text": "qua.",
+          "start_time": 12.84,
+          "end_time": 13.139
+        },
+        {
+          "text": " ",
+          "start_time": 13.139,
+          "end_time": 13.499
+        },
+        {
+          "text": "Nh\u1eefng",
+          "start_time": 13.5,
+          "end_time": 13.619
+        },
+        {
+          "text": " ",
+          "start_time": 13.619,
+          "end_time": 13.719
+        },
+        {
+          "text": "d\u00f2ng",
+          "start_time": 13.719,
+          "end_time": 13.84
+        },
+        {
+          "text": " ",
+          "start_time": 13.84,
+          "end_time": 13.899
+        },
+        {
+          "text": "log",
+          "start_time": 13.899,
+          "end_time": 14.059
+        },
+        {
+          "text": " ",
+          "start_time": 14.059,
+          "end_time": 14.119
+        },
+        {
+          "text": "\u0111\u00f3",
+          "start_time": 14.119,
+          "end_time": 14.34
+        },
+        {
+          "text": " ",
+          "start_time": 14.34,
+          "end_time": 14.679
+        },
+        {
+          "text": "cu\u1ed1i",
+          "start_time": 14.679,
+          "end_time": 14.819
+        },
+        {
+          "text": " ",
+          "start_time": 14.819,
+          "end_time": 14.88
+        },
+        {
+          "text": "c\u00f9ng",
+          "start_time": 14.88,
+          "end_time": 15.039
+        },
+        {
+          "text": " ",
+          "start_time": 15.039,
+          "end_time": 15.139
+        },
+        {
+          "text": "v\u1eabn",
+          "start_time": 15.139,
+          "end_time": 15.259
+        },
+        {
+          "text": " ",
+          "start_time": 15.259,
+          "end_time": 15.299
+        },
+        {
+          "text": "ph\u1ea3i",
+          "start_time": 15.299,
+          "end_time": 15.42
+        },
+        {
+          "text": " ",
+          "start_time": 15.42,
+          "end_time": 15.479
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 15.479,
+          "end_time": 15.599
+        },
+        {
+          "text": " ",
+          "start_time": 15.599,
+          "end_time": 15.659
+        },
+        {
+          "text": "l\u01b0u",
+          "start_time": 15.659,
+          "end_time": 15.799
+        },
+        {
+          "text": " ",
+          "start_time": 15.799,
+          "end_time": 15.879
+        },
+        {
+          "text": "\u1edf",
+          "start_time": 15.88,
+          "end_time": 15.899
+        },
+        {
+          "text": " ",
+          "start_time": 15.899,
+          "end_time": 15.96
+        },
+        {
+          "text": "\u0111\u00e2u",
+          "start_time": 15.96,
+          "end_time": 16.079
+        },
+        {
+          "text": " ",
+          "start_time": 16.079,
+          "end_time": 16.139
+        },
+        {
+          "text": "\u0111\u00f3.",
+          "start_time": 16.139,
+          "end_time": 16.379
+        },
+        {
+          "text": " ",
+          "start_time": 16.379,
+          "end_time": 17.159
+        },
+        {
+          "text": "Tr\u00ean",
+          "start_time": 17.159,
+          "end_time": 17.319
+        },
+        {
+          "text": " ",
+          "start_time": 17.319,
+          "end_time": 17.399
+        },
+        {
+          "text": "Kubernetes,",
+          "start_time": 17.399,
+          "end_time": 18.0
+        },
+        {
+          "text": " ",
+          "start_time": 18.0,
+          "end_time": 18.459
+        },
+        {
+          "text": "container",
+          "start_time": 18.459,
+          "end_time": 18.859
+        },
+        {
+          "text": " ",
+          "start_time": 18.859,
+          "end_time": 18.919
+        },
+        {
+          "text": "runtime",
+          "start_time": 18.92,
+          "end_time": 19.34
+        },
+        {
+          "text": " ",
+          "start_time": 19.34,
+          "end_time": 19.399
+        },
+        {
+          "text": "s\u1ebd",
+          "start_time": 19.399,
+          "end_time": 19.5
+        },
+        {
+          "text": " ",
+          "start_time": 19.5,
+          "end_time": 19.559
+        },
+        {
+          "text": "ghi",
+          "start_time": 19.559,
+          "end_time": 19.659
+        },
+        {
+          "text": " ",
+          "start_time": 19.659,
+          "end_time": 19.719
+        },
+        {
+          "text": "log",
+          "start_time": 19.719,
+          "end_time": 19.939
+        },
+        {
+          "text": " ",
+          "start_time": 19.939,
+          "end_time": 20.019
+        },
+        {
+          "text": "xu\u1ed1ng",
+          "start_time": 20.02,
+          "end_time": 20.159
+        },
+        {
+          "text": " ",
+          "start_time": 20.159,
+          "end_time": 20.239
+        },
+        {
+          "text": "file",
+          "start_time": 20.239,
+          "end_time": 20.359
+        },
+        {
+          "text": " ",
+          "start_time": 20.359,
+          "end_time": 20.559
+        },
+        {
+          "text": "system",
+          "start_time": 20.559,
+          "end_time": 20.959
+        },
+        {
+          "text": " ",
+          "start_time": 20.959,
+          "end_time": 21.0
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 21.0,
+          "end_time": 21.079
+        },
+        {
+          "text": " ",
+          "start_time": 21.079,
+          "end_time": 21.159
+        },
+        {
+          "text": "node,",
+          "start_time": 21.159,
+          "end_time": 21.379
+        },
+        {
+          "text": " ",
+          "start_time": 21.379,
+          "end_time": 21.819
+        },
+        {
+          "text": "c\u00f2n",
+          "start_time": 21.819,
+          "end_time": 21.939
+        },
+        {
+          "text": " ",
+          "start_time": 21.939,
+          "end_time": 21.999
+        },
+        {
+          "text": "Kubelet",
+          "start_time": 22.0,
+          "end_time": 22.399
+        },
+        {
+          "text": " ",
+          "start_time": 22.399,
+          "end_time": 22.5
+        },
+        {
+          "text": "ch\u1ecbu",
+          "start_time": 22.5,
+          "end_time": 22.619
+        },
+        {
+          "text": " ",
+          "start_time": 22.619,
+          "end_time": 22.659
+        },
+        {
+          "text": "tr\u00e1ch",
+          "start_time": 22.659,
+          "end_time": 22.799
+        },
+        {
+          "text": " ",
+          "start_time": 22.799,
+          "end_time": 22.84
+        },
+        {
+          "text": "nhi\u1ec7m",
+          "start_time": 22.84,
+          "end_time": 22.979
+        },
+        {
+          "text": " ",
+          "start_time": 22.979,
+          "end_time": 23.059
+        },
+        {
+          "text": "qu\u1ea3n",
+          "start_time": 23.059,
+          "end_time": 23.18
+        },
+        {
+          "text": " ",
+          "start_time": 23.18,
+          "end_time": 23.26
+        },
+        {
+          "text": "l\u00fd",
+          "start_time": 23.26,
+          "end_time": 23.34
+        },
+        {
+          "text": " ",
+          "start_time": 23.34,
+          "end_time": 23.399
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 23.399,
+          "end_time": 23.519
+        },
+        {
+          "text": " ",
+          "start_time": 23.519,
+          "end_time": 23.619
+        },
+        {
+          "text": "file",
+          "start_time": 23.619,
+          "end_time": 23.739
+        },
+        {
+          "text": " ",
+          "start_time": 23.739,
+          "end_time": 23.799
+        },
+        {
+          "text": "log",
+          "start_time": 23.799,
+          "end_time": 23.939
+        },
+        {
+          "text": " ",
+          "start_time": 23.939,
+          "end_time": 23.999
+        },
+        {
+          "text": "n\u00e0y.",
+          "start_time": 24.0,
+          "end_time": 24.199
+        },
+        {
+          "text": " ",
+          "start_time": 24.199,
+          "end_time": 24.84
+        },
+        {
+          "text": "Kubelet",
+          "start_time": 24.84,
+          "end_time": 25.26
+        },
+        {
+          "text": " ",
+          "start_time": 25.26,
+          "end_time": 25.299
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 25.299,
+          "end_time": 25.379
+        },
+        {
+          "text": " ",
+          "start_time": 25.379,
+          "end_time": 25.459
+        },
+        {
+          "text": "c\u01a1",
+          "start_time": 25.459,
+          "end_time": 25.539
+        },
+        {
+          "text": " ",
+          "start_time": 25.539,
+          "end_time": 25.619
+        },
+        {
+          "text": "ch\u1ebf",
+          "start_time": 25.619,
+          "end_time": 25.739
+        },
+        {
+          "text": " ",
+          "start_time": 25.739,
+          "end_time": 25.819
+        },
+        {
+          "text": "log",
+          "start_time": 25.819,
+          "end_time": 26.0
+        },
+        {
+          "text": " ",
+          "start_time": 26.0,
+          "end_time": 26.059
+        },
+        {
+          "text": "rotation,",
+          "start_time": 26.059,
+          "end_time": 26.619
+        },
+        {
+          "text": " ",
+          "start_time": 26.619,
+          "end_time": 27.059
+        },
+        {
+          "text": "v\u00ec",
+          "start_time": 27.059,
+          "end_time": 27.139
+        },
+        {
+          "text": " ",
+          "start_time": 27.139,
+          "end_time": 27.219
+        },
+        {
+          "text": "v\u1eady",
+          "start_time": 27.219,
+          "end_time": 27.34
+        },
+        {
+          "text": " ",
+          "start_time": 27.34,
+          "end_time": 27.42
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 27.42,
+          "end_time": 27.579
+        },
+        {
+          "text": " ",
+          "start_time": 27.579,
+          "end_time": 27.619
+        },
+        {
+          "text": "ph\u1ea3i",
+          "start_time": 27.619,
+          "end_time": 27.76
+        },
+        {
+          "text": " ",
+          "start_time": 27.76,
+          "end_time": 27.859
+        },
+        {
+          "text": "c\u1ee9",
+          "start_time": 27.859,
+          "end_time": 27.979
+        },
+        {
+          "text": " ",
+          "start_time": 27.979,
+          "end_time": 28.039
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 28.039,
+          "end_time": 28.119
+        },
+        {
+          "text": " ",
+          "start_time": 28.119,
+          "end_time": 28.179
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 28.18,
+          "end_time": 28.299
+        },
+        {
+          "text": " ",
+          "start_time": 28.299,
+          "end_time": 28.359
+        },
+        {
+          "text": "file",
+          "start_time": 28.359,
+          "end_time": 28.479
+        },
+        {
+          "text": " ",
+          "start_time": 28.479,
+          "end_time": 28.539
+        },
+        {
+          "text": "log",
+          "start_time": 28.539,
+          "end_time": 28.699
+        },
+        {
+          "text": " ",
+          "start_time": 28.699,
+          "end_time": 28.759
+        },
+        {
+          "text": "duy",
+          "start_time": 28.76,
+          "end_time": 28.879
+        },
+        {
+          "text": " ",
+          "start_time": 28.879,
+          "end_time": 28.92
+        },
+        {
+          "text": "nh\u1ea5t",
+          "start_time": 28.92,
+          "end_time": 29.099
+        },
+        {
+          "text": " ",
+          "start_time": 29.099,
+          "end_time": 29.259
+        },
+        {
+          "text": "r\u1ed3i",
+          "start_time": 29.26,
+          "end_time": 29.34
+        },
+        {
+          "text": " ",
+          "start_time": 29.34,
+          "end_time": 29.399
+        },
+        {
+          "text": "n\u00f3",
+          "start_time": 29.399,
+          "end_time": 29.459
+        },
+        {
+          "text": " ",
+          "start_time": 29.459,
+          "end_time": 29.559
+        },
+        {
+          "text": "t\u0103ng",
+          "start_time": 29.559,
+          "end_time": 29.719
+        },
+        {
+          "text": " ",
+          "start_time": 29.719,
+          "end_time": 29.779
+        },
+        {
+          "text": "m\u00e3i",
+          "start_time": 29.779,
+          "end_time": 29.939
+        },
+        {
+          "text": " ",
+          "start_time": 29.939,
+          "end_time": 29.999
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 30.0,
+          "end_time": 30.139
+        },
+        {
+          "text": " ",
+          "start_time": 30.139,
+          "end_time": 30.179
+        },
+        {
+          "text": "gi\u1edbi",
+          "start_time": 30.179,
+          "end_time": 30.299
+        },
+        {
+          "text": " ",
+          "start_time": 30.299,
+          "end_time": 30.359
+        },
+        {
+          "text": "h\u1ea1n.",
+          "start_time": 30.359,
+          "end_time": 30.539
+        },
+        {
+          "text": " ",
+          "start_time": 30.539,
+          "end_time": 31.139
+        },
+        {
+          "text": "Tuy",
+          "start_time": 31.139,
+          "end_time": 31.239
+        },
+        {
+          "text": " ",
+          "start_time": 31.239,
+          "end_time": 31.299
+        },
+        {
+          "text": "nhi\u00ean,",
+          "start_time": 31.299,
+          "end_time": 31.579
+        },
+        {
+          "text": " ",
+          "start_time": 31.579,
+          "end_time": 31.879
+        },
+        {
+          "text": "\u0111i\u1ec1u",
+          "start_time": 31.879,
+          "end_time": 32.0
+        },
+        {
+          "text": " ",
+          "start_time": 32.0,
+          "end_time": 32.059
+        },
+        {
+          "text": "\u0111\u00f3",
+          "start_time": 32.059,
+          "end_time": 32.159
+        },
+        {
+          "text": " ",
+          "start_time": 32.159,
+          "end_time": 32.259
+        },
+        {
+          "text": "c\u0169ng",
+          "start_time": 32.259,
+          "end_time": 32.36
+        },
+        {
+          "text": " ",
+          "start_time": 32.36,
+          "end_time": 32.399
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 32.399,
+          "end_time": 32.54
+        },
+        {
+          "text": " ",
+          "start_time": 32.54,
+          "end_time": 32.579
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 32.579,
+          "end_time": 32.68
+        },
+        {
+          "text": " ",
+          "start_time": 32.68,
+          "end_time": 32.719
+        },
+        {
+          "text": "ngh\u0129a",
+          "start_time": 32.719,
+          "end_time": 32.88
+        },
+        {
+          "text": " ",
+          "start_time": 32.88,
+          "end_time": 32.939
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 32.939,
+          "end_time": 33.0
+        },
+        {
+          "text": " ",
+          "start_time": 33.0,
+          "end_time": 33.079
+        },
+        {
+          "text": "logging",
+          "start_time": 33.079,
+          "end_time": 33.439
+        },
+        {
+          "text": " ",
+          "start_time": 33.439,
+          "end_time": 33.52
+        },
+        {
+          "text": "s\u1ebd",
+          "start_time": 33.52,
+          "end_time": 33.599
+        },
+        {
+          "text": " ",
+          "start_time": 33.599,
+          "end_time": 33.659
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 33.659,
+          "end_time": 33.779
+        },
+        {
+          "text": " ",
+          "start_time": 33.779,
+          "end_time": 33.84
+        },
+        {
+          "text": "bao",
+          "start_time": 33.84,
+          "end_time": 33.939
+        },
+        {
+          "text": " ",
+          "start_time": 33.939,
+          "end_time": 33.979
+        },
+        {
+          "text": "gi\u1edd",
+          "start_time": 33.979,
+          "end_time": 34.099
+        },
+        {
+          "text": " ",
+          "start_time": 34.099,
+          "end_time": 34.18
+        },
+        {
+          "text": "g\u00e2y",
+          "start_time": 34.18,
+          "end_time": 34.299
+        },
+        {
+          "text": " ",
+          "start_time": 34.299,
+          "end_time": 34.36
+        },
+        {
+          "text": "ra",
+          "start_time": 34.36,
+          "end_time": 34.439
+        },
+        {
+          "text": " ",
+          "start_time": 34.439,
+          "end_time": 34.52
+        },
+        {
+          "text": "v\u1ea5n",
+          "start_time": 34.52,
+          "end_time": 34.619
+        },
+        {
+          "text": " ",
+          "start_time": 34.619,
+          "end_time": 34.68
+        },
+        {
+          "text": "\u0111\u1ec1",
+          "start_time": 34.68,
+          "end_time": 34.799
+        },
+        {
+          "text": " ",
+          "start_time": 34.799,
+          "end_time": 34.88
+        },
+        {
+          "text": "v\u1ec1",
+          "start_time": 34.88,
+          "end_time": 34.959
+        },
+        {
+          "text": " ",
+          "start_time": 34.959,
+          "end_time": 35.059
+        },
+        {
+          "text": "storage.",
+          "start_time": 35.059,
+          "end_time": 35.559
+        },
+        {
+          "text": " ",
+          "start_time": 35.559,
+          "end_time": 36.499
+        },
+        {
+          "text": "H\u00e3y",
+          "start_time": 36.5,
+          "end_time": 36.599
+        },
+        {
+          "text": " ",
+          "start_time": 36.599,
+          "end_time": 36.659
+        },
+        {
+          "text": "t\u01b0\u1edfng",
+          "start_time": 36.659,
+          "end_time": 36.819
+        },
+        {
+          "text": " ",
+          "start_time": 36.819,
+          "end_time": 36.86
+        },
+        {
+          "text": "t\u01b0\u1ee3ng",
+          "start_time": 36.86,
+          "end_time": 37.02
+        },
+        {
+          "text": " ",
+          "start_time": 37.02,
+          "end_time": 37.079
+        },
+        {
+          "text": "tr\u00ean",
+          "start_time": 37.079,
+          "end_time": 37.2
+        },
+        {
+          "text": " ",
+          "start_time": 37.2,
+          "end_time": 37.239
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 37.239,
+          "end_time": 37.36
+        },
+        {
+          "text": " ",
+          "start_time": 37.36,
+          "end_time": 37.439
+        },
+        {
+          "text": "node",
+          "start_time": 37.439,
+          "end_time": 37.7
+        },
+        {
+          "text": " ",
+          "start_time": 37.7,
+          "end_time": 37.759
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 37.759,
+          "end_time": 37.819
+        },
+        {
+          "text": " ",
+          "start_time": 37.819,
+          "end_time": 37.879
+        },
+        {
+          "text": "r\u1ea5t",
+          "start_time": 37.879,
+          "end_time": 37.979
+        },
+        {
+          "text": " ",
+          "start_time": 37.979,
+          "end_time": 38.04
+        },
+        {
+          "text": "nhi\u1ec1u",
+          "start_time": 38.04,
+          "end_time": 38.159
+        },
+        {
+          "text": " ",
+          "start_time": 38.159,
+          "end_time": 38.279
+        },
+        {
+          "text": "pod",
+          "start_time": 38.279,
+          "end_time": 38.5
+        },
+        {
+          "text": " ",
+          "start_time": 38.5,
+          "end_time": 38.559
+        },
+        {
+          "text": "c\u00f9ng",
+          "start_time": 38.559,
+          "end_time": 38.68
+        },
+        {
+          "text": " ",
+          "start_time": 38.68,
+          "end_time": 38.779
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 38.779,
+          "end_time": 38.899
+        },
+        {
+          "text": " ",
+          "start_time": 38.899,
+          "end_time": 38.979
+        },
+        {
+          "text": "log",
+          "start_time": 38.979,
+          "end_time": 39.159
+        },
+        {
+          "text": " ",
+          "start_time": 39.159,
+          "end_time": 39.2
+        },
+        {
+          "text": "v\u1edbi",
+          "start_time": 39.2,
+          "end_time": 39.279
+        },
+        {
+          "text": " ",
+          "start_time": 39.279,
+          "end_time": 39.319
+        },
+        {
+          "text": "t\u1ed1c",
+          "start_time": 39.319,
+          "end_time": 39.419
+        },
+        {
+          "text": " ",
+          "start_time": 39.419,
+          "end_time": 39.479
+        },
+        {
+          "text": "\u0111\u1ed9",
+          "start_time": 39.479,
+          "end_time": 39.579
+        },
+        {
+          "text": " ",
+          "start_time": 39.579,
+          "end_time": 39.659
+        },
+        {
+          "text": "cao.",
+          "start_time": 39.659,
+          "end_time": 39.899
+        },
+        {
+          "text": " ",
+          "start_time": 39.899,
+          "end_time": 40.339
+        },
+        {
+          "text": "M\u1ed7i",
+          "start_time": 40.34,
+          "end_time": 40.439
+        },
+        {
+          "text": " ",
+          "start_time": 40.439,
+          "end_time": 40.5
+        },
+        {
+          "text": "container",
+          "start_time": 40.5,
+          "end_time": 40.919
+        },
+        {
+          "text": " ",
+          "start_time": 40.919,
+          "end_time": 40.979
+        },
+        {
+          "text": "gi\u1eef",
+          "start_time": 40.979,
+          "end_time": 41.099
+        },
+        {
+          "text": " ",
+          "start_time": 41.099,
+          "end_time": 41.159
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 41.159,
+          "end_time": 41.259
+        },
+        {
+          "text": " ",
+          "start_time": 41.259,
+          "end_time": 41.319
+        },
+        {
+          "text": "s\u1ed1",
+          "start_time": 41.319,
+          "end_time": 41.399
+        },
+        {
+          "text": " ",
+          "start_time": 41.399,
+          "end_time": 41.499
+        },
+        {
+          "text": "file",
+          "start_time": 41.5,
+          "end_time": 41.619
+        },
+        {
+          "text": " ",
+          "start_time": 41.619,
+          "end_time": 41.68
+        },
+        {
+          "text": "log,",
+          "start_time": 41.68,
+          "end_time": 41.939
+        },
+        {
+          "text": " ",
+          "start_time": 41.939,
+          "end_time": 42.279
+        },
+        {
+          "text": "trong",
+          "start_time": 42.279,
+          "end_time": 42.399
+        },
+        {
+          "text": " ",
+          "start_time": 42.399,
+          "end_time": 42.439
+        },
+        {
+          "text": "khi",
+          "start_time": 42.439,
+          "end_time": 42.559
+        },
+        {
+          "text": " ",
+          "start_time": 42.559,
+          "end_time": 42.639
+        },
+        {
+          "text": "\u1ee9ng",
+          "start_time": 42.639,
+          "end_time": 42.719
+        },
+        {
+          "text": " ",
+          "start_time": 42.719,
+          "end_time": 42.799
+        },
+        {
+          "text": "d\u1ee5ng",
+          "start_time": 42.799,
+          "end_time": 42.979
+        },
+        {
+          "text": " ",
+          "start_time": 42.979,
+          "end_time": 43.04
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 43.04,
+          "end_time": 43.099
+        },
+        {
+          "text": " ",
+          "start_time": 43.099,
+          "end_time": 43.139
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 43.139,
+          "end_time": 43.259
+        },
+        {
+          "text": " ",
+          "start_time": 43.259,
+          "end_time": 43.299
+        },
+        {
+          "text": "c\u00f2n",
+          "start_time": 43.299,
+          "end_time": 43.419
+        },
+        {
+          "text": " ",
+          "start_time": 43.419,
+          "end_time": 43.5
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 43.5,
+          "end_time": 43.619
+        },
+        {
+          "text": " ",
+          "start_time": 43.619,
+          "end_time": 43.68
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 43.68,
+          "end_time": 43.86
+        },
+        {
+          "text": " ",
+          "start_time": 43.86,
+          "end_time": 43.939
+        },
+        {
+          "text": "file",
+          "start_time": 43.939,
+          "end_time": 44.139
+        },
+        {
+          "text": " ",
+          "start_time": 44.139,
+          "end_time": 44.159
+        },
+        {
+          "text": "trong",
+          "start_time": 44.159,
+          "end_time": 44.319
+        },
+        {
+          "text": " ",
+          "start_time": 44.319,
+          "end_time": 44.379
+        },
+        {
+          "text": "writable",
+          "start_time": 44.379,
+          "end_time": 44.819
+        },
+        {
+          "text": " ",
+          "start_time": 44.819,
+          "end_time": 44.86
+        },
+        {
+          "text": "layer",
+          "start_time": 44.86,
+          "end_time": 45.439
+        },
+        {
+          "text": " ",
+          "start_time": 45.439,
+          "end_time": 45.479
+        },
+        {
+          "text": "ho\u1eb7c",
+          "start_time": 45.479,
+          "end_time": 45.659
+        },
+        {
+          "text": " ",
+          "start_time": 45.659,
+          "end_time": 45.719
+        },
+        {
+          "text": "local",
+          "start_time": 45.719,
+          "end_time": 45.959
+        },
+        {
+          "text": " ",
+          "start_time": 45.959,
+          "end_time": 46.0
+        },
+        {
+          "text": "volume.",
+          "start_time": 46.0,
+          "end_time": 46.399
+        },
+        {
+          "text": " ",
+          "start_time": 46.399,
+          "end_time": 46.979
+        },
+        {
+          "text": "Khi",
+          "start_time": 46.979,
+          "end_time": 47.119
+        },
+        {
+          "text": " ",
+          "start_time": 47.119,
+          "end_time": 47.159
+        },
+        {
+          "text": "c\u1ed9ng",
+          "start_time": 47.159,
+          "end_time": 47.319
+        },
+        {
+          "text": " ",
+          "start_time": 47.319,
+          "end_time": 47.36
+        },
+        {
+          "text": "t\u1ea5t",
+          "start_time": 47.36,
+          "end_time": 47.459
+        },
+        {
+          "text": " ",
+          "start_time": 47.459,
+          "end_time": 47.539
+        },
+        {
+          "text": "c\u1ea3",
+          "start_time": 47.539,
+          "end_time": 47.639
+        },
+        {
+          "text": " ",
+          "start_time": 47.639,
+          "end_time": 47.68
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 47.68,
+          "end_time": 47.799
+        },
+        {
+          "text": " ",
+          "start_time": 47.799,
+          "end_time": 47.84
+        },
+        {
+          "text": "th\u1ee9",
+          "start_time": 47.84,
+          "end_time": 47.939
+        },
+        {
+          "text": " ",
+          "start_time": 47.939,
+          "end_time": 48.0
+        },
+        {
+          "text": "\u0111\u00f3",
+          "start_time": 48.0,
+          "end_time": 48.119
+        },
+        {
+          "text": " ",
+          "start_time": 48.119,
+          "end_time": 48.18
+        },
+        {
+          "text": "l\u1ea1i,",
+          "start_time": 48.18,
+          "end_time": 48.699
+        },
+        {
+          "text": " ",
+          "start_time": 48.699,
+          "end_time": 48.799
+        },
+        {
+          "text": "l\u01b0\u1ee3ng",
+          "start_time": 48.799,
+          "end_time": 48.919
+        },
+        {
+          "text": " ",
+          "start_time": 48.919,
+          "end_time": 49.0
+        },
+        {
+          "text": "storage",
+          "start_time": 49.0,
+          "end_time": 49.439
+        },
+        {
+          "text": " ",
+          "start_time": 49.439,
+          "end_time": 49.5
+        },
+        {
+          "text": "b\u1ecb",
+          "start_time": 49.5,
+          "end_time": 49.599
+        },
+        {
+          "text": " ",
+          "start_time": 49.599,
+          "end_time": 49.659
+        },
+        {
+          "text": "s\u1eed",
+          "start_time": 49.659,
+          "end_time": 49.739
+        },
+        {
+          "text": " ",
+          "start_time": 49.739,
+          "end_time": 49.799
+        },
+        {
+          "text": "d\u1ee5ng",
+          "start_time": 49.799,
+          "end_time": 49.919
+        },
+        {
+          "text": " ",
+          "start_time": 49.919,
+          "end_time": 49.979
+        },
+        {
+          "text": "tr\u00ean",
+          "start_time": 49.979,
+          "end_time": 50.099
+        },
+        {
+          "text": " ",
+          "start_time": 50.099,
+          "end_time": 50.18
+        },
+        {
+          "text": "node",
+          "start_time": 50.18,
+          "end_time": 50.619
+        },
+        {
+          "text": " ",
+          "start_time": 50.619,
+          "end_time": 50.68
+        },
+        {
+          "text": "v\u1eabn",
+          "start_time": 50.68,
+          "end_time": 50.799
+        },
+        {
+          "text": " ",
+          "start_time": 50.799,
+          "end_time": 50.84
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 50.84,
+          "end_time": 50.919
+        },
+        {
+          "text": " ",
+          "start_time": 50.919,
+          "end_time": 50.959
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 50.959,
+          "end_time": 51.059
+        },
+        {
+          "text": " ",
+          "start_time": 51.059,
+          "end_time": 51.159
+        },
+        {
+          "text": "t\u0103ng",
+          "start_time": 51.159,
+          "end_time": 51.279
+        },
+        {
+          "text": " ",
+          "start_time": 51.279,
+          "end_time": 51.34
+        },
+        {
+          "text": "r\u1ea5t",
+          "start_time": 51.34,
+          "end_time": 51.459
+        },
+        {
+          "text": " ",
+          "start_time": 51.459,
+          "end_time": 51.52
+        },
+        {
+          "text": "nhanh.",
+          "start_time": 51.52,
+          "end_time": 51.759
+        },
+        {
+          "text": " ",
+          "start_time": 51.759,
+          "end_time": 52.759
+        },
+        {
+          "text": "\u0110\u1ebfn",
+          "start_time": 52.759,
+          "end_time": 52.84
+        },
+        {
+          "text": " ",
+          "start_time": 52.84,
+          "end_time": 52.899
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 52.899,
+          "end_time": 52.979
+        },
+        {
+          "text": " ",
+          "start_time": 52.979,
+          "end_time": 53.02
+        },
+        {
+          "text": "th\u1eddi",
+          "start_time": 53.02,
+          "end_time": 53.119
+        },
+        {
+          "text": " ",
+          "start_time": 53.119,
+          "end_time": 53.159
+        },
+        {
+          "text": "\u0111i\u1ec3m",
+          "start_time": 53.159,
+          "end_time": 53.279
+        },
+        {
+          "text": " ",
+          "start_time": 53.279,
+          "end_time": 53.319
+        },
+        {
+          "text": "n\u00e0o",
+          "start_time": 53.319,
+          "end_time": 53.439
+        },
+        {
+          "text": " ",
+          "start_time": 53.439,
+          "end_time": 53.5
+        },
+        {
+          "text": "\u0111\u00f3,",
+          "start_time": 53.5,
+          "end_time": 53.759
+        },
+        {
+          "text": " ",
+          "start_time": 53.759,
+          "end_time": 54.319
+        },
+        {
+          "text": "file",
+          "start_time": 54.319,
+          "end_time": 54.479
+        },
+        {
+          "text": " ",
+          "start_time": 54.479,
+          "end_time": 54.539
+        },
+        {
+          "text": "system",
+          "start_time": 54.539,
+          "end_time": 54.939
+        },
+        {
+          "text": " ",
+          "start_time": 54.939,
+          "end_time": 54.979
+        },
+        {
+          "text": "b\u1eaft",
+          "start_time": 54.979,
+          "end_time": 55.079
+        },
+        {
+          "text": " ",
+          "start_time": 55.079,
+          "end_time": 55.139
+        },
+        {
+          "text": "\u0111\u1ea7u",
+          "start_time": 55.139,
+          "end_time": 55.239
+        },
+        {
+          "text": " ",
+          "start_time": 55.239,
+          "end_time": 55.299
+        },
+        {
+          "text": "thi\u1ebfu",
+          "start_time": 55.299,
+          "end_time": 55.439
+        },
+        {
+          "text": " ",
+          "start_time": 55.439,
+          "end_time": 55.52
+        },
+        {
+          "text": "dung",
+          "start_time": 55.52,
+          "end_time": 55.639
+        },
+        {
+          "text": " ",
+          "start_time": 55.639,
+          "end_time": 55.699
+        },
+        {
+          "text": "l\u01b0\u1ee3ng",
+          "start_time": 55.699,
+          "end_time": 55.879
+        },
+        {
+          "text": " ",
+          "start_time": 55.879,
+          "end_time": 56.039
+        },
+        {
+          "text": "ho\u1eb7c",
+          "start_time": 56.039,
+          "end_time": 56.219
+        },
+        {
+          "text": " ",
+          "start_time": 56.219,
+          "end_time": 56.359
+        },
+        {
+          "text": "inode.",
+          "start_time": 56.36,
+          "end_time": 56.739
+        },
+        {
+          "text": " ",
+          "start_time": 56.739,
+          "end_time": 57.079
+        },
+        {
+          "text": "Kubelet",
+          "start_time": 57.079,
+          "end_time": 57.52
+        },
+        {
+          "text": " ",
+          "start_time": 57.52,
+          "end_time": 57.559
+        },
+        {
+          "text": "ph\u00e1t",
+          "start_time": 57.559,
+          "end_time": 57.68
+        },
+        {
+          "text": " ",
+          "start_time": 57.68,
+          "end_time": 57.719
+        },
+        {
+          "text": "hi\u1ec7n",
+          "start_time": 57.719,
+          "end_time": 57.84
+        },
+        {
+          "text": " ",
+          "start_time": 57.84,
+          "end_time": 57.899
+        },
+        {
+          "text": "t\u00ecnh",
+          "start_time": 57.899,
+          "end_time": 58.02
+        },
+        {
+          "text": " ",
+          "start_time": 58.02,
+          "end_time": 58.059
+        },
+        {
+          "text": "tr\u1ea1ng",
+          "start_time": 58.059,
+          "end_time": 58.219
+        },
+        {
+          "text": " ",
+          "start_time": 58.219,
+          "end_time": 58.279
+        },
+        {
+          "text": "n\u00e0y",
+          "start_time": 58.279,
+          "end_time": 58.899
+        },
+        {
+          "text": " ",
+          "start_time": 58.899,
+          "end_time": 58.979
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 58.979,
+          "end_time": 59.079
+        },
+        {
+          "text": " ",
+          "start_time": 59.079,
+          "end_time": 59.139
+        },
+        {
+          "text": "node",
+          "start_time": 59.139,
+          "end_time": 59.359
+        },
+        {
+          "text": " ",
+          "start_time": 59.359,
+          "end_time": 59.419
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 59.419,
+          "end_time": 59.479
+        },
+        {
+          "text": " ",
+          "start_time": 59.479,
+          "end_time": 59.52
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 59.52,
+          "end_time": 59.639
+        },
+        {
+          "text": " ",
+          "start_time": 59.639,
+          "end_time": 59.719
+        },
+        {
+          "text": "chuy\u1ec3n",
+          "start_time": 59.719,
+          "end_time": 59.919
+        },
+        {
+          "text": " ",
+          "start_time": 59.919,
+          "end_time": 59.979
+        },
+        {
+          "text": "sang",
+          "start_time": 59.979,
+          "end_time": 60.159
+        },
+        {
+          "text": " ",
+          "start_time": 60.159,
+          "end_time": 60.219
+        },
+        {
+          "text": "disk",
+          "start_time": 60.219,
+          "end_time": 60.459
+        },
+        {
+          "text": " ",
+          "start_time": 60.459,
+          "end_time": 60.52
+        },
+        {
+          "text": "pressure.",
+          "start_time": 60.52,
+          "end_time": 60.979
+        },
+        {
+          "text": " ",
+          "start_time": 60.979,
+          "end_time": 61.719
+        },
+        {
+          "text": "L\u00fac",
+          "start_time": 61.719,
+          "end_time": 61.819
+        },
+        {
+          "text": " ",
+          "start_time": 61.819,
+          "end_time": 61.899
+        },
+        {
+          "text": "\u0111\u00f3",
+          "start_time": 61.899,
+          "end_time": 62.059
+        },
+        {
+          "text": " ",
+          "start_time": 62.059,
+          "end_time": 62.139
+        },
+        {
+          "text": "Kubelet",
+          "start_time": 62.139,
+          "end_time": 62.539
+        },
+        {
+          "text": " ",
+          "start_time": 62.539,
+          "end_time": 62.599
+        },
+        {
+          "text": "s\u1ebd",
+          "start_time": 62.599,
+          "end_time": 62.699
+        },
+        {
+          "text": " ",
+          "start_time": 62.699,
+          "end_time": 62.759
+        },
+        {
+          "text": "c\u1ed1",
+          "start_time": 62.759,
+          "end_time": 62.859
+        },
+        {
+          "text": " ",
+          "start_time": 62.859,
+          "end_time": 62.919
+        },
+        {
+          "text": "g\u1eafng",
+          "start_time": 62.919,
+          "end_time": 63.079
+        },
+        {
+          "text": " ",
+          "start_time": 63.079,
+          "end_time": 63.179
+        },
+        {
+          "text": "reclaim",
+          "start_time": 63.18,
+          "end_time": 63.599
+        },
+        {
+          "text": " ",
+          "start_time": 63.599,
+          "end_time": 63.68
+        },
+        {
+          "text": "storage",
+          "start_time": 63.68,
+          "end_time": 64.059
+        },
+        {
+          "text": " ",
+          "start_time": 64.059,
+          "end_time": 64.059
+        },
+        {
+          "text": "tr\u01b0\u1edbc,",
+          "start_time": 64.059,
+          "end_time": 64.279
+        },
+        {
+          "text": " ",
+          "start_time": 64.279,
+          "end_time": 64.859
+        },
+        {
+          "text": "nh\u01b0ng",
+          "start_time": 64.86,
+          "end_time": 64.979
+        },
+        {
+          "text": " ",
+          "start_time": 64.979,
+          "end_time": 65.059
+        },
+        {
+          "text": "n\u1ebfu",
+          "start_time": 65.059,
+          "end_time": 65.159
+        },
+        {
+          "text": " ",
+          "start_time": 65.159,
+          "end_time": 65.219
+        },
+        {
+          "text": "v\u1eabn",
+          "start_time": 65.22,
+          "end_time": 65.319
+        },
+        {
+          "text": " ",
+          "start_time": 65.319,
+          "end_time": 65.36
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 65.36,
+          "end_time": 65.519
+        },
+        {
+          "text": " ",
+          "start_time": 65.519,
+          "end_time": 65.599
+        },
+        {
+          "text": "\u0111\u1ee7,",
+          "start_time": 65.599,
+          "end_time": 66.119
+        },
+        {
+          "text": " ",
+          "start_time": 66.119,
+          "end_time": 66.199
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 66.199,
+          "end_time": 66.319
+        },
+        {
+          "text": " ",
+          "start_time": 66.319,
+          "end_time": 66.379
+        },
+        {
+          "text": "s\u1ed1",
+          "start_time": 66.379,
+          "end_time": 66.5
+        },
+        {
+          "text": " ",
+          "start_time": 66.5,
+          "end_time": 66.58
+        },
+        {
+          "text": "pod",
+          "start_time": 66.58,
+          "end_time": 66.76
+        },
+        {
+          "text": " ",
+          "start_time": 66.76,
+          "end_time": 66.819
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 66.819,
+          "end_time": 66.879
+        },
+        {
+          "text": " ",
+          "start_time": 66.879,
+          "end_time": 66.939
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 66.939,
+          "end_time": 67.039
+        },
+        {
+          "text": " ",
+          "start_time": 67.039,
+          "end_time": 67.119
+        },
+        {
+          "text": "b\u1ecb",
+          "start_time": 67.119,
+          "end_time": 67.199
+        },
+        {
+          "text": " ",
+          "start_time": 67.199,
+          "end_time": 67.299
+        },
+        {
+          "text": "evict",
+          "start_time": 67.299,
+          "end_time": 67.619
+        },
+        {
+          "text": " ",
+          "start_time": 67.619,
+          "end_time": 67.679
+        },
+        {
+          "text": "\u0111\u1ec3",
+          "start_time": 67.68,
+          "end_time": 67.739
+        },
+        {
+          "text": " ",
+          "start_time": 67.739,
+          "end_time": 67.799
+        },
+        {
+          "text": "gi\u1ea3i",
+          "start_time": 67.799,
+          "end_time": 67.939
+        },
+        {
+          "text": " ",
+          "start_time": 67.939,
+          "end_time": 67.979
+        },
+        {
+          "text": "ph\u00f3ng",
+          "start_time": 67.979,
+          "end_time": 68.139
+        },
+        {
+          "text": " ",
+          "start_time": 68.139,
+          "end_time": 68.199
+        },
+        {
+          "text": "t\u00e0i",
+          "start_time": 68.199,
+          "end_time": 68.319
+        },
+        {
+          "text": " ",
+          "start_time": 68.319,
+          "end_time": 68.36
+        },
+        {
+          "text": "nguy\u00ean.",
+          "start_time": 68.36,
+          "end_time": 68.639
+        },
+        {
+          "text": " ",
+          "start_time": 68.639,
+          "end_time": 69.439
+        },
+        {
+          "text": "V\u1eady",
+          "start_time": 69.439,
+          "end_time": 69.559
+        },
+        {
+          "text": " ",
+          "start_time": 69.559,
+          "end_time": 69.639
+        },
+        {
+          "text": "l\u00e0,",
+          "start_time": 69.639,
+          "end_time": 70.18
+        },
+        {
+          "text": " ",
+          "start_time": 70.18,
+          "end_time": 70.259
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 70.26,
+          "end_time": 70.339
+        },
+        {
+          "text": " ",
+          "start_time": 70.339,
+          "end_time": 70.419
+        },
+        {
+          "text": "v\u1ea5n",
+          "start_time": 70.419,
+          "end_time": 70.5
+        },
+        {
+          "text": " ",
+          "start_time": 70.5,
+          "end_time": 70.58
+        },
+        {
+          "text": "\u0111\u1ec1",
+          "start_time": 70.58,
+          "end_time": 70.659
+        },
+        {
+          "text": " ",
+          "start_time": 70.659,
+          "end_time": 70.739
+        },
+        {
+          "text": "ban",
+          "start_time": 70.739,
+          "end_time": 70.859
+        },
+        {
+          "text": " ",
+          "start_time": 70.859,
+          "end_time": 70.939
+        },
+        {
+          "text": "\u0111\u1ea7u",
+          "start_time": 70.939,
+          "end_time": 71.419
+        },
+        {
+          "text": " ",
+          "start_time": 71.419,
+          "end_time": 71.459
+        },
+        {
+          "text": "ch\u1ec9",
+          "start_time": 71.459,
+          "end_time": 71.559
+        },
+        {
+          "text": " ",
+          "start_time": 71.559,
+          "end_time": 71.619
+        },
+        {
+          "text": "b\u1eaft",
+          "start_time": 71.619,
+          "end_time": 71.719
+        },
+        {
+          "text": " ",
+          "start_time": 71.719,
+          "end_time": 71.799
+        },
+        {
+          "text": "\u0111\u1ea7u",
+          "start_time": 71.799,
+          "end_time": 71.939
+        },
+        {
+          "text": " ",
+          "start_time": 71.939,
+          "end_time": 72.019
+        },
+        {
+          "text": "t\u1eeb",
+          "start_time": 72.019,
+          "end_time": 72.099
+        },
+        {
+          "text": " ",
+          "start_time": 72.099,
+          "end_time": 72.159
+        },
+        {
+          "text": "vi\u1ec7c",
+          "start_time": 72.159,
+          "end_time": 72.319
+        },
+        {
+          "text": " ",
+          "start_time": 72.319,
+          "end_time": 72.4
+        },
+        {
+          "text": "\u1ee9ng",
+          "start_time": 72.4,
+          "end_time": 72.519
+        },
+        {
+          "text": " ",
+          "start_time": 72.519,
+          "end_time": 72.599
+        },
+        {
+          "text": "d\u1ee5ng",
+          "start_time": 72.599,
+          "end_time": 73.079
+        },
+        {
+          "text": " ",
+          "start_time": 73.079,
+          "end_time": 73.139
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 73.139,
+          "end_time": 73.319
+        },
+        {
+          "text": " ",
+          "start_time": 73.319,
+          "end_time": 73.379
+        },
+        {
+          "text": "qu\u00e1",
+          "start_time": 73.379,
+          "end_time": 73.499
+        },
+        {
+          "text": " ",
+          "start_time": 73.499,
+          "end_time": 73.559
+        },
+        {
+          "text": "nhi\u1ec1u",
+          "start_time": 73.559,
+          "end_time": 73.719
+        },
+        {
+          "text": " ",
+          "start_time": 73.719,
+          "end_time": 73.799
+        },
+        {
+          "text": "log",
+          "start_time": 73.799,
+          "end_time": 73.959
+        },
+        {
+          "text": " ",
+          "start_time": 73.959,
+          "end_time": 74.019
+        },
+        {
+          "text": "cu\u1ed1i",
+          "start_time": 74.019,
+          "end_time": 74.159
+        },
+        {
+          "text": " ",
+          "start_time": 74.159,
+          "end_time": 74.219
+        },
+        {
+          "text": "c\u00f9ng",
+          "start_time": 74.22,
+          "end_time": 74.739
+        },
+        {
+          "text": " ",
+          "start_time": 74.739,
+          "end_time": 74.799
+        },
+        {
+          "text": "l\u1ea1i",
+          "start_time": 74.799,
+          "end_time": 74.899
+        },
+        {
+          "text": " ",
+          "start_time": 74.899,
+          "end_time": 74.939
+        },
+        {
+          "text": "tr\u1edf",
+          "start_time": 74.939,
+          "end_time": 75.059
+        },
+        {
+          "text": " ",
+          "start_time": 75.059,
+          "end_time": 75.099
+        },
+        {
+          "text": "th\u00e0nh",
+          "start_time": 75.099,
+          "end_time": 75.259
+        },
+        {
+          "text": " ",
+          "start_time": 75.259,
+          "end_time": 75.319
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 75.319,
+          "end_time": 75.479
+        },
+        {
+          "text": " ",
+          "start_time": 75.479,
+          "end_time": 75.559
+        },
+        {
+          "text": "storage",
+          "start_time": 75.559,
+          "end_time": 76.0
+        },
+        {
+          "text": " ",
+          "start_time": 76.0,
+          "end_time": 76.059
+        },
+        {
+          "text": "incident",
+          "start_time": 76.059,
+          "end_time": 76.839
+        },
+        {
+          "text": " ",
+          "start_time": 76.839,
+          "end_time": 76.919
+        },
+        {
+          "text": "\u1ea3nh",
+          "start_time": 76.919,
+          "end_time": 77.019
+        },
+        {
+          "text": " ",
+          "start_time": 77.019,
+          "end_time": 77.079
+        },
+        {
+          "text": "h\u01b0\u1edfng",
+          "start_time": 77.08,
+          "end_time": 77.259
+        },
+        {
+          "text": " ",
+          "start_time": 77.259,
+          "end_time": 77.319
+        },
+        {
+          "text": "t\u1edbi",
+          "start_time": 77.319,
+          "end_time": 77.439
+        },
+        {
+          "text": " ",
+          "start_time": 77.439,
+          "end_time": 77.579
+        },
+        {
+          "text": "c\u1ea3",
+          "start_time": 77.58,
+          "end_time": 77.619
+        },
+        {
+          "text": " ",
+          "start_time": 77.619,
+          "end_time": 77.699
+        },
+        {
+          "text": "workload",
+          "start_time": 77.699,
+          "end_time": 78.08
+        },
+        {
+          "text": " ",
+          "start_time": 78.08,
+          "end_time": 78.119
+        },
+        {
+          "text": "tr\u00ean",
+          "start_time": 78.119,
+          "end_time": 78.259
+        },
+        {
+          "text": " ",
+          "start_time": 78.259,
+          "end_time": 78.339
+        },
+        {
+          "text": "node.",
+          "start_time": 78.339,
+          "end_time": 78.599
+        },
+        {
+          "text": " ",
+          "start_time": 78.599,
+          "end_time": 79.179
+        },
+        {
+          "text": "Cho",
+          "start_time": 79.18,
+          "end_time": 79.279
+        },
+        {
+          "text": " ",
+          "start_time": 79.279,
+          "end_time": 79.339
+        },
+        {
+          "text": "n\u00ean",
+          "start_time": 79.339,
+          "end_time": 79.5
+        },
+        {
+          "text": " ",
+          "start_time": 79.5,
+          "end_time": 79.559
+        },
+        {
+          "text": "khi",
+          "start_time": 79.559,
+          "end_time": 79.659
+        },
+        {
+          "text": " ",
+          "start_time": 79.659,
+          "end_time": 79.759
+        },
+        {
+          "text": "x\u00e2y",
+          "start_time": 79.759,
+          "end_time": 79.859
+        },
+        {
+          "text": " ",
+          "start_time": 79.859,
+          "end_time": 79.939
+        },
+        {
+          "text": "logging",
+          "start_time": 79.939,
+          "end_time": 80.239
+        },
+        {
+          "text": " ",
+          "start_time": 80.239,
+          "end_time": 80.299
+        },
+        {
+          "text": "pipeline,",
+          "start_time": 80.299,
+          "end_time": 81.079
+        },
+        {
+          "text": " ",
+          "start_time": 81.079,
+          "end_time": 81.159
+        },
+        {
+          "text": "\u0111\u1eebng",
+          "start_time": 81.159,
+          "end_time": 81.279
+        },
+        {
+          "text": " ",
+          "start_time": 81.279,
+          "end_time": 81.319
+        },
+        {
+          "text": "ch\u1ec9",
+          "start_time": 81.319,
+          "end_time": 81.459
+        },
+        {
+          "text": " ",
+          "start_time": 81.459,
+          "end_time": 81.519
+        },
+        {
+          "text": "h\u1ecfi",
+          "start_time": 81.519,
+          "end_time": 81.68
+        },
+        {
+          "text": " ",
+          "start_time": 81.68,
+          "end_time": 81.759
+        },
+        {
+          "text": "log",
+          "start_time": 81.759,
+          "end_time": 81.959
+        },
+        {
+          "text": " ",
+          "start_time": 81.959,
+          "end_time": 82.04
+        },
+        {
+          "text": "\u0111\u00e3",
+          "start_time": 82.04,
+          "end_time": 82.119
+        },
+        {
+          "text": " ",
+          "start_time": 82.119,
+          "end_time": 82.179
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 82.18,
+          "end_time": 82.279
+        },
+        {
+          "text": " ",
+          "start_time": 82.279,
+          "end_time": 82.339
+        },
+        {
+          "text": "g\u1eedi",
+          "start_time": 82.339,
+          "end_time": 82.459
+        },
+        {
+          "text": " ",
+          "start_time": 82.459,
+          "end_time": 82.539
+        },
+        {
+          "text": "l\u00ean",
+          "start_time": 82.54,
+          "end_time": 82.639
+        },
+        {
+          "text": " ",
+          "start_time": 82.639,
+          "end_time": 82.699
+        },
+        {
+          "text": "Loki,",
+          "start_time": 82.699,
+          "end_time": 83.479
+        },
+        {
+          "text": " ",
+          "start_time": 83.479,
+          "end_time": 83.58
+        },
+        {
+          "text": "Elasticsearch",
+          "start_time": 83.58,
+          "end_time": 84.639
+        },
+        {
+          "text": " ",
+          "start_time": 84.639,
+          "end_time": 84.699
+        },
+        {
+          "text": "hay",
+          "start_time": 84.699,
+          "end_time": 84.819
+        },
+        {
+          "text": " ",
+          "start_time": 84.819,
+          "end_time": 84.879
+        },
+        {
+          "text": "h\u1ec7",
+          "start_time": 84.879,
+          "end_time": 84.979
+        },
+        {
+          "text": " ",
+          "start_time": 84.979,
+          "end_time": 85.019
+        },
+        {
+          "text": "th\u1ed1ng",
+          "start_time": 85.019,
+          "end_time": 85.159
+        },
+        {
+          "text": " ",
+          "start_time": 85.159,
+          "end_time": 85.239
+        },
+        {
+          "text": "t\u1eadp",
+          "start_time": 85.239,
+          "end_time": 85.339
+        },
+        {
+          "text": " ",
+          "start_time": 85.339,
+          "end_time": 85.379
+        },
+        {
+          "text": "trung",
+          "start_time": 85.379,
+          "end_time": 85.519
+        },
+        {
+          "text": " ",
+          "start_time": 85.519,
+          "end_time": 85.579
+        },
+        {
+          "text": "hay",
+          "start_time": 85.58,
+          "end_time": 85.659
+        },
+        {
+          "text": " ",
+          "start_time": 85.659,
+          "end_time": 85.759
+        },
+        {
+          "text": "ch\u01b0a.",
+          "start_time": 85.759,
+          "end_time": 86.019
+        },
+        {
+          "text": " ",
+          "start_time": 86.019,
+          "end_time": 86.019
+        }
+      ]
+    },
+    {
+      "text": "H\u00e3y ki\u1ec3m tra th\u00eam m\u1ed9t c\u00e2u n\u1eefa. Tr\u00ean ch\u00ednh node, l\u01b0\u1ee3ng log \u0111ang chi\u1ebfm bao nhi\u00eau disk v\u00e0 log rotation \u0111ang \u0111\u01b0\u1ee3c c\u1ea5u h\u00ecnh nh\u01b0 th\u1ebf n\u00e0o? Follow Uptime DevOps \u0111\u1ec3 xem th\u00eam nh\u1eefng failure trend ki\u1ec3u n\u00e0y trong Kubernetes production. ",
+      "start_time": 87.139,
+      "end_time": 101.499,
+      "speaker": {
+        "id": "speaker_0",
+        "name": "Speaker 0"
+      },
+      "words": [
+        {
+          "text": "H\u00e3y",
+          "start_time": 87.139,
+          "end_time": 87.239
+        },
+        {
+          "text": " ",
+          "start_time": 87.239,
+          "end_time": 87.299
+        },
+        {
+          "text": "ki\u1ec3m",
+          "start_time": 87.299,
+          "end_time": 87.419
+        },
+        {
+          "text": " ",
+          "start_time": 87.419,
+          "end_time": 87.479
+        },
+        {
+          "text": "tra",
+          "start_time": 87.479,
+          "end_time": 87.599
+        },
+        {
+          "text": " ",
+          "start_time": 87.599,
+          "end_time": 87.639
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 87.639,
+          "end_time": 87.799
+        },
+        {
+          "text": " ",
+          "start_time": 87.799,
+          "end_time": 87.859
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 87.86,
+          "end_time": 87.939
+        },
+        {
+          "text": " ",
+          "start_time": 87.939,
+          "end_time": 88.039
+        },
+        {
+          "text": "c\u00e2u",
+          "start_time": 88.04,
+          "end_time": 88.139
+        },
+        {
+          "text": " ",
+          "start_time": 88.139,
+          "end_time": 88.239
+        },
+        {
+          "text": "n\u1eefa.",
+          "start_time": 88.239,
+          "end_time": 88.459
+        },
+        {
+          "text": " ",
+          "start_time": 88.459,
+          "end_time": 88.919
+        },
+        {
+          "text": "Tr\u00ean",
+          "start_time": 88.919,
+          "end_time": 89.059
+        },
+        {
+          "text": " ",
+          "start_time": 89.059,
+          "end_time": 89.119
+        },
+        {
+          "text": "ch\u00ednh",
+          "start_time": 89.119,
+          "end_time": 89.36
+        },
+        {
+          "text": " ",
+          "start_time": 89.36,
+          "end_time": 89.379
+        },
+        {
+          "text": "node,",
+          "start_time": 89.379,
+          "end_time": 89.819
+        },
+        {
+          "text": " ",
+          "start_time": 89.819,
+          "end_time": 89.919
+        },
+        {
+          "text": "l\u01b0\u1ee3ng",
+          "start_time": 89.919,
+          "end_time": 90.059
+        },
+        {
+          "text": " ",
+          "start_time": 90.059,
+          "end_time": 90.139
+        },
+        {
+          "text": "log",
+          "start_time": 90.139,
+          "end_time": 90.399
+        },
+        {
+          "text": " ",
+          "start_time": 90.399,
+          "end_time": 90.479
+        },
+        {
+          "text": "\u0111ang",
+          "start_time": 90.479,
+          "end_time": 90.579
+        },
+        {
+          "text": " ",
+          "start_time": 90.579,
+          "end_time": 90.679
+        },
+        {
+          "text": "chi\u1ebfm",
+          "start_time": 90.68,
+          "end_time": 90.839
+        },
+        {
+          "text": " ",
+          "start_time": 90.839,
+          "end_time": 90.899
+        },
+        {
+          "text": "bao",
+          "start_time": 90.9,
+          "end_time": 90.999
+        },
+        {
+          "text": " ",
+          "start_time": 90.999,
+          "end_time": 91.059
+        },
+        {
+          "text": "nhi\u00eau",
+          "start_time": 91.059,
+          "end_time": 91.199
+        },
+        {
+          "text": " ",
+          "start_time": 91.199,
+          "end_time": 91.259
+        },
+        {
+          "text": "disk",
+          "start_time": 91.259,
+          "end_time": 91.859
+        },
+        {
+          "text": " ",
+          "start_time": 91.859,
+          "end_time": 91.919
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 91.919,
+          "end_time": 92.159
+        },
+        {
+          "text": " ",
+          "start_time": 92.159,
+          "end_time": 92.179
+        },
+        {
+          "text": "log",
+          "start_time": 92.18,
+          "end_time": 92.239
+        },
+        {
+          "text": " ",
+          "start_time": 92.239,
+          "end_time": 92.319
+        },
+        {
+          "text": "rotation",
+          "start_time": 92.319,
+          "end_time": 92.979
+        },
+        {
+          "text": " ",
+          "start_time": 92.979,
+          "end_time": 93.059
+        },
+        {
+          "text": "\u0111ang",
+          "start_time": 93.059,
+          "end_time": 93.179
+        },
+        {
+          "text": " ",
+          "start_time": 93.179,
+          "end_time": 93.239
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 93.239,
+          "end_time": 93.339
+        },
+        {
+          "text": " ",
+          "start_time": 93.339,
+          "end_time": 93.439
+        },
+        {
+          "text": "c\u1ea5u",
+          "start_time": 93.439,
+          "end_time": 93.519
+        },
+        {
+          "text": " ",
+          "start_time": 93.519,
+          "end_time": 93.599
+        },
+        {
+          "text": "h\u00ecnh",
+          "start_time": 93.599,
+          "end_time": 93.739
+        },
+        {
+          "text": " ",
+          "start_time": 93.739,
+          "end_time": 93.779
+        },
+        {
+          "text": "nh\u01b0",
+          "start_time": 93.779,
+          "end_time": 93.859
+        },
+        {
+          "text": " ",
+          "start_time": 93.859,
+          "end_time": 93.899
+        },
+        {
+          "text": "th\u1ebf",
+          "start_time": 93.9,
+          "end_time": 94.019
+        },
+        {
+          "text": " ",
+          "start_time": 94.019,
+          "end_time": 94.079
+        },
+        {
+          "text": "n\u00e0o?",
+          "start_time": 94.079,
+          "end_time": 95.019
+        },
+        {
+          "text": " ",
+          "start_time": 95.019,
+          "end_time": 95.099
+        },
+        {
+          "text": "Follow",
+          "start_time": 95.099,
+          "end_time": 95.419
+        },
+        {
+          "text": " ",
+          "start_time": 95.419,
+          "end_time": 95.439
+        },
+        {
+          "text": "Uptime",
+          "start_time": 95.439,
+          "end_time": 95.779
+        },
+        {
+          "text": " ",
+          "start_time": 95.779,
+          "end_time": 95.839
+        },
+        {
+          "text": "DevOps",
+          "start_time": 95.839,
+          "end_time": 96.539
+        },
+        {
+          "text": " ",
+          "start_time": 96.539,
+          "end_time": 96.599
+        },
+        {
+          "text": "\u0111\u1ec3",
+          "start_time": 96.599,
+          "end_time": 96.679
+        },
+        {
+          "text": " ",
+          "start_time": 96.679,
+          "end_time": 96.779
+        },
+        {
+          "text": "xem",
+          "start_time": 96.779,
+          "end_time": 96.939
+        },
+        {
+          "text": " ",
+          "start_time": 96.939,
+          "end_time": 96.979
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 96.979,
+          "end_time": 97.139
+        },
+        {
+          "text": " ",
+          "start_time": 97.139,
+          "end_time": 97.199
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 97.199,
+          "end_time": 97.359
+        },
+        {
+          "text": " ",
+          "start_time": 97.359,
+          "end_time": 97.459
+        },
+        {
+          "text": "failure",
+          "start_time": 97.459,
+          "end_time": 97.799
+        },
+        {
+          "text": " ",
+          "start_time": 97.799,
+          "end_time": 97.939
+        },
+        {
+          "text": "trend",
+          "start_time": 97.939,
+          "end_time": 98.039
+        },
+        {
+          "text": " ",
+          "start_time": 98.039,
+          "end_time": 98.119
+        },
+        {
+          "text": "ki\u1ec3u",
+          "start_time": 98.119,
+          "end_time": 98.259
+        },
+        {
+          "text": " ",
+          "start_time": 98.259,
+          "end_time": 98.839
+        },
+        {
+          "text": "n\u00e0y",
+          "start_time": 98.839,
+          "end_time": 98.899
+        },
+        {
+          "text": " ",
+          "start_time": 98.899,
+          "end_time": 98.919
+        },
+        {
+          "text": "trong",
+          "start_time": 98.919,
+          "end_time": 99.019
+        },
+        {
+          "text": " ",
+          "start_time": 99.019,
+          "end_time": 99.319
+        },
+        {
+          "text": "Kubernetes",
+          "start_time": 99.319,
+          "end_time": 99.719
+        },
+        {
+          "text": " ",
+          "start_time": 99.719,
+          "end_time": 99.819
+        },
+        {
+          "text": "production.",
+          "start_time": 99.819,
+          "end_time": 101.459
+        },
+        {
+          "text": " ",
+          "start_time": 101.459,
+          "end_time": 101.499
+        }
+      ]
+    },
+    {
+      "text": "[hi\u1ec7u \u1ee9ng \u00e2m thanh]",
+      "start_time": 101.499,
+      "end_time": 101.499,
+      "speaker": {
+        "id": "speaker_1",
+        "name": "Speaker 1"
+      },
+      "words": [
+        {
+          "text": "[hi\u1ec7u \u1ee9ng \u00e2m thanh]",
+          "start_time": 101.499,
+          "end_time": 101.499
+        }
+      ]
+    }
+  ]
+}
