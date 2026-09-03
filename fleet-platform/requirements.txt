@@ -1,0 +1,17 @@
+# Fleet Platform — Python Dependencies
+# ====================================
+
+# Core PySpark & Data Processing
+pyspark>=3.5.0
+psycopg2-binary>=2.9.9
+
+# Kafka Integration
+kafka-python>=2.0.2
+
+# Redis & Async Utilities
+redis>=5.0.1
+websockets>=12.0
+requests>=2.31.0
+
+# Airflow (Optional for local DAG development)
+apache-airflow>=2.8.0

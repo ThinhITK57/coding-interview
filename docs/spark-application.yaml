@@ -1,0 +1,120 @@
+# =============================================================
+# FILE 1: SparkApplication - mo ta 1 lan chay job Spark tren K8s
+# Doi tuong nay do Spark Operator (sparkoperator.k8s.io) quan ly
+# =============================================================
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: revenue-etl-job              # ten job, dung de theo doi/log
+  namespace: data-pipelines          # namespace rieng cho team data
+
+spec:
+  # --- Xac dinh loai ung dung va image ---
+  type: Python                       # Python | Scala | Java | R
+  pythonVersion: "3"
+  mode: cluster                      # driver cung chay trong pod K8s (khong phai client)
+  image: registry.example.com/data-pipelines/revenue-etl:git-sha-abc123
+  imagePullPolicy: Always            # luon lay dung image theo tag (immutable artifact)
+  mainApplicationFile: local:///app/ingestion.py   # file entrypoint, nam san trong image
+  arguments:                         # tuong duong --params trong spark-submit
+    - "--tblName"
+    - "doanh_thu"
+    - "--executionDate"
+    - "2026-08-27"
+  sparkVersion: "3.3.0"              # phai khop version PySpark dong goi trong image
+
+  # --- Chinh sach retry khi job fail ---
+  restartPolicy:
+    type: OnFailure
+    onFailureRetries: 2
+    onFailureRetryInterval: 10
+
+  # --- Cau hinh Spark de tro toi HDFS (storage) va Hive Metastore (warehouse) ---
+  sparkConf:
+    "spark.hadoop.fs.defaultFS": "hdfs://hdfs-namenode:9000"
+    "spark.sql.catalogImplementation": "hive"
+    "spark.hadoop.hive.metastore.uris": "thrift://hive-metastore:9083"
+    "spark.eventLog.enabled": "true"
+    "spark.eventLog.dir": "hdfs://hdfs-namenode:9000/spark-logs"
+
+  # --- Driver pod ---
+  driver:
+    cores: 1
+    memory: "2g"
+    serviceAccount: spark-driver-sa   # quyen de driver tao/quan ly executor pod
+    labels:
+      version: "3.3.0"
+    env:
+      - name: HADOOP_CONF_DIR
+        value: /etc/hadoop/conf
+    volumeMounts:
+      - name: hadoop-hive-conf
+        mountPath: /etc/hadoop/conf
+
+  # --- Executor pod(s) ---
+  executor:
+    cores: 2
+    instances: 3                     # so luong executor pod duoc tao
+    memory: "4g"
+    labels:
+      version: "3.3.0"
+    env:
+      - name: HADOOP_CONF_DIR
+        value: /etc/hadoop/conf
+    volumeMounts:
+      - name: hadoop-hive-conf
+        mountPath: /etc/hadoop/conf
+
+  # --- Volume dung chung cho ca driver va executor ---
+  volumes:
+    - name: hadoop-hive-conf
+      configMap:
+        name: hadoop-hive-config      # tro toi ConfigMap ben duoi
+
+  # --- Dependency ngoai (vi du JDBC driver) khong nam trong image goc ---
+  deps:
+    jars:
+      - local:///opt/spark/extra-jars/mysql-connector-java-8.0.33.jar
+
+  # --- Xuat metric RED (rate/errors/duration) ve Prometheus ---
+  monitoring:
+    exposeDriverMetrics: true
+    exposeExecutorMetrics: true
+    prometheus:
+      jmxExporterJar: "/prometheus/jmx_prometheus_javaagent.jar"
+      port: 8090
+
+---
+# =============================================================
+# FILE 2: ConfigMap - noi dung file cau hinh Hadoop/Hive
+# Duoc mount vao /etc/hadoop/conf trong ca driver va executor
+# =============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hadoop-hive-config
+  namespace: data-pipelines
+data:
+  core-site.xml: |
+    <configuration>
+      <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://hdfs-namenode:9000</value>
+      </property>
+    </configuration>
+
+  hdfs-site.xml: |
+    <configuration>
+      <property>
+        <name>dfs.replication</name>
+        <value>3</value>
+      </property>
+    </configuration>
+
+  hive-site.xml: |
+    <configuration>
+      <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://hive-metastore:9083</value>
+      </property>
+    </configuration>

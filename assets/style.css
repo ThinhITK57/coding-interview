@@ -1,0 +1,114 @@
+/* Tufte-inspired clean typography for teaching lessons */
+:root {
+  --bg-color: #fffff8;
+  --text-color: #111111;
+  --accent-color: #a00000;
+  --code-bg: #f4f4ec;
+  --border-color: #ddddcc;
+  --card-bg: #ffffff;
+}
+
+body {
+  font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: et-book, Palatino, "Palatino Linotype", Georgia, serif;
+  font-weight: normal;
+  color: var(--accent-color);
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+  margin-top: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3rem;
+}
+
+.subtitle {
+  font-style: italic;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+pre, code {
+  font-family: "Consolas", "Fira Code", "Courier New", monospace;
+  background-color: var(--code-bg);
+  font-size: 0.92rem;
+}
+
+pre {
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+}
+
+code {
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.quiz-container {
+  background-color: #f9f9f0;
+  border-left: 4px solid var(--accent-color);
+  padding: 1.2rem;
+  margin: 1.5rem 0;
+}
+
+.quiz-option {
+  display: block;
+  margin: 0.5rem 0;
+  padding: 0.6rem 1rem;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quiz-option:hover {
+  background: #f0f0e8;
+  border-color: var(--accent-color);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+  background-color: var(--accent-color);
+  border-radius: 12px;
+  margin-right: 0.5rem;
+}
+
+footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  color: #666;
+}

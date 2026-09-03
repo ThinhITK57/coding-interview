@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Lesson 0002: Production ELT Architecture Blueprint</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .diagram-box {
+      background: #2b2b2b;
+      color: #f8f8f2;
+      padding: 1.2rem;
+      border-radius: 6px;
+      font-family: "Consolas", monospace;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      overflow-x: auto;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .check-item {
+      background: #fdfdfb;
+      border-left: 3px solid #2e7d32;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lesson 0002: Production ELT Blueprint</h1>
+  <div class="subtitle">Orchestration với Prefect, Ingestion API tối ưu, Metadata Quality Rule, DLQ và Multi-target Storage (Trino / MinIO)</div>
+
+  <div class="card">
+    <h3>Mục Tiêu Bài Học (Learning Objective)</h3>
+    <p>Trang bị trọn vẹn tư duy thiết kế hệ thống và giải pháp kỹ thuật mức <strong>Senior Data Engineer</strong> để vận hành pipeline dữ liệu thực tế tại môi trường doanh nghiệp: xử lý API bất định, chống cạn kiệt connection pool, kiểm soát chất lượng qua Dead Letter Queue (DLQ), lưu trữ đa mục tiêu (MinIO raw backup + Trino sandbox/prod) và xử lý xung đột đồng thời giữa Fact & Dimension.</p>
+  </div>
+
+  <h2>1. Kiến Trúc Tổng Thể (System Architecture)</h2>
+  <div class="diagram-box">
+[REST APIs (Muc 1..4)]
+        │ (Rate-limited, Keep-Alive, HTTP 429 Backoff)
+        ▼
+[Prefect Ingestion Worker] ──► Ghi Raw JSON ──► [MinIO: raw-backup/ (Immutable Bronze)]
+        │
+        ▼ (Kích hoạt sau khi có file)
+[Apache Spark Cluster (Compute)]
+   ├── 1. Schema Parser & Recursive Flattening (Unstructured - Silver Staging)
+   ├── 2. Metadata Data Quality Rule Engine
+   │        ├── Valid Records  ──► Ghi [Trino: dev_db/sandbox] (Dành cho Data Scientist/DE test)
+   │        │                  └──► Ghi [Trino: prod_db/cleaned] (Iceberg ACID MERGE INTO)
+   │        └── Invalid Records ─► Ghi [Dead Letter Queue: MinIO/Trino dlq_table]
+   └── 3. Late-Arriving Dimension Resolver & Window Deduplication
+  </div>
+
+  <h2>2. Giải Quyết 5 Vấn Đề Kỹ Thuật Trọng Tâm</h2>
+
+  <div class="card">
+    <h3>Vấn đề 1: Bảo vệ Connection Pool & Ổn định API Ingestion</h3>
+    <p><strong>Cảnh báo Senior DE:</strong> Tuyệt đối không khởi tạo HTTP connection trong hàm <code>map()</code> hay UDF từng dòng của Spark. Sẽ gây socket leak và DDOS máy chủ API.</p>
+    <ul>
+      <li><strong>Mô hình Decoupled (Khuyến nghị số 1):</strong> Để Prefect Task (Python <code>httpx</code> / <code>aiohttp</code>) đóng vai trò I/O Ingestor, kéo data về và dump thẳng file <code>.json.gz</code> lên MinIO. Spark chỉ đọc từ MinIO để tính toán song song.</li>
+      <li><strong>Mô hình Spark Direct Ingestion:</strong> Nếu bắt buộc Spark kéo trực tiếp qua partition, phải dùng <code>rdd.mapPartitions()</code> kết hợp với Singleton Connection Pool (ví dụ <code>urllib3.PoolManager</code> hoặc <code>requests.Session</code> với <code>HTTPAdapter(pool_connections=..., pool_maxsize=...)</code>) để tái sử dụng socket trên từng Executor.</li>
+      <li><strong>Cơ chế Backoff:</strong> Sử dụng Exponential Backoff + Full Jitter khi nhận HTTP 429 và đọc header <code>Retry-After</code>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Vấn đề 2: Metadata Quality Rule & Dead Letter Queue (DLQ)</h3>
+    <p>Thay vì lọc 2 lần gây quét dữ liệu trùng lặp (Double Scan), ta áp dụng kỹ thuật <strong>Single-Pass Validation Tagging</strong>:</p>
+    <pre><code># PySpark logic gắn thẻ lỗi
+from pyspark.sql import functions as F
+
+df_validated = df_flattened.withColumn(
+    "validation_errors",
+    F.concat_ws(";",
+        F.when(F.col("id").isNull(), F.lit("ERR_NULL_ID")).otherwise(F.lit("")),
+        F.when(F.col("amount") &lt; 0, F.lit("ERR_NEGATIVE_AMOUNT")).otherwise(F.lit(""))
+    )
+)
+
+# Tách luồng sạch và luồng lỗi
+df_valid = df_validated.filter(F.col("validation_errors") == "")
+df_dlq   = df_validated.filter(F.col("validation_errors") != "")</code></pre>
+    <p><strong>Plan xử lý DLQ:</strong> Lưu vào bảng Iceberg DLQ kèm <code>error_code, raw_payload, ingested_at</code>. Cài đặt Prefect Webhook cảnh báo nếu số lỗi vượt ngưỡng (ví dụ > 2%). Viết pipeline <em>DLQ Replay</em> chạy lại sau khi sửa logic hoặc nhận bản vá từ bên cung cấp API.</p>
+  </div>
+
+  <div class="card">
+    <h3>Vấn đề 3: Lưu Trữ Đa Mục Tiêu (MinIO + Trino Dev + Trino Prod)</h3>
+    <p>Sử dụng <code>df.cache()</code> sau bước xử lý gốc để tránh tính toán lại khi ghi vào 3 đích:</p>
+    <ol>
+      <li><strong>MinIO Backup (Bronze):</strong> Ghi append-only file thô theo phân vùng ngày <code>/raw/{muc_name}/year=YYYY/month=MM/day=DD/</code>.</li>
+      <li><strong>Trino Dev (Sandbox):</strong> Ghi đè hoặc append vào schema cá nhân để chạy notebook, thí nghiệm thuật toán.</li>
+      <li><strong>Trino Prod (Cleaned/Silver):</strong> Sử dụng <code>MERGE INTO</code> (nếu chạy qua Trino engine hoặc Spark Iceberg catalog) để upsert dữ liệu đã sạch, không tạo bản ghi trùng lặp.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>Vấn đề 4: Xử Lý Incremental Multi-Version & Xung Đột Fact - Dimension</h3>
+    <p>Hiện tượng: Bảng Dimension và Fact cùng được đẩy về trong 1 micro-window, dẫn đến Fact trỏ vào Dimension chưa kịp cập nhật (Late Arriving Dimension).</p>
+    <div class="grid-2">
+      <div>
+        <h4>1. Điều phối Prefect</h4>
+        <p>Thiết lập dependency bắt buộc: Luồng Dimension phải chạy xong Stage & Upsert SCD2 trước khi Fact Ingestion bắt đầu chạy Join.</p>
+      </div>
+      <div>
+        <h4>2. Inferred Dimension Key</h4>
+        <p>Nếu Fact xuất hiện ID lạ chưa có trong Dimension: Tự động chèn 1 bản ghi tạm (Dummy/Pending Member) với trạng thái <code>status='INFERRED'</code> để Fact không bị rớt.</p>
+      </div>
+    </div>
+    <h4>3. Multi-version Window Deduplication trong Spark:</h4>
+    <pre><code>from pyspark.sql.window import Window
+
+# Chỉ giữ lại bản ghi có phiên bản/updated_at mới nhất trong batch
+window_spec = Window.partitionBy("business_id").orderBy(F.col("updated_at").desc(), F.col("version").desc())
+df_deduped = df_valid.withColumn("rank", F.row_number().over(window_spec)).filter("rank = 1").drop("rank")</code></pre>
+  </div>
+
+  <h2>3. Checklist Chuẩn Bị Cho Buổi Làm Việc Ngày Mai</h2>
+  <div class="check-item"><strong>1. Về API Ingestion:</strong> Xác nhận chính xác Authentication (OAuth2 Bearer hay API Key?), Rate limit (bao nhiêu RPS, RPM?), và cơ chế phân trang (Cursor-based, Offset, hay Time-window?).</div>
+  <div class="check-item"><strong>2. Về 4 Mục Dữ Liệu:</strong> Mục nào là Master/Dimension (khách hàng, danh mục) và mục nào là Transaction/Fact (giao dịch, sự kiện, log)?</div>
+  <div class="check-item"><strong>3. Về Trino Catalogs:</strong> Trino đang dùng connector nào phía dưới (Apache Iceberg, Delta Lake, hay Hive Metastore)? Connector quyết định cú pháp <code>MERGE INTO</code> và tính năng Time Travel.</div>
+  <div class="check-item"><strong>4. Về MinIO S3 Endpoint:</strong> Thông số kết nối S3A (Access Key, Secret Key, Endpoint URL, SSL enabled?) để Spark và Prefect đẩy backup an toàn.</div>
+
+  <footer>
+    <p>Antigravity Senior Data Engineering Series • Lesson 0002 • Cập nhật ngày 2026-09-04</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+   =============================================================================
+   hive-site.xml — Cấu hình Apache Hive 3.1.3+ Production trên Ubuntu Bare-Metal
+   Vị trí: /opt/hive/conf/hive-site.xml (hoặc /usr/local/hive/conf/hive-site.xml)
+   Và copy sang: /opt/spark/conf/hive-site.xml (để Spark SQL đọc chung Metastore)
+   =============================================================================
+-->
+<configuration>
+
+    <!-- ===================================================================== -->
+    <!-- 1. CẤU HÌNH KẾT NỐI POSTGRESQL HIVE METASTORE DATABASE                 -->
+    <!-- ===================================================================== -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:postgresql://master:5432/metastore_db</value>
+        <description>JDBC URL kết nối PostgreSQL metastore database</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>org.postgresql.Driver</value>
+        <description>Driver JDBC PostgreSQL</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+        <description>Tên tài khoản kết nối DB Metastore</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>HivePass_VCS_2026</value>
+        <description>Mật khẩu tài khoản kết nối DB Metastore</description>
+    </property>
+
+    <!-- ===================================================================== -->
+    <!-- 2. CẤU HÌNH THƯ MỤC LƯU TRỮ HDFS & SCRATCH DIR                         -->
+    <!-- ===================================================================== -->
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>/user/hive/warehouse</value>
+        <description>Đường dẫn thư mục lưu trữ bảng Hive Managed trên HDFS</description>
+    </property>
+
+    <property>
+        <name>hive.exec.scratchdir</name>
+        <value>/tmp/hive</value>
+        <description>Thư mục tạm trên HDFS để thực thi các câu lệnh Hive query</description>
+    </property>
+
+    <property>
+        <name>hive.user.install.directory</name>
+        <value>/user/</value>
+        <description>Thư mục gốc người dùng trên HDFS</description>
+    </property>
+
+    <!-- ===================================================================== -->
+    <!-- 3. CẤU HÌNH THRIFT HIVE METASTORE SERVICE (PORT 9083)                  -->
+    <!-- ===================================================================== -->
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://master:9083</value>
+        <description>Địa chỉ Thrift URI của Hive Metastore phục vụ cho Spark SQL, Trino, Presto</description>
+    </property>
+
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+        <description>Bỏ qua kiểm tra phiên bản schema nghiêm ngặt khi khởi động</description>
+    </property>
+
+    <property>
+        <name>datanucleus.schema.autoCreateAll</name>
+        <value>false</value>
+        <description>Không tự tạo schema tự động (bắt buộc dùng schematool để khởi tạo)</description>
+    </property>
+
+    <!-- ===================================================================== -->
+    <!-- 4. CẤU HÌNH HIVESERVER2 SERVICE (PORT 10000 & BEELINE JDBC)           -->
+    <!-- ===================================================================== -->
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
+        <description>Cổng TCP HiveServer2 lắng nghe kết nối JDBC/ODBC từ Beeline, DBeaver, BI Tools</description>
+    </property>
+
+    <property>
+        <name>hive.server2.thrift.bind.host</name>
+        <value>master</value>
+        <description>IP/Hostname máy chủ HiveServer2 lắng nghe</description>
+    </property>
+
+    <property>
+        <name>hive.server2.enable.doAs</name>
+        <value>false</value>
+        <description>Tắt doAs để HiveServer2 chạy dưới quyền service user quản lý thư mục HDFS</description>
+    </property>
+
+    <property>
+        <name>hive.server2.authentication</name>
+        <value>NONE</value>
+        <description>Chế độ xác thực HiveServer2 (NONE hoặc NOSASL cho môi trường nội bộ)</description>
+    </property>
+
+    <!-- ===================================================================== -->
+    <!-- 5. TỐI ƯU HÓA HIỆU NĂNG QUERY & ĐỊNH DẠNG PARQUET/ORC                  -->
+    <!-- ===================================================================== -->
+    <property>
+        <name>hive.execution.engine</name>
+        <value>mr</value>
+        <description>Engine thực thi mặc định (Hoặc dùng Spark SQL để query trực tiếp qua Metastore)</description>
+    </property>
+
+    <property>
+        <name>hive.vectorized.execution.enabled</name>
+        <value>true</value>
+        <description>Bật xử lý Vectorized execution tăng tốc quét dữ liệu theo lô</description>
+    </property>
+
+    <property>
+        <name>hive.cbo.enable</name>
+        <value>true</value>
+        <description>Bật Cost-Based Optimizer (CBO) với Apache Calcite</description>
+    </property>
+
+</configuration>
