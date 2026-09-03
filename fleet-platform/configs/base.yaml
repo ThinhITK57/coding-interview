@@ -1,0 +1,51 @@
+# =============================================================================
+# Fleet Data Platform — Base Configuration (Shared across ALL environments)
+# =============================================================================
+# File này chứa các tham số CHUNG áp dụng cho mọi môi trường (local, dev, staging, prod).
+# Các giá trị cụ thể từng môi trường sẽ GHI ĐÈ trong file {env}.yaml tương ứng.
+
+app:
+  name: "fleet-data-platform"
+  version: "1.0.0"
+  log_level: "INFO"
+
+# --- Spark Defaults ---
+spark:
+  app_name: "FleetPlatform"
+  compression_codec: "snappy"
+  adaptive_enabled: true
+  adaptive_skew_join: true
+  serializer: "org.apache.spark.serializer.KryoSerializer"
+  shuffle_partitions: 8
+  salt_buckets: 10
+
+# --- ETL Job Defaults ---
+etl:
+  batch_size: 10000
+  retry_count: 3
+  retry_delay_seconds: 30
+  scd2_expiration_date: "9999-12-31"
+  partition_overwrite_mode: "dynamic"
+
+# --- Data Lake Paths (Relative — prefix sẽ thay đổi theo env) ---
+datalake:
+  root: "/fleet-datalake"
+  raw: "/fleet-datalake/raw"
+  silver: "/fleet-datalake/silver"
+  gold: "/fleet-datalake/warehouse"
+  checkpoints: "/fleet-datalake/checkpoints"
+
+# --- Kafka Topics ---
+kafka:
+  topics:
+    telemetry: "truck-telemetry"
+    repair_request: "repair-request"
+    cdc_prefix: "fleet.public"
+  consumer_group: "fleet-etl-consumer"
+  starting_offsets: "latest"
+
+# --- Streaming ---
+streaming:
+  trigger_interval: "10 seconds"
+  watermark_delay: "5 minutes"
+  no_data_micro_batches: false

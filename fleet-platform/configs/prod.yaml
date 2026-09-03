@@ -1,0 +1,55 @@
+# =============================================================================
+# Fleet Data Platform — PRODUCTION Environment Configuration
+# =============================================================================
+# Dành cho: Cụm Bare-Metal 3 máy chủ (Master/Slave1/Slave2) hoặc K8s Production.
+# Ghi đè: base.yaml
+# ⚠️ TUYỆT ĐỐI KHÔNG COMMIT PASSWORD THẬT VÀO FILE NÀY.
+#    Sử dụng Environment Variables hoặc K8s Secrets.
+
+env: "prod"
+
+storage:
+  type: "hdfs"
+  endpoint: "hdfs://master:9000"
+  warehouse_path: "hdfs://master:9000/fleet-datalake/warehouse"
+
+database:
+  host: "master"
+  port: 5432
+  name: "fleet_oltp"
+  user: "fleet_app"
+  password: "${FLEET_DB_PASSWORD}"
+  jdbc_url: "jdbc:postgresql://master:5432/fleet_oltp"
+
+hive:
+  enabled: true
+  metastore_uris: "thrift://master:9083"
+
+kafka:
+  bootstrap_servers: "master:9092,slave1:9092,slave2:9092"
+
+redis:
+  host: "master"
+  port: 6379
+  password: "${REDIS_PASSWORD}"
+
+spark:
+  master: "spark://master:7077"
+  driver_memory: "4g"
+  executor_memory: "8g"
+  executor_cores: 4
+  shuffle_partitions: 200
+  salt_buckets: 50
+  event_log_enabled: true
+  event_log_dir: "hdfs://master:9000/spark-logs"
+
+etl:
+  batch_size: 100000
+  retry_count: 5
+  retry_delay_seconds: 60
+
+monitoring:
+  prometheus_pushgateway: "http://master:9091"
+  grafana_url: "http://master:3000"
+  alerting_enabled: true
+  alert_webhook: "${ALERT_WEBHOOK_URL}"

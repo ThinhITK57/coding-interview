@@ -1,0 +1,3872 @@
+{
+  "language_code": null,
+  "segments": [
+    {
+      "text": "Timeout v\u00e0 retry c\u00f3 th\u1ec3 t\u1ea1o failure cascade nh\u01b0 th\u1ebf n\u00e0o? Trong distributed system, retry l\u00e0 m\u1ed9t d\u1ea1ng t\u1ea3i b\u1ed5 sung. N\u1ebfu downstream \u0111\u00e3 qu\u00e1 t\u1ea3i, retry kh\u00f4ng t\u1ea1o th\u00eam capacity, n\u00f3 ch\u1ec9 t\u1ea1o th\u00eam work. Gi\u1ea3 s\u1eed service A g\u1ecdi service B. \u1ede tr\u1ea1ng th\u00e1i b\u00ecnh th\u01b0\u1eddng, B ph\u1ea3n h\u1ed3i nhanh nh\u01b0ng khi t\u1ea3i t\u0103ng, latency c\u1ee7a B b\u1eaft \u0111\u1ea7u cao h\u01a1n. A c\u00f3 timeout l\u00e0 m\u1ed9t gi\u00e2y. Khi h\u1ebft m\u1ed9t gi\u00e2y m\u00e0 ch\u01b0a nh\u1eadn \u0111\u01b0\u1ee3c response, A k\u1ebft lu\u1eadn request th\u1ea5t b\u1ea1i v\u00e0 th\u1ef1c hi\u1ec7n retry. Tuy nhi\u00ean, timeout \u1edf ph\u00eda A kh\u00f4ng nh\u1ea5t thi\u1ebft \u0111\u1ed3ng ngh\u0129a c\u00f4ng vi\u1ec7c ph\u00eda B \u0111\u00e3 d\u1eebng l\u1ea1i. Request \u0111\u1ea7u ti\u00ean c\u00f3 th\u1ec3 v\u1eabn \u0111ang chi\u1ebfm connection, thread, CPU ho\u1eb7c m\u1ed9t resource n\u00e0o \u0111\u00f3 \u1edf downstream. Retry th\u1ee9 2 l\u00fac n\u00e0y t\u1ea1o th\u00eam m\u1ed9t \u0111\u01a1n v\u1ecb work tr\u00ean ch\u00ednh service v\u1ed1n \u0111\u00e3 g\u1eb7p v\u1ea5n \u0111\u1ec1. N\u1ebfu nhi\u1ec1u client c\u00f9ng l\u00e0m \u0111i\u1ec1u n\u00e0y, t\u1ea3i ph\u00eda B t\u0103ng l\u00ean. Latency v\u00ec th\u1ebf ti\u1ebfp t\u1ee5c t\u0103ng. Nhi\u1ec1u request kh\u00e1c l\u1ea1i ch\u1ea1m timeout v\u00e0 nh\u1eefng timeout m\u1edbi l\u1ea1i sinh ra nh\u1eefng retry m\u1edbi. \u0110\u00e2y l\u00e0 positive feedback loop \u0111i\u1ec3n h\u00ecnh c\u1ee7a m\u1ed9t cascading failure. Overload t\u1ea1o retry, retry t\u1ea1o th\u00eam overload v\u00e0 tr\u1ea1ng th\u00e1i c\u1ee7a h\u1ec7 th\u1ed1ng ti\u1ebfp t\u1ee5c x\u1ea5u \u0111i. Google SRE m\u00f4 t\u1ea3 retry amplification l\u00e0 m\u1ed9t trong nh\u1eefng c\u01a1 ch\u1ebf c\u00f3 th\u1ec3 bi\u1ebfn m\u1ed9t m\u1ee9c l\u1ed7i nh\u1ecf th\u00e0nh s\u1ef1 c\u1ed1 tr\u00ean di\u1ec7n r\u1ed9ng. V\u00ec th\u1ebf, timeout v\u00e0 retry ph\u1ea3i \u0111\u01b0\u1ee3c thi\u1ebft k\u1ebf nh\u01b0 m\u1ed9t ph\u1ea7n c\u1ee7a to\u00e0n b\u1ed9 call chain. Timeout c\u1ea7n ph\u00f9 h\u1ee3p v\u1edbi latency th\u1ef1c t\u1ebf c\u1ee7a downstream v\u00e0 v\u1edbi deadline t\u1ed5ng th\u1ec3 c\u1ee7a request. Retry c\u1ea7n c\u00f3 gi\u1edbi h\u1ea1n. C\u00e1c l\u1ea7n retry n\u00ean \u0111\u01b0\u1ee3c gi\u00e3n ra b\u1eb1ng back off v\u00e0 th\u00eam jitter \u0111\u1ec3 nhi\u1ec1u client kh\u00f4ng \u0111\u1ed3ng th\u1eddi g\u1eedi l\u1ea1i request v\u00e0o c\u00f9ng m\u1ed9t th\u1eddi \u0111i\u1ec3m. V\u00e0 v\u1edbi nh\u1eefng operation c\u00f3 side effect, c\u1ea7n xem x\u00e9t idempotency tr\u01b0\u1edbc khi quy\u1ebft \u0111\u1ecbnh r\u1eb1ng retry l\u00e0 an to\u00e0n. Amazon c\u0169ng nh\u1ea5n m\u1ea1nh ch\u00ednh c\u00e1c \u0111i\u1ec3m n\u00e0y khi thi\u1ebft k\u1ebf remote calls trong h\u1ec7 th\u1ed1ng ph\u00e2n t\u00e1n. Retry l\u00e0 m\u1ed9t c\u01a1 ch\u1ebf resilience, nh\u01b0ng ch\u1ec9 khi h\u1ec7 th\u1ed1ng bi\u1ebft l\u00fac n\u00e0o n\u00ean th\u1eed l\u1ea1i, th\u1eed l\u1ea1i bao nhi\u00eau l\u1ea7n v\u00e0 l\u00fac n\u00e0o n\u00ean d\u1eebng. Follow Uptime DevOps \u0111\u1ec3 xem th\u00eam c\u00e1ch nh\u1eefng quy\u1ebft \u0111\u1ecbnh nh\u1ecf \u1edf t\u1ea7ng RPC c\u00f3 th\u1ec3 thay \u0111\u1ed5i reliability c\u1ee7a c\u1ea3 h\u1ec7 th\u1ed1ng. ",
+      "start_time": 0.36,
+      "end_time": 128.769,
+      "speaker": {
+        "id": "speaker_0",
+        "name": "Speaker 0"
+      },
+      "words": [
+        {
+          "text": "Timeout",
+          "start_time": 0.36,
+          "end_time": 0.76
+        },
+        {
+          "text": " ",
+          "start_time": 0.76,
+          "end_time": 0.78
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 0.78,
+          "end_time": 0.88
+        },
+        {
+          "text": " ",
+          "start_time": 0.88,
+          "end_time": 0.94
+        },
+        {
+          "text": "retry",
+          "start_time": 0.94,
+          "end_time": 1.42
+        },
+        {
+          "text": " ",
+          "start_time": 1.42,
+          "end_time": 1.819
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 1.82,
+          "end_time": 1.92
+        },
+        {
+          "text": " ",
+          "start_time": 1.92,
+          "end_time": 1.94
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 1.94,
+          "end_time": 2.08
+        },
+        {
+          "text": " ",
+          "start_time": 2.08,
+          "end_time": 2.1
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 2.1,
+          "end_time": 2.24
+        },
+        {
+          "text": " ",
+          "start_time": 2.24,
+          "end_time": 2.34
+        },
+        {
+          "text": "failure",
+          "start_time": 2.34,
+          "end_time": 2.66
+        },
+        {
+          "text": " ",
+          "start_time": 2.66,
+          "end_time": 2.74
+        },
+        {
+          "text": "cascade",
+          "start_time": 2.74,
+          "end_time": 3.18
+        },
+        {
+          "text": " ",
+          "start_time": 3.18,
+          "end_time": 3.2
+        },
+        {
+          "text": "nh\u01b0",
+          "start_time": 3.2,
+          "end_time": 3.32
+        },
+        {
+          "text": " ",
+          "start_time": 3.32,
+          "end_time": 3.34
+        },
+        {
+          "text": "th\u1ebf",
+          "start_time": 3.34,
+          "end_time": 3.44
+        },
+        {
+          "text": " ",
+          "start_time": 3.44,
+          "end_time": 3.48
+        },
+        {
+          "text": "n\u00e0o?",
+          "start_time": 3.48,
+          "end_time": 3.68
+        },
+        {
+          "text": " ",
+          "start_time": 3.68,
+          "end_time": 4.54
+        },
+        {
+          "text": "Trong",
+          "start_time": 4.54,
+          "end_time": 4.76
+        },
+        {
+          "text": " ",
+          "start_time": 4.76,
+          "end_time": 4.8
+        },
+        {
+          "text": "distributed",
+          "start_time": 4.8,
+          "end_time": 5.44
+        },
+        {
+          "text": " ",
+          "start_time": 5.44,
+          "end_time": 5.5
+        },
+        {
+          "text": "system,",
+          "start_time": 5.5,
+          "end_time": 5.9
+        },
+        {
+          "text": " ",
+          "start_time": 5.9,
+          "end_time": 6.48
+        },
+        {
+          "text": "retry",
+          "start_time": 6.48,
+          "end_time": 6.9
+        },
+        {
+          "text": " ",
+          "start_time": 6.9,
+          "end_time": 6.94
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 6.94,
+          "end_time": 7.02
+        },
+        {
+          "text": " ",
+          "start_time": 7.02,
+          "end_time": 7.06
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 7.06,
+          "end_time": 7.18
+        },
+        {
+          "text": " ",
+          "start_time": 7.18,
+          "end_time": 7.239
+        },
+        {
+          "text": "d\u1ea1ng",
+          "start_time": 7.24,
+          "end_time": 7.44
+        },
+        {
+          "text": " ",
+          "start_time": 7.44,
+          "end_time": 7.48
+        },
+        {
+          "text": "t\u1ea3i",
+          "start_time": 7.48,
+          "end_time": 7.6
+        },
+        {
+          "text": " ",
+          "start_time": 7.6,
+          "end_time": 7.7
+        },
+        {
+          "text": "b\u1ed5",
+          "start_time": 7.7,
+          "end_time": 7.84
+        },
+        {
+          "text": " ",
+          "start_time": 7.84,
+          "end_time": 7.859
+        },
+        {
+          "text": "sung.",
+          "start_time": 7.86,
+          "end_time": 8.08
+        },
+        {
+          "text": " ",
+          "start_time": 8.08,
+          "end_time": 8.66
+        },
+        {
+          "text": "N\u1ebfu",
+          "start_time": 8.66,
+          "end_time": 8.82
+        },
+        {
+          "text": " ",
+          "start_time": 8.82,
+          "end_time": 8.86
+        },
+        {
+          "text": "downstream",
+          "start_time": 8.86,
+          "end_time": 9.36
+        },
+        {
+          "text": " ",
+          "start_time": 9.36,
+          "end_time": 9.379
+        },
+        {
+          "text": "\u0111\u00e3",
+          "start_time": 9.38,
+          "end_time": 9.5
+        },
+        {
+          "text": " ",
+          "start_time": 9.5,
+          "end_time": 9.52
+        },
+        {
+          "text": "qu\u00e1",
+          "start_time": 9.52,
+          "end_time": 9.64
+        },
+        {
+          "text": " ",
+          "start_time": 9.64,
+          "end_time": 9.72
+        },
+        {
+          "text": "t\u1ea3i,",
+          "start_time": 9.72,
+          "end_time": 9.94
+        },
+        {
+          "text": " ",
+          "start_time": 9.94,
+          "end_time": 10.46
+        },
+        {
+          "text": "retry",
+          "start_time": 10.46,
+          "end_time": 10.86
+        },
+        {
+          "text": " ",
+          "start_time": 10.86,
+          "end_time": 10.9
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 10.9,
+          "end_time": 11.08
+        },
+        {
+          "text": " ",
+          "start_time": 11.08,
+          "end_time": 11.09
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 11.09,
+          "end_time": 11.28
+        },
+        {
+          "text": " ",
+          "start_time": 11.28,
+          "end_time": 11.319
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 11.32,
+          "end_time": 11.46
+        },
+        {
+          "text": " ",
+          "start_time": 11.46,
+          "end_time": 11.56
+        },
+        {
+          "text": "capacity,",
+          "start_time": 11.56,
+          "end_time": 12.16
+        },
+        {
+          "text": " ",
+          "start_time": 12.16,
+          "end_time": 12.78
+        },
+        {
+          "text": "n\u00f3",
+          "start_time": 12.78,
+          "end_time": 12.88
+        },
+        {
+          "text": " ",
+          "start_time": 12.88,
+          "end_time": 12.9
+        },
+        {
+          "text": "ch\u1ec9",
+          "start_time": 12.9,
+          "end_time": 13.06
+        },
+        {
+          "text": " ",
+          "start_time": 13.06,
+          "end_time": 13.1
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 13.1,
+          "end_time": 13.26
+        },
+        {
+          "text": " ",
+          "start_time": 13.26,
+          "end_time": 13.28
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 13.28,
+          "end_time": 13.46
+        },
+        {
+          "text": " ",
+          "start_time": 13.46,
+          "end_time": 13.5
+        },
+        {
+          "text": "work.",
+          "start_time": 13.5,
+          "end_time": 13.74
+        },
+        {
+          "text": " ",
+          "start_time": 13.74,
+          "end_time": 14.4
+        },
+        {
+          "text": "Gi\u1ea3",
+          "start_time": 14.4,
+          "end_time": 14.52
+        },
+        {
+          "text": " ",
+          "start_time": 14.52,
+          "end_time": 14.639
+        },
+        {
+          "text": "s\u1eed",
+          "start_time": 14.64,
+          "end_time": 14.84
+        },
+        {
+          "text": " ",
+          "start_time": 14.84,
+          "end_time": 14.9
+        },
+        {
+          "text": "service",
+          "start_time": 14.9,
+          "end_time": 15.2
+        },
+        {
+          "text": " ",
+          "start_time": 15.2,
+          "end_time": 15.38
+        },
+        {
+          "text": "A",
+          "start_time": 15.38,
+          "end_time": 15.52
+        },
+        {
+          "text": " ",
+          "start_time": 15.52,
+          "end_time": 15.98
+        },
+        {
+          "text": "g\u1ecdi",
+          "start_time": 15.98,
+          "end_time": 16.1
+        },
+        {
+          "text": " ",
+          "start_time": 16.1,
+          "end_time": 16.2
+        },
+        {
+          "text": "service",
+          "start_time": 16.2,
+          "end_time": 16.48
+        },
+        {
+          "text": " ",
+          "start_time": 16.48,
+          "end_time": 16.6
+        },
+        {
+          "text": "B.",
+          "start_time": 16.6,
+          "end_time": 16.78
+        },
+        {
+          "text": " ",
+          "start_time": 16.78,
+          "end_time": 17.48
+        },
+        {
+          "text": "\u1ede",
+          "start_time": 17.48,
+          "end_time": 17.56
+        },
+        {
+          "text": " ",
+          "start_time": 17.56,
+          "end_time": 17.58
+        },
+        {
+          "text": "tr\u1ea1ng",
+          "start_time": 17.58,
+          "end_time": 17.76
+        },
+        {
+          "text": " ",
+          "start_time": 17.76,
+          "end_time": 17.8
+        },
+        {
+          "text": "th\u00e1i",
+          "start_time": 17.8,
+          "end_time": 17.93
+        },
+        {
+          "text": " ",
+          "start_time": 17.93,
+          "end_time": 18.0
+        },
+        {
+          "text": "b\u00ecnh",
+          "start_time": 18.0,
+          "end_time": 18.14
+        },
+        {
+          "text": " ",
+          "start_time": 18.14,
+          "end_time": 18.16
+        },
+        {
+          "text": "th\u01b0\u1eddng,",
+          "start_time": 18.16,
+          "end_time": 18.41
+        },
+        {
+          "text": " ",
+          "start_time": 18.41,
+          "end_time": 18.9
+        },
+        {
+          "text": "B",
+          "start_time": 18.9,
+          "end_time": 19.06
+        },
+        {
+          "text": " ",
+          "start_time": 19.06,
+          "end_time": 19.139
+        },
+        {
+          "text": "ph\u1ea3n",
+          "start_time": 19.14,
+          "end_time": 19.32
+        },
+        {
+          "text": " ",
+          "start_time": 19.32,
+          "end_time": 19.36
+        },
+        {
+          "text": "h\u1ed3i",
+          "start_time": 19.36,
+          "end_time": 19.46
+        },
+        {
+          "text": " ",
+          "start_time": 19.46,
+          "end_time": 19.52
+        },
+        {
+          "text": "nhanh",
+          "start_time": 19.52,
+          "end_time": 20.2
+        },
+        {
+          "text": " ",
+          "start_time": 20.2,
+          "end_time": 20.24
+        },
+        {
+          "text": "nh\u01b0ng",
+          "start_time": 20.24,
+          "end_time": 20.4
+        },
+        {
+          "text": " ",
+          "start_time": 20.4,
+          "end_time": 20.42
+        },
+        {
+          "text": "khi",
+          "start_time": 20.42,
+          "end_time": 20.52
+        },
+        {
+          "text": " ",
+          "start_time": 20.52,
+          "end_time": 20.58
+        },
+        {
+          "text": "t\u1ea3i",
+          "start_time": 20.58,
+          "end_time": 20.78
+        },
+        {
+          "text": " ",
+          "start_time": 20.78,
+          "end_time": 20.8
+        },
+        {
+          "text": "t\u0103ng,",
+          "start_time": 20.8,
+          "end_time": 21.0
+        },
+        {
+          "text": " ",
+          "start_time": 21.0,
+          "end_time": 21.34
+        },
+        {
+          "text": "latency",
+          "start_time": 21.34,
+          "end_time": 21.84
+        },
+        {
+          "text": " ",
+          "start_time": 21.84,
+          "end_time": 21.88
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 21.88,
+          "end_time": 21.98
+        },
+        {
+          "text": " ",
+          "start_time": 21.98,
+          "end_time": 22.02
+        },
+        {
+          "text": "B",
+          "start_time": 22.02,
+          "end_time": 22.2
+        },
+        {
+          "text": " ",
+          "start_time": 22.2,
+          "end_time": 22.279
+        },
+        {
+          "text": "b\u1eaft",
+          "start_time": 22.28,
+          "end_time": 22.36
+        },
+        {
+          "text": " ",
+          "start_time": 22.36,
+          "end_time": 22.419
+        },
+        {
+          "text": "\u0111\u1ea7u",
+          "start_time": 22.42,
+          "end_time": 22.58
+        },
+        {
+          "text": " ",
+          "start_time": 22.58,
+          "end_time": 22.64
+        },
+        {
+          "text": "cao",
+          "start_time": 22.64,
+          "end_time": 22.76
+        },
+        {
+          "text": " ",
+          "start_time": 22.76,
+          "end_time": 22.82
+        },
+        {
+          "text": "h\u01a1n.",
+          "start_time": 22.82,
+          "end_time": 23.06
+        },
+        {
+          "text": " ",
+          "start_time": 23.06,
+          "end_time": 23.52
+        },
+        {
+          "text": "A",
+          "start_time": 23.52,
+          "end_time": 23.62
+        },
+        {
+          "text": " ",
+          "start_time": 23.62,
+          "end_time": 23.7
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 23.7,
+          "end_time": 23.78
+        },
+        {
+          "text": " ",
+          "start_time": 23.78,
+          "end_time": 23.86
+        },
+        {
+          "text": "timeout",
+          "start_time": 23.86,
+          "end_time": 24.26
+        },
+        {
+          "text": " ",
+          "start_time": 24.26,
+          "end_time": 24.3
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 24.3,
+          "end_time": 24.38
+        },
+        {
+          "text": " ",
+          "start_time": 24.38,
+          "end_time": 24.419
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 24.42,
+          "end_time": 24.54
+        },
+        {
+          "text": " ",
+          "start_time": 24.54,
+          "end_time": 24.599
+        },
+        {
+          "text": "gi\u00e2y.",
+          "start_time": 24.6,
+          "end_time": 24.8
+        },
+        {
+          "text": " ",
+          "start_time": 24.8,
+          "end_time": 25.14
+        },
+        {
+          "text": "Khi",
+          "start_time": 25.14,
+          "end_time": 25.28
+        },
+        {
+          "text": " ",
+          "start_time": 25.28,
+          "end_time": 25.32
+        },
+        {
+          "text": "h\u1ebft",
+          "start_time": 25.32,
+          "end_time": 25.46
+        },
+        {
+          "text": " ",
+          "start_time": 25.46,
+          "end_time": 25.5
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 25.5,
+          "end_time": 25.6
+        },
+        {
+          "text": " ",
+          "start_time": 25.6,
+          "end_time": 25.68
+        },
+        {
+          "text": "gi\u00e2y",
+          "start_time": 25.68,
+          "end_time": 25.86
+        },
+        {
+          "text": " ",
+          "start_time": 25.86,
+          "end_time": 25.96
+        },
+        {
+          "text": "m\u00e0",
+          "start_time": 25.96,
+          "end_time": 26.08
+        },
+        {
+          "text": " ",
+          "start_time": 26.08,
+          "end_time": 26.12
+        },
+        {
+          "text": "ch\u01b0a",
+          "start_time": 26.12,
+          "end_time": 26.24
+        },
+        {
+          "text": " ",
+          "start_time": 26.24,
+          "end_time": 26.28
+        },
+        {
+          "text": "nh\u1eadn",
+          "start_time": 26.28,
+          "end_time": 26.44
+        },
+        {
+          "text": " ",
+          "start_time": 26.44,
+          "end_time": 26.48
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 26.48,
+          "end_time": 26.64
+        },
+        {
+          "text": " ",
+          "start_time": 26.64,
+          "end_time": 26.66
+        },
+        {
+          "text": "response,",
+          "start_time": 26.66,
+          "end_time": 27.19
+        },
+        {
+          "text": " ",
+          "start_time": 27.19,
+          "end_time": 27.619
+        },
+        {
+          "text": "A",
+          "start_time": 27.62,
+          "end_time": 27.7
+        },
+        {
+          "text": " ",
+          "start_time": 27.7,
+          "end_time": 27.779
+        },
+        {
+          "text": "k\u1ebft",
+          "start_time": 27.78,
+          "end_time": 27.9
+        },
+        {
+          "text": " ",
+          "start_time": 27.9,
+          "end_time": 27.94
+        },
+        {
+          "text": "lu\u1eadn",
+          "start_time": 27.94,
+          "end_time": 28.12
+        },
+        {
+          "text": " ",
+          "start_time": 28.12,
+          "end_time": 28.16
+        },
+        {
+          "text": "request",
+          "start_time": 28.16,
+          "end_time": 28.56
+        },
+        {
+          "text": " ",
+          "start_time": 28.56,
+          "end_time": 28.58
+        },
+        {
+          "text": "th\u1ea5t",
+          "start_time": 28.58,
+          "end_time": 28.71
+        },
+        {
+          "text": " ",
+          "start_time": 28.71,
+          "end_time": 28.779
+        },
+        {
+          "text": "b\u1ea1i",
+          "start_time": 28.78,
+          "end_time": 29.24
+        },
+        {
+          "text": " ",
+          "start_time": 29.24,
+          "end_time": 29.3
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 29.3,
+          "end_time": 29.36
+        },
+        {
+          "text": " ",
+          "start_time": 29.36,
+          "end_time": 29.4
+        },
+        {
+          "text": "th\u1ef1c",
+          "start_time": 29.4,
+          "end_time": 29.52
+        },
+        {
+          "text": " ",
+          "start_time": 29.52,
+          "end_time": 29.56
+        },
+        {
+          "text": "hi\u1ec7n",
+          "start_time": 29.56,
+          "end_time": 29.72
+        },
+        {
+          "text": " ",
+          "start_time": 29.72,
+          "end_time": 29.799
+        },
+        {
+          "text": "retry.",
+          "start_time": 29.8,
+          "end_time": 30.26
+        },
+        {
+          "text": " ",
+          "start_time": 30.26,
+          "end_time": 30.76
+        },
+        {
+          "text": "Tuy",
+          "start_time": 30.76,
+          "end_time": 30.86
+        },
+        {
+          "text": " ",
+          "start_time": 30.86,
+          "end_time": 30.92
+        },
+        {
+          "text": "nhi\u00ean,",
+          "start_time": 30.92,
+          "end_time": 31.12
+        },
+        {
+          "text": " ",
+          "start_time": 31.12,
+          "end_time": 31.46
+        },
+        {
+          "text": "timeout",
+          "start_time": 31.46,
+          "end_time": 31.88
+        },
+        {
+          "text": " ",
+          "start_time": 31.88,
+          "end_time": 31.919
+        },
+        {
+          "text": "\u1edf",
+          "start_time": 31.92,
+          "end_time": 31.96
+        },
+        {
+          "text": " ",
+          "start_time": 31.96,
+          "end_time": 32.04
+        },
+        {
+          "text": "ph\u00eda",
+          "start_time": 32.04,
+          "end_time": 32.2
+        },
+        {
+          "text": " ",
+          "start_time": 32.2,
+          "end_time": 32.28
+        },
+        {
+          "text": "A",
+          "start_time": 32.28,
+          "end_time": 32.439
+        },
+        {
+          "text": " ",
+          "start_time": 32.439,
+          "end_time": 32.46
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 32.46,
+          "end_time": 32.64
+        },
+        {
+          "text": " ",
+          "start_time": 32.64,
+          "end_time": 32.66
+        },
+        {
+          "text": "nh\u1ea5t",
+          "start_time": 32.66,
+          "end_time": 32.82
+        },
+        {
+          "text": " ",
+          "start_time": 32.82,
+          "end_time": 32.84
+        },
+        {
+          "text": "thi\u1ebft",
+          "start_time": 32.84,
+          "end_time": 33.04
+        },
+        {
+          "text": " ",
+          "start_time": 33.04,
+          "end_time": 33.06
+        },
+        {
+          "text": "\u0111\u1ed3ng",
+          "start_time": 33.06,
+          "end_time": 33.22
+        },
+        {
+          "text": " ",
+          "start_time": 33.22,
+          "end_time": 33.24
+        },
+        {
+          "text": "ngh\u0129a",
+          "start_time": 33.24,
+          "end_time": 33.44
+        },
+        {
+          "text": " ",
+          "start_time": 33.44,
+          "end_time": 33.48
+        },
+        {
+          "text": "c\u00f4ng",
+          "start_time": 33.48,
+          "end_time": 33.6
+        },
+        {
+          "text": " ",
+          "start_time": 33.6,
+          "end_time": 33.66
+        },
+        {
+          "text": "vi\u1ec7c",
+          "start_time": 33.66,
+          "end_time": 33.84
+        },
+        {
+          "text": " ",
+          "start_time": 33.84,
+          "end_time": 33.86
+        },
+        {
+          "text": "ph\u00eda",
+          "start_time": 33.86,
+          "end_time": 34.02
+        },
+        {
+          "text": " ",
+          "start_time": 34.02,
+          "end_time": 34.06
+        },
+        {
+          "text": "B",
+          "start_time": 34.06,
+          "end_time": 34.22
+        },
+        {
+          "text": " ",
+          "start_time": 34.22,
+          "end_time": 34.28
+        },
+        {
+          "text": "\u0111\u00e3",
+          "start_time": 34.28,
+          "end_time": 34.38
+        },
+        {
+          "text": " ",
+          "start_time": 34.38,
+          "end_time": 34.42
+        },
+        {
+          "text": "d\u1eebng",
+          "start_time": 34.42,
+          "end_time": 34.55
+        },
+        {
+          "text": " ",
+          "start_time": 34.55,
+          "end_time": 34.62
+        },
+        {
+          "text": "l\u1ea1i.",
+          "start_time": 34.62,
+          "end_time": 34.86
+        },
+        {
+          "text": " ",
+          "start_time": 34.86,
+          "end_time": 35.4
+        },
+        {
+          "text": "Request",
+          "start_time": 35.4,
+          "end_time": 35.76
+        },
+        {
+          "text": " ",
+          "start_time": 35.76,
+          "end_time": 35.82
+        },
+        {
+          "text": "\u0111\u1ea7u",
+          "start_time": 35.82,
+          "end_time": 35.98
+        },
+        {
+          "text": " ",
+          "start_time": 35.98,
+          "end_time": 36.02
+        },
+        {
+          "text": "ti\u00ean",
+          "start_time": 36.02,
+          "end_time": 36.34
+        },
+        {
+          "text": " ",
+          "start_time": 36.34,
+          "end_time": 36.36
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 36.36,
+          "end_time": 36.46
+        },
+        {
+          "text": " ",
+          "start_time": 36.46,
+          "end_time": 36.5
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 36.5,
+          "end_time": 36.66
+        },
+        {
+          "text": " ",
+          "start_time": 36.66,
+          "end_time": 36.72
+        },
+        {
+          "text": "v\u1eabn",
+          "start_time": 36.72,
+          "end_time": 36.81
+        },
+        {
+          "text": " ",
+          "start_time": 36.81,
+          "end_time": 36.86
+        },
+        {
+          "text": "\u0111ang",
+          "start_time": 36.86,
+          "end_time": 37.02
+        },
+        {
+          "text": " ",
+          "start_time": 37.02,
+          "end_time": 37.08
+        },
+        {
+          "text": "chi\u1ebfm",
+          "start_time": 37.08,
+          "end_time": 37.24
+        },
+        {
+          "text": " ",
+          "start_time": 37.24,
+          "end_time": 37.32
+        },
+        {
+          "text": "connection,",
+          "start_time": 37.32,
+          "end_time": 37.86
+        },
+        {
+          "text": " ",
+          "start_time": 37.86,
+          "end_time": 38.28
+        },
+        {
+          "text": "thread,",
+          "start_time": 38.28,
+          "end_time": 38.62
+        },
+        {
+          "text": " ",
+          "start_time": 38.62,
+          "end_time": 39.04
+        },
+        {
+          "text": "CPU",
+          "start_time": 39.04,
+          "end_time": 39.52
+        },
+        {
+          "text": " ",
+          "start_time": 39.52,
+          "end_time": 39.78
+        },
+        {
+          "text": "ho\u1eb7c",
+          "start_time": 39.9,
+          "end_time": 40.04
+        },
+        {
+          "text": " ",
+          "start_time": 40.04,
+          "end_time": 40.08
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 40.08,
+          "end_time": 40.24
+        },
+        {
+          "text": " ",
+          "start_time": 40.24,
+          "end_time": 40.26
+        },
+        {
+          "text": "resource",
+          "start_time": 40.26,
+          "end_time": 40.68
+        },
+        {
+          "text": " ",
+          "start_time": 40.68,
+          "end_time": 40.72
+        },
+        {
+          "text": "n\u00e0o",
+          "start_time": 40.72,
+          "end_time": 40.84
+        },
+        {
+          "text": " ",
+          "start_time": 40.84,
+          "end_time": 40.88
+        },
+        {
+          "text": "\u0111\u00f3",
+          "start_time": 40.88,
+          "end_time": 41.08
+        },
+        {
+          "text": " ",
+          "start_time": 41.08,
+          "end_time": 41.16
+        },
+        {
+          "text": "\u1edf",
+          "start_time": 41.16,
+          "end_time": 41.24
+        },
+        {
+          "text": " ",
+          "start_time": 41.24,
+          "end_time": 41.28
+        },
+        {
+          "text": "downstream.",
+          "start_time": 41.28,
+          "end_time": 41.84
+        },
+        {
+          "text": " ",
+          "start_time": 41.84,
+          "end_time": 42.4
+        },
+        {
+          "text": "Retry",
+          "start_time": 42.4,
+          "end_time": 42.76
+        },
+        {
+          "text": " ",
+          "start_time": 42.76,
+          "end_time": 42.82
+        },
+        {
+          "text": "th\u1ee9",
+          "start_time": 42.82,
+          "end_time": 42.92
+        },
+        {
+          "text": " ",
+          "start_time": 42.92,
+          "end_time": 42.98
+        },
+        {
+          "text": "2",
+          "start_time": 42.98,
+          "end_time": 43.22
+        },
+        {
+          "text": " ",
+          "start_time": 43.22,
+          "end_time": 43.28
+        },
+        {
+          "text": "l\u00fac",
+          "start_time": 43.28,
+          "end_time": 43.4
+        },
+        {
+          "text": " ",
+          "start_time": 43.4,
+          "end_time": 43.44
+        },
+        {
+          "text": "n\u00e0y",
+          "start_time": 43.44,
+          "end_time": 44.02
+        },
+        {
+          "text": " ",
+          "start_time": 44.02,
+          "end_time": 44.06
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 44.06,
+          "end_time": 44.24
+        },
+        {
+          "text": " ",
+          "start_time": 44.24,
+          "end_time": 44.26
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 44.26,
+          "end_time": 44.42
+        },
+        {
+          "text": " ",
+          "start_time": 44.42,
+          "end_time": 44.48
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 44.48,
+          "end_time": 44.58
+        },
+        {
+          "text": " ",
+          "start_time": 44.58,
+          "end_time": 44.62
+        },
+        {
+          "text": "\u0111\u01a1n",
+          "start_time": 44.62,
+          "end_time": 44.74
+        },
+        {
+          "text": " ",
+          "start_time": 44.74,
+          "end_time": 44.8
+        },
+        {
+          "text": "v\u1ecb",
+          "start_time": 44.8,
+          "end_time": 44.9
+        },
+        {
+          "text": " ",
+          "start_time": 44.9,
+          "end_time": 44.98
+        },
+        {
+          "text": "work",
+          "start_time": 44.98,
+          "end_time": 45.28
+        },
+        {
+          "text": " ",
+          "start_time": 45.28,
+          "end_time": 45.6
+        },
+        {
+          "text": "tr\u00ean",
+          "start_time": 45.6,
+          "end_time": 45.8
+        },
+        {
+          "text": " ",
+          "start_time": 45.8,
+          "end_time": 45.84
+        },
+        {
+          "text": "ch\u00ednh",
+          "start_time": 45.84,
+          "end_time": 46.0
+        },
+        {
+          "text": " ",
+          "start_time": 46.0,
+          "end_time": 46.08
+        },
+        {
+          "text": "service",
+          "start_time": 46.08,
+          "end_time": 46.48
+        },
+        {
+          "text": " ",
+          "start_time": 46.48,
+          "end_time": 46.86
+        },
+        {
+          "text": "v\u1ed1n",
+          "start_time": 46.86,
+          "end_time": 47.0
+        },
+        {
+          "text": " ",
+          "start_time": 47.0,
+          "end_time": 47.04
+        },
+        {
+          "text": "\u0111\u00e3",
+          "start_time": 47.04,
+          "end_time": 47.12
+        },
+        {
+          "text": " ",
+          "start_time": 47.12,
+          "end_time": 47.18
+        },
+        {
+          "text": "g\u1eb7p",
+          "start_time": 47.18,
+          "end_time": 47.32
+        },
+        {
+          "text": " ",
+          "start_time": 47.32,
+          "end_time": 47.36
+        },
+        {
+          "text": "v\u1ea5n",
+          "start_time": 47.36,
+          "end_time": 47.46
+        },
+        {
+          "text": " ",
+          "start_time": 47.46,
+          "end_time": 47.5
+        },
+        {
+          "text": "\u0111\u1ec1.",
+          "start_time": 47.5,
+          "end_time": 47.72
+        },
+        {
+          "text": " ",
+          "start_time": 47.72,
+          "end_time": 48.42
+        },
+        {
+          "text": "N\u1ebfu",
+          "start_time": 48.42,
+          "end_time": 48.56
+        },
+        {
+          "text": " ",
+          "start_time": 48.56,
+          "end_time": 48.6
+        },
+        {
+          "text": "nhi\u1ec1u",
+          "start_time": 48.6,
+          "end_time": 48.78
+        },
+        {
+          "text": " ",
+          "start_time": 48.78,
+          "end_time": 48.82
+        },
+        {
+          "text": "client",
+          "start_time": 48.82,
+          "end_time": 49.18
+        },
+        {
+          "text": " ",
+          "start_time": 49.18,
+          "end_time": 49.24
+        },
+        {
+          "text": "c\u00f9ng",
+          "start_time": 49.24,
+          "end_time": 49.38
+        },
+        {
+          "text": " ",
+          "start_time": 49.38,
+          "end_time": 49.42
+        },
+        {
+          "text": "l\u00e0m",
+          "start_time": 49.42,
+          "end_time": 49.54
+        },
+        {
+          "text": " ",
+          "start_time": 49.54,
+          "end_time": 49.58
+        },
+        {
+          "text": "\u0111i\u1ec1u",
+          "start_time": 49.58,
+          "end_time": 49.72
+        },
+        {
+          "text": " ",
+          "start_time": 49.72,
+          "end_time": 49.73
+        },
+        {
+          "text": "n\u00e0y,",
+          "start_time": 49.73,
+          "end_time": 49.94
+        },
+        {
+          "text": " ",
+          "start_time": 49.94,
+          "end_time": 50.44
+        },
+        {
+          "text": "t\u1ea3i",
+          "start_time": 50.44,
+          "end_time": 50.62
+        },
+        {
+          "text": " ",
+          "start_time": 50.62,
+          "end_time": 50.64
+        },
+        {
+          "text": "ph\u00eda",
+          "start_time": 50.64,
+          "end_time": 50.78
+        },
+        {
+          "text": " ",
+          "start_time": 50.78,
+          "end_time": 50.82
+        },
+        {
+          "text": "B",
+          "start_time": 50.82,
+          "end_time": 51.0
+        },
+        {
+          "text": " ",
+          "start_time": 51.0,
+          "end_time": 51.02
+        },
+        {
+          "text": "t\u0103ng",
+          "start_time": 51.02,
+          "end_time": 51.18
+        },
+        {
+          "text": " ",
+          "start_time": 51.18,
+          "end_time": 51.22
+        },
+        {
+          "text": "l\u00ean.",
+          "start_time": 51.22,
+          "end_time": 51.44
+        },
+        {
+          "text": " ",
+          "start_time": 51.44,
+          "end_time": 52.35
+        },
+        {
+          "text": "Latency",
+          "start_time": 52.35,
+          "end_time": 52.88
+        },
+        {
+          "text": " ",
+          "start_time": 52.88,
+          "end_time": 52.94
+        },
+        {
+          "text": "v\u00ec",
+          "start_time": 52.94,
+          "end_time": 53.06
+        },
+        {
+          "text": " ",
+          "start_time": 53.06,
+          "end_time": 53.08
+        },
+        {
+          "text": "th\u1ebf",
+          "start_time": 53.08,
+          "end_time": 53.3
+        },
+        {
+          "text": " ",
+          "start_time": 53.3,
+          "end_time": 53.32
+        },
+        {
+          "text": "ti\u1ebfp",
+          "start_time": 53.32,
+          "end_time": 53.46
+        },
+        {
+          "text": " ",
+          "start_time": 53.46,
+          "end_time": 53.48
+        },
+        {
+          "text": "t\u1ee5c",
+          "start_time": 53.48,
+          "end_time": 53.64
+        },
+        {
+          "text": " ",
+          "start_time": 53.64,
+          "end_time": 53.65
+        },
+        {
+          "text": "t\u0103ng.",
+          "start_time": 53.65,
+          "end_time": 54.46
+        },
+        {
+          "text": " ",
+          "start_time": 54.46,
+          "end_time": 54.52
+        },
+        {
+          "text": "Nhi\u1ec1u",
+          "start_time": 54.52,
+          "end_time": 54.72
+        },
+        {
+          "text": " ",
+          "start_time": 54.72,
+          "end_time": 54.76
+        },
+        {
+          "text": "request",
+          "start_time": 54.76,
+          "end_time": 55.16
+        },
+        {
+          "text": " ",
+          "start_time": 55.16,
+          "end_time": 55.18
+        },
+        {
+          "text": "kh\u00e1c",
+          "start_time": 55.18,
+          "end_time": 55.42
+        },
+        {
+          "text": " ",
+          "start_time": 55.42,
+          "end_time": 55.46
+        },
+        {
+          "text": "l\u1ea1i",
+          "start_time": 55.46,
+          "end_time": 55.6
+        },
+        {
+          "text": " ",
+          "start_time": 55.6,
+          "end_time": 55.64
+        },
+        {
+          "text": "ch\u1ea1m",
+          "start_time": 55.64,
+          "end_time": 55.84
+        },
+        {
+          "text": " ",
+          "start_time": 55.84,
+          "end_time": 55.86
+        },
+        {
+          "text": "timeout",
+          "start_time": 55.86,
+          "end_time": 56.68
+        },
+        {
+          "text": " ",
+          "start_time": 56.68,
+          "end_time": 56.72
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 56.72,
+          "end_time": 56.84
+        },
+        {
+          "text": " ",
+          "start_time": 56.84,
+          "end_time": 56.86
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 56.86,
+          "end_time": 57.04
+        },
+        {
+          "text": " ",
+          "start_time": 57.04,
+          "end_time": 57.08
+        },
+        {
+          "text": "timeout",
+          "start_time": 57.08,
+          "end_time": 57.43
+        },
+        {
+          "text": " ",
+          "start_time": 57.43,
+          "end_time": 57.44
+        },
+        {
+          "text": "m\u1edbi",
+          "start_time": 57.44,
+          "end_time": 57.65
+        },
+        {
+          "text": " ",
+          "start_time": 57.65,
+          "end_time": 57.7
+        },
+        {
+          "text": "l\u1ea1i",
+          "start_time": 57.7,
+          "end_time": 57.83
+        },
+        {
+          "text": " ",
+          "start_time": 57.83,
+          "end_time": 57.9
+        },
+        {
+          "text": "sinh",
+          "start_time": 57.9,
+          "end_time": 58.04
+        },
+        {
+          "text": " ",
+          "start_time": 58.04,
+          "end_time": 58.12
+        },
+        {
+          "text": "ra",
+          "start_time": 58.12,
+          "end_time": 58.24
+        },
+        {
+          "text": " ",
+          "start_time": 58.24,
+          "end_time": 58.3
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 58.3,
+          "end_time": 58.46
+        },
+        {
+          "text": " ",
+          "start_time": 58.46,
+          "end_time": 58.5
+        },
+        {
+          "text": "retry",
+          "start_time": 58.5,
+          "end_time": 58.9
+        },
+        {
+          "text": " ",
+          "start_time": 58.9,
+          "end_time": 58.92
+        },
+        {
+          "text": "m\u1edbi.",
+          "start_time": 58.92,
+          "end_time": 59.15
+        },
+        {
+          "text": " ",
+          "start_time": 59.15,
+          "end_time": 59.73
+        },
+        {
+          "text": "\u0110\u00e2y",
+          "start_time": 59.73,
+          "end_time": 59.88
+        },
+        {
+          "text": " ",
+          "start_time": 59.88,
+          "end_time": 59.92
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 59.92,
+          "end_time": 60.1
+        },
+        {
+          "text": " ",
+          "start_time": 60.1,
+          "end_time": 60.12
+        },
+        {
+          "text": "positive",
+          "start_time": 60.12,
+          "end_time": 60.5
+        },
+        {
+          "text": " ",
+          "start_time": 60.5,
+          "end_time": 60.58
+        },
+        {
+          "text": "feedback",
+          "start_time": 60.58,
+          "end_time": 60.96
+        },
+        {
+          "text": " ",
+          "start_time": 60.96,
+          "end_time": 61.0
+        },
+        {
+          "text": "loop",
+          "start_time": 61.0,
+          "end_time": 61.18
+        },
+        {
+          "text": " ",
+          "start_time": 61.18,
+          "end_time": 61.2
+        },
+        {
+          "text": "\u0111i\u1ec3n",
+          "start_time": 61.2,
+          "end_time": 61.36
+        },
+        {
+          "text": " ",
+          "start_time": 61.36,
+          "end_time": 61.4
+        },
+        {
+          "text": "h\u00ecnh",
+          "start_time": 61.4,
+          "end_time": 61.64
+        },
+        {
+          "text": " ",
+          "start_time": 61.64,
+          "end_time": 61.66
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 61.66,
+          "end_time": 61.76
+        },
+        {
+          "text": " ",
+          "start_time": 61.76,
+          "end_time": 61.8
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 61.8,
+          "end_time": 61.96
+        },
+        {
+          "text": " ",
+          "start_time": 61.96,
+          "end_time": 62.0
+        },
+        {
+          "text": "cascading",
+          "start_time": 62.0,
+          "end_time": 62.5
+        },
+        {
+          "text": " ",
+          "start_time": 62.5,
+          "end_time": 62.62
+        },
+        {
+          "text": "failure.",
+          "start_time": 62.62,
+          "end_time": 62.98
+        },
+        {
+          "text": " ",
+          "start_time": 62.98,
+          "end_time": 63.56
+        },
+        {
+          "text": "Overload",
+          "start_time": 63.56,
+          "end_time": 63.98
+        },
+        {
+          "text": " ",
+          "start_time": 63.98,
+          "end_time": 64.06
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 64.06,
+          "end_time": 64.239
+        },
+        {
+          "text": " ",
+          "start_time": 64.239,
+          "end_time": 64.259
+        },
+        {
+          "text": "retry,",
+          "start_time": 64.26,
+          "end_time": 64.71
+        },
+        {
+          "text": " ",
+          "start_time": 64.71,
+          "end_time": 65.18
+        },
+        {
+          "text": "retry",
+          "start_time": 65.18,
+          "end_time": 65.6
+        },
+        {
+          "text": " ",
+          "start_time": 65.6,
+          "end_time": 65.64
+        },
+        {
+          "text": "t\u1ea1o",
+          "start_time": 65.64,
+          "end_time": 65.8
+        },
+        {
+          "text": " ",
+          "start_time": 65.8,
+          "end_time": 65.82
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 65.82,
+          "end_time": 66.02
+        },
+        {
+          "text": " ",
+          "start_time": 66.02,
+          "end_time": 66.1
+        },
+        {
+          "text": "overload",
+          "start_time": 66.1,
+          "end_time": 66.92
+        },
+        {
+          "text": " ",
+          "start_time": 66.92,
+          "end_time": 66.96
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 66.96,
+          "end_time": 67.02
+        },
+        {
+          "text": " ",
+          "start_time": 67.02,
+          "end_time": 67.08
+        },
+        {
+          "text": "tr\u1ea1ng",
+          "start_time": 67.08,
+          "end_time": 67.28
+        },
+        {
+          "text": " ",
+          "start_time": 67.28,
+          "end_time": 67.3
+        },
+        {
+          "text": "th\u00e1i",
+          "start_time": 67.3,
+          "end_time": 67.53
+        },
+        {
+          "text": " ",
+          "start_time": 67.53,
+          "end_time": 67.539
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 67.54,
+          "end_time": 67.62
+        },
+        {
+          "text": " ",
+          "start_time": 67.62,
+          "end_time": 67.66
+        },
+        {
+          "text": "h\u1ec7",
+          "start_time": 67.66,
+          "end_time": 67.8
+        },
+        {
+          "text": " ",
+          "start_time": 67.8,
+          "end_time": 67.84
+        },
+        {
+          "text": "th\u1ed1ng",
+          "start_time": 67.84,
+          "end_time": 68.02
+        },
+        {
+          "text": " ",
+          "start_time": 68.02,
+          "end_time": 68.08
+        },
+        {
+          "text": "ti\u1ebfp",
+          "start_time": 68.08,
+          "end_time": 68.22
+        },
+        {
+          "text": " ",
+          "start_time": 68.22,
+          "end_time": 68.26
+        },
+        {
+          "text": "t\u1ee5c",
+          "start_time": 68.26,
+          "end_time": 68.44
+        },
+        {
+          "text": " ",
+          "start_time": 68.44,
+          "end_time": 68.48
+        },
+        {
+          "text": "x\u1ea5u",
+          "start_time": 68.48,
+          "end_time": 68.65
+        },
+        {
+          "text": " ",
+          "start_time": 68.65,
+          "end_time": 68.68
+        },
+        {
+          "text": "\u0111i.",
+          "start_time": 68.68,
+          "end_time": 68.84
+        },
+        {
+          "text": " ",
+          "start_time": 68.84,
+          "end_time": 69.42
+        },
+        {
+          "text": "Google",
+          "start_time": 69.48,
+          "end_time": 69.84
+        },
+        {
+          "text": " ",
+          "start_time": 69.84,
+          "end_time": 70.0
+        },
+        {
+          "text": "SRE",
+          "start_time": 70.0,
+          "end_time": 70.52
+        },
+        {
+          "text": " ",
+          "start_time": 70.52,
+          "end_time": 70.94
+        },
+        {
+          "text": "m\u00f4",
+          "start_time": 70.94,
+          "end_time": 71.06
+        },
+        {
+          "text": " ",
+          "start_time": 71.06,
+          "end_time": 71.12
+        },
+        {
+          "text": "t\u1ea3",
+          "start_time": 71.12,
+          "end_time": 71.36
+        },
+        {
+          "text": " ",
+          "start_time": 71.36,
+          "end_time": 71.74
+        },
+        {
+          "text": "retry",
+          "start_time": 71.74,
+          "end_time": 72.2
+        },
+        {
+          "text": " ",
+          "start_time": 72.2,
+          "end_time": 72.3
+        },
+        {
+          "text": "amplification",
+          "start_time": 72.3,
+          "end_time": 73.22
+        },
+        {
+          "text": " ",
+          "start_time": 73.22,
+          "end_time": 73.66
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 73.66,
+          "end_time": 73.74
+        },
+        {
+          "text": " ",
+          "start_time": 73.74,
+          "end_time": 73.82
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 73.82,
+          "end_time": 73.96
+        },
+        {
+          "text": " ",
+          "start_time": 73.96,
+          "end_time": 73.98
+        },
+        {
+          "text": "trong",
+          "start_time": 73.98,
+          "end_time": 74.12
+        },
+        {
+          "text": " ",
+          "start_time": 74.12,
+          "end_time": 74.16
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 74.16,
+          "end_time": 74.28
+        },
+        {
+          "text": " ",
+          "start_time": 74.28,
+          "end_time": 74.36
+        },
+        {
+          "text": "c\u01a1",
+          "start_time": 74.36,
+          "end_time": 74.46
+        },
+        {
+          "text": " ",
+          "start_time": 74.46,
+          "end_time": 74.52
+        },
+        {
+          "text": "ch\u1ebf",
+          "start_time": 74.52,
+          "end_time": 74.74
+        },
+        {
+          "text": " ",
+          "start_time": 74.74,
+          "end_time": 74.78
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 74.78,
+          "end_time": 74.88
+        },
+        {
+          "text": " ",
+          "start_time": 74.88,
+          "end_time": 74.899
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 74.9,
+          "end_time": 75.08
+        },
+        {
+          "text": " ",
+          "start_time": 75.08,
+          "end_time": 75.14
+        },
+        {
+          "text": "bi\u1ebfn",
+          "start_time": 75.14,
+          "end_time": 75.32
+        },
+        {
+          "text": " ",
+          "start_time": 75.32,
+          "end_time": 75.38
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 75.38,
+          "end_time": 75.5
+        },
+        {
+          "text": " ",
+          "start_time": 75.5,
+          "end_time": 75.54
+        },
+        {
+          "text": "m\u1ee9c",
+          "start_time": 75.54,
+          "end_time": 75.68
+        },
+        {
+          "text": " ",
+          "start_time": 75.68,
+          "end_time": 75.7
+        },
+        {
+          "text": "l\u1ed7i",
+          "start_time": 75.7,
+          "end_time": 75.84
+        },
+        {
+          "text": " ",
+          "start_time": 75.84,
+          "end_time": 75.88
+        },
+        {
+          "text": "nh\u1ecf",
+          "start_time": 75.88,
+          "end_time": 76.16
+        },
+        {
+          "text": " ",
+          "start_time": 76.16,
+          "end_time": 76.5
+        },
+        {
+          "text": "th\u00e0nh",
+          "start_time": 76.5,
+          "end_time": 76.64
+        },
+        {
+          "text": " ",
+          "start_time": 76.64,
+          "end_time": 76.72
+        },
+        {
+          "text": "s\u1ef1",
+          "start_time": 76.72,
+          "end_time": 76.84
+        },
+        {
+          "text": " ",
+          "start_time": 76.84,
+          "end_time": 76.94
+        },
+        {
+          "text": "c\u1ed1",
+          "start_time": 76.94,
+          "end_time": 77.16
+        },
+        {
+          "text": " ",
+          "start_time": 77.16,
+          "end_time": 77.179
+        },
+        {
+          "text": "tr\u00ean",
+          "start_time": 77.18,
+          "end_time": 77.34
+        },
+        {
+          "text": " ",
+          "start_time": 77.34,
+          "end_time": 77.38
+        },
+        {
+          "text": "di\u1ec7n",
+          "start_time": 77.38,
+          "end_time": 77.52
+        },
+        {
+          "text": " ",
+          "start_time": 77.52,
+          "end_time": 77.58
+        },
+        {
+          "text": "r\u1ed9ng.",
+          "start_time": 77.58,
+          "end_time": 77.82
+        },
+        {
+          "text": " ",
+          "start_time": 77.82,
+          "end_time": 78.56
+        },
+        {
+          "text": "V\u00ec",
+          "start_time": 78.56,
+          "end_time": 78.64
+        },
+        {
+          "text": " ",
+          "start_time": 78.64,
+          "end_time": 78.7
+        },
+        {
+          "text": "th\u1ebf,",
+          "start_time": 78.7,
+          "end_time": 78.92
+        },
+        {
+          "text": " ",
+          "start_time": 78.92,
+          "end_time": 79.04
+        },
+        {
+          "text": "timeout",
+          "start_time": 79.04,
+          "end_time": 79.6
+        },
+        {
+          "text": " ",
+          "start_time": 79.6,
+          "end_time": 79.82
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 79.82,
+          "end_time": 79.92
+        },
+        {
+          "text": " ",
+          "start_time": 79.92,
+          "end_time": 80.0
+        },
+        {
+          "text": "retry",
+          "start_time": 80.0,
+          "end_time": 80.8
+        },
+        {
+          "text": " ",
+          "start_time": 80.8,
+          "end_time": 80.82
+        },
+        {
+          "text": "ph\u1ea3i",
+          "start_time": 80.82,
+          "end_time": 80.96
+        },
+        {
+          "text": " ",
+          "start_time": 80.96,
+          "end_time": 80.98
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 80.98,
+          "end_time": 81.12
+        },
+        {
+          "text": " ",
+          "start_time": 81.12,
+          "end_time": 81.13
+        },
+        {
+          "text": "thi\u1ebft",
+          "start_time": 81.13,
+          "end_time": 81.32
+        },
+        {
+          "text": " ",
+          "start_time": 81.32,
+          "end_time": 81.36
+        },
+        {
+          "text": "k\u1ebf",
+          "start_time": 81.36,
+          "end_time": 81.56
+        },
+        {
+          "text": " ",
+          "start_time": 81.56,
+          "end_time": 81.62
+        },
+        {
+          "text": "nh\u01b0",
+          "start_time": 81.62,
+          "end_time": 81.72
+        },
+        {
+          "text": " ",
+          "start_time": 81.72,
+          "end_time": 81.76
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 81.76,
+          "end_time": 81.92
+        },
+        {
+          "text": " ",
+          "start_time": 81.92,
+          "end_time": 81.94
+        },
+        {
+          "text": "ph\u1ea7n",
+          "start_time": 81.94,
+          "end_time": 82.12
+        },
+        {
+          "text": " ",
+          "start_time": 82.12,
+          "end_time": 82.22
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 82.22,
+          "end_time": 82.34
+        },
+        {
+          "text": " ",
+          "start_time": 82.34,
+          "end_time": 82.36
+        },
+        {
+          "text": "to\u00e0n",
+          "start_time": 82.36,
+          "end_time": 82.54
+        },
+        {
+          "text": " ",
+          "start_time": 82.54,
+          "end_time": 82.56
+        },
+        {
+          "text": "b\u1ed9",
+          "start_time": 82.56,
+          "end_time": 82.74
+        },
+        {
+          "text": " ",
+          "start_time": 82.74,
+          "end_time": 82.78
+        },
+        {
+          "text": "call",
+          "start_time": 82.78,
+          "end_time": 83.0
+        },
+        {
+          "text": " ",
+          "start_time": 83.0,
+          "end_time": 83.04
+        },
+        {
+          "text": "chain.",
+          "start_time": 83.04,
+          "end_time": 83.3
+        },
+        {
+          "text": " ",
+          "start_time": 83.3,
+          "end_time": 83.86
+        },
+        {
+          "text": "Timeout",
+          "start_time": 83.86,
+          "end_time": 84.58
+        },
+        {
+          "text": " ",
+          "start_time": 84.58,
+          "end_time": 84.64
+        },
+        {
+          "text": "c\u1ea7n",
+          "start_time": 84.64,
+          "end_time": 84.84
+        },
+        {
+          "text": " ",
+          "start_time": 84.84,
+          "end_time": 84.86
+        },
+        {
+          "text": "ph\u00f9",
+          "start_time": 84.86,
+          "end_time": 84.96
+        },
+        {
+          "text": " ",
+          "start_time": 84.96,
+          "end_time": 85.02
+        },
+        {
+          "text": "h\u1ee3p",
+          "start_time": 85.02,
+          "end_time": 85.22
+        },
+        {
+          "text": " ",
+          "start_time": 85.22,
+          "end_time": 85.26
+        },
+        {
+          "text": "v\u1edbi",
+          "start_time": 85.26,
+          "end_time": 85.34
+        },
+        {
+          "text": " ",
+          "start_time": 85.34,
+          "end_time": 85.42
+        },
+        {
+          "text": "latency",
+          "start_time": 85.42,
+          "end_time": 86.0
+        },
+        {
+          "text": " ",
+          "start_time": 86.0,
+          "end_time": 86.02
+        },
+        {
+          "text": "th\u1ef1c",
+          "start_time": 86.02,
+          "end_time": 86.2
+        },
+        {
+          "text": " ",
+          "start_time": 86.2,
+          "end_time": 86.24
+        },
+        {
+          "text": "t\u1ebf",
+          "start_time": 86.24,
+          "end_time": 86.46
+        },
+        {
+          "text": " ",
+          "start_time": 86.46,
+          "end_time": 86.48
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 86.48,
+          "end_time": 86.6
+        },
+        {
+          "text": " ",
+          "start_time": 86.6,
+          "end_time": 86.62
+        },
+        {
+          "text": "downstream",
+          "start_time": 86.62,
+          "end_time": 87.48
+        },
+        {
+          "text": " ",
+          "start_time": 87.48,
+          "end_time": 87.52
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 87.52,
+          "end_time": 87.64
+        },
+        {
+          "text": " ",
+          "start_time": 87.64,
+          "end_time": 87.66
+        },
+        {
+          "text": "v\u1edbi",
+          "start_time": 87.66,
+          "end_time": 87.8
+        },
+        {
+          "text": " ",
+          "start_time": 87.8,
+          "end_time": 87.82
+        },
+        {
+          "text": "deadline",
+          "start_time": 87.82,
+          "end_time": 88.28
+        },
+        {
+          "text": " ",
+          "start_time": 88.28,
+          "end_time": 88.3
+        },
+        {
+          "text": "t\u1ed5ng",
+          "start_time": 88.3,
+          "end_time": 88.44
+        },
+        {
+          "text": " ",
+          "start_time": 88.44,
+          "end_time": 88.52
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 88.52,
+          "end_time": 88.66
+        },
+        {
+          "text": " ",
+          "start_time": 88.66,
+          "end_time": 88.759
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 88.76,
+          "end_time": 88.84
+        },
+        {
+          "text": " ",
+          "start_time": 88.84,
+          "end_time": 88.9
+        },
+        {
+          "text": "request.",
+          "start_time": 88.9,
+          "end_time": 89.34
+        },
+        {
+          "text": " ",
+          "start_time": 89.34,
+          "end_time": 89.9
+        },
+        {
+          "text": "Retry",
+          "start_time": 89.9,
+          "end_time": 90.7
+        },
+        {
+          "text": " ",
+          "start_time": 90.7,
+          "end_time": 90.74
+        },
+        {
+          "text": "c\u1ea7n",
+          "start_time": 90.74,
+          "end_time": 90.92
+        },
+        {
+          "text": " ",
+          "start_time": 90.92,
+          "end_time": 90.94
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 90.94,
+          "end_time": 91.06
+        },
+        {
+          "text": " ",
+          "start_time": 91.06,
+          "end_time": 91.08
+        },
+        {
+          "text": "gi\u1edbi",
+          "start_time": 91.08,
+          "end_time": 91.24
+        },
+        {
+          "text": " ",
+          "start_time": 91.24,
+          "end_time": 91.28
+        },
+        {
+          "text": "h\u1ea1n.",
+          "start_time": 91.28,
+          "end_time": 91.48
+        },
+        {
+          "text": " ",
+          "start_time": 91.48,
+          "end_time": 92.18
+        },
+        {
+          "text": "C\u00e1c",
+          "start_time": 92.18,
+          "end_time": 92.28
+        },
+        {
+          "text": " ",
+          "start_time": 92.28,
+          "end_time": 92.32
+        },
+        {
+          "text": "l\u1ea7n",
+          "start_time": 92.32,
+          "end_time": 92.5
+        },
+        {
+          "text": " ",
+          "start_time": 92.5,
+          "end_time": 92.54
+        },
+        {
+          "text": "retry",
+          "start_time": 92.54,
+          "end_time": 93.02
+        },
+        {
+          "text": " ",
+          "start_time": 93.02,
+          "end_time": 93.06
+        },
+        {
+          "text": "n\u00ean",
+          "start_time": 93.06,
+          "end_time": 93.18
+        },
+        {
+          "text": " ",
+          "start_time": 93.18,
+          "end_time": 93.22
+        },
+        {
+          "text": "\u0111\u01b0\u1ee3c",
+          "start_time": 93.22,
+          "end_time": 93.34
+        },
+        {
+          "text": " ",
+          "start_time": 93.34,
+          "end_time": 93.38
+        },
+        {
+          "text": "gi\u00e3n",
+          "start_time": 93.38,
+          "end_time": 93.54
+        },
+        {
+          "text": " ",
+          "start_time": 93.54,
+          "end_time": 93.62
+        },
+        {
+          "text": "ra",
+          "start_time": 93.62,
+          "end_time": 93.76
+        },
+        {
+          "text": " ",
+          "start_time": 93.76,
+          "end_time": 93.8
+        },
+        {
+          "text": "b\u1eb1ng",
+          "start_time": 93.8,
+          "end_time": 93.94
+        },
+        {
+          "text": " ",
+          "start_time": 93.94,
+          "end_time": 93.98
+        },
+        {
+          "text": "back",
+          "start_time": 93.98,
+          "end_time": 94.12
+        },
+        {
+          "text": " ",
+          "start_time": 94.12,
+          "end_time": 94.24
+        },
+        {
+          "text": "off",
+          "start_time": 94.24,
+          "end_time": 94.44
+        },
+        {
+          "text": " ",
+          "start_time": 94.44,
+          "end_time": 94.6
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 94.6,
+          "end_time": 94.7
+        },
+        {
+          "text": " ",
+          "start_time": 94.7,
+          "end_time": 94.74
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 94.74,
+          "end_time": 94.92
+        },
+        {
+          "text": " ",
+          "start_time": 94.92,
+          "end_time": 94.94
+        },
+        {
+          "text": "jitter",
+          "start_time": 94.94,
+          "end_time": 95.74
+        },
+        {
+          "text": " ",
+          "start_time": 95.74,
+          "end_time": 95.8
+        },
+        {
+          "text": "\u0111\u1ec3",
+          "start_time": 95.8,
+          "end_time": 95.9
+        },
+        {
+          "text": " ",
+          "start_time": 95.9,
+          "end_time": 95.94
+        },
+        {
+          "text": "nhi\u1ec1u",
+          "start_time": 95.94,
+          "end_time": 96.12
+        },
+        {
+          "text": " ",
+          "start_time": 96.12,
+          "end_time": 96.16
+        },
+        {
+          "text": "client",
+          "start_time": 96.16,
+          "end_time": 96.58
+        },
+        {
+          "text": " ",
+          "start_time": 96.58,
+          "end_time": 96.6
+        },
+        {
+          "text": "kh\u00f4ng",
+          "start_time": 96.6,
+          "end_time": 96.76
+        },
+        {
+          "text": " ",
+          "start_time": 96.76,
+          "end_time": 96.8
+        },
+        {
+          "text": "\u0111\u1ed3ng",
+          "start_time": 96.8,
+          "end_time": 96.96
+        },
+        {
+          "text": " ",
+          "start_time": 96.96,
+          "end_time": 96.98
+        },
+        {
+          "text": "th\u1eddi",
+          "start_time": 96.98,
+          "end_time": 97.16
+        },
+        {
+          "text": " ",
+          "start_time": 97.16,
+          "end_time": 97.24
+        },
+        {
+          "text": "g\u1eedi",
+          "start_time": 97.24,
+          "end_time": 97.38
+        },
+        {
+          "text": " ",
+          "start_time": 97.38,
+          "end_time": 97.42
+        },
+        {
+          "text": "l\u1ea1i",
+          "start_time": 97.42,
+          "end_time": 97.58
+        },
+        {
+          "text": " ",
+          "start_time": 97.58,
+          "end_time": 97.62
+        },
+        {
+          "text": "request",
+          "start_time": 97.62,
+          "end_time": 98.16
+        },
+        {
+          "text": " ",
+          "start_time": 98.16,
+          "end_time": 98.179
+        },
+        {
+          "text": "v\u00e0o",
+          "start_time": 98.18,
+          "end_time": 98.34
+        },
+        {
+          "text": " ",
+          "start_time": 98.34,
+          "end_time": 98.38
+        },
+        {
+          "text": "c\u00f9ng",
+          "start_time": 98.38,
+          "end_time": 98.5
+        },
+        {
+          "text": " ",
+          "start_time": 98.5,
+          "end_time": 98.52
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 98.52,
+          "end_time": 98.64
+        },
+        {
+          "text": " ",
+          "start_time": 98.64,
+          "end_time": 98.66
+        },
+        {
+          "text": "th\u1eddi",
+          "start_time": 98.66,
+          "end_time": 98.78
+        },
+        {
+          "text": " ",
+          "start_time": 98.78,
+          "end_time": 98.84
+        },
+        {
+          "text": "\u0111i\u1ec3m.",
+          "start_time": 98.84,
+          "end_time": 99.02
+        },
+        {
+          "text": " ",
+          "start_time": 99.02,
+          "end_time": 99.64
+        },
+        {
+          "text": "V\u00e0",
+          "start_time": 99.64,
+          "end_time": 99.74
+        },
+        {
+          "text": " ",
+          "start_time": 99.74,
+          "end_time": 99.82
+        },
+        {
+          "text": "v\u1edbi",
+          "start_time": 99.82,
+          "end_time": 99.94
+        },
+        {
+          "text": " ",
+          "start_time": 99.94,
+          "end_time": 99.96
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 99.96,
+          "end_time": 100.08
+        },
+        {
+          "text": " ",
+          "start_time": 100.08,
+          "end_time": 100.179
+        },
+        {
+          "text": "operation",
+          "start_time": 100.18,
+          "end_time": 100.74
+        },
+        {
+          "text": " ",
+          "start_time": 100.74,
+          "end_time": 100.82
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 100.82,
+          "end_time": 100.98
+        },
+        {
+          "text": " ",
+          "start_time": 100.98,
+          "end_time": 101.02
+        },
+        {
+          "text": "side",
+          "start_time": 101.02,
+          "end_time": 101.22
+        },
+        {
+          "text": " ",
+          "start_time": 101.22,
+          "end_time": 101.24
+        },
+        {
+          "text": "effect,",
+          "start_time": 101.24,
+          "end_time": 101.62
+        },
+        {
+          "text": " ",
+          "start_time": 101.62,
+          "end_time": 102.04
+        },
+        {
+          "text": "c\u1ea7n",
+          "start_time": 102.04,
+          "end_time": 102.18
+        },
+        {
+          "text": " ",
+          "start_time": 102.18,
+          "end_time": 102.3
+        },
+        {
+          "text": "xem",
+          "start_time": 102.3,
+          "end_time": 102.46
+        },
+        {
+          "text": " ",
+          "start_time": 102.46,
+          "end_time": 102.5
+        },
+        {
+          "text": "x\u00e9t",
+          "start_time": 102.5,
+          "end_time": 102.72
+        },
+        {
+          "text": " ",
+          "start_time": 102.72,
+          "end_time": 102.8
+        },
+        {
+          "text": "idempotency",
+          "start_time": 102.8,
+          "end_time": 103.64
+        },
+        {
+          "text": " ",
+          "start_time": 103.64,
+          "end_time": 103.98
+        },
+        {
+          "text": "tr\u01b0\u1edbc",
+          "start_time": 103.98,
+          "end_time": 104.12
+        },
+        {
+          "text": " ",
+          "start_time": 104.12,
+          "end_time": 104.16
+        },
+        {
+          "text": "khi",
+          "start_time": 104.16,
+          "end_time": 104.34
+        },
+        {
+          "text": " ",
+          "start_time": 104.34,
+          "end_time": 104.36
+        },
+        {
+          "text": "quy\u1ebft",
+          "start_time": 104.36,
+          "end_time": 104.48
+        },
+        {
+          "text": " ",
+          "start_time": 104.48,
+          "end_time": 104.52
+        },
+        {
+          "text": "\u0111\u1ecbnh",
+          "start_time": 104.52,
+          "end_time": 104.66
+        },
+        {
+          "text": " ",
+          "start_time": 104.66,
+          "end_time": 104.72
+        },
+        {
+          "text": "r\u1eb1ng",
+          "start_time": 104.72,
+          "end_time": 104.94
+        },
+        {
+          "text": " ",
+          "start_time": 104.94,
+          "end_time": 104.96
+        },
+        {
+          "text": "retry",
+          "start_time": 104.96,
+          "end_time": 105.48
+        },
+        {
+          "text": " ",
+          "start_time": 105.48,
+          "end_time": 105.52
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 105.52,
+          "end_time": 105.62
+        },
+        {
+          "text": " ",
+          "start_time": 105.62,
+          "end_time": 105.68
+        },
+        {
+          "text": "an",
+          "start_time": 105.68,
+          "end_time": 105.76
+        },
+        {
+          "text": " ",
+          "start_time": 105.76,
+          "end_time": 105.84
+        },
+        {
+          "text": "to\u00e0n.",
+          "start_time": 105.84,
+          "end_time": 106.06
+        },
+        {
+          "text": " ",
+          "start_time": 106.06,
+          "end_time": 106.56
+        },
+        {
+          "text": "Amazon",
+          "start_time": 106.56,
+          "end_time": 107.0
+        },
+        {
+          "text": " ",
+          "start_time": 107.0,
+          "end_time": 107.06
+        },
+        {
+          "text": "c\u0169ng",
+          "start_time": 107.06,
+          "end_time": 107.18
+        },
+        {
+          "text": " ",
+          "start_time": 107.18,
+          "end_time": 107.2
+        },
+        {
+          "text": "nh\u1ea5n",
+          "start_time": 107.2,
+          "end_time": 107.36
+        },
+        {
+          "text": " ",
+          "start_time": 107.36,
+          "end_time": 107.4
+        },
+        {
+          "text": "m\u1ea1nh",
+          "start_time": 107.4,
+          "end_time": 107.62
+        },
+        {
+          "text": " ",
+          "start_time": 107.62,
+          "end_time": 107.66
+        },
+        {
+          "text": "ch\u00ednh",
+          "start_time": 107.66,
+          "end_time": 107.84
+        },
+        {
+          "text": " ",
+          "start_time": 107.84,
+          "end_time": 107.86
+        },
+        {
+          "text": "c\u00e1c",
+          "start_time": 107.86,
+          "end_time": 107.98
+        },
+        {
+          "text": " ",
+          "start_time": 107.98,
+          "end_time": 108.02
+        },
+        {
+          "text": "\u0111i\u1ec3m",
+          "start_time": 108.02,
+          "end_time": 108.18
+        },
+        {
+          "text": " ",
+          "start_time": 108.18,
+          "end_time": 108.22
+        },
+        {
+          "text": "n\u00e0y",
+          "start_time": 108.22,
+          "end_time": 108.759
+        },
+        {
+          "text": " ",
+          "start_time": 108.759,
+          "end_time": 108.8
+        },
+        {
+          "text": "khi",
+          "start_time": 108.8,
+          "end_time": 108.94
+        },
+        {
+          "text": " ",
+          "start_time": 108.94,
+          "end_time": 108.98
+        },
+        {
+          "text": "thi\u1ebft",
+          "start_time": 108.98,
+          "end_time": 109.1
+        },
+        {
+          "text": " ",
+          "start_time": 109.1,
+          "end_time": 109.16
+        },
+        {
+          "text": "k\u1ebf",
+          "start_time": 109.16,
+          "end_time": 109.36
+        },
+        {
+          "text": " ",
+          "start_time": 109.36,
+          "end_time": 109.38
+        },
+        {
+          "text": "remote",
+          "start_time": 109.38,
+          "end_time": 109.72
+        },
+        {
+          "text": " ",
+          "start_time": 109.72,
+          "end_time": 109.78
+        },
+        {
+          "text": "calls",
+          "start_time": 109.78,
+          "end_time": 110.2
+        },
+        {
+          "text": " ",
+          "start_time": 110.2,
+          "end_time": 110.22
+        },
+        {
+          "text": "trong",
+          "start_time": 110.22,
+          "end_time": 110.36
+        },
+        {
+          "text": " ",
+          "start_time": 110.36,
+          "end_time": 110.4
+        },
+        {
+          "text": "h\u1ec7",
+          "start_time": 110.4,
+          "end_time": 110.5
+        },
+        {
+          "text": " ",
+          "start_time": 110.5,
+          "end_time": 110.56
+        },
+        {
+          "text": "th\u1ed1ng",
+          "start_time": 110.56,
+          "end_time": 110.7
+        },
+        {
+          "text": " ",
+          "start_time": 110.7,
+          "end_time": 110.76
+        },
+        {
+          "text": "ph\u00e2n",
+          "start_time": 110.76,
+          "end_time": 110.89
+        },
+        {
+          "text": " ",
+          "start_time": 110.89,
+          "end_time": 110.96
+        },
+        {
+          "text": "t\u00e1n.",
+          "start_time": 110.96,
+          "end_time": 111.22
+        },
+        {
+          "text": " ",
+          "start_time": 111.22,
+          "end_time": 112.2
+        },
+        {
+          "text": "Retry",
+          "start_time": 112.2,
+          "end_time": 112.8
+        },
+        {
+          "text": " ",
+          "start_time": 112.8,
+          "end_time": 112.84
+        },
+        {
+          "text": "l\u00e0",
+          "start_time": 112.84,
+          "end_time": 112.94
+        },
+        {
+          "text": " ",
+          "start_time": 112.94,
+          "end_time": 112.96
+        },
+        {
+          "text": "m\u1ed9t",
+          "start_time": 112.96,
+          "end_time": 113.12
+        },
+        {
+          "text": " ",
+          "start_time": 113.12,
+          "end_time": 113.16
+        },
+        {
+          "text": "c\u01a1",
+          "start_time": 113.16,
+          "end_time": 113.26
+        },
+        {
+          "text": " ",
+          "start_time": 113.26,
+          "end_time": 113.36
+        },
+        {
+          "text": "ch\u1ebf",
+          "start_time": 113.36,
+          "end_time": 113.54
+        },
+        {
+          "text": " ",
+          "start_time": 113.54,
+          "end_time": 113.64
+        },
+        {
+          "text": "resilience,",
+          "start_time": 113.64,
+          "end_time": 114.26
+        },
+        {
+          "text": " ",
+          "start_time": 114.26,
+          "end_time": 114.9
+        },
+        {
+          "text": "nh\u01b0ng",
+          "start_time": 114.9,
+          "end_time": 115.08
+        },
+        {
+          "text": " ",
+          "start_time": 115.08,
+          "end_time": 115.12
+        },
+        {
+          "text": "ch\u1ec9",
+          "start_time": 115.12,
+          "end_time": 115.26
+        },
+        {
+          "text": " ",
+          "start_time": 115.26,
+          "end_time": 115.3
+        },
+        {
+          "text": "khi",
+          "start_time": 115.3,
+          "end_time": 115.42
+        },
+        {
+          "text": " ",
+          "start_time": 115.42,
+          "end_time": 115.46
+        },
+        {
+          "text": "h\u1ec7",
+          "start_time": 115.46,
+          "end_time": 115.6
+        },
+        {
+          "text": " ",
+          "start_time": 115.6,
+          "end_time": 115.64
+        },
+        {
+          "text": "th\u1ed1ng",
+          "start_time": 115.64,
+          "end_time": 115.82
+        },
+        {
+          "text": " ",
+          "start_time": 115.82,
+          "end_time": 115.88
+        },
+        {
+          "text": "bi\u1ebft",
+          "start_time": 115.88,
+          "end_time": 116.0
+        },
+        {
+          "text": " ",
+          "start_time": 116.0,
+          "end_time": 116.04
+        },
+        {
+          "text": "l\u00fac",
+          "start_time": 116.04,
+          "end_time": 116.18
+        },
+        {
+          "text": " ",
+          "start_time": 116.18,
+          "end_time": 116.22
+        },
+        {
+          "text": "n\u00e0o",
+          "start_time": 116.22,
+          "end_time": 116.44
+        },
+        {
+          "text": " ",
+          "start_time": 116.44,
+          "end_time": 116.46
+        },
+        {
+          "text": "n\u00ean",
+          "start_time": 116.46,
+          "end_time": 116.62
+        },
+        {
+          "text": " ",
+          "start_time": 116.62,
+          "end_time": 116.66
+        },
+        {
+          "text": "th\u1eed",
+          "start_time": 116.66,
+          "end_time": 116.8
+        },
+        {
+          "text": " ",
+          "start_time": 116.8,
+          "end_time": 116.84
+        },
+        {
+          "text": "l\u1ea1i,",
+          "start_time": 116.84,
+          "end_time": 117.02
+        },
+        {
+          "text": " ",
+          "start_time": 117.02,
+          "end_time": 117.52
+        },
+        {
+          "text": "th\u1eed",
+          "start_time": 117.52,
+          "end_time": 117.62
+        },
+        {
+          "text": " ",
+          "start_time": 117.62,
+          "end_time": 117.7
+        },
+        {
+          "text": "l\u1ea1i",
+          "start_time": 117.7,
+          "end_time": 117.84
+        },
+        {
+          "text": " ",
+          "start_time": 117.84,
+          "end_time": 117.88
+        },
+        {
+          "text": "bao",
+          "start_time": 117.88,
+          "end_time": 117.98
+        },
+        {
+          "text": " ",
+          "start_time": 117.98,
+          "end_time": 118.02
+        },
+        {
+          "text": "nhi\u00eau",
+          "start_time": 118.02,
+          "end_time": 118.16
+        },
+        {
+          "text": " ",
+          "start_time": 118.16,
+          "end_time": 118.2
+        },
+        {
+          "text": "l\u1ea7n",
+          "start_time": 118.2,
+          "end_time": 118.4
+        },
+        {
+          "text": " ",
+          "start_time": 118.4,
+          "end_time": 118.8
+        },
+        {
+          "text": "v\u00e0",
+          "start_time": 118.84,
+          "end_time": 118.94
+        },
+        {
+          "text": " ",
+          "start_time": 118.94,
+          "end_time": 118.98
+        },
+        {
+          "text": "l\u00fac",
+          "start_time": 118.98,
+          "end_time": 119.14
+        },
+        {
+          "text": " ",
+          "start_time": 119.14,
+          "end_time": 119.18
+        },
+        {
+          "text": "n\u00e0o",
+          "start_time": 119.18,
+          "end_time": 119.36
+        },
+        {
+          "text": " ",
+          "start_time": 119.36,
+          "end_time": 119.4
+        },
+        {
+          "text": "n\u00ean",
+          "start_time": 119.4,
+          "end_time": 119.54
+        },
+        {
+          "text": " ",
+          "start_time": 119.54,
+          "end_time": 119.6
+        },
+        {
+          "text": "d\u1eebng.",
+          "start_time": 119.6,
+          "end_time": 120.32
+        },
+        {
+          "text": " ",
+          "start_time": 120.32,
+          "end_time": 120.36
+        },
+        {
+          "text": "Follow",
+          "start_time": 120.36,
+          "end_time": 120.68
+        },
+        {
+          "text": " ",
+          "start_time": 120.68,
+          "end_time": 120.86
+        },
+        {
+          "text": "Uptime",
+          "start_time": 120.86,
+          "end_time": 121.27
+        },
+        {
+          "text": " ",
+          "start_time": 121.27,
+          "end_time": 121.34
+        },
+        {
+          "text": "DevOps",
+          "start_time": 121.34,
+          "end_time": 122.1
+        },
+        {
+          "text": " ",
+          "start_time": 122.1,
+          "end_time": 122.16
+        },
+        {
+          "text": "\u0111\u1ec3",
+          "start_time": 122.16,
+          "end_time": 122.3
+        },
+        {
+          "text": " ",
+          "start_time": 122.3,
+          "end_time": 122.34
+        },
+        {
+          "text": "xem",
+          "start_time": 122.34,
+          "end_time": 122.5
+        },
+        {
+          "text": " ",
+          "start_time": 122.5,
+          "end_time": 122.54
+        },
+        {
+          "text": "th\u00eam",
+          "start_time": 122.54,
+          "end_time": 122.68
+        },
+        {
+          "text": " ",
+          "start_time": 122.68,
+          "end_time": 122.76
+        },
+        {
+          "text": "c\u00e1ch",
+          "start_time": 122.76,
+          "end_time": 122.92
+        },
+        {
+          "text": " ",
+          "start_time": 122.92,
+          "end_time": 122.96
+        },
+        {
+          "text": "nh\u1eefng",
+          "start_time": 122.96,
+          "end_time": 123.12
+        },
+        {
+          "text": " ",
+          "start_time": 123.12,
+          "end_time": 123.14
+        },
+        {
+          "text": "quy\u1ebft",
+          "start_time": 123.14,
+          "end_time": 123.26
+        },
+        {
+          "text": " ",
+          "start_time": 123.26,
+          "end_time": 123.28
+        },
+        {
+          "text": "\u0111\u1ecbnh",
+          "start_time": 123.28,
+          "end_time": 123.42
+        },
+        {
+          "text": " ",
+          "start_time": 123.42,
+          "end_time": 123.46
+        },
+        {
+          "text": "nh\u1ecf",
+          "start_time": 123.46,
+          "end_time": 123.84
+        },
+        {
+          "text": " ",
+          "start_time": 123.84,
+          "end_time": 123.9
+        },
+        {
+          "text": "\u1edf",
+          "start_time": 123.9,
+          "end_time": 124.0
+        },
+        {
+          "text": " ",
+          "start_time": 124.0,
+          "end_time": 124.04
+        },
+        {
+          "text": "t\u1ea7ng",
+          "start_time": 124.04,
+          "end_time": 124.2
+        },
+        {
+          "text": " ",
+          "start_time": 124.2,
+          "end_time": 124.3
+        },
+        {
+          "text": "RPC",
+          "start_time": 124.3,
+          "end_time": 125.16
+        },
+        {
+          "text": " ",
+          "start_time": 125.16,
+          "end_time": 125.22
+        },
+        {
+          "text": "c\u00f3",
+          "start_time": 125.22,
+          "end_time": 125.32
+        },
+        {
+          "text": " ",
+          "start_time": 125.32,
+          "end_time": 125.34
+        },
+        {
+          "text": "th\u1ec3",
+          "start_time": 125.34,
+          "end_time": 125.5
+        },
+        {
+          "text": " ",
+          "start_time": 125.5,
+          "end_time": 125.54
+        },
+        {
+          "text": "thay",
+          "start_time": 125.54,
+          "end_time": 125.66
+        },
+        {
+          "text": " ",
+          "start_time": 125.66,
+          "end_time": 125.72
+        },
+        {
+          "text": "\u0111\u1ed5i",
+          "start_time": 125.72,
+          "end_time": 125.9
+        },
+        {
+          "text": " ",
+          "start_time": 125.9,
+          "end_time": 125.94
+        },
+        {
+          "text": "reliability",
+          "start_time": 125.94,
+          "end_time": 126.76
+        },
+        {
+          "text": " ",
+          "start_time": 126.76,
+          "end_time": 126.78
+        },
+        {
+          "text": "c\u1ee7a",
+          "start_time": 126.78,
+          "end_time": 126.9
+        },
+        {
+          "text": " ",
+          "start_time": 126.9,
+          "end_time": 126.94
+        },
+        {
+          "text": "c\u1ea3",
+          "start_time": 126.94,
+          "end_time": 127.02
+        },
+        {
+          "text": " ",
+          "start_time": 127.02,
+          "end_time": 127.08
+        },
+        {
+          "text": "h\u1ec7",
+          "start_time": 127.08,
+          "end_time": 127.22
+        },
+        {
+          "text": " ",
+          "start_time": 127.22,
+          "end_time": 127.24
+        },
+        {
+          "text": "th\u1ed1ng.",
+          "start_time": 127.24,
+          "end_time": 128.759
+        },
+        {
+          "text": " ",
+          "start_time": 128.759,
+          "end_time": 128.769
+        }
+      ]
+    },
+    {
+      "text": "[hi\u1ec7u \u1ee9ng \u00e2m thanh]",
+      "start_time": 128.769,
+      "end_time": 128.789,
+      "speaker": {
+        "id": "speaker_1",
+        "name": "Speaker 1"
+      },
+      "words": [
+        {
+          "text": "[hi\u1ec7u \u1ee9ng \u00e2m thanh]",
+          "start_time": 128.769,
+          "end_time": 128.789
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,28 @@
 .idea
 *.iml
 personal-9894.md
+github-token.md
+.env
+.env.local
+*.log
+
+# Media & Binaries
+*.mp3
+*.mp4
+*.wav
+*.zip
+*.tar.gz
+
+# Python & testing cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+env/
+venv/
 
 # Targets Windows & Unix temporary files
 ~$*
@@ -18,13 +40,3 @@ Thumbs.db
 
 # Sublime Files
 .sublime
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.log
-.venv/
-env/
-venv/
-.pytest_cache/

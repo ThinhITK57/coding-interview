@@ -1,0 +1,310 @@
+﻿Tuyệt vời! Bạn đã có Terminator với font đẹp và màu Gruvbox. Bây giờ tôi sẽ tổng hợp toàn bộ quá trình thành một **file hướng dẫn hoàn chỉnh** để bạn có thể lưu lại và thực hiện lại trên bất kỳ máy tính nào (kể cả máy công ty) một cách dễ dàng.
+
+
+---
+
+
+## 📄 HƯỚNG DẪN THIẾT LẬP MÔI TRƯỜNG "CAM-ĐEN" CHUẨN DATA ENGINEER
+
+
+### 🎯 Mục tiêu
+- Có môi trường đồ họa tối giản với **i3** (window manager) – màu cam/đen.
+- Terminal đẹp với **Terminator**, font **JetBrains Mono Nerd Font**, bảng màu **Gruvbox**.
+- Prompt Bash có màu sắc.
+- Quản lý toàn bộ cấu hình bằng **dotfiles** (Git) để có thể tái tạo trên máy khác.
+
+
+---
+
+
+### 1. Cài đặt hệ thống cơ bản (trên console vật lý hoặc VMware)
+
+
+```bash
+sudo apt update
+sudo apt install -y xorg i3 i3status i3lock dmenu xinit
+sudo apt install -y terminator vim git wget unzip curl
+```
+
+
+---
+
+
+### 2. Cài font JetBrains Mono Nerd Font (cho Terminator)
+
+
+```bash
+mkdir -p ~/.local/share/fonts
+cd ~/.local/share/fonts
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
+unzip JetBrainsMono.zip
+rm JetBrainsMono.zip
+fc-cache -fv
+```
+
+
+---
+
+
+### 3. Cấu hình Terminator (màu Gruvbox + font đẹp)
+
+
+Tạo file `~/.config/terminator/config`:
+
+
+```bash
+mkdir -p ~/.config/terminator
+cat > ~/.config/terminator/config << 'EOF'
+[global_config]
+  title_transmit_fg_color = "#d79921"
+  title_transmit_bg_color = "#282828"
+  focus = system
+  suppress_multiple_term_dialog = True
+
+
+[keybindings]
+  full_screen = <Shift>F11
+
+
+[profiles]
+  [[default]]
+    background_color = "#282828"
+    background_darkness = 0.95
+    background_type = transparent
+    cursor_color = "#fabd2f"
+    foreground_color = "#ebdbb2"
+    palette = "#282828:#cc241d:#98971a:#d79921:#458588:#b16286:#689d6a:#a89984:#928374:#fb4934:#b8bb26:#fabd2f:#83a598:#d3869b:#8ec07c:#ebdbb2"
+    use_system_font = False
+    font = JetBrains Mono Nerd Font 13
+    show_titlebar = False
+    scrollbar_position = hidden
+    use_transparent_background = False
+EOF
+```
+
+
+---
+
+
+### 4. Cấu hình i3 (phím tắt + màu Gruvbox)
+
+
+Tạo file `~/.i3/config`:
+
+
+```bash
+mkdir -p ~/.i3
+cat > ~/.i3/config << 'EOF'
+# i3 config file
+set $mod Mod4
+
+
+# Font cho tiêu đề
+font pango:monospace 8
+
+
+# Màu Gruvbox
+# class                 border  backgr. text    indicator
+client.focused          #d79921 #d79921 #282828 #d79921
+client.focused_inactive #3c3836 #3c3836 #ebdbb2 #3c3836
+client.unfocused        #3c3836 #3c3836 #928374 #3c3836
+client.urgent           #fb4934 #fb4934 #282828 #fb4934
+client.placeholder      #3c3836 #3c3836 #928374 #3c3836
+
+
+# Phím tắt mở terminal (dùng Terminator)
+bindsym $mod+Return exec terminator
+
+
+# Phím tắt mở dmenu (chạy ứng dụng)
+bindsym $mod+d exec dmenu_run
+
+
+# Di chuyển focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+
+# Di chuyển cửa sổ
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+
+# Workspace
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+
+# Di chuyển container sang workspace
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+
+# Reload config
+bindsym $mod+Shift+c reload
+
+
+# Restart i3
+bindsym $mod+Shift+r restart
+
+
+# Exit i3
+bindsym $mod+Shift+e exec "i3-msg exit; pkill -KILL -u $USER"
+
+
+# Thanh trạng thái
+bar {
+    status_command i3status
+    colors {
+        background #282828
+        statusline #ebdbb2
+        separator #928374
+        focused_workspace  #d79921 #d79921 #282828
+        active_workspace   #3c3836 #3c3836 #ebdbb2
+        inactive_workspace #3c3836 #3c3836 #928374
+        urgent_workspace   #fb4934 #fb4934 #282828
+    }
+}
+EOF
+```
+
+
+---
+
+
+### 5. Cấu hình Bash prompt màu sắc
+
+
+Thêm vào cuối file `~/.bashrc`:
+
+
+```bash
+echo '
+# Màu prompt
+PS1="\[\033[01;32m\](base)\[\033[00m\] \[\033[01;33m\]\u\[\033[00m\]@\[\033[01;36m\]\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
+' >> ~/.bashrc
+source ~/.bashrc
+```
+
+
+---
+
+
+### 6. Tạo file `~/.xinitrc` để tự động chạy i3
+
+
+```bash
+echo 'exec i3' > ~/.xinitrc
+```
+
+
+---
+
+
+### 7. Chạy i3 từ console (không phải SSH)
+
+
+- Tại màn hình đăng nhập (hoặc sau khi đăng nhập), gõ:
+  ```bash
+  startx
+  ```
+- i3 sẽ khởi động. Các phím tắt cơ bản:
+  - `Super` + `Enter` → mở terminal
+  - `Super` + `d` → mở dmenu (gõ tên app)
+  - `Super` + `Shift` + `c` → reload cấu hình
+  - `Super` + `Shift` + `e` → thoát i3
+
+
+---
+
+
+### 8. Quản lý dotfiles để mang đi mọi nơi (Bước QUAN TRỌNG)
+
+
+Sau khi bạn đã cấu hình ưng ý, hãy lưu toàn bộ vào một kho Git trên GitHub.
+
+
+```bash
+# Tạo thư mục dotfiles
+mkdir ~/dotfiles
+cd ~/dotfiles
+git init
+
+
+# Sao chép các file cấu hình vào đây
+cp ~/.i3/config ~/dotfiles/i3_config
+cp ~/.config/terminator/config ~/dotfiles/terminator_config
+cp ~/.bashrc ~/dotfiles/bashrc
+cp ~/.xinitrc ~/dotfiles/xinitrc
+# Thêm các file khác nếu có: .vimrc, .zshrc, ...
+
+
+# Tạo symlink (liên kết) để các chương trình tìm đúng file
+# Ví dụ: ln -s ~/dotfiles/i3_config ~/.i3/config
+# Bạn có thể viết script để tự động tạo symlink
+```
+
+
+**Khi cài máy mới (công ty):**
+- Cài git, clone dotfiles về.
+- Chạy script tạo symlink (hoặc tự tạo tay).
+- Cài các gói cần thiết (xorg, i3, terminator, vim, git, wget, unzip, font).
+- `startx` và tận hưởng.
+
+
+> **Gợi ý**: Dùng công cụ **GNU Stow** để quản lý symlink gọn gàng hơn. Cài `sudo apt install stow`, sau đó trong thư mục `~/dotfiles` bạn tạo cấu trúc thư mục giống như `/home/aiguystory` và dùng `stow -t ~` để tự động tạo symlink.
+
+
+---
+
+
+sudo apt update
+sudo apt install firefox
+
+
+
+
+### 📌 Tóm tắt các bước khi cài đặt lại từ đầu
+
+
+1. Cài Ubuntu Server (hoặc bất kỳ Linux nào).
+2. Chạy các lệnh trong phần 1 (cài gói).
+3. Clone dotfiles từ GitHub về.
+4. Tạo symlink (hoặc dùng stow).
+5. Chạy `startx`.
+
+
+---
+
+
+### 🎉 Kết quả
+
+
+Bạn sẽ có một môi trường làm việc:
+- Màu sắc cam-đen Gruvbox
+- Font chữ đẹp, rõ ràng
+- Thao tác nhanh bằng bàn phím
+- Hoàn toàn nhất quán trên mọi máy tính
+
+
+Chúc bạn thành công và tận hưởng phong cách Data Engineer chuyên nghiệp!

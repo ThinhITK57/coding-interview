@@ -1,0 +1,44 @@
+# =============================================================================
+# Fleet Data Platform — DEV Environment Configuration
+# =============================================================================
+# Dành cho: Cụm K8s Development (hoặc máy chủ dev nội bộ).
+# Ghi đè: base.yaml
+
+env: "dev"
+
+storage:
+  type: "hdfs"
+  endpoint: "hdfs://dev-namenode:9000"
+  warehouse_path: "hdfs://dev-namenode:9000/fleet-datalake/warehouse"
+
+database:
+  host: "dev-postgres"
+  port: 5432
+  name: "fleet_oltp"
+  user: "fleet_app"
+  password: "${FLEET_DB_PASSWORD}"           # Đọc từ K8s Secret / Environment Variable
+  jdbc_url: "jdbc:postgresql://dev-postgres:5432/fleet_oltp"
+
+hive:
+  enabled: true
+  metastore_uris: "thrift://dev-hive-metastore:9083"
+
+kafka:
+  bootstrap_servers: "dev-kafka-0:9092,dev-kafka-1:9092"
+
+redis:
+  host: "dev-redis"
+  port: 6379
+  password: "${REDIS_PASSWORD}"
+
+spark:
+  master: "spark://dev-spark-master:7077"
+  driver_memory: "2g"
+  executor_memory: "4g"
+  shuffle_partitions: 8
+  salt_buckets: 10
+
+monitoring:
+  prometheus_pushgateway: "http://dev-prometheus:9091"
+  grafana_url: "http://dev-grafana:3000"
+  alerting_enabled: false                    # Dev không gửi alert Telegram/Slack
