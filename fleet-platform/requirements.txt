@@ -1,17 +1,28 @@
-# Fleet Platform — Python Dependencies
-# ====================================
+# =============================================================================
+# Fleet Data Platform — Python Dependencies
+# =============================================================================
 
-# Core PySpark & Data Processing
+# --- 1. Core Data Processing & PySpark ---
 pyspark>=3.5.0
+pyarrow>=15.0.0
 psycopg2-binary>=2.9.9
 
-# Kafka Integration
-kafka-python>=2.0.2
+# --- 2. Centralized Configuration & Serialization ---
+pyyaml>=6.0.1
 
-# Redis & Async Utilities
+# --- 3. Messaging, Caching & Serving ---
+kafka-python>=2.0.2
 redis>=5.0.1
 websockets>=12.0
 requests>=2.31.0
 
-# Airflow (Optional for local DAG development)
-apache-airflow>=2.8.0
+# --- 4. Quality Assurance, Testing & Linters ---
+pytest>=8.0.0
+pytest-cov>=4.1.0
+flake8>=7.0.0
+sqlfluff>=3.0.0
+pyright>=1.1.350
+
+# --- 5. Terminal-First Data Exploration Tools (TUI) ---
+harlequin[postgres,duckdb]>=1.18.0
+visidata>=3.0.2

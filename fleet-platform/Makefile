@@ -12,12 +12,29 @@
 #   make config env=prod  — In ra cấu hình production để kiểm tra
 # =============================================================================
 
-.PHONY: help up down clean status test lint config run-scd2 run-agg smoke-test topics
+.PHONY: help up down clean status test lint config run-scd2 run-agg smoke-test topics install install-dev
 
 # Biến mặc định
 ENV ?= local
 COMPOSE_FILE = docker/docker-compose.local.yaml
 PYTHON = python
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DEPENDENCIES & SETUP — Cài đặt môi trường mới
+# ─────────────────────────────────────────────────────────────────────────────
+install: ## Cài đặt toàn bộ dependencies Python từ requirements.txt
+	@echo "📦 Installing Python dependencies..."
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements.txt
+	@echo "✅ All Python dependencies installed successfully."
+
+install-dev: ## Cài đặt môi trường dev đầy đủ (Terminal IDE + SQL Tools + PySpark)
+	@echo "🛠 Setting up full Terminal Development Environment..."
+	sudo apt update && sudo apt install -y openjdk-11-jdk git curl ripgrep fd-find pgcli
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements.txt
+	@echo "✅ Development environment setup complete."
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HELP — Hiển thị menu lệnh
