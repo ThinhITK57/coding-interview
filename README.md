@@ -1,18 +1,39 @@
-# Coding Interview University
+# 🚚 Fleet Maintenance & Repair Real-Time Data Platform & Senior DE Handbook
 
-> I originally created this as a short to-do list of study topics for becoming a software engineer,
-> but it grew to the large list you see today. After going through this study plan, [I got hired
-> as a Software Development Engineer at Amazon](https://startupnextdoor.com/ive-been-acquired-by-amazon/?src=ciu)!
-> You probably won't have to study as much as I did. Anyway, everything you need is here.
->
-> I studied about 8-12 hours a day, for several months. This is my story: [Why I studied full-time for 8 months for a Google interview](https://medium.freecodecamp.org/why-i-studied-full-time-for-8-months-for-a-google-interview-cc662ce9bb13)
->
-> **Please Note:** You won't need to study as much as I did. I wasted a lot of time on things I didn't need to know. More info about that is below. I'll help you get there without wasting your precious time.
->
-> The items listed here will prepare you well for a technical interview at just about any software company,
-> including the giants: Amazon, Facebook, Google, and Microsoft.
->
-> *Best of luck to you!*
+> 🌟 **Project Showcase & Engineering Portfolio**: This repository contains the complete production-grade **Fleet Real-Time Data Engineering Platform** (`fleet-platform/`), infrastructure automation, multi-environment architecture, and senior-level system design handbooks.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 📂 DIRECTORY STRUCTURE & QUICK NAVIGATION:                                                             │
+│                                                                                                        │
+│  ├── 🚚 fleet-platform/                  ──► Production Data Engineering Platform                      │
+│  │   ├── src/core/config.py              ──► Config-as-Code Loader (YAML + Env Vars)                   │
+│  │   ├── configs/                        ──► Multi-Environment Configs (base, local, dev, prod)        │
+│  │   ├── docker/                         ──► Local Sandbox (Postgres, Redis, Redpanda, MinIO)          │
+│  │   ├── streaming/                      ──► Real-Time PySpark Structured Streaming to HDFS            │
+│  │   ├── serving/                        ──► Redis GEOSEARCH (<1ms) & Lua Concurrency Control          │
+│  │   ├── analytics/                      ──► SCD2 Customer Dimension & DWH Aggregations                │
+│  │   ├── websocket_backend/              ──► Async WebSocket Live Push Serving                         │
+│  │   ├── tests/                          ──► Automated Test Suites (pytest)                            │
+│  │   ├── docs/                           ──► Terminal IDE (LazyVim), Minikube & VMware Guides          │
+│  │   └── infra/                          ──► 8-Framework Bare-Metal Cluster Setup (Hadoop/Spark/Hive)  │
+│  │                                                                                                     │
+│  ├── 📚 docs/                            ──► Distributed Systems, Retry Storm & Scale DB Guides        │
+│  └── 🎯 interview_prep/                  ──► Senior/Lead Data Engineer Playbooks & Live Scenarios      │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### ⚡ Quick Navigation Links:
+- 🚀 **[Fleet Data Platform Overview & Quickstart](fleet-platform/README.md)**
+- 🛠️ **[Terminal IDE Setup (LazyVim + PySpark + SQL)](fleet-platform/docs/LAZYVIM-DATA-ENGINEERING-SETUP.md)**
+- ☸️ **[Minikube & Kubernetes Handbook](fleet-platform/docs/MINIKUBE-COMPLETE-GUIDE.md)**
+- 🖥️ **[VMware Workstation Dev Environment Guide](fleet-platform/docs/VMWARE-DEV-ENVIRONMENT-SETUP.md)**
+- 🧠 **[Distributed Systems: Retry, Eviction & Backpressure](docs/retry-eviction-backpressure.md)**
+- 🗄️ **[30 Backend / DE Concepts: MQ, Data Modeling & Scale DB](docs/mq-datamodeling-scaledb.md)**
+
+---
+
+# Coding Interview University (Original Reference Materials)
 
 <details>
 <summary>Translations:</summary>
