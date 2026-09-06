@@ -36,6 +36,7 @@ from prefect.concurrency.sync import concurrency
 
 from config.loader import ConfigLoader
 from config.validator import ConfigValidator
+from config.job_config import ExtractionMode
 from ingestion.extractor import Extractor
 from ingestion.writer import BatchWriter, PartitionedParquetWriter
 from transform.spark_session import SparkSessionFactory
@@ -93,8 +94,14 @@ def load_and_validate_config(config_path="config.json", env="dev"):
     retries=2,
     retry_delay_seconds=[30, 120],
 )
-def extract_from_api(config, endpoint_name, staging_dir):
-    """Extract all pages from an API endpoint with rate limiting and checkpointing.
+def extract_from_api(
+    config,
+    endpoint_name,
+    staging_dir,
+    window_start=None,
+    window_end=None,
+):
+    """Extract paginated records from API endpoint to staging.
 
     Uses ResilientHTTPClient (rate limit + retry + circuit breaker)
     and CheckpointStore for crash-safe resume.
@@ -103,6 +110,8 @@ def extract_from_api(config, endpoint_name, staging_dir):
         config: IngestionConfig.
         endpoint_name: Name of the endpoint to extract.
         staging_dir: Directory to write raw JSON batches.
+        window_start: Optional ISO timestamp override for incremental start.
+        window_end: Optional ISO timestamp override for incremental end.
 
     Returns:
         dict: Extraction summary with total_records, total_pages, client_stats.
@@ -128,11 +137,17 @@ def extract_from_api(config, endpoint_name, staging_dir):
 
         total_records = 0
         total_pages = 0
+        last_batch = None
 
-        for batch in extractor.iterate_batches(endpoint_config):
+        for batch in extractor.iterate_batches(
+            endpoint_config,
+            window_start=window_start,
+            window_end=window_end,
+        ):
             writer.write_batch(batch)
             total_records += batch.record_count
             total_pages += 1
+            last_batch = batch
 
             log.info(
                 "Page %d extracted: %d records (total: %d)",
@@ -149,7 +164,9 @@ def extract_from_api(config, endpoint_name, staging_dir):
         "total_pages": total_pages,
         "staging_dir": staging_dir,
         "client_stats": client_stats,
-        "batch_id": batch.batch_id if total_pages > 0 else "",
+        "batch_id": last_batch.batch_id if last_batch else "",
+        "window_start": last_batch.window_start if last_batch else window_start,
+        "window_end": last_batch.window_end if last_batch else window_end,
     }
 
     log.info(
@@ -426,9 +443,11 @@ def publish_daily_report(job_summary, quality_report):
 )
 def api_ingestion_pipeline(
     config_path: str = "config.json",
-    endpoint_name: str = "entity_query",
+    endpoint_name: str = "muc_1",
     env: str = "dev",
-    mode: str = "full",
+    mode: str = "incremental",
+    window_start: Optional[str] = None,
+    window_end: Optional[str] = None,
     spark_master: str = "local[*]",
     dry_run: bool = False,
 ):
@@ -445,16 +464,18 @@ def api_ingestion_pipeline(
 
     Args:
         config_path: Path to pipeline config JSON.
-        endpoint_name: API endpoint to extract from.
+        endpoint_name: API endpoint to extract from (e.g. muc_1, muc_2, muc_3, muc_4).
         env: Environment (dev, staging, prod).
         mode: Extraction mode (full, incremental).
+        window_start: Optional ISO timestamp override for incremental start.
+        window_end: Optional ISO timestamp override for incremental end.
         spark_master: Spark master URL.
         dry_run: If True, load config and validate but don't execute.
     """
     log = get_run_logger()
     log.info(
-        "Pipeline started: endpoint=%s, env=%s, mode=%s",
-        endpoint_name, env, mode,
+        "Pipeline started: endpoint=%s, env=%s, mode=%s, window=[%s, %s]",
+        endpoint_name, env, mode, window_start, window_end,
     )
 
     # Initialize job tracker
@@ -475,6 +496,14 @@ def api_ingestion_pipeline(
             log.info("Dry run mode: config validated, exiting")
             return {"status": "DRY_RUN", "config_valid": True}
 
+        # Apply runtime mode & window overrides
+        if mode:
+            config.job.extraction.mode = ExtractionMode(mode)
+        if window_start:
+            config.job.extraction.window_start = window_start
+        if window_end:
+            config.job.extraction.window_end = window_end
+
         # Derive paths from config
         source_name = config.api.name
         api_version = config.api.version
@@ -487,11 +516,13 @@ def api_ingestion_pipeline(
             "./data/bronze", source_name, endpoint_name
         )
 
-        # Step 2: Extract from API
+        # Step 2: Extract from API with window bounds
         extraction_result = extract_from_api(
             config=config,
             endpoint_name=endpoint_name,
             staging_dir=staging_dir,
+            window_start=window_start,
+            window_end=window_end,
         )
 
         tracker._total_pages = extraction_result["total_pages"]
@@ -603,9 +634,19 @@ Examples:
     )
     parser.add_argument(
         "--mode",
-        default="full",
+        default="incremental",
         choices=["full", "incremental"],
-        help="Extraction mode (default: full)",
+        help="Extraction mode (default: incremental)",
+    )
+    parser.add_argument(
+        "--window-start",
+        default=None,
+        help="ISO timestamp for incremental window start (e.g. 2026-09-05T00:00:00Z)",
+    )
+    parser.add_argument(
+        "--window-end",
+        default=None,
+        help="ISO timestamp for incremental window end (e.g. 2026-09-06T00:00:00Z)",
     )
     parser.add_argument(
         "--spark-master",
@@ -641,6 +682,8 @@ if __name__ == "__main__":
                 endpoint_name=ep.name,
                 env=args.env,
                 mode=args.mode,
+                window_start=args.window_start,
+                window_end=args.window_end,
                 spark_master=args.spark_master,
                 dry_run=args.dry_run,
             )
@@ -650,6 +693,8 @@ if __name__ == "__main__":
             endpoint_name=args.endpoint,
             env=args.env,
             mode=args.mode,
+            window_start=args.window_start,
+            window_end=args.window_end,
             spark_master=args.spark_master,
             dry_run=args.dry_run,
         )

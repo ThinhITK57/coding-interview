@@ -6,14 +6,12 @@
 
     "endpoints": [
       {
-        "name": "entity_query",
+        "name": "muc_1",
         "path": "/v2.0/services/data/entityQuery",
         "method": "POST",
-
         "headers": {
           "Content-Type": "application/json"
         },
-
         "auth": {
           "type": "api_key",
           "credentials": {
@@ -22,20 +20,16 @@
             "prefix": "ApiKey"
           }
         },
-
         "timeout_seconds": 30,
-
         "rate_limit": {
           "requests_per_minute": 60,
           "requests_per_day": 10000
         },
-
         "retry": {
           "max_attempts": 5,
           "backoff_factor": 2,
           "max_backoff_seconds": 60
         },
-
         "pagination": {
           "type": "offset",
           "location": "body",
@@ -44,7 +38,6 @@
           "offset_param": "from",
           "limit_param": "limit"
         },
-
         "body": {
           "typeName": "Task",
           "fields": [
@@ -53,8 +46,214 @@
             "State",
             "PercentCompleted",
             "StartDate",
-            "DueDate"
+            "DueDate",
+            "LastModified",
+            "C_Project"
           ],
+          "where": {
+            "and": [
+              {
+                "field": "LastModified",
+                "operator": "GreaterThanOrEqual",
+                "value": "${WINDOW_START}"
+              },
+              {
+                "field": "LastModified",
+                "operator": "LessThan",
+                "value": "${WINDOW_END}"
+              }
+            ]
+          },
+          "paging": {
+            "from": 0,
+            "limit": 50
+          }
+        }
+      },
+      {
+        "name": "muc_2",
+        "path": "/v2.0/services/data/entityQuery",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "auth": {
+          "type": "api_key",
+          "credentials": {
+            "header_name": "Authorization",
+            "env_name": "PROJECT_API_KEY",
+            "prefix": "ApiKey"
+          }
+        },
+        "timeout_seconds": 30,
+        "rate_limit": {
+          "requests_per_minute": 60,
+          "requests_per_day": 10000
+        },
+        "retry": {
+          "max_attempts": 5,
+          "backoff_factor": 2,
+          "max_backoff_seconds": 60
+        },
+        "pagination": {
+          "type": "offset",
+          "location": "body",
+          "page_size": 50,
+          "max_pages": 10000,
+          "offset_param": "from",
+          "limit_param": "limit"
+        },
+        "body": {
+          "typeName": "Project",
+          "fields": [
+            "SYSID",
+            "Name",
+            "TrackStatus",
+            "StartDate",
+            "DueDate",
+            "Budget",
+            "LastModified"
+          ],
+          "where": {
+            "and": [
+              {
+                "field": "LastModified",
+                "operator": "GreaterThanOrEqual",
+                "value": "${WINDOW_START}"
+              },
+              {
+                "field": "LastModified",
+                "operator": "LessThan",
+                "value": "${WINDOW_END}"
+              }
+            ]
+          },
+          "paging": {
+            "from": 0,
+            "limit": 50
+          }
+        }
+      },
+      {
+        "name": "muc_3",
+        "path": "/v2.0/services/data/entityQuery",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "auth": {
+          "type": "api_key",
+          "credentials": {
+            "header_name": "Authorization",
+            "env_name": "PROJECT_API_KEY",
+            "prefix": "ApiKey"
+          }
+        },
+        "timeout_seconds": 30,
+        "rate_limit": {
+          "requests_per_minute": 60,
+          "requests_per_day": 10000
+        },
+        "retry": {
+          "max_attempts": 5,
+          "backoff_factor": 2,
+          "max_backoff_seconds": 60
+        },
+        "pagination": {
+          "type": "offset",
+          "location": "body",
+          "page_size": 50,
+          "max_pages": 10000,
+          "offset_param": "from",
+          "limit_param": "limit"
+        },
+        "body": {
+          "typeName": "User",
+          "fields": [
+            "SYSID",
+            "UserName",
+            "Email",
+            "DirectManager",
+            "Active",
+            "LastModified"
+          ],
+          "where": {
+            "and": [
+              {
+                "field": "LastModified",
+                "operator": "GreaterThanOrEqual",
+                "value": "${WINDOW_START}"
+              },
+              {
+                "field": "LastModified",
+                "operator": "LessThan",
+                "value": "${WINDOW_END}"
+              }
+            ]
+          },
+          "paging": {
+            "from": 0,
+            "limit": 50
+          }
+        }
+      },
+      {
+        "name": "muc_4",
+        "path": "/v2.0/services/data/entityQuery",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "auth": {
+          "type": "api_key",
+          "credentials": {
+            "header_name": "Authorization",
+            "env_name": "PROJECT_API_KEY",
+            "prefix": "ApiKey"
+          }
+        },
+        "timeout_seconds": 30,
+        "rate_limit": {
+          "requests_per_minute": 60,
+          "requests_per_day": 10000
+        },
+        "retry": {
+          "max_attempts": 5,
+          "backoff_factor": 2,
+          "max_backoff_seconds": 60
+        },
+        "pagination": {
+          "type": "offset",
+          "location": "body",
+          "page_size": 50,
+          "max_pages": 10000,
+          "offset_param": "from",
+          "limit_param": "limit"
+        },
+        "body": {
+          "typeName": "Timesheet",
+          "fields": [
+            "SYSID",
+            "ReportedDate",
+            "Duration",
+            "WorkItem",
+            "Comment",
+            "LastModified"
+          ],
+          "where": {
+            "and": [
+              {
+                "field": "LastModified",
+                "operator": "GreaterThanOrEqual",
+                "value": "${WINDOW_START}"
+              },
+              {
+                "field": "LastModified",
+                "operator": "LessThan",
+                "value": "${WINDOW_END}"
+              }
+            ]
+          },
           "paging": {
             "from": 0,
             "limit": 50
@@ -65,29 +264,35 @@
   },
 
   "job": {
-    "job_name": "clarizen_task_ingestion",
+    "job_name": "clarizen_multi_endpoint_ingestion",
     "source": "clarizen",
-    "endpoint": "entity_query",
+    "endpoint": "muc_1",
     "api_version": "v2.0",
 
     "extraction": {
-      "mode": "full",
+      "mode": "incremental",
       "batch_size": 50,
       "max_records": 100000,
       "max_pages": 10000,
-      "max_runtime_seconds": 3600
+      "max_runtime_seconds": 3600,
+      "incremental": {
+        "watermark_field": "LastModified",
+        "lookback_minutes": 15,
+        "datetime_format": "%Y-%m-%dT%H:%M:%SZ",
+        "initial_start_time": "2026-09-01T00:00:00Z"
+      }
     },
 
     "checkpoint": {
       "enabled": true,
       "store_type": "file",
-      "path": "./checkpoints/clarizen_task"
+      "path": "./checkpoints"
     },
 
     "storage": {
       "format": "parquet",
       "layer": "bronze",
-      "path": "./data/bronze/clarizen/task",
+      "path": "./data/bronze/clarizen",
       "partition_columns": [
         "ingest_date"
       ],

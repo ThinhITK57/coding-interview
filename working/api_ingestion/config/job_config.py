@@ -15,6 +15,14 @@ class StorageFormat(str, Enum):
 
 
 @dataclass
+class IncrementalConfig:
+    watermark_field: str = "LastModified"
+    lookback_minutes: int = 15
+    datetime_format: str = "%Y-%m-%dT%H:%M:%SZ"
+    initial_start_time: Optional[str] = None
+
+
+@dataclass
 class ExtractionConfig:
     mode: ExtractionMode = ExtractionMode.FULL
 
@@ -23,6 +31,12 @@ class ExtractionConfig:
     max_records: Optional[int] = None
     max_pages: Optional[int] = None
     max_runtime_seconds: Optional[int] = None
+
+    window_start: Optional[str] = None
+    window_end: Optional[str] = None
+    incremental: IncrementalConfig = field(
+        default_factory=IncrementalConfig
+    )
 
 
 @dataclass

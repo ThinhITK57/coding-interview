@@ -46,8 +46,12 @@ class CheckpointStore:
             f"{endpoint_name}.checkpoint.json"
         )
 
-    def load(self):
+    def load(self, skip_completed=True):
         """Load checkpoint state from file.
+
+        Args:
+            skip_completed: If True, returns None if checkpoint is marked completed.
+                If False, returns state regardless of completion status (useful for reading watermarks).
 
         Returns:
             dict: Checkpoint state, or None if no checkpoint exists.
@@ -67,8 +71,8 @@ class CheckpointStore:
             with open(self._file_path, "r", encoding="utf-8") as f:
                 state = json.load(f)
 
-            # Skip completed checkpoints
-            if state.get("completed", False):
+            # Skip completed checkpoints if requested (e.g. for offset resume)
+            if skip_completed and state.get("completed", False):
                 logger.info(json.dumps({
                     "event": "checkpoint_completed_skip",
                     "endpoint": self._endpoint_name,
@@ -82,6 +86,7 @@ class CheckpointStore:
                 "last_offset": state.get("last_offset"),
                 "total_records": state.get("total_records"),
                 "timestamp": state.get("timestamp"),
+                "watermark": state.get("watermark"),
             }))
             return state
 
@@ -89,6 +94,17 @@ class CheckpointStore:
             raise CheckpointError(
                 f"Failed to load checkpoint {self._file_path}: {e}"
             )
+
+    def get_last_watermark(self):
+        """Get the latest committed watermark regardless of completion status.
+
+        Returns:
+            str or None: The last committed watermark timestamp string, or None.
+        """
+        state = self.load(skip_completed=False)
+        if state is None:
+            return None
+        return state.get("watermark") or state.get("max_timestamp_seen")
 
     def commit(self, state):
         """Atomically write checkpoint state to file.
@@ -141,22 +157,30 @@ class CheckpointStore:
                 f"Failed to write checkpoint {self._file_path}: {e}"
             )
 
-    def mark_completed(self):
+    def mark_completed(self, final_watermark=None, window_start=None, window_end=None):
         """Mark the current checkpoint as completed.
 
-        Called when extraction for this endpoint finishes successfully.
-        Next run will skip this checkpoint and start fresh.
+        Args:
+            final_watermark: Optional high watermark timestamp string to persist.
+            window_start: Optional window start timestamp string.
+            window_end: Optional window end timestamp string.
         """
-        state = self.load()
-        if state is None:
-            state = {}
+        state = self.load(skip_completed=False) or {}
         state["completed"] = True
+        if final_watermark:
+            state["watermark"] = final_watermark
+        if window_start:
+            state["window_start"] = window_start
+        if window_end:
+            state["window_end"] = window_end
         self.commit(state)
 
         logger.info(json.dumps({
             "event": "checkpoint_marked_completed",
             "endpoint": self._endpoint_name,
             "total_records": state.get("total_records"),
+            "watermark": state.get("watermark"),
+            "window_end": state.get("window_end"),
         }))
 
     def clear(self):

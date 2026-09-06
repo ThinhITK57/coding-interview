@@ -20,6 +20,7 @@ from .job_config import (
     JobConfig,
     ExtractionConfig,
     ExtractionMode,
+    IncrementalConfig,
     CheckpointConfig,
     StorageConfig,
     StorageFormat,
@@ -325,6 +326,15 @@ class ConfigLoader:
                 max_runtime_seconds=extraction.get(
                     "max_runtime_seconds"
                 ),
+                window_start=extraction.get(
+                    "window_start"
+                ),
+                window_end=extraction.get(
+                    "window_end"
+                ),
+                incremental=self._build_incremental_config(
+                    extraction.get("incremental", {})
+                ),
             ),
 
             checkpoint=CheckpointConfig(
@@ -364,5 +374,27 @@ class ConfigLoader:
                     "compression",
                     "snappy"
                 ),
+            ),
+        )
+
+    def _build_incremental_config(self, config):
+        if not config:
+            return IncrementalConfig()
+
+        return IncrementalConfig(
+            watermark_field=config.get(
+                "watermark_field",
+                "LastModified"
+            ),
+            lookback_minutes=config.get(
+                "lookback_minutes",
+                15
+            ),
+            datetime_format=config.get(
+                "datetime_format",
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
+            initial_start_time=config.get(
+                "initial_start_time"
             ),
         )

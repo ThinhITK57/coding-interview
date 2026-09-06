@@ -3,11 +3,12 @@ import ssl
 import time
 import json
 import logging
-from datetime import datetime
-from typing import Dict, Iterator, List, Optional
+from datetime import datetime, timedelta
+from typing import Any, Dict, Iterator, List, Optional
 
 from config import IngestionConfig
 from config.api_config import PaginationType, EndpointConfig
+from config.job_config import ExtractionMode
 from auth.token_auth import TokenAuth
 from client.resilient_client import ResilientHTTPClient
 from reliability.rate_limiter import RateLimiter
@@ -23,12 +24,23 @@ logger = logging.getLogger(__name__)
 class Batch:
     """Container for a batch of extracted records."""
 
-    def __init__(self, records, batch_id, page_number, record_count, endpoint_name):
+    def __init__(
+        self,
+        records,
+        batch_id,
+        page_number,
+        record_count,
+        endpoint_name,
+        window_start=None,
+        window_end=None,
+    ):
         self.records = records
         self.batch_id = batch_id
         self.page_number = page_number
         self.record_count = record_count
         self.endpoint_name = endpoint_name
+        self.window_start = window_start
+        self.window_end = window_end
 
     def to_dict(self):
         return {
@@ -36,6 +48,8 @@ class Batch:
             "page_number": self.page_number,
             "record_count": self.record_count,
             "endpoint_name": self.endpoint_name,
+            "window_start": self.window_start,
+            "window_end": self.window_end,
         }
 
 
@@ -114,7 +128,92 @@ class Extractor:
                 return ep
         raise ValueError(f"Endpoint '{endpoint_name}' not found in config")
 
-    def iterate_batches(self, endpoint_config):
+    def _calculate_window(
+        self,
+        endpoint_config,
+        checkpoint,
+        override_start=None,
+        override_end=None,
+    ):
+        """Calculate the incremental window [window_start, window_end).
+
+        Priority:
+            1. Explicit override (CLI/caller).
+            2. Configured window in ExtractionConfig.
+            3. Checkpoint last watermark minus lookback buffer.
+            4. Initial start time in IncrementalConfig.
+            5. Default 24-hour lookback from window_end.
+        """
+        extraction = self._job_config.extraction
+        if extraction.mode != ExtractionMode.INCREMENTAL:
+            return None, None
+
+        incr = extraction.incremental
+        fmt = incr.datetime_format or "%Y-%m-%dT%H:%M:%SZ"
+        now = datetime.utcnow()
+
+        # 1. Determine window_end
+        if override_end:
+            win_end = override_end
+        elif extraction.window_end:
+            win_end = extraction.window_end
+        else:
+            win_end = now.strftime(fmt)
+
+        # 2. Determine window_start
+        if override_start:
+            win_start = override_start
+        elif extraction.window_start:
+            win_start = extraction.window_start
+        elif checkpoint is not None and checkpoint.get_last_watermark():
+            last_wm_str = checkpoint.get_last_watermark()
+            try:
+                last_wm_dt = datetime.strptime(last_wm_str, fmt)
+                buf_dt = last_wm_dt - timedelta(minutes=incr.lookback_minutes)
+                win_start = buf_dt.strftime(fmt)
+            except ValueError:
+                win_start = last_wm_str
+        elif incr.initial_start_time:
+            win_start = incr.initial_start_time
+        else:
+            # Default to 24-hour lookback
+            try:
+                end_dt = datetime.strptime(win_end, fmt)
+            except ValueError:
+                end_dt = now
+            win_start = (end_dt - timedelta(days=1)).strftime(fmt)
+
+        return win_start, win_end
+
+    def _interpolate_params(self, data, window_start, window_end):
+        """Recursively replace ${WINDOW_START} and ${WINDOW_END} placeholders."""
+        if data is None:
+            return None
+        if isinstance(data, dict):
+            return {
+                k: self._interpolate_params(v, window_start, window_end)
+                for k, v in data.items()
+            }
+        if isinstance(data, list):
+            return [
+                self._interpolate_params(item, window_start, window_end)
+                for item in data
+            ]
+        if isinstance(data, str):
+            res = data
+            if window_start:
+                res = res.replace("${WINDOW_START}", window_start)
+            if window_end:
+                res = res.replace("${WINDOW_END}", window_end)
+            return res
+        return data
+
+    def iterate_batches(
+        self,
+        endpoint_config,
+        window_start=None,
+        window_end=None,
+    ):
         """Extract all pages from an endpoint, yielding batches.
 
         Resumes from checkpoint if one exists. Commits checkpoint
@@ -123,6 +222,8 @@ class Extractor:
 
         Args:
             endpoint_config: EndpointConfig to extract from.
+            window_start: Optional ISO timestamp override for incremental start.
+            window_end: Optional ISO timestamp override for incremental end.
 
         Yields:
             Batch: Container with records, batch_id, page_number, record_count.
@@ -139,12 +240,17 @@ class Extractor:
                 endpoint_name=endpoint_config.name,
             )
 
+        # Calculate incremental window [window_start, window_end)
+        win_start, win_end = self._calculate_window(
+            endpoint_config, checkpoint, window_start, window_end
+        )
+
         # Setup paginator
         paginator = self._build_paginator(endpoint_config)
 
-        # Resume from checkpoint if available
+        # Resume from checkpoint if available (interrupted run)
         if checkpoint is not None:
-            saved_state = checkpoint.load()
+            saved_state = checkpoint.load(skip_completed=True)
             if saved_state is not None:
                 paginator.restore_state(saved_state.get("paginator_state", {}))
                 batch_id = saved_state.get("batch_id", batch_id)
@@ -166,15 +272,32 @@ class Extractor:
         base_url = self._api_config.base_url.rstrip("/")
         url = base_url + endpoint_config.path
 
+        # Interpolate window parameters into base params and body
+        base_params = self._interpolate_params(
+            dict(endpoint_config.params), win_start, win_end
+        )
+        base_body = self._interpolate_params(
+            endpoint_config.body, win_start, win_end
+        )
+
         logger.info(json.dumps({
             "event": "extraction_started",
             "endpoint": endpoint_config.name,
             "url": url,
             "batch_id": batch_id,
+            "mode": extraction.mode.value,
+            "window_start": win_start,
+            "window_end": win_end,
             "max_records": extraction.max_records,
             "max_pages": extraction.max_pages,
             "max_runtime_seconds": extraction.max_runtime_seconds,
         }))
+
+        max_watermark_seen = None
+        watermark_field = (
+            extraction.incremental.watermark_field
+            if extraction.mode == ExtractionMode.INCREMENTAL else None
+        )
 
         # Main extraction loop
         while paginator.has_more():
@@ -190,10 +313,10 @@ class Extractor:
                     }))
                     break
 
-            # Get pagination params
+            # Get pagination params with window bounds injected
             params, body = paginator.get_next_params(
-                base_params=dict(endpoint_config.params),
-                base_body=endpoint_config.body,
+                base_params=base_params,
+                base_body=base_body,
             )
 
             # Execute request
@@ -213,6 +336,16 @@ class Extractor:
             # Update paginator state
             paginator.update_state(response.get("body", {}), records_count)
 
+            # Scan watermark in records
+            if watermark_field and records:
+                for rec in records:
+                    if isinstance(rec, dict):
+                        wm_val = rec.get(watermark_field)
+                        if wm_val is not None:
+                            wm_str = str(wm_val)
+                            if max_watermark_seen is None or wm_str > max_watermark_seen:
+                                max_watermark_seen = wm_str
+
             # Empty page = end of data
             if records_count == 0:
                 logger.info(json.dumps({
@@ -229,6 +362,8 @@ class Extractor:
                 page_number=paginator.current_page,
                 record_count=records_count,
                 endpoint_name=endpoint_config.name,
+                window_start=win_start,
+                window_end=win_end,
             )
 
             # Commit checkpoint
@@ -239,14 +374,22 @@ class Extractor:
                     "total_records": paginator.total_records,
                     "current_page": paginator.current_page,
                     "paginator_state": paginator.get_state(),
+                    "watermark": max_watermark_seen,
+                    "window_start": win_start,
+                    "window_end": win_end,
                     "completed": False,
                 })
 
             yield batch
 
-        # Mark checkpoint as completed
+        # Mark checkpoint as completed with watermark
         if checkpoint is not None:
-            checkpoint.mark_completed()
+            final_wm = max_watermark_seen or win_end
+            checkpoint.mark_completed(
+                final_watermark=final_wm,
+                window_start=win_start,
+                window_end=win_end,
+            )
 
         elapsed = time.monotonic() - start_time
         logger.info(json.dumps({
@@ -256,6 +399,7 @@ class Extractor:
             "total_records": paginator.total_records,
             "elapsed_seconds": round(elapsed, 1),
             "batch_id": batch_id,
+            "watermark": max_watermark_seen,
         }))
 
     def _build_paginator(self, endpoint_config):
@@ -287,12 +431,19 @@ class Extractor:
             max_records=extraction.max_records,
         )
 
-    def extract_all_endpoints(self, endpoint_names=None):
+    def extract_all_endpoints(
+        self,
+        endpoint_names=None,
+        window_start=None,
+        window_end=None,
+    ):
         """Extract from multiple endpoints sequentially.
 
         Args:
             endpoint_names: List of endpoint names to extract.
                 If None, extracts from all configured endpoints.
+            window_start: Optional ISO timestamp override.
+            window_end: Optional ISO timestamp override.
 
         Yields:
             Batch: Batches from each endpoint in sequence.
@@ -312,5 +463,9 @@ class Extractor:
                 "total_endpoints": len(endpoints),
             }))
 
-            for batch in self.iterate_batches(endpoint_config):
+            for batch in self.iterate_batches(
+                endpoint_config,
+                window_start=window_start,
+                window_end=window_end,
+            ):
                 yield batch
