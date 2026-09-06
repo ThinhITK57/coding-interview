@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference: Airflow → Prefect 3 Mapping</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<h1>Airflow → Prefect 3 Quick Reference</h1>
+<p style="color: #666;">Bảng mapping cho người đã biết Airflow chuyển sang Prefect</p>
+
+<table>
+  <thead>
+    <tr><th>Airflow</th><th>Prefect 3</th><th>Ghi chú</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>DAG("name")</code></td><td><code>@flow(name="name")</code></td><td>Flow = hàm Python, không cần DAG object</td></tr>
+    <tr><td><code>PythonOperator</code></td><td><code>@task</code></td><td>Task = hàm Python thường</td></tr>
+    <tr><td><code>t1 >> t2</code></td><td><code>result = t2(t1())</code></td><td>Dependency tự động qua data flow</td></tr>
+    <tr><td><code>XCom.push/pull</code></td><td>Python return value</td><td>Không cần serialize, truyền trực tiếp</td></tr>
+    <tr><td><code>schedule_interval</code></td><td><code>prefect deploy --cron</code></td><td>Schedule ở deployment, không ở code</td></tr>
+    <tr><td><code>self.log.info()</code></td><td><code>get_run_logger().info()</code></td><td>Logs gắn vào flow run trên HQ</td></tr>
+    <tr><td>Airflow UI</td><td>Prefect HQ (<code>localhost:4200</code>)</td><td>HQ có Artifacts, Automations, Events</td></tr>
+    <tr><td><code>retries=3, retry_delay</code></td><td><code>retries=3, retry_delay_seconds=[30,120,300]</code></td><td>Progressive delay (array)</td></tr>
+    <tr><td>Pool (slots)</td><td><code>concurrency("name", occupy=N)</code></td><td>Global token-bucket, áp dụng cho bất kỳ code block</td></tr>
+    <tr><td>Connection</td><td>Block / Variable</td><td>Typed storage cho secrets, URLs</td></tr>
+    <tr><td><em>Không có</em></td><td><code>create_markdown_artifact()</code></td><td>Publish reports lên HQ dashboard</td></tr>
+    <tr><td><em>Không có</em></td><td><code>create_table_artifact()</code></td><td>Publish bảng stats lên HQ dashboard</td></tr>
+    <tr><td><code>airflow dags test</code></td><td><code>python my_flow.py</code></td><td>Chạy trực tiếp như script Python</td></tr>
+    <tr><td>Copy DAG file → dags/</td><td><code>prefect deploy</code></td><td>Chỉ đăng ký metadata, không copy file</td></tr>
+    <tr><td><code>airflow scheduler</code></td><td><code>prefect server start</code></td><td>Local dev server</td></tr>
+    <tr><td>SubDAG / TaskGroup</td><td>Subflow (<code>@flow</code> gọi từ <code>@flow</code>)</td><td>Flow lồng flow, tự nhiên như hàm gọi hàm</td></tr>
+  </tbody>
+</table>
+
+<h2>CLI Cheat Sheet</h2>
+<pre><code><span class="comment"># Install</span>
+pip install prefect
+
+<span class="comment"># Start local server (HQ dashboard)</span>
+prefect server start
+
+<span class="comment"># Run flow trực tiếp</span>
+python prefect_flow.py --endpoint entity_query --env dev
+
+<span class="comment"># Dry run (validate only)</span>
+python prefect_flow.py --endpoint entity_query --dry-run
+
+<span class="comment"># Deploy with schedule</span>
+prefect deploy prefect_flow.py:api_ingestion_pipeline \
+    --name <span class="string">"clarizen-daily"</span> \
+    --cron <span class="string">"0 2 * * *"</span>
+
+<span class="comment"># Xem deployments</span>
+prefect deployment ls
+
+<span class="comment"># Trigger manual run từ CLI</span>
+prefect deployment run api_ingestion_pipeline/clarizen-daily
+
+<span class="comment"># Xem flow runs</span>
+prefect flow-run ls</code></pre>
+
+<div class="lesson-footer">
+  <p>Quick reference card — in ra dán cạnh màn hình 📌</p>
+</div>
+
+</body>
+</html>

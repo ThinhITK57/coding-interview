@@ -1,0 +1,142 @@
+/* Prefect Learning - Shared Stylesheet */
+:root {
+  --bg: #fafafa;
+  --text: #1a1a2e;
+  --accent: #024dfd;
+  --accent-light: #e8f0ff;
+  --code-bg: #f4f4f8;
+  --border: #e0e0e6;
+  --success: #16a34a;
+  --warning: #ea580c;
+  --danger: #dc2626;
+  --airflow: #017cee;
+  --prefect: #024dfd;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.7;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--accent); }
+h2 { font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.6rem; border-bottom: 2px solid var(--accent); padding-bottom: 0.3rem; }
+h3 { font-size: 1.1rem; margin-top: 1.4rem; margin-bottom: 0.4rem; }
+p { margin-bottom: 1rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--code-bg);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 1.2rem 1.4rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+pre code { background: none; padding: 0; color: inherit; }
+.keyword { color: #cba6f7; }
+.decorator { color: #f9e2af; }
+.string { color: #a6e3a1; }
+.comment { color: #6c7086; font-style: italic; }
+.function { color: #89b4fa; }
+.number { color: #fab387; }
+
+/* Mapping table */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.92rem; }
+th, td { padding: 0.6rem 0.8rem; border: 1px solid var(--border); text-align: left; }
+th { background: var(--accent-light); font-weight: 600; }
+tr:nth-child(even) { background: #f8f8fc; }
+.airflow-col { color: var(--airflow); font-weight: 600; }
+.prefect-col { color: var(--prefect); font-weight: 600; }
+
+/* Callout boxes */
+.callout {
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  margin: 1rem 0 1.5rem;
+  border-left: 4px solid;
+}
+.callout-info { background: #e8f4fd; border-color: #0284c7; }
+.callout-tip { background: #ecfdf5; border-color: var(--success); }
+.callout-warning { background: #fff7ed; border-color: var(--warning); }
+.callout-danger { background: #fef2f2; border-color: var(--danger); }
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; }
+
+/* Quiz widget */
+.quiz { background: #fff; border: 2px solid var(--border); border-radius: 10px; padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+.quiz-question { font-weight: 600; margin-bottom: 0.8rem; font-size: 1rem; }
+.quiz-options { list-style: none; }
+.quiz-options li {
+  padding: 0.5rem 0.8rem;
+  margin: 0.3rem 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-options li:hover { background: var(--accent-light); border-color: var(--accent); }
+.quiz-options li.correct { background: #dcfce7; border-color: var(--success); }
+.quiz-options li.wrong { background: #fee2e2; border-color: var(--danger); }
+.quiz-options li.disabled { pointer-events: none; opacity: 0.7; }
+.quiz-feedback { margin-top: 0.6rem; font-size: 0.92rem; display: none; }
+
+/* Step counter */
+.steps { counter-reset: step; }
+.step { counter-increment: step; padding-left: 2.5rem; position: relative; margin-bottom: 1.5rem; }
+.step::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* Visual comparison */
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.comparison > div { padding: 1rem; border-radius: 8px; }
+.comparison .airflow-side { background: #e8f0fe; border-top: 3px solid var(--airflow); }
+.comparison .prefect-side { background: #e8f0ff; border-top: 3px solid var(--prefect); }
+.comparison h4 { margin-bottom: 0.5rem; }
+
+/* Footer */
+.lesson-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: #666;
+}
+.nav-links { display: flex; justify-content: space-between; margin-top: 1rem; }
+
+@media (max-width: 700px) {
+  .comparison { grid-template-columns: 1fr; }
+  body { padding: 1rem; }
+}

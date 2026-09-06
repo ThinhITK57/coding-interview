@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 01 — Prefect HQ Core: Từ Airflow sang Prefect qua code thực tế</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<h1>Lesson 01 — Prefect HQ Core</h1>
+<p style="color: #666; margin-bottom: 2rem;">Từ Airflow sang Prefect, qua bộ code <code>api_ingestion/prefect_flow.py</code> thực tế</p>
+
+<div class="callout callout-info">
+  <div class="callout-title">📖 Primary Source</div>
+  <a href="https://docs.prefect.io/v3/get-started/quickstart" target="_blank">Prefect 3 Quickstart Guide</a> — đọc song song với lesson này để có full context.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>1. Airflow → Prefect Mapping Table</h2>
+
+<p>Bạn đã biết Airflow, nên đây là bảng "Rosetta Stone" giúp translate kiến thức:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Concept</th>
+      <th class="airflow-col">Airflow</th>
+      <th class="prefect-col">Prefect 3</th>
+      <th>Khác biệt chính</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Pipeline</strong></td>
+      <td>DAG</td>
+      <td><code>@flow</code></td>
+      <td>Prefect flow = hàm Python thường, không cần khai báo DAG object</td>
+    </tr>
+    <tr>
+      <td><strong>Unit of work</strong></td>
+      <td>Operator / Task</td>
+      <td><code>@task</code></td>
+      <td>Prefect task = hàm Python thường, return value trực tiếp (không cần XCom)</td>
+    </tr>
+    <tr>
+      <td><strong>Truyền data</strong></td>
+      <td>XCom (push/pull)</td>
+      <td>Python return value</td>
+      <td>Không cần serialize. Task A return → Task B nhận trực tiếp qua argument</td>
+    </tr>
+    <tr>
+      <td><strong>Schedule</strong></td>
+      <td><code>schedule_interval</code></td>
+      <td>Deployment + <code>cron</code></td>
+      <td>Schedule nằm ở deployment, không ở flow definition</td>
+    </tr>
+    <tr>
+      <td><strong>Dashboard</strong></td>
+      <td>Airflow Webserver</td>
+      <td>Prefect HQ (Cloud/Server)</td>
+      <td>HQ có Artifacts, Automations, Events — Airflow webserver không có</td>
+    </tr>
+    <tr>
+      <td><strong>Connection</strong></td>
+      <td>Connection (UI/CLI)</td>
+      <td>Block / Variable</td>
+      <td>Prefect Blocks = typed storage cho secrets, DB URLs, etc.</td>
+    </tr>
+    <tr>
+      <td><strong>Retry</strong></td>
+      <td><code>retries=3</code></td>
+      <td><code>retries=3, retry_delay_seconds=[30,120]</code></td>
+      <td>Prefect hỗ trợ progressive delay (array), Airflow dùng retry_delay cố định</td>
+    </tr>
+    <tr>
+      <td><strong>Logging</strong></td>
+      <td><code>self.log.info()</code></td>
+      <td><code>get_run_logger().info()</code></td>
+      <td>Logs tự động gắn vào flow run trên HQ, searchable</td>
+    </tr>
+    <tr>
+      <td><strong>Deployment</strong></td>
+      <td>DAG file → dags/ folder</td>
+      <td><code>prefect deploy</code></td>
+      <td>Không cần copy file. Deploy chỉ đăng ký metadata lên server</td>
+    </tr>
+    <tr>
+      <td><strong>Concurrency</strong></td>
+      <td>Pool (slots)</td>
+      <td>Concurrency Limit (token bucket)</td>
+      <td>Prefect dùng global concurrency limits, linh hoạt hơn Airflow pools</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout callout-tip">
+  <div class="callout-title">💡 Key Insight</div>
+  Sự khác biệt lớn nhất: Airflow là <strong>configuration-as-code</strong> (khai báo DAG object rồi add operators). 
+  Prefect là <strong>code-as-code</strong> (viết Python bình thường, gắn decorator).
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2. Anatomy: Flow Code của bạn</h2>
+
+<p>Mở file <code>prefect_flow.py</code> và nhìn cấu trúc. Mỗi phần được đánh dấu bằng comment section:</p>
+
+<pre><code><span class="comment"># Cấu trúc tổng quan prefect_flow.py</span>
+
+<span class="comment"># 1. Imports</span>
+<span class="keyword">from</span> prefect <span class="keyword">import</span> flow, task, get_run_logger
+<span class="keyword">from</span> prefect.artifacts <span class="keyword">import</span> create_markdown_artifact, create_table_artifact
+<span class="keyword">from</span> prefect.concurrency.sync <span class="keyword">import</span> concurrency
+
+<span class="comment"># 2. Task definitions (= Airflow Operators)</span>
+<span class="decorator">@task</span>(name=<span class="string">"load_config"</span>, tags=[<span class="string">"config"</span>], retries=<span class="number">0</span>)
+<span class="keyword">def</span> <span class="function">load_and_validate_config</span>(config_path, env):
+    ...
+
+<span class="decorator">@task</span>(name=<span class="string">"extract_from_api"</span>, retries=<span class="number">2</span>, retry_delay_seconds=[<span class="number">30</span>, <span class="number">120</span>])
+<span class="keyword">def</span> <span class="function">extract_from_api</span>(config, endpoint_name, staging_dir):
+    ...
+
+<span class="decorator">@task</span>(name=<span class="string">"transform_with_spark"</span>, retries=<span class="number">1</span>)
+<span class="keyword">def</span> <span class="function">transform_with_spark</span>(staging_dir, output_path, ...):
+    ...
+
+<span class="decorator">@task</span>(name=<span class="string">"run_quality_checks"</span>)
+<span class="keyword">def</span> <span class="function">run_quality_checks</span>(output_path, ...):
+    ...
+
+<span class="decorator">@task</span>(name=<span class="string">"publish_daily_report"</span>)
+<span class="keyword">def</span> <span class="function">publish_daily_report</span>(job_summary, quality_report):
+    ...
+
+<span class="comment"># 3. Flow definition (= Airflow DAG)</span>
+<span class="decorator">@flow</span>(name=<span class="string">"api_ingestion_pipeline"</span>)
+<span class="keyword">def</span> <span class="function">api_ingestion_pipeline</span>(endpoint_name, env, ...):
+    <span class="comment"># Task dependencies = just function calls!</span>
+    config = load_and_validate_config(config_path, env)
+    result = extract_from_api(config, endpoint_name, staging_dir)
+    transform = transform_with_spark(staging_dir, output_path, ...)
+    report = run_quality_checks(output_path, ...)
+    publish_daily_report(summary, report)
+
+<span class="comment"># 4. CLI entrypoint (argparse)</span>
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    api_ingestion_pipeline(...)
+</code></pre>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>3. So sánh trực quan: Cùng logic, 2 style</h2>
+
+<div class="comparison">
+  <div class="airflow-side">
+    <h4>✈️ Airflow</h4>
+<pre><code><span class="comment"># Khai báo DAG object</span>
+dag = DAG(
+    <span class="string">"api_ingestion"</span>,
+    schedule_interval=<span class="string">"0 2 * * *"</span>,
+)
+
+<span class="comment"># Khai báo Operator</span>
+extract = PythonOperator(
+    task_id=<span class="string">"extract"</span>,
+    python_callable=extract_fn,
+    dag=dag,
+)
+
+transform = PythonOperator(
+    task_id=<span class="string">"transform"</span>,
+    python_callable=transform_fn,
+    dag=dag,
+)
+
+<span class="comment"># Khai báo dependency</span>
+extract >> transform</code></pre>
+  </div>
+  <div class="prefect-side">
+    <h4>🔷 Prefect</h4>
+<pre><code><span class="comment"># Không cần DAG object</span>
+
+<span class="decorator">@task</span>
+<span class="keyword">def</span> <span class="function">extract</span>(config):
+    <span class="keyword">return</span> data
+
+<span class="decorator">@task</span>
+<span class="keyword">def</span> <span class="function">transform</span>(data):
+    <span class="keyword">return</span> result
+
+<span class="decorator">@flow</span>
+<span class="keyword">def</span> <span class="function">pipeline</span>():
+    <span class="comment"># Dependency = function call!</span>
+    data = extract(config)
+    result = transform(data)
+
+<span class="comment"># Schedule ở deployment,</span>
+<span class="comment"># KHÔNG ở code</span></code></pre>
+  </div>
+</div>
+
+<div class="callout callout-warning">
+  <div class="callout-title">⚠️ Airflow mindset trap</div>
+  Trong Airflow, bạn phải khai báo <code>extract >> transform</code> để set dependency. 
+  Trong Prefect, <strong>dependency tự động xác định qua data flow</strong>: <code>transform(extract(config))</code> — 
+  Prefect biết transform phụ thuộc extract vì nó nhận kết quả của extract.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>4. 5 Feature HQ bạn đang dùng trong prefect_flow.py</h2>
+
+<h3>4.1 Task Retries + Progressive Delay</h3>
+<pre><code><span class="decorator">@task</span>(
+    name=<span class="string">"extract_from_api"</span>,
+    retries=<span class="number">2</span>,                      <span class="comment"># Retry tối đa 2 lần</span>
+    retry_delay_seconds=[<span class="number">30</span>, <span class="number">120</span>],  <span class="comment"># Lần 1: chờ 30s, lần 2: chờ 120s</span>
+)</code></pre>
+<p><strong>Airflow equivalent:</strong> <code>retries=2, retry_delay=timedelta(seconds=30)</code> — nhưng Airflow chỉ có 1 delay cố định, không progressive.</p>
+
+<h3>4.2 Task Tags</h3>
+<pre><code><span class="decorator">@task</span>(tags=[<span class="string">"extraction"</span>, <span class="string">"api"</span>])</code></pre>
+<p>Tags xuất hiện trên HQ UI → bạn filter task runs theo tag. Ví dụ: xem tất cả task liên quan <code>api</code> đang fail.</p>
+
+<h3>4.3 Structured Logging</h3>
+<pre><code>log = get_run_logger()
+log.info(<span class="string">"Page %d extracted: %d records"</span>, batch.page_number, total_records)</code></pre>
+<p>Logs tự gắn vào flow run trên HQ dashboard. <strong>Airflow equivalent:</strong> <code>self.log.info()</code> trong Operator, nhưng trên Prefect HQ logs searchable theo keyword.</p>
+
+<h3>4.4 Concurrency Limits</h3>
+<pre><code><span class="keyword">with</span> concurrency(<span class="string">"clarizen-api"</span>, occupy=<span class="number">1</span>):
+    <span class="comment"># Chỉ 1 flow run được hit API cùng lúc</span>
+    <span class="keyword">for</span> batch <span class="keyword">in</span> extractor.iterate_batches(endpoint_config):
+        writer.write_batch(batch)</code></pre>
+<p>Giống <strong>Airflow Pool</strong> nhưng flexible hơn: token-bucket based, có thể apply cho bất kỳ code block nào, không chỉ task.</p>
+
+<h3>4.5 Artifacts (Markdown + Table)</h3>
+<pre><code><span class="comment"># Markdown report → hiển thị trên HQ Artifacts tab</span>
+create_markdown_artifact(
+    key=<span class="string">"daily-report-tasks"</span>,
+    markdown=markdown_report,
+    description=<span class="string">"Daily ingestion report for tasks"</span>,
+)
+
+<span class="comment"># Table artifact → bảng column stats</span>
+create_table_artifact(
+    key=<span class="string">"column-stats-tasks"</span>,
+    table=table_data,  <span class="comment"># List of dicts</span>
+)</code></pre>
+<p><strong>Airflow KHÔNG CÓ tính năng tương đương.</strong> Artifacts là điểm mạnh riêng của Prefect HQ — bạn publish markdown reports, bảng thống kê trực tiếp lên dashboard.</p>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>5. Hands-on: Chạy thử pipeline</h2>
+
+<div class="steps">
+  <div class="step">
+    <h3>Cài Prefect</h3>
+<pre><code>pip install prefect</code></pre>
+    <p>Kiểm tra: <code>prefect version</code> — phải là 3.x</p>
+  </div>
+
+  <div class="step">
+    <h3>Chạy Prefect Server (local HQ dashboard)</h3>
+<pre><code><span class="comment"># Terminal 1: Khởi động Prefect server</span>
+prefect server start</code></pre>
+    <p>Mở browser: <a href="http://localhost:4200" target="_blank"><code>http://localhost:4200</code></a> — đây là HQ dashboard local.</p>
+  </div>
+
+  <div class="step">
+    <h3>Chạy flow dry-run</h3>
+<pre><code><span class="comment"># Terminal 2: cd vào thư mục api_ingestion</span>
+cd d:\dataguystory\coding-interview-university\working\api_ingestion
+
+<span class="comment"># Dry run = chỉ validate config, không gọi API</span>
+python prefect_flow.py --endpoint entity_query --env dev --dry-run</code></pre>
+    <p>Quay lại HQ dashboard → <strong>Flow Runs</strong> tab → bạn sẽ thấy flow run với trạng thái <code>Completed</code>.</p>
+  </div>
+
+  <div class="step">
+    <h3>Khám phá HQ Dashboard</h3>
+    <p>Trên HQ (<code>localhost:4200</code>), click vào flow run vừa tạo:</p>
+    <ul>
+      <li><strong>Graph tab</strong>: Xem task dependency graph (giống Airflow Grid view)</li>
+      <li><strong>Logs tab</strong>: Xem structured logs theo thời gian</li>
+      <li><strong>Artifacts tab</strong>: Xem markdown reports (nếu chạy full, không dry-run)</li>
+      <li><strong>Parameters tab</strong>: Xem input params của flow run</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h3>Deploy as scheduled job (bonus)</h3>
+<pre><code><span class="comment"># Tạo deployment chạy daily lúc 2AM</span>
+prefect deploy prefect_flow.py:api_ingestion_pipeline \
+    --name <span class="string">"clarizen-daily"</span> \
+    --cron <span class="string">"0 2 * * *"</span> \
+    --pool default-agent-pool</code></pre>
+    <p>Quay lại HQ → <strong>Deployments</strong> tab → thấy schedule. Đây là equivalent của Airflow DAG schedule.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>6. Kiểm tra hiểu biết</h2>
+
+<div id="quiz1"></div>
+<div id="quiz2"></div>
+<div id="quiz3"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>7. Data Flow Diagram: prefect_flow.py</h2>
+
+<p>Luồng dữ liệu qua 5 tasks trong bộ code của bạn:</p>
+
+<pre><code>
+  ┌─────────────────────┐
+  │  load_and_validate  │  ← tags: [config, setup]
+  │     _config()       │  ← retries: 0
+  └────────┬────────────┘
+           │ config (IngestionConfig)
+           ▼
+  ┌─────────────────────┐
+  │  extract_from_api() │  ← tags: [extraction, api]
+  │                     │  ← retries: 2 (30s, 120s)
+  │  ┌───────────────┐  │  ← concurrency("clarizen-api")
+  │  │ RateLimiter   │  │
+  │  │ CircuitBreaker│  │
+  │  │ Checkpoint    │  │
+  │  └───────────────┘  │
+  └────────┬────────────┘
+           │ extraction_result (dict)
+           ▼
+  ┌─────────────────────┐
+  │ transform_with      │  ← tags: [transform, spark]
+  │    _spark()         │  ← retries: 1 (60s)
+  │  ┌───────────────┐  │
+  │  │ JSONFlattener │  │
+  │  │ ParquetWriter │  │
+  │  │ dbt schema    │  │
+  │  └───────────────┘  │
+  └────────┬────────────┘
+           │ transform_result (dict)
+           ▼
+  ┌─────────────────────┐
+  │ run_quality_checks()│  ← tags: [quality, validation]
+  │  ┌───────────────┐  │
+  │  │ SchemaValid.  │  │
+  │  │ StatProfiler  │  │
+  │  │ QualityReport │  │
+  │  └───────────────┘  │
+  └────────┬────────────┘
+           │ quality_report (QualityReport)
+           ▼
+  ┌─────────────────────┐
+  │ publish_daily       │  ← tags: [reporting, prefect-hq]
+  │    _report()        │
+  │  ┌───────────────┐  │
+  │  │ create_markdown│  │  → HQ Artifacts tab
+  │  │ _artifact()   │  │
+  │  │ create_table  │  │  → HQ Artifacts tab
+  │  │ _artifact()   │  │
+  │  └───────────────┘  │
+  └─────────────────────┘
+</code></pre>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="callout callout-info">
+  <div class="callout-title">🤖 Hỏi thêm</div>
+  Nếu có gì chưa rõ — hỏi agent bất kỳ lúc nào. Agent là giáo viên của bạn, 
+  sẵn sàng giải thích chi tiết hơn hoặc chạy demo trực tiếp.
+</div>
+
+<div class="lesson-footer">
+  <p><strong>Lesson 01</strong> — Prefect HQ Core: Airflow → Prefect mapping + bộ code api_ingestion</p>
+  <p>Tài liệu tham khảo: <a href="../RESOURCES.md">RESOURCES.md</a> • <a href="../reference/prefect-airflow-mapping.html">Airflow → Prefect Mapping (Reference)</a></p>
+  <div class="nav-links">
+    <span></span>
+    <a href="0002-prefect-hands-on-deploy-schedule.html">Lesson 02: Deploy + Schedule →</a>
+  </div>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script>
+createQuiz('quiz1',
+  'Trong Prefect, task dependency được xác định bằng cách nào?',
+  [
+    'Khai báo task_a >> task_b như Airflow',
+    'Gọi hàm task trực tiếp và truyền return value qua argument',
+    'Dùng depends_on parameter trong @task decorator',
+    'Viết file YAML khai báo dependency graph'
+  ],
+  1,
+  'Prefect xác định dependency tự động qua data flow: <code>result = task_b(task_a())</code>. Không cần khai báo explicit.'
+);
+
+createQuiz('quiz2',
+  'Tính năng nào sau đây CHỈ có trên Prefect HQ mà Airflow KHÔNG có native?',
+  [
+    'Task retries với delay cố định',
+    'Scheduled DAG/flow runs',
+    'Markdown Artifacts hiển thị trên dashboard',
+    'Structured logging theo thời gian'
+  ],
+  2,
+  'Prefect Artifacts (markdown, table, link, image) là tính năng riêng — publish reports trực tiếp lên HQ dashboard. Airflow không có tương đương native.'
+);
+
+createQuiz('quiz3',
+  'Trong prefect_flow.py, concurrency("clarizen-api", occupy=1) có tác dụng gì?',
+  [
+    'Giới hạn tối đa 1 task chạy song song trong toàn bộ flow',
+    'Giới hạn chỉ 1 flow run được gọi API cùng lúc, flow run khác phải chờ',
+    'Tạo 1 thread duy nhất để gọi API',
+    'Giới hạn 1 request per second đến API'
+  ],
+  1,
+  'Global concurrency limit "clarizen-api" với occupy=1 nghĩa là chỉ 1 flow run được "chiếm" slot này tại một thời điểm. Flow run khác đến cùng block code phải chờ slot được release.'
+);
+</script>
+
+</body>
+</html>

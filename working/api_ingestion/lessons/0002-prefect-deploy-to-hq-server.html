@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 02 — Đưa code lên Prefect HQ Server: Từ local đến production</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<h1>Lesson 02 — Đưa code lên Prefect HQ Server</h1>
+<p style="color: #666; margin-bottom: 2rem;">4 bước từ code local → chạy trên Prefect HQ đã deploy sẵn</p>
+
+<div class="callout callout-info">
+  <div class="callout-title">📖 Primary Source</div>
+  <a href="https://docs.prefect.io/v3/deploy" target="_blank">Prefect 3 — Deploy Overview</a> — tài liệu chính thức về deployment workflow.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Bức tranh tổng thể</h2>
+
+<p>Khi bạn nói "đưa code lên Prefect HQ", thực ra có <strong>3 thành phần</strong> hoạt động cùng nhau:</p>
+
+<pre><code>
+  ┌─────────────────────────────────────────────────────────────┐
+  │                   PREFECT HQ SERVER                         │
+  │                (đã deploy sẵn trên server)                  │
+  │                                                             │
+  │  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐   │
+  │  │ Deployments │  │  Flow Runs   │  │    Artifacts     │   │
+  │  │ (metadata)  │  │  (tracking)  │  │  (reports, logs) │   │
+  │  └──────▲──────┘  └──────▲───────┘  └──────────────────┘   │
+  │         │                │                                  │
+  └─────────┼────────────────┼──────────────────────────────────┘
+            │                │
+    ① đăng ký           ③ báo cáo
+    deployment           kết quả
+            │                │
+  ┌─────────┴────────────────┴──────────────────────────────────┐
+  │                    WORKER MACHINE                            │
+  │          (máy thực thi code — có thể cùng server)           │
+  │                                                             │
+  │  ┌──────────────┐     ┌─────────────────────────────────┐   │
+  │  │   Worker     │────▶│  prefect_flow.py                │   │
+  │  │ (polling HQ) │     │  + config.json                  │   │
+  │  │              │     │  + toàn bộ api_ingestion/       │   │
+  │  └──────────────┘     └─────────────────────────────────┘   │
+  │                                                             │
+  │  ② Worker poll HQ, thấy scheduled run → pull code → chạy   │
+  └─────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    YOUR LOCAL MACHINE                        │
+  │                                                             │
+  │  prefect deploy  ───────────────────▶  đăng ký lên HQ ①    │
+  │  (chỉ gửi metadata, KHÔNG gửi code)                        │
+  └─────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<div class="callout callout-warning">
+  <div class="callout-title">⚠️ Hiểu sai phổ biến (từ Airflow mindset)</div>
+  <p>Trong Airflow, bạn copy DAG file vào <code>dags/</code> folder → scheduler tự parse → chạy.</p>
+  <p>Trong Prefect, <strong><code>prefect deploy</code> KHÔNG upload code</strong>. Nó chỉ đăng ký metadata 
+  (tên flow, schedule, parameters) lên HQ. <strong>Code phải có sẵn trên worker machine</strong> — 
+  qua Git clone, Docker image, hoặc shared filesystem.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Bước 1: Kết nối local → HQ Server</h2>
+
+<p>Chỉ cần <strong>1 biến môi trường</strong>:</p>
+
+<pre><code><span class="comment"># Trỏ Prefect CLI đến server HQ đã deploy</span>
+<span class="comment"># Thay IP/domain thật của server</span>
+
+<span class="comment"># PowerShell (Windows)</span>
+$env:PREFECT_API_URL = <span class="string">"http://your-prefect-server:4200/api"</span>
+
+<span class="comment"># Bash (Linux/Mac)</span>
+export PREFECT_API_URL=<span class="string">"http://your-prefect-server:4200/api"</span>
+
+<span class="comment"># Kiểm tra kết nối</span>
+prefect version         <span class="comment"># Xem version</span>
+prefect server health   <span class="comment"># Phải trả về "healthy"</span></code></pre>
+
+<div class="callout callout-tip">
+  <div class="callout-title">💡 Set vĩnh viễn</div>
+  <p>Để không phải set mỗi lần mở terminal:</p>
+<pre><code><span class="comment"># Lưu vào Prefect profile</span>
+prefect config set PREFECT_API_URL=<span class="string">"http://your-prefect-server:4200/api"</span>
+
+<span class="comment"># Kiểm tra</span>
+prefect config view</code></pre>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Bước 2: Tạo prefect.yaml — bản thiết kế deployment</h2>
+
+<p>File <code>prefect.yaml</code> nằm ở root thư mục <code>api_ingestion/</code>, khai báo:</p>
+<ul>
+  <li><strong>Tên deployment</strong> — hiển thị trên HQ</li>
+  <li><strong>Entrypoint</strong> — file + function chứa <code>@flow</code></li>
+  <li><strong>Work Pool</strong> — worker nào sẽ chạy code</li>
+  <li><strong>Schedule</strong> — cron expression</li>
+  <li><strong>Parameters</strong> — giá trị mặc định cho flow</li>
+  <li><strong>Pull step</strong> — cách worker lấy code (Git, local, Docker)</li>
+</ul>
+
+<pre><code><span class="comment"># prefect.yaml — đặt tại d:\...\api_ingestion\prefect.yaml</span>
+
+<span class="comment"># Pull step: cách Worker lấy code về để chạy</span>
+pull:
+  - prefect.deployments.steps.git_clone:
+      repository: https://github.com/ThinhITK57/coding-interview.git
+      branch: enterprise-elt-pipeline
+      access_token: null  <span class="comment"># hoặc dùng Prefect Secret Block</span>
+
+<span class="comment"># Deployments: có thể khai báo nhiều deployment cùng lúc</span>
+deployments:
+
+  <span class="comment"># --- Deployment cho DEV ---</span>
+  - name: clarizen-entity-query-dev
+    entrypoint: working/api_ingestion/prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: dev-pool            <span class="comment"># Work Pool phải tồn tại trên HQ</span>
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: entity_query
+      env: dev
+      spark_master: "local[*]"
+    schedule:
+      cron: "0 8 * * 1-5"      <span class="comment"># 8AM thứ 2-6</span>
+      timezone: "Asia/Ho_Chi_Minh"
+
+  <span class="comment"># --- Deployment cho PROD ---</span>
+  - name: clarizen-entity-query-prod
+    entrypoint: working/api_ingestion/prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: prod-pool
+      work_queue_name: critical
+    parameters:
+      config_path: config.json
+      endpoint_name: entity_query
+      env: prod
+      spark_master: "spark://master:7077"
+    schedule:
+      cron: "0 2 * * *"        <span class="comment"># 2AM hàng ngày</span>
+      timezone: "Asia/Ho_Chi_Minh"
+    job_variables:
+      env:                      <span class="comment"># Biến môi trường inject vào runtime</span>
+        API_KEY: "{{ prefect.blocks.secret.clarizen-api-key }}"
+        SPARK_HOME: "/opt/spark"</code></pre>
+
+<div class="callout callout-tip">
+  <div class="callout-title">💡 Airflow mapping</div>
+  <p><code>prefect.yaml</code> = Airflow <code>airflow.cfg</code> + DAG schedule + Connection config gộp lại 1 file. 
+  Nhưng version-controlled cùng code — không phải config riêng trên server.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Bước 3: Deploy (đăng ký metadata lên HQ)</h2>
+
+<pre><code><span class="comment"># cd vào thư mục chứa prefect.yaml</span>
+cd d:\dataguystory\coding-interview-university\working\api_ingestion
+
+<span class="comment"># Deploy TẤT CẢ deployments trong prefect.yaml</span>
+prefect deploy --all
+
+<span class="comment"># Hoặc deploy 1 cái cụ thể</span>
+prefect deploy --name clarizen-entity-query-dev
+
+<span class="comment"># Kiểm tra trên HQ</span>
+prefect deployment ls</code></pre>
+
+<p>Sau lệnh này, vào HQ dashboard → <strong>Deployments</strong> tab → thấy deployment vừa tạo với schedule, parameters.</p>
+
+<div class="callout callout-warning">
+  <div class="callout-title">⚠️ Nhắc lại: deploy ≠ upload code</div>
+  <p><code>prefect deploy</code> chỉ gửi <strong>metadata</strong> (tên, schedule, params, entrypoint path). 
+  Code vẫn nằm trên Git repo hoặc worker machine. Worker sẽ pull code theo <code>pull</code> step khi chạy.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Bước 4: Chạy Worker trên server</h2>
+
+<p>Worker là process chạy trên máy thực thi (cùng server HQ hoặc máy riêng), 
+liên tục poll HQ để lấy scheduled runs và chạy code.</p>
+
+<pre><code><span class="comment"># Trên WORKER MACHINE (server thực thi code)</span>
+
+<span class="comment"># 1. Set API URL trỏ về HQ server</span>
+export PREFECT_API_URL=<span class="string">"http://your-prefect-server:4200/api"</span>
+
+<span class="comment"># 2. Cài dependencies</span>
+pip install prefect pyspark==2.3.2
+
+<span class="comment"># 3. Start worker cho pool cụ thể</span>
+prefect worker start --pool dev-pool
+
+<span class="comment"># Worker sẽ:</span>
+<span class="comment"># → Poll HQ mỗi vài giây</span>
+<span class="comment"># → Thấy scheduled run → pull code từ Git</span>
+<span class="comment"># → Chạy prefect_flow.py:api_ingestion_pipeline</span>
+<span class="comment"># → Báo kết quả + logs + artifacts về HQ</span></code></pre>
+
+<div class="callout callout-info">
+  <div class="callout-title">📌 Airflow equivalent</div>
+  <p>Worker = Airflow <strong>Celery Worker</strong> hoặc <strong>Local Executor</strong>. 
+  Work Pool = Airflow <strong>Pool</strong>. 
+  Nhưng Prefect Worker tự pull code, không cần shared <code>dags/</code> folder.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Quản lý môi trường: 3 chiến lược</h2>
+
+<p>Bạn nói đúng — phải "control code để khớp với môi trường". Có 3 cách, từ đơn giản đến nâng cao:</p>
+
+<h3>Cách 1: Flow Parameters (bạn đã có!)</h3>
+
+<p>Code <code>prefect_flow.py</code> của bạn đã có <code>env</code> parameter:</p>
+
+<pre><code><span class="decorator">@flow</span>
+<span class="keyword">def</span> <span class="function">api_ingestion_pipeline</span>(
+    endpoint_name: str = <span class="string">"entity_query"</span>,
+    env: str = <span class="string">"dev"</span>,        <span class="comment"># ← switch môi trường tại đây</span>
+    spark_master: str = <span class="string">"local[*]"</span>,
+):
+    ...</code></pre>
+
+<p>Mỗi deployment set <code>parameters.env</code> khác nhau → cùng code, khác hành vi:</p>
+
+<pre><code><span class="comment"># prefect.yaml</span>
+deployments:
+  - name: dev-pipeline
+    parameters:
+      env: dev
+      spark_master: "local[*]"
+
+  - name: prod-pipeline
+    parameters:
+      env: prod
+      spark_master: "spark://master:7077"</code></pre>
+
+<h3>Cách 2: Job Variables (inject env vars vào runtime)</h3>
+
+<pre><code><span class="comment"># prefect.yaml — inject biến môi trường theo deployment</span>
+deployments:
+  - name: prod-pipeline
+    job_variables:
+      env:
+        API_KEY: <span class="string">"{{ prefect.blocks.secret.prod-api-key }}"</span>
+        DATABASE_URL: <span class="string">"{{ prefect.blocks.secret.prod-db-url }}"</span>
+        SPARK_HOME: <span class="string">"/opt/spark-2.3.2"</span></code></pre>
+
+<p>Code Python đọc bằng <code>os.getenv("API_KEY")</code> — không hardcode secret trong code.</p>
+
+<h3>Cách 3: Prefect Variables + Blocks (quản lý trên HQ UI)</h3>
+
+<pre><code><span class="comment"># Tạo Variable trên HQ (qua CLI hoặc UI)</span>
+prefect variable set spark_master_dev <span class="string">"local[*]"</span>
+prefect variable set spark_master_prod <span class="string">"spark://master:7077"</span>
+
+<span class="comment"># Tạo Secret Block cho API key</span>
+prefect block create secret/clarizen-api-key
+
+<span class="comment"># Trong code Python, đọc Variable:</span>
+<span class="keyword">from</span> prefect.variables <span class="keyword">import</span> Variable
+
+spark_master = Variable.get(<span class="string">"spark_master_"</span> + env)</code></pre>
+
+<div class="comparison">
+  <div class="airflow-side">
+    <h4>✈️ Airflow</h4>
+    <ul>
+      <li><code>Variable.get("key")</code></li>
+      <li><code>Connection</code> cho DB/API credentials</li>
+      <li>Quản lý trên Airflow UI</li>
+    </ul>
+  </div>
+  <div class="prefect-side">
+    <h4>🔷 Prefect</h4>
+    <ul>
+      <li><code>Variable.get("key")</code> ← gần giống!</li>
+      <li><code>Secret Block</code> cho credentials</li>
+      <li>Quản lý trên HQ UI hoặc CLI</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Quy trình thực tế hàng ngày</h2>
+
+<pre><code>
+  Viết/sửa code    Push Git     Deploy metadata     Worker chạy
+  ─────────────  ─────────────  ───────────────  ──────────────────
+                                                   
+  prefect_flow.py   git push    prefect deploy     Worker poll HQ
+       │               │            │                    │
+       ▼               ▼            ▼                    ▼
+  Test local:      Code lên     HQ biết flow     Worker git clone
+  python            GitHub      mới/update       → chạy flow
+  prefect_flow.py                               → report về HQ
+  --dry-run
+
+  ┌────────────────────────────────────────────────────────────┐
+  │  🔄 CI/CD: Có thể tự động hóa bước deploy bằng           │
+  │     GitHub Actions: git push → prefect deploy --all       │
+  └────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Checklist trước khi deploy</h2>
+
+<div class="callout callout-danger">
+  <div class="callout-title">✅ Pre-deployment Checklist</div>
+  <ol>
+    <li>☐ <code>PREFECT_API_URL</code> trỏ đúng HQ server</li>
+    <li>☐ <code>prefect server health</code> → "healthy"</li>
+    <li>☐ Work Pool đã tạo trên HQ (dev-pool, prod-pool)</li>
+    <li>☐ Worker đang chạy trên server: <code>prefect worker start --pool dev-pool</code></li>
+    <li>☐ Code đã push lên Git (branch đúng)</li>
+    <li>☐ <code>prefect.yaml</code> có pull step đúng Git repo + branch</li>
+    <li>☐ Dependencies cài đủ trên worker machine (<code>prefect</code>, <code>pyspark</code>)</li>
+    <li>☐ Secrets tạo xong trên HQ (API keys, DB URLs)</li>
+    <li>☐ Dry-run local pass: <code>python prefect_flow.py --dry-run</code></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>Kiểm tra hiểu biết</h2>
+
+<div id="quiz1"></div>
+<div id="quiz2"></div>
+<div id="quiz3"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="callout callout-info">
+  <div class="callout-title">🤖 Hỏi thêm</div>
+  Bạn có IP/domain của Prefect HQ server không? Nếu có, cho tôi biết — tôi sẽ tạo sẵn file 
+  <code>prefect.yaml</code> khớp chính xác với bộ code <code>api_ingestion</code> của bạn, 
+  chỉ cần <code>prefect deploy --all</code> là xong.
+</div>
+
+<div class="lesson-footer">
+  <p><strong>Lesson 02</strong> — Đưa code lên Prefect HQ Server: Từ local đến production</p>
+  <p>Tài liệu: <a href="https://docs.prefect.io/v3/deploy" target="_blank">Prefect Deploy Docs</a> • <a href="../reference/prefect-airflow-mapping.html">Airflow → Prefect Mapping</a></p>
+  <div class="nav-links">
+    <a href="0001-prefect-hq-core-airflow-to-prefect.html">← Lesson 01: Core Concepts</a>
+    <a href="0003-prefect-artifacts-monitoring-deep-dive.html">Lesson 03: Artifacts Deep Dive →</a>
+  </div>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script>
+createQuiz('quiz1',
+  'Lệnh "prefect deploy" thực sự làm gì?',
+  [
+    'Upload toàn bộ source code lên Prefect HQ server',
+    'Gửi metadata (tên, schedule, params, entrypoint) lên HQ — không gửi code',
+    'Build Docker image và push lên registry',
+    'Copy file Python vào thư mục dags/ trên server'
+  ],
+  1,
+  '<code>prefect deploy</code> chỉ đăng ký metadata. Code được Worker pull về qua Git clone hoặc shared filesystem khi cần chạy.'
+);
+
+createQuiz('quiz2',
+  'Để chạy code trên server, bạn cần khởi động gì trên worker machine?',
+  [
+    'prefect scheduler start',
+    'prefect agent start --queue default',
+    'prefect worker start --pool dev-pool',
+    'python prefect_flow.py --serve'
+  ],
+  2,
+  'Prefect 3 dùng <strong>Worker</strong> (không phải Agent như Prefect 2). Worker poll HQ theo Work Pool, pull code, và chạy flow.'
+);
+
+createQuiz('quiz3',
+  'Cách nào KHÔNG phù hợp để quản lý API key cho production?',
+  [
+    'Prefect Secret Block + reference trong prefect.yaml',
+    'job_variables.env trong prefect.yaml',
+    'Hardcode trực tiếp trong config.json rồi push lên Git',
+    'Prefect Variable set qua CLI'
+  ],
+  2,
+  'KHÔNG BAO GIỜ hardcode secrets trong code/config rồi push lên Git. Dùng Prefect Secret Block hoặc inject qua job_variables.'
+);
+</script>
+
+</body>
+</html>
