@@ -41,9 +41,12 @@ from ingestion.extractor import Extractor
 from ingestion.writer import BatchWriter, PartitionedParquetWriter
 from storage.tri_storage_sink import TriStorageSink
 from storage.trino_ddl_generator import TrinoDDLGenerator
+from storage.dlq_router import DLQRouter
 from transform.spark_session import SparkSessionFactory
 from transform.json_flattener import JSONFlattener
 from transform.docstring_registry import DocstringRegistry
+from transform.dedup_engine import DedupEngine
+from transform.race_condition_router import InferredDimensionRouter
 from quality.validator import SchemaValidator
 from quality.statistics import StatisticsProfiler
 from quality.profiler import QualityReport
@@ -257,13 +260,42 @@ def transform_with_spark(
             len(df_flat.columns),
         )
 
+        # Idempotent Deduplication (Spark 2.3.2 Window Ranking)
+        dedup_engine = DedupEngine(primary_key="sysid", watermark_col="last_modified")
+        df_clean, dedup_stats = dedup_engine.deduplicate(df_flat)
+        log.info(
+            "Dedup complete: %d input -> %d unique records (%d duplicates removed)",
+            dedup_stats["input_count"],
+            dedup_stats["deduped_count"],
+            dedup_stats["duplicates_removed"],
+        )
+
+        # Race Condition Handling (Kimball Inferred Dimension)
+        if "c_project" in df_clean.columns:
+            inferred_router = InferredDimensionRouter()
+            stubs = inferred_router.generate_inferred_stubs(
+                fact_df=df_clean,
+                fk_column="c_project",
+                dim_pk_column="sysid",
+                dim_name_column="name",
+            )
+            if stubs is not None:
+                dim_path = os.path.join("./data/warehouse", "global_clean", "projects")
+                inferred_router.reconcile_dimension(
+                    stubs_df=stubs,
+                    dim_table_path=dim_path,
+                    spark_session=spark,
+                    dedup_engine=dedup_engine,
+                )
+                log.info("Reconciled inferred dimension stubs into %s", dim_path)
+
         # Generate dbt schema.yml
         registry = DocstringRegistry(
             source_name=source_name,
             endpoint_name=endpoint_name,
             api_version=api_version,
         )
-        registry.register_columns(df_flat, flattener.flatten_map)
+        registry.register_columns(df_clean, flattener.flatten_map)
 
         schema_path = os.path.join(
             os.path.dirname(output_path) or ".",
@@ -279,7 +311,7 @@ def transform_with_spark(
             compression="snappy",
             source_name=source_name,
         )
-        write_result = writer.write(df_flat, output_path, batch_id=batch_id)
+        write_result = writer.write(df_clean, output_path, batch_id=batch_id)
 
         log.info(
             "Parquet written: %d records to %s",
@@ -309,7 +341,7 @@ def transform_with_spark(
         # Sink to DB 2: global_clean
         db2_path = tri_sink.sink_trino_global_clean(
             table_name=endpoint_name,
-            clean_df=df_flat,
+            clean_df=df_clean,
             partition_col="ingest_date",
             partition_val=today_date,
         )
@@ -318,7 +350,7 @@ def transform_with_spark(
         ddl_path = tri_sink.ddl_generator.export_sql_file(
             output_path="./generated_ddl",
             table_name=endpoint_name,
-            schema_or_fields=df_flat.schema,
+            schema_or_fields=df_clean.schema,
             partition_col="ingest_date",
         )
         log.info("Trino DDL generated for trino.exe: %s", ddl_path)
@@ -385,7 +417,23 @@ def run_quality_checks(
         valid_df, dlq_df = validator.validate(df)
 
         valid_count = valid_df.count()
-        dlq_count = dlq_df.count() if dlq_df is not None else 0
+        dlq_count = 0
+
+        # Route quarantined records to DLQ storage
+        if dlq_df is not None:
+            dlq_router = DLQRouter(base_storage_dir="./data")
+            dlq_stats = dlq_router.route_dlq(
+                dlq_df=dlq_df,
+                table_name=endpoint_name,
+                batch_id=batch_id,
+            )
+            dlq_count = dlq_stats.get("dlq_count", 0)
+            log.warning(
+                "Quarantined %d records into DLQ (%s): %s",
+                dlq_count,
+                dlq_stats.get("dlq_path"),
+                dlq_stats.get("error_breakdown"),
+            )
 
         # Profile
         profiler = StatisticsProfiler()

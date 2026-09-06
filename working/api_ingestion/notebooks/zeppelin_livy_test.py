@@ -214,3 +214,88 @@ print(trino_ddl_sql)
 read_back_df = spark.read.parquet(path_db2)
 print(f"Total rows read back: {read_back_df.count()}")
 read_back_df.show(5, truncate=False)
+
+
+# ==============================================================================
+# [PARAGRAPH 7]: TEST THUẬT TOÁN DEDUP TRÊN SPARK 2.3.2 (WINDOW RANKING)
+# ==============================================================================
+# %livy.spark
+# Giả lập dữ liệu trùng lặp có nhiều phiên bản theo thời gian
+duplicate_records = [
+    {"sysid": "T-101", "name": "Task Ban Đầu", "last_modified": "2026-09-01T10:00:00Z", "status": "Draft"},
+    {"sysid": "T-101", "name": "Task Cập Nhật Lần 1", "last_modified": "2026-09-03T12:00:00Z", "status": "In Progress"},
+    {"sysid": "T-101", "name": "Task Hoàn Thành Cuối Cùng", "last_modified": "2026-09-06T18:00:00Z", "status": "Done"},
+    {"sysid": "T-102", "name": "Task Độc Lập", "last_modified": "2026-09-05T09:00:00Z", "status": "New"},
+]
+dup_df = spark.read.json(spark.sparkContext.parallelize(duplicate_records))
+print(f"Số bản ghi trước khi khử trùng lặp: {dup_df.count()}")
+
+# Thuật toán Window Ranking Spark 2.3.2
+from pyspark.sql.window import Window
+w_spec = Window.partitionBy("sysid").orderBy(F.col("last_modified").desc())
+
+deduped_test_df = (
+    dup_df
+    .withColumn("_rank", F.row_number().over(w_spec))
+    .filter(F.col("_rank") == 1)
+    .drop("_rank")
+)
+
+print(f"Số bản ghi sau khi khử trùng lặp: {deduped_test_df.count()}")
+deduped_test_df.show(truncate=False)
+
+
+# ==============================================================================
+# [PARAGRAPH 8]: XỬ LÝ RACE CONDITION FACT-DIM (INFERRED DIMENSION PATTERN)
+# ==============================================================================
+# %livy.spark
+# Giả sử Fact Tasks đến trước, có chứa Project ID chưa từng xuất hiện trong Dim Project
+fact_with_fk = [
+    {"task_id": "T-201", "c_project": "PRJ-9999_CHUA_CO"},
+    {"task_id": "T-202", "c_project": "PRJ-9999_CHUA_CO"},
+    {"task_id": "T-203", "c_project": "PRJ-EXISTING_DA_CO"},
+]
+fact_df = spark.read.json(spark.sparkContext.parallelize(fact_with_fk))
+
+# Trích xuất các Project ID và sinh bản ghi Stub Inferred
+distinct_projects = fact_df.select(F.col("c_project").alias("sysid")).distinct()
+inferred_dim_stubs = (
+    distinct_projects
+    .withColumn("name", F.concat(F.lit("Inferred Stub ["), F.col("sysid"), F.lit("]")))
+    .withColumn("last_modified", F.lit("1970-01-01T00:00:00Z"))
+    .withColumn("_is_inferred", F.lit(True))
+)
+
+print("Inferred Dimension Stubs tự động sinh ra để chống Race Condition:")
+inferred_dim_stubs.show(truncate=False)
+
+
+# ==============================================================================
+# [PARAGRAPH 9]: PHÂN LUỒNG RECORD LỖI VÀO DLQ (DEAD LETTER QUEUE)
+# ==============================================================================
+# %livy.spark
+# Giả lập dữ liệu có dòng hợp lệ và dòng lỗi (thiếu sysid hoặc percent âm)
+dirty_records = [
+    {"sysid": "VALID-01", "percent_completed": 50.0},
+    {"sysid": None, "percent_completed": 80.0},          # Lỗi: Null sysid
+    {"sysid": "INVALID-02", "percent_completed": 150.0},  # Lỗi: Vượt quá 100%
+]
+dirty_df = spark.read.json(spark.sparkContext.parallelize(dirty_records))
+
+# Gắn nhãn lỗi bằng single-pass concat_ws
+error_tags = F.concat_ws(";",
+    F.when(F.col("sysid").isNull(), F.lit("sysid:null")).otherwise(F.lit("")),
+    F.when(F.col("percent_completed") > 100, F.lit("percent_completed:out_of_range")).otherwise(F.lit(""))
+)
+
+tagged_df = dirty_df.withColumn("_error_tags", error_tags)
+
+valid_output = tagged_df.filter(F.length(F.col("_error_tags")) == 0).drop("_error_tags")
+dlq_output = tagged_df.filter(F.length(F.col("_error_tags")) > 0)
+
+print(f"Số bản ghi hợp lệ đi vào Clean Warehouse: {valid_output.count()}")
+valid_output.show()
+
+print(f"Số bản ghi lỗi bị cách ly vào Dead Letter Queue (DLQ): {dlq_output.count()}")
+dlq_output.show(truncate=False)
+
