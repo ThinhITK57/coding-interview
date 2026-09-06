@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  api-ingestion-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_ingestion_worker
+    restart: unless-stopped
+    environment:
+      # URL của Prefect HQ Server (ví dụ: http://192.168.1.100:4200/api hoặc http://prefect-server:4200/api)
+      - PREFECT_API_URL=${PREFECT_API_URL:-http://prefect-server:4200/api}
+      # Tên Work Pool trên Prefect HQ mà worker này sẽ lắng nghe
+      - PREFECT_WORK_POOL_NAME=${PREFECT_WORK_POOL_NAME:-default-agent-pool}
+      # Môi trường chạy (dev, staging, prod)
+      - ENV=${ENV:-prod}
+      # API Key kết nối dịch vụ nguồn (lấy từ file .env hoặc env máy chủ)
+      - PROJECT_API_KEY=${PROJECT_API_KEY}
+    volumes:
+      # Mount thư mục data và checkpoints ra máy chủ để giữ dữ liệu an toàn
+      - ./data:/app/data
+      - ./checkpoints:/app/checkpoints
+    # Mặc định container chạy lệnh CMD trong Dockerfile:
+    # prefect worker start --pool ${PREFECT_WORK_POOL_NAME}
+    # 
+    # Nếu muốn chạy kiểm tra trực tiếp (Dry-run hoặc Single Run), bỏ comment dòng dưới:
+    # command: ["python", "prefect_flow.py", "--endpoint", "entity_query", "--env", "dev", "--dry-run"]
