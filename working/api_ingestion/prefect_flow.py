@@ -39,6 +39,8 @@ from config.validator import ConfigValidator
 from config.job_config import ExtractionMode
 from ingestion.extractor import Extractor
 from ingestion.writer import BatchWriter, PartitionedParquetWriter
+from storage.tri_storage_sink import TriStorageSink
+from storage.trino_ddl_generator import TrinoDDLGenerator
 from transform.spark_session import SparkSessionFactory
 from transform.json_flattener import JSONFlattener
 from transform.docstring_registry import DocstringRegistry
@@ -134,10 +136,12 @@ def extract_from_api(
 
         extractor = Extractor(config)
         writer = BatchWriter(staging_dir)
+        tri_sink = TriStorageSink(local_base_dir="./data")
 
         total_records = 0
         total_pages = 0
         last_batch = None
+        all_raw_records = []
 
         for batch in extractor.iterate_batches(
             endpoint_config,
@@ -145,6 +149,7 @@ def extract_from_api(
             window_end=window_end,
         ):
             writer.write_batch(batch)
+            all_raw_records.extend(batch.records)
             total_records += batch.record_count
             total_pages += 1
             last_batch = batch
@@ -155,6 +160,14 @@ def extract_from_api(
                 batch.record_count,
                 total_records,
             )
+
+        if all_raw_records:
+            backup_file = tri_sink.sink_minio_raw_backup(
+                table_name=endpoint_name,
+                raw_records=all_raw_records,
+                batch_id=last_batch.batch_id if last_batch else "batch_init",
+            )
+            log.info("MinIO Raw Backup written: %s", backup_file)
 
     client_stats = extractor._client.get_stats()
 
@@ -274,9 +287,48 @@ def transform_with_spark(
             output_path,
         )
 
+        # Tri-Storage Sinks: DB 1 (personal_raw) + DB 2 (global_clean) + Trino DDL
+        tri_sink = TriStorageSink(
+            spark_session=spark,
+            local_base_dir="./data",
+            trino_catalog="hive",
+            personal_schema="personal_raw",
+            clean_schema="global_clean",
+            ddl_output_dir="./generated_ddl",
+        )
+        today_date = datetime.utcnow().strftime("%Y-%m-%d")
+
+        # Sink to DB 1: personal_raw
+        db1_path = tri_sink.sink_trino_personal_raw(
+            table_name=endpoint_name,
+            raw_df=df_raw,
+            partition_col="ingest_date",
+            partition_val=today_date,
+        )
+
+        # Sink to DB 2: global_clean
+        db2_path = tri_sink.sink_trino_global_clean(
+            table_name=endpoint_name,
+            clean_df=df_flat,
+            partition_col="ingest_date",
+            partition_val=today_date,
+        )
+
+        # Generate DDL for trino.exe
+        ddl_path = tri_sink.ddl_generator.export_sql_file(
+            output_path="./generated_ddl",
+            table_name=endpoint_name,
+            schema_or_fields=df_flat.schema,
+            partition_col="ingest_date",
+        )
+        log.info("Trino DDL generated for trino.exe: %s", ddl_path)
+
         return {
             "record_count": write_result["record_count"],
             "output_path": output_path,
+            "db1_personal_raw_path": db1_path,
+            "db2_global_clean_path": db2_path,
+            "trino_ddl_file": ddl_path,
             "schema_path": schema_path,
             "columns": df_flat.columns,
         }

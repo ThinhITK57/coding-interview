@@ -1,0 +1,78 @@
+{
+  "_comment": "TABLES REGISTRY - Danh sách cấu hình bảng dữ liệu cần cào và nạp vào Data Lakehouse (Trino Hive)",
+  "_instruction": "Ngày mai khi nhận danh sách từ BA, chỉ cần cập nhật tên bảng (table_name, entity_type) và danh sách trường (fields) vào đây.",
+
+  "defaults": {
+    "trino_catalog": "hive",
+    "db1_schema": "personal_raw",
+    "db2_schema": "global_clean",
+    "minio_backup_bucket": "lakehouse",
+    "partition_col": "ingest_date"
+  },
+
+  "tables": [
+    {
+      "table_name": "muc_1",
+      "entity_type": "Task",
+      "description": "Bảng Fact Công việc / Tasks - Tần suất cập nhật cao",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "fields": [
+        "SYSID",
+        "Name",
+        "State",
+        "PercentCompleted",
+        "StartDate",
+        "DueDate",
+        "LastModified",
+        "C_Project"
+      ]
+    },
+    {
+      "table_name": "muc_2",
+      "entity_type": "Project",
+      "description": "Bảng Fact/Dim Dự án / Projects",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "fields": [
+        "SYSID",
+        "Name",
+        "TrackStatus",
+        "StartDate",
+        "DueDate",
+        "Budget",
+        "LastModified"
+      ]
+    },
+    {
+      "table_name": "muc_3",
+      "entity_type": "User",
+      "description": "Bảng Dimension Người dùng / Nhân sự",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "fields": [
+        "SYSID",
+        "UserName",
+        "Email",
+        "DirectManager",
+        "Active",
+        "LastModified"
+      ]
+    },
+    {
+      "table_name": "muc_4",
+      "entity_type": "Timesheet",
+      "description": "Bảng Fact Chi phí / Nhật ký công việc / Giao dịch",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "fields": [
+        "SYSID",
+        "ReportedDate",
+        "Duration",
+        "WorkItem",
+        "Comment",
+        "LastModified"
+      ]
+    }
+  ]
+}
