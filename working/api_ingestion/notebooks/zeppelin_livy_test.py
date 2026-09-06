@@ -299,3 +299,65 @@ valid_output.show()
 print(f"Số bản ghi lỗi bị cách ly vào Dead Letter Queue (DLQ): {dlq_output.count()}")
 dlq_output.show(truncate=False)
 
+
+# ==============================================================================
+# [PARAGRAPH 10]: SINH KNOWLEDGE CONTEXT PACK CHO GENBI (AI LLM CHỮ + BIỂU ĐỒ)
+# ==============================================================================
+# %livy.spark
+# Trích xuất metadata ngữ nghĩa phục vụ GenBI và AI LLM
+import json
+
+genbi_columns = {}
+for field in clean_df.schema.fields:
+    col_name = field.name
+    t = field.dataType.simpleString()
+    role = "dimension"
+    agg = "none"
+    synonyms = [col_name, col_name.replace("_", " ")]
+
+    if any(k in col_name for k in ["percent", "rate", "ratio"]):
+        role, agg = "y_axis", "avg"
+        synonyms.extend(["tiến độ", "phần trăm hoàn thành", "tỷ lệ"])
+    elif any(k in col_name for k in ["budget", "cost", "duration"]):
+        role, agg = "y_axis", "sum"
+        synonyms.extend(["ngân sách", "chi phí", "thời lượng"])
+    elif any(k in col_name for k in ["state", "status"]):
+        role, agg = "x_axis", "count"
+        synonyms.extend(["trạng thái", "tình trạng"])
+    elif any(k in col_name for k in ["date", "time"]):
+        role = "x_axis"
+        synonyms.extend(["thời gian", "ngày"])
+
+    genbi_columns[col_name] = {
+        "name": col_name,
+        "data_type": t,
+        "chart_role": role,
+        "aggregation_type": agg,
+        "synonyms": synonyms
+    }
+
+genbi_pack = {
+    "table_name": "tasks",
+    "trino_table_ref": "hive.global_clean.tasks",
+    "semantic_layer": genbi_columns,
+    "recommended_chart": {
+        "type": "bar",
+        "title": "Tiến độ công việc trung bình theo trạng thái",
+        "echarts_spec": {
+            "tooltip": {"trigger": "axis"},
+            "xAxis": {"type": "category", "data": ["In Progress", "Completed", "Draft"]},
+            "yAxis": {"type": "value", "name": "Tiến độ (%)"},
+            "series": [{"data": [75.5, 100.0, 0.0], "type": "bar"}]
+        }
+    },
+    "llm_few_shot": {
+        "question": "Thống kê tiến độ các công việc hiện tại",
+        "expected_sql": "SELECT state, AVG(percent_completed) FROM hive.global_clean.tasks GROUP BY state",
+        "text_insights": "Hệ thống ghi nhận 100% công việc hoàn thành và các công việc đang chạy đạt 75.5%"
+    }
+}
+
+print("=== GENBI CONTEXT PACK HOÀN TẤT CHO AI LLM ===")
+print(json.dumps(genbi_pack, indent=2, ensure_ascii=False))
+
+

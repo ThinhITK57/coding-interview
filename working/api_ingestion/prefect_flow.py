@@ -47,6 +47,7 @@ from transform.json_flattener import JSONFlattener
 from transform.docstring_registry import DocstringRegistry
 from transform.dedup_engine import DedupEngine
 from transform.race_condition_router import InferredDimensionRouter
+from transform.genbi_context_packer import GenBIContextPacker
 from quality.validator import SchemaValidator
 from quality.statistics import StatisticsProfiler
 from quality.profiler import QualityReport
@@ -302,8 +303,23 @@ def transform_with_spark(
             f"schema_{source_name}_{endpoint_name}.yml",
         )
         registry.export_dbt_schema(schema_path)
-
         log.info("dbt schema.yml exported to: %s", schema_path)
+
+        # Generate GenBI Knowledge Context Pack for AI LLM
+        packer = GenBIContextPacker(trino_catalog="hive", clean_schema="global_clean")
+        context_pack_path = os.path.join(
+            os.path.dirname(output_path) or ".",
+            f"genbi_context_pack_{endpoint_name}.json",
+        )
+        sample_records = [r.asDict() for r in df_clean.limit(3).collect()]
+        packer.export_pack(
+            output_path=context_pack_path,
+            table_name=endpoint_name,
+            columns_meta=registry._columns,
+            table_description=f"Curated {endpoint_name} dataset from {source_name} API",
+            sample_rows=sample_records,
+        )
+        log.info("GenBI Context Pack for AI LLM exported to: %s", context_pack_path)
 
         # Write partitioned Parquet
         writer = PartitionedParquetWriter(
@@ -362,7 +378,8 @@ def transform_with_spark(
             "db2_global_clean_path": db2_path,
             "trino_ddl_file": ddl_path,
             "schema_path": schema_path,
-            "columns": df_flat.columns,
+            "genbi_context_pack_path": context_pack_path,
+            "columns": df_clean.columns,
         }
 
     finally:

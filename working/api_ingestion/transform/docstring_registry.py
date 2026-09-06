@@ -56,6 +56,8 @@ class DocstringRegistry:
             if "." in source_field or "[" in source_field:
                 flatten_path = source_field
 
+            genbi_meta = self._infer_genbi_metadata(col_name, str(field.dataType.simpleString()))
+
             self._columns[col_name] = {
                 "description": self._generate_description(col_name, source_field),
                 "data_type": str(field.dataType.simpleString()),
@@ -64,6 +66,7 @@ class DocstringRegistry:
                 "api_endpoint": self._endpoint_name,
                 "flatten_path": flatten_path,
                 "business_meaning": "",  # To be filled by data team
+                **genbi_meta,
             }
 
         new_columns = [
@@ -82,6 +85,73 @@ class DocstringRegistry:
             "total_columns": len(self._columns),
             "endpoint": self._endpoint_name,
         }))
+
+    def _infer_genbi_metadata(self, col_name, data_type):
+        """Infer GenBI semantic metadata: chart_role, synonyms, aggregation_type, chart_preference."""
+        name = col_name.lower()
+        t = data_type.lower()
+
+        role = "dimension"
+        agg = "none"
+        chart_pref = "bar"
+        synonyms = [col_name, col_name.replace("_", " ")]
+
+        # Temporal columns
+        if "date" in name or "time" in name or t in ["timestamp", "date"]:
+            role = "x_axis"
+            agg = "none"
+            chart_pref = "line"
+            if "start" in name:
+                synonyms.extend(["ngày bắt đầu", "start date", "khởi động"])
+            elif "due" in name or "end" in name:
+                synonyms.extend(["hạn chót", "deadline", "ngày đến hạn", "due date"])
+            elif "modified" in name or "updated" in name:
+                synonyms.extend(["ngày cập nhật", "last modified", "thời gian sửa"])
+
+        # Numerical measures / metrics
+        elif any(k in name for k in ["percent", "ratio", "rate", "pct"]):
+            role = "y_axis"
+            agg = "avg"
+            chart_pref = "bar"
+            synonyms.extend(["tiến độ", "phần trăm hoàn thành", "tỷ lệ", "completion rate", "progress"])
+        elif any(k in name for k in ["budget", "cost", "amount", "price", "fee"]):
+            role = "y_axis"
+            agg = "sum"
+            chart_pref = "bar"
+            synonyms.extend(["ngân sách", "chi phí", "vốn", "tiền", "budget", "cost"])
+        elif any(k in name for k in ["duration", "hours", "time_spent"]):
+            role = "y_axis"
+            agg = "sum"
+            chart_pref = "bar"
+            synonyms.extend(["thời lượng", "số giờ", "hours", "duration"])
+        elif t in ["int", "integer", "bigint", "long", "double", "float"] and not name.endswith("id"):
+            role = "y_axis"
+            agg = "sum"
+            chart_pref = "bar"
+
+        # Categorical dimensions
+        elif any(k in name for k in ["state", "status", "phase", "stage"]):
+            role = "x_axis"
+            agg = "count"
+            chart_pref = "pie"
+            synonyms.extend(["trạng thái", "tình trạng", "giai đoạn", "status", "state"])
+        elif any(k in name for k in ["name", "title", "label"]):
+            role = "dimension"
+            synonyms.extend(["tên", "tiêu đề", "title", "name"])
+        elif any(k in name for k in ["user", "manager", "assignee", "owner"]):
+            role = "dimension"
+            synonyms.extend(["người phụ trách", "nhân sự", "chủ sở hữu", "owner", "assignee"])
+        elif name.endswith("id") or name.startswith("id"):
+            role = "identifier"
+            agg = "count_distinct"
+            synonyms.extend(["mã", "định danh", "identifier", "id"])
+
+        return {
+            "chart_role": role,
+            "aggregation_type": agg,
+            "chart_type_preference": chart_pref,
+            "synonyms": list(dict.fromkeys(synonyms)),
+        }
 
     def update_column(self, col_name, description=None, business_meaning=None):
         """Manually update a column's description or business meaning.
@@ -114,7 +184,7 @@ class DocstringRegistry:
         - Model name: bronze_{source}_{endpoint}
         - Model description with source and API version
         - Column descriptions
-        - Column meta tags (source_field, data_type, nullable, etc.)
+        - Column meta tags (source_field, data_type, chart_role, synonyms, aggregation_type)
 
         Args:
             output_path: File path to write the schema.yml.
@@ -131,6 +201,10 @@ class DocstringRegistry:
                     "api_endpoint": meta["api_endpoint"],
                     "data_type": meta["data_type"],
                     "nullable": meta["nullable"],
+                    "chart_role": meta.get("chart_role", "dimension"),
+                    "aggregation_type": meta.get("aggregation_type", "none"),
+                    "chart_type_preference": meta.get("chart_type_preference", "bar"),
+                    "synonyms": meta.get("synonyms", [col_name]),
                 },
             }
             if meta.get("flatten_path"):
