@@ -1,0 +1,186 @@
+Danh sách cột trên thuộc schema thực thể **Task** của nền tảng quản trị dự án & danh mục đầu tư chuẩn doanh nghiệp (điển hình là **Clarizen / Planview AdaptiveWork**).
+
+Bảng Task này không chỉ đơn thuần lưu tên và ngày tháng, mà còn tích hợp chặt chẽ với:
+
+* **EVM (Earned Value Management)**: Quản lý giá trị thu được theo chuẩn PMI.
+* **Financial & Cost Accounting**: Tách biệt CAPEX/OPEX, Labor Rate (LR) vs. Non-Labor Rate (NLR), Billed vs. Non-Billable.
+* **WBS & Scheduling**: Tiến độ, đường găng (Critical Path), baseline, quan hệ phụ thuộc (predecessors/successors).
+
+Dưới đây là bức tranh tổng thể sau khi phân nhóm và giải thích chi tiết các trường dữ liệu quan trọng:
+
+---
+
+### 1. Định danh, Cấu trúc Phân cấp & Quan hệ (Hierarchy & WBS)
+
+Quản lý cây công việc (WBS) và liên kết giữa Task với Project, Milestone hay Task con/cha.
+
+* **Định danh hệ thống**: `SYSID`, `InternalId`, `ExternalID`, `ObjectAlias`, `InstanceNumber`, `OrderID`.
+* **Cấu trúc cây (Parent - Child)**:
+* `Parent`, `ParentProject`, `Project`, `Phase`: Trỏ tới đối tượng cha trực tiếp, project cha hoặc giai đoạn dự án.
+* `ChildrenCount`, `ChildShortcutCount`: Số lượng task con / shortcut trỏ tới.
+
+
+* **Thuộc tính phân loại task**:
+* `Milestone`: Đánh dấu task có phải là cột mốc quan trọng (thời lượng = 0) hay không.
+* `Deliverable`, `DeliverableType`: Sản phẩm bàn giao cụ thể gắn liền với task.
+* `TaskType`, `EntityType`, `Template`, `FloatingTask`.
+
+
+* **Quan hệ phụ thuộc (Dependencies)**:
+* `PredecessorsCount`: Số task tiền nhiệm (phải xong/bắt đầu trước task này).
+* `SuccessorsCount`: Số task kế nhiệm (bị phụ thuộc vào task này).
+* `Conflicts`, `ConflictType`: Xung đột về ràng buộc lịch trình.
+
+
+
+---
+
+### 2. Quản lý Thời gian, Lịch trình & Baseline (Scheduling & Variance)
+
+Theo dõi kế hoạch ban đầu (Baseline), kế hoạch hiện tại (Planned), ước tính (Estimated) và thực tế (Actual).
+
+* **Lịch trình hiện hành & Dự báo**:
+* `StartDate`, `DueDate`, `Duration`, `WorkdaysOnly`, `WeekDays`: Lịch trình mục tiêu.
+* `EarliestStartDate`, `EarliestEndDate`, `LatestStartDate`, `LatestEndDate`: Giới hạn sớm/muộn phục vụ thuật toán đường găng.
+* `OnCriticalPath`: Task có nằm trên đường găng (ảnh hưởng trực tiếp đến ngày kết thúc dự án) hay không.
+* `EstimatedStartDate`, `EstimatedEndDate`, `EstimatedDuration`.
+
+
+* **Lịch sử & Cơ sở gốc (Baseline)**:
+* `BaselineStartDate`, `BaselineDueDate`, `BaselineDuration`, `BaselineWork`, `BaselineCreationDate`.
+
+
+* **Độ lệch (Variance)**:
+* `StartDateVariance`, `DueDateVariance`, `DurationVariance`, `WorkVariance`: Chênh lệch giữa tiến độ hiện tại so với Baseline gốc.
+
+
+* **Thực tế đã diễn ra**:
+* `ActualStartDate`, `ActualEndDate`, `ActualDuration`.
+
+
+* **Task lặp lại (Recurrence)**:
+* `RecurrenceStartDate`, `RecurrenceEndDate`, `RecurrenceType`, `RecurrenceInterval`, `RecurrenceDayOfMonth`, `RecurrenceMonthOfYear`, `Occurrences`, `OccurrenceStartDate`, `OccurenceDuration`.
+
+
+
+---
+
+### 3. Khối lượng Công việc, Nhân sự & Theo dõi Thời gian (Effort & Resource Allocation)
+
+Theo dõi nỗ lực (man-hours), phân bổ tài nguyên và bảng chấm công (timesheet).
+
+* **Định lượng công việc (Work/Effort)**:
+* `Work`, `BudgetedHours`: Tổng giờ công dự kiến.
+* `ActualEffort`, `ActualEffortUpdatedFromTimesheets`: Tổng giờ thực tế đã làm (cập nhật từ timesheet).
+* `RemainingEffort`: Giờ công còn lại để hoàn thành.
+* `ActualBillableHours`, `ActualNonBillableHours`: Tách biệt giờ có tính phí cho khách và giờ nội bộ.
+
+
+* **Phân bổ tài nguyên**:
+* `Allocation`, `SubAllocation`, `TotalAllocation`, `Unallocated`, `UnusedAllocation`: Tỷ lệ % phân bổ nguồn lực.
+* `UserResourcesCount`, `ResourcesAndPlaceholdersCount`, `AllUserResourcesCount`: Số lượng nhân sự thật và nhân sự giữ chỗ (placeholder/role).
+* `ResourceRateDate`, `ResourceUtilizationCategory`.
+
+
+* **Time tracking & Đồng hồ bấm giờ**:
+* `ActiveStopwatch`, `StopwatchesCount`, `AggregatedStopwatchesCount`: Đếm số bộ bấm giờ trực tiếp đang chạy.
+* `PendingTimeTrackingEffort`: Giờ chấm công đang chờ duyệt.
+* `TimeTrackingCost`, `TimeTrackingEffort`, `TimeTrackingBilling`.
+
+
+
+---
+
+### 4. Tài chính: Chi phí, Doanh thu, Lợi nhuận (Financials & Accounting)
+
+Đây là phần phức tạp nhất trong schema, áp dụng nguyên tắc hạch toán dự án:
+
+#### Quy ước viết tắt:
+
+* **LR (Labor Rate)**: Chi phí nhân công (tính theo giờ x rate của nhân sự).
+* **NLR (Non-Labor Rate)**: Chi phí ngoài nhân công (vật tư, bản quyền, máy móc, nhà thầu phụ).
+* **CAPEX**: Chi phí đầu tư tài sản cố định (Capital Expenditure).
+* **OPEX**: Chi phí vận hành thường xuyên (Operational Expenditure).
+* **FY**: Fiscal Year (Năm tài chính).
+
+#### Chi tiết các nhóm trường:
+
+* **Ngân sách & Kế hoạch (Budget / Planned)**:
+* `PlannedBudget`, `PlannedAmount`, `BudgetCostLR`, `BudgetCostNLR`, `BudgetCostCAPEX`, `BudgetCostOPEX`.
+* `BudgetThirdPartyNLRCosts`, `BudgetThirdPartyNLRBillableCosts`, `BudgetThirdPartyNLRNonBillableCosts`.
+* `PlannedRevenue`, `PlannedRevenueNLR`, `PlannedExpenses`, `PlannedNetProfit`, `PlannedMargin`, `PlannedNetProfitability`.
+
+
+* **Thực tế phát sinh (Actuals)**:
+* `ActualCost`, `ActualCostLR`, `ActualCostNLR`, `ActualCostCAPEX`, `ActualCostOPEX`.
+* `CapexActualYTD`, `OpexActualYTD`: Chi phí lũy kế từ đầu năm tài chính đến nay (Year-To-Date).
+* `ActualRevenue`, `ActualNetRevenue`, `ActualExpenses`, `ActualNetProfit`, `ActualNetProfitability`.
+* `DirectActualExpenses`, `DirectActualBilledExpenses`.
+
+
+* **Dự báo tài chính (Forecast & FY)**:
+* `ProjectForecastatCompletionCost`, `ProjectCapexForecastatCompletionCost`, `ProjectOpexForecastatCompletionCost`.
+* `FYBudgetedCost...`, `FYForecastCost...`, `FYForecastRevenue`, `FYPlannedProfit`.
+
+
+* **Nguồn vốn & Tài trợ (Funding)**:
+* `Funding`, `FundingAvailable`, `FundingRemaining`, `FundingGap`, `FundingVariance`.
+
+
+* **Hợp đồng & Đơn giá**:
+* `FixedCost`, `FixedPrice`, `Contract`, `ContractPurchaseOrder`, `Billable`, `Charged`, `ChargedAmount`.
+
+
+
+---
+
+### 5. Quản lý Giá trị Thu được (EVM - Earned Value Management)
+
+Các chỉ số chuẩn quốc tế dùng để đánh giá sức khỏe dự án:
+
+| Trường dữ liệu | Thuật ngữ đầy đủ | Ý nghĩa nghiệp vụ |
+| --- | --- | --- |
+| `EarnedValue` | **EV** (Earned Value) | Giá trị công việc thực tế đã hoàn thành tính bằng tiền. |
+| `PlannedRevenue` / Budget | **PV** (Planned Value) | Giá trị công việc dự kiến phải hoàn thành tại thời điểm xét. |
+| `ActualCost` | **AC** (Actual Cost) | Toàn bộ chi phí thực tế đã chi ra. |
+| `CPI` | **Cost Performance Index** | Chỉ số hiệu quả chi phí ($EV / AC$). Nếu $< 1.0$ là vượt ngân sách. |
+| `SPI` | **Schedule Performance Index** | Chỉ số hiệu quả tiến độ ($EV / PV$). Nếu $< 1.0$ là chậm tiến độ. |
+| `CurrencyEAC` | **EAC** (Estimate at Completion) | Dự toán tổng chi phí khi task hoàn thành. |
+| `CurrencyETC` | **ETC** (Estimate to Complete) | Chi phí ước tính cần bỏ thêm từ bây giờ đến khi xong. |
+| `TCPI` | **To-Complete CPI** | Hiệu quả chi phí cần đạt được trong phần việc còn lại để giữ đúng ngân sách. |
+| `RevenueEarnedValue`, `CurrencyREAC`, `CurrencyRETC`, `RPI`, `RTCPI` | **Revenue EVM** | Bộ chỉ số EVM tương tự nhưng tính trên dòng **Doanh thu (Revenue)** thay vì Chi phí (Cost). |
+
+---
+
+### 6. Trạng thái, Tiến độ & Giám sát (Status & Health)
+
+* **Tiến độ**:
+* `PercentCompleted`: % hoàn thành tổng thể.
+* `LaborCostPercentComplete`, `PercentInvested`, `PercentProfitability`.
+* `CompletnessDefinition`, `CalculateCompletenessBasedOnEfforts`: Cách hệ thống tự động tính % hoàn thành (theo giờ công, khối lượng hay thủ công).
+* `ExpectedProgress`: % tiến độ lẽ ra phải đạt được tính đến hôm nay.
+
+
+* **Trạng thái & Rủi ro**:
+* `TrackStatus`: Chỉ số trạng thái nhanh (On Track, At Risk, Off Track).
+* `InternalStatus`, `State`, `StatusChangedOn`, `CommitLevel`, `CommittedDate`.
+* `IssuesCount`: Số lượng vấn đề (issue/risk) đang gắn với task này.
+
+
+
+---
+
+### 7. Cộng tác, Siêu dữ liệu & Hệ thống (Collaboration & Audit)
+
+* **Người phụ trách & Phân quyền**:
+* `Manager`, `EntityOwner`, `CreatedBy`, `LastUpdatedBy`.
+
+
+* **Cộng tác & Trao đổi**:
+* `NotesCount`, `EmailsCount`, `AttachmentsCount`, `PostsCount`, `LikesCount`.
+
+
+* **Thời gian hệ thống & Mô tả**:
+* `CreatedOn`, `LastUpdatedOn`, `LastUpdatedBySystemOn`.
+* `Name`, `Description`, `Overview`, `Overview1` $\rightarrow$ `Overview5` (trường văn bản mở rộng).
+* `Priority`, `Importance`, `SKU`, `Country`, `GeographicalRegion`.

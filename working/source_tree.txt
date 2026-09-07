@@ -1,0 +1,55 @@
+api_ingestion/
+│
+├── config/
+│   ├── __init__.py
+│   ├── api_config.py        ← giữ dataclass
+│   ├── job_config.py        ← giữ dataclass
+│   ├── loader.py            ← JSON + .env bằng stdlib
+│   └── validator.py         ← giữ validator
+│
+├── auth/
+│   ├── base_auth.py
+│   ├── token_auth.py
+│   └── session_auth.py
+│
+├── client/
+│   ├── base_client.py
+│   └── http_client.py       ← urllib
+│
+├── pagination/
+│   ├── base_paginator.py
+│   ├── offset_paginator.py
+│   ├── cursor_paginator.py
+│   └── page_paginator.py
+│
+├── reliability/
+│   ├── rate_limiter.py
+│   ├── retry.py
+│   └── circuit_breaker.py
+│
+├── checkpoint/
+│   └── checkpoint_store.py
+│
+├── ingestion/
+│   ├── extractor.py
+│   └── writer.py
+│
+├── quality/
+│   ├── profiler.py
+│   ├── validator.py
+│   └── statistics.py
+│
+├── monitoring/
+│   ├── job_tracker.py
+│   └── metrics.py
+│
+├── exceptions/
+│   └── errors.py
+│
+├── utils/
+│   └── helpers.py
+│
+├── config.json              ← thay config.yaml
+├── .env
+├── .gitignore
+└── main.py
