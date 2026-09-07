@@ -140,6 +140,13 @@ def run_transform_experiment(
     print("=" * 80)
 
     spark.stop()
+    return {
+        "raw_count": raw_count,
+        "invalid_count": invalid_count,
+        "duplicates_removed": duplicates_removed,
+        "clean_count": clean_count,
+        "stubs_count": stubs_count,
+    }
 
 
 if __name__ == "__main__":

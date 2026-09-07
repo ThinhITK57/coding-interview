@@ -22,6 +22,7 @@
 | **12. Chạy test tương tác trên Apache Zeppelin (%livy.spark)** | [`notebooks/zeppelin_livy_test.py`](file:///d:/dataguystory/coding-interview-university/working/api_ingestion/notebooks/zeppelin_livy_test.py) | Paragraphs 1 ➜ 10 (Copy paste vào Zeppelin) |
 | **13. Triển khai Docker-compose, kết nối Prefect HQ Server** | [`docker-compose.yml`](file:///d:/dataguystory/coding-interview-university/working/api_ingestion/docker-compose.yml)<br>[`Dockerfile`](file:///d:/dataguystory/coding-interview-university/working/api_ingestion/Dockerfile)<br>[`.env.example`](file:///d:/dataguystory/coding-interview-university/working/api_ingestion/.env.example) | Biến `PREFECT_API_URL`, `PREFECT_WORK_POOL_NAME` |
 | **14. Chạy toàn bộ Pipeline từ CLI** | [`prefect_flow.py`](file:///d:/dataguystory/coding-interview-university/working/api_ingestion/prefect_flow.py) | `python prefect_flow.py --endpoint muc_1 --env dev` |
+| **15. Chạy Kiểm Định Tự Động & Xem Báo Cáo Thực Nghiệm** | [`scripts/run_automated_audit_and_experiments.py`](file:///d:/dataguystory/coding-interview-university/working/api_ingestion/scripts/run_automated_audit_and_experiments.py)<br>[`experiment_results/`](file:///d:/dataguystory/coding-interview-university/working/api_ingestion/experiment_results/) | `run_automated_audit_and_experiments.py` (Chạy 6 phases kiểm định toàn trình và sinh báo cáo) |
 
 ---
 
@@ -89,9 +90,28 @@ working/api_ingestion/
 ├── notebooks/                          # THỬ NGHIỆM TƯƠNG TÁC ZEPEPLIN
 │   └── zeppelin_livy_test.py           # [Ticket 03-05] 10 Paragraphs chạy với %livy.spark
 │
+├── scripts/                            # SCRIPTS MOCK SERVER & BENCHMARK THỰC NGHIỆM
+│   ├── mock_data_generator.py          # Sinh giả lập 186 trường dữ liệu Task Planview
+│   ├── mock_epm_server.py              # Mock HTTP Server lắng nghe cổng 8088
+│   ├── benchmark_pagination_chunks.py  # Đo lường 6 mức chunk size (10 -> 1000)
+│   ├── run_spark_transform_experiment.py # Spark 2.3.2 Pipeline (Flatten -> DLQ -> Dedup -> Parquet)
+│   ├── run_dbt_simulation.py           # dbt Modeling, EVM Metrics (PV, EV, AC, CPI, SPI)
+│   └── run_automated_audit_and_experiments.py # Master runner kiểm thử toàn bộ 6 phases
+│
+├── experiment_results/                 # KẾT QUẢ VẬT LÝ VÀ BÁO CÁO THỰC NGHIỆM
+│   ├── phase1_component_audit.json     # Kết quả kiểm thử 10 module (100% PASS)
+│   ├── phase2_mock_server_health.json  # Trạng thái Mock Server
+│   ├── phase3_pagination_benchmark.json# Bảng đo lường 6 mức limit
+│   ├── phase4_spark_transform_audit.json# Số liệu Spark (1500 raw -> 30 DLQ -> 75 dup -> 1395 clean)
+│   ├── phase5_dbt_evm_audit.json       # Báo cáo tài chính & sức khỏe danh mục EVM
+│   └── EXECUTIVE_EXPERIMENT_AND_AUDIT_REPORT.md # Báo cáo kiểm định tổng hợp
+│
 └── docs/                               # TÀI LIỆU DỰ ÁN
     ├── ARCHITECTURE_BLUEPRINT.md       # Thiết kế kiến trúc tổng thể End-to-End
     ├── ROADMAP_AND_TICKETS.md          # Chi tiết 5 tickets và acceptance criteria
+    ├── LEADER_DEEP_DIVE_GUIDELINE.md   # Cẩm nang giải trình thực nghiệm với Leader
+    ├── CRAWLER_CODE_REVIEW_AND_DBT_BENCHMARK.md # Đánh giá code crawler & benchmark dbt
+    ├── OFFLINE_IMPLEMENTATION_AND_TESTING_GUIDE.md # Hướng dẫn gõ code máy công ty
     └── CODE_MAP.md                     # File bản đồ này
 ```
 

@@ -204,9 +204,42 @@ def run_dbt_simulation(
         )
         print("-" * 100)
 
+    # 7. Thống kê tổng hợp tài chính và sức khỏe danh mục
+    agg_row = fct_snapshot.groupBy().agg(
+        F.sum("planned_value_pv").alias("total_pv"),
+        F.sum("earned_value_ev").alias("total_ev"),
+        F.sum("actual_cost_ac").alias("total_ac"),
+    ).collect()[0]
+
+    health_df = fct_snapshot.groupBy("evm_health_status").count().collect()
+    health_dict = {row["evm_health_status"]: row["count"] for row in health_df}
+
+    total_pv = float(agg_row["total_pv"] or 0)
+    total_ev = float(agg_row["total_ev"] or 0)
+    total_ac = float(agg_row["total_ac"] or 0)
+    portfolio_cpi = round(total_ev / total_ac, 3) if total_ac > 0 else 0
+    portfolio_spi = round(total_ev / total_pv, 3) if total_pv > 0 else 0
+
+    dim_count = dim_tasks.count()
+    fct_count = fct_snapshot.count()
+
+    summary_stats = {
+        "dim_count": dim_count,
+        "fct_count": fct_count,
+        "total_planned_value_usd": round(total_pv, 2),
+        "total_earned_value_usd": round(total_ev, 2),
+        "total_actual_cost_usd": round(total_ac, 2),
+        "cost_variance_usd": round(total_ev - total_ac, 2),
+        "schedule_variance_usd": round(total_ev - total_pv, 2),
+        "portfolio_cpi": portfolio_cpi,
+        "portfolio_spi": portfolio_spi,
+        "health_distribution": health_dict,
+    }
+
     print("=" * 100)
     print("🎉 DBT TRANSFORMATION ĐÃ HOÀN THÀNH TOÀN BỘ LOGIC KHO DỮ LIỆU!")
     spark.stop()
+    return summary_stats
 
 
 if __name__ == "__main__":

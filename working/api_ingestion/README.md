@@ -119,7 +119,16 @@ Chạy mô phỏng 3 tầng dbt (`stg_`, `int_`, `dim_`, `fct_`):
 
 ---
 
-### 🔄 Bước 5: Chạy Pipeline Điều Phối & Các Chế Độ Khác
+### 🛡️ Bước 5: Chạy Kiểm Định Tự Động Toàn Trình 6 Pha (One-Click Master Audit)
+Để chạy toàn bộ chu trình kiểm thử tự động, đánh giá chất lượng mã nguồn, kiểm tra 0 bugs và sinh toàn bộ artifacts báo cáo:
+```powershell
+& "D:\miniconda-envs\envs\planview-spark37\python.exe" scripts/run_automated_audit_and_experiments.py
+```
+*Script tự động thực thi trong ~22 giây: Phase 1 (Kiểm thử 10 module) ➜ Phase 2 (Mock Server) ➜ Phase 3 (Benchmark 6 limit plans) ➜ Phase 4 (Spark 2.3.2 Transform, DLQ & Dedup) ➜ Phase 5 (dbt EVM Modeling) ➜ Phase 6 (Xuất báo cáo tổng hợp vào `experiment_results/`).*
+
+---
+
+### 🔄 Bước 6: Chạy Pipeline Điều Phối & Các Chế Độ Khác
 
 #### A. Chạy kiểm tra kết nối trích xuất cơ bản (Client Test):
 ```powershell

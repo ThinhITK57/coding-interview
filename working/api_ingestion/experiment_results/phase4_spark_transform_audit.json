@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-09-07T17:52:52.327873Z",
+  "spark_version": "2.3.2",
+  "raw_records_input": 1500,
+  "quarantined_dlq_records": 30,
+  "pruned_duplicate_records": 75,
+  "curated_clean_records": 1395,
+  "inferred_stubs_count": 0,
+  "duration_seconds": 15.88,
+  "storage_destinations": {
+    "dlq_parquet": "D:\\dataguystory\\coding-interview-university\\working\\api_ingestion\\storage_data\\warehouse\\dlq\\tasks",
+    "trino_db1_personal_raw": "D:\\dataguystory\\coding-interview-university\\working\\api_ingestion\\storage_data\\warehouse\\hive\\personal_raw\\tasks",
+    "trino_db2_global_clean": "D:\\dataguystory\\coding-interview-university\\working\\api_ingestion\\storage_data\\warehouse\\hive\\global_clean\\tasks"
+  },
+  "status": "SUCCESS"
+}

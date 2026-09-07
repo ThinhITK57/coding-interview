@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-09-07T17:52:55.472694Z",
+  "total_tasks_processed": 1395,
+  "duration_seconds": 3.14,
+  "financial_summary": {
+    "total_planned_value_usd": 3965147.1,
+    "total_earned_value_usd": 3090675.6,
+    "total_actual_cost_usd": 3149377.2,
+    "cost_variance_usd": -58701.6,
+    "schedule_variance_usd": -874471.5,
+    "portfolio_cpi": 0.981,
+    "portfolio_spi": 0.779
+  },
+  "health_distribution": {
+    "COMPLETED": 375,
+    "HIGH_RISK": 286,
+    "CRITICAL_DELAY": 233,
+    "AT_RISK": 241,
+    "ON_TRACK": 260
+  },
+  "marts_outputs": {
+    "dim_tasks": "D:\\dataguystory\\coding-interview-university\\working\\api_ingestion\\storage_data\\warehouse\\marts\\core\\dim_tasks",
+    "fct_task_daily_snapshot": "D:\\dataguystory\\coding-interview-university\\working\\api_ingestion\\storage_data\\warehouse\\marts\\evm\\fct_task_daily_snapshot"
+  },
+  "status": "SUCCESS"
+}

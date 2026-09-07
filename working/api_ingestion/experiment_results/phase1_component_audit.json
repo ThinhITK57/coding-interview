@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-09-07T17:52:33.200664Z",
+  "total_modules_tested": 10,
+  "passed": 10,
+  "failed": 0,
+  "tests": {
+    "ConfigLoader_and_Validator": {
+      "passed": true,
+      "detail": "Loaded clarizen with 4 endpoints"
+    },
+    "RateLimiter": {
+      "passed": true,
+      "detail": "Acquired token successfully. Status: 599 RPM remaining"
+    },
+    "RetryExecutor": {
+      "passed": true,
+      "detail": "Retried 3 times before success"
+    },
+    "CircuitBreaker": {
+      "passed": true,
+      "detail": "Successfully opened circuit after 2 consecutive failures"
+    },
+    "OffsetPaginator_NestedBody": {
+      "passed": true,
+      "detail": "Offset shifted from 0 -> 250"
+    },
+    "CheckpointStore_Atomic": {
+      "passed": true,
+      "detail": "Persisted and reloaded offset: 1000"
+    },
+    "TrinoDDLGenerator": {
+      "passed": true,
+      "detail": "Generated DDL for personal_raw & global_clean compatible with trino.exe"
+    },
+    "DLQRouter": {
+      "passed": true,
+      "detail": "DLQ Router configured at D:\\dataguystory\\coding-interview-university\\working\\api_ingestion\\experiment_results\\scratch_dlq"
+    },
+    "DocstringRegistry": {
+      "passed": true,
+      "detail": "Exported dbt schema.yml successfully"
+    },
+    "GenBIContextPacker": {
+      "passed": true,
+      "detail": "Successfully constructed LLM GenBI Context Pack"
+    }
+  }
+}
