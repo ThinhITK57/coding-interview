@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: planview_clean
+    database: hive
+    schema: global_clean
+    description: "Lớp dữ liệu sạch (Curated Layer) được nạp từ Spark 2.3.2 sau khi dedup và unnest JSON."
+    tables:
+      - name: tasks
+        description: "Bảng Tasks gốc của Planview/Clarizen AdaptiveWork sau khi dedup theo ID và last_updated_on."
+        columns:
+          - name: id
+            description: "Clarizen Global Entity ID, ví dụ /Task/538rjdsmsetne1v9cko71zhpa32754"
+            tests:
+              - unique
+              - not_null
+          - name: sysid
+            description: "User friendly Task ID, ví dụ T-36140"
+            tests:
+              - not_null
+          - name: last_updated_on
+            description: "Audit timestamp từ hệ thống nguồn"

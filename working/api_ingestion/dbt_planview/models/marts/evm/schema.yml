@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: dim_tasks
+    description: "Bảng Chiều chứa danh sách và thuộc tính phân cấp WBS của toàn bộ Tasks từ Planview EPM."
+    columns:
+      - name: task_id
+        description: "Clarizen Global ID (/Task/...)"
+        tests:
+          - unique
+          - not_null
+
+      - name: task_code
+        description: "Mã Task ngắn hiển thị cho người dùng (ví dụ T-36140)"
+        tests:
+          - not_null
+
+      - name: is_milestone
+        description: "Đánh dấu Task có phải là cột mốc quan trọng (Milestone) hay không."
+
+      - name: is_on_critical_path
+        description: "Đánh dấu Task có nằm trên đường găng (Critical Path) quyết định ngày kết thúc dự án hay không."
+
+  - name: fct_task_daily_snapshot
+    description: "Bảng Fact theo dõi ảnh chụp tiến độ (Periodic Snapshot Fact) và chỉ số EVM hàng ngày của từng Task."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - snapshot_date
+            - task_id
+    columns:
+      - name: snapshot_date
+        description: "Ngày chốt dữ liệu ảnh chụp"
+        tests:
+          - not_null
+
+      - name: task_id
+        description: "Khóa ngoại trỏ sang dim_tasks.task_id"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_tasks')
+              field: task_id
+
+      - name: percent_completed
+        description: "Phần trăm hoàn thành công việc (0.0 đến 100.0)"
+        tests:
+          - not_null
+
+      - name: planned_value_pv
+        description: "Giá trị kế hoạch tại thời điểm xét (Planned Value - PV)"
+
+      - name: earned_value_ev
+        description: "Giá trị công việc thực tế đã hoàn thành tính bằng tiền (Earned Value - EV)"
+
+      - name: actual_cost_ac
+        description: "Toàn bộ chi phí thực tế đã chi trả tính đến ngày hôm nay (Actual Cost - AC)"
+
+      - name: cost_variance_cv
+        description: "Chênh lệch chi phí (EV - AC). Giá trị dương thể hiện tiết kiệm, giá trị âm thể hiện bội chi."
+
+      - name: schedule_variance_sv
+        description: "Chênh lệch tiến độ (EV - PV). Giá trị dương thể hiện nhanh hơn kế hoạch, âm thể hiện trễ hạn."
+
+      - name: cpi
+        description: "Cost Performance Index (EV / AC). < 1.0 cảnh báo nguy cơ vượt ngân sách."
+
+      - name: spi
+        description: "Schedule Performance Index (EV / PV). < 1.0 cảnh báo nguy cơ trễ tiến độ."
+
+      - name: evm_health_status
+        description: "Đánh giá sức khỏe tổng hợp của Task theo chuẩn PMI"
+        tests:
+          - accepted_values:
+              values: ['COMPLETED', 'ON_TRACK', 'AT_RISK', 'HIGH_RISK', 'CRITICAL_DELAY']
