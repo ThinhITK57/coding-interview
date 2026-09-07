@@ -1,0 +1,200 @@
+{
+  "_comment": "TABLES REGISTRY - Cấu hình 5 thực thể liên kết phụ thuộc (Interdependent Endpoints)",
+  "_instruction": "Bản thiết kế chuẩn bị sẵn cho ngày mai khi BA cung cấp danh sách trường chi tiết của 4 mục còn lại.",
+  
+  "defaults": {
+    "trino_catalog": "hive",
+    "db1_schema": "personal_raw",
+    "db2_schema": "global_clean",
+    "minio_backup_bucket": "lakehouse",
+    "partition_col": "ingest_date"
+  },
+
+  "tables": [
+    {
+      "table_name": "User",
+      "endpoint_name": "user_query",
+      "entity_type": "User",
+      "tier": 1,
+      "tier_description": "Tier 1: Master Dimension Nhân sự / Người dùng (Bảng gốc độc lập)",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "depends_on": [],
+      "foreign_keys": [
+        {
+          "field": "DirectManager",
+          "references": "User.SYSID",
+          "relationship": "self_referencing_parent_child",
+          "description": "Cấp trên trực tiếp quản lý (Self Join hierarchy)"
+        }
+      ],
+      "fields_placeholder_instruction": "BA điền danh sách trường nhân sự vào đây ngày mai",
+      "fields": [
+        "SYSID",
+        "UserName",
+        "Email",
+        "FirstName",
+        "LastName",
+        "Department",
+        "DirectManager",
+        "Active",
+        "LastModified"
+      ]
+    },
+    {
+      "table_name": "Project",
+      "endpoint_name": "project_query",
+      "entity_type": "Project",
+      "tier": 1,
+      "tier_description": "Tier 1: Master Dimension Dự án (Bảng gốc độc lập)",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "depends_on": [],
+      "foreign_keys": [
+        {
+          "field": "ProjectManager",
+          "references": "User.SYSID",
+          "relationship": "many_to_one",
+          "description": "Giám đốc / Quản trị dự án chịu trách nhiệm"
+        }
+      ],
+      "fields_placeholder_instruction": "BA điền danh sách trường dự án vào đây ngày mai",
+      "fields": [
+        "SYSID",
+        "Name",
+        "TrackStatus",
+        "StartDate",
+        "DueDate",
+        "Budget",
+        "ProjectManager",
+        "LastModified"
+      ]
+    },
+    {
+      "table_name": "Task",
+      "endpoint_name": "task_query",
+      "entity_type": "Task",
+      "tier": 2,
+      "tier_description": "Tier 2: Core Entity Công việc (Phụ thuộc Project và User)",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "depends_on": ["Project", "User"],
+      "foreign_keys": [
+        {
+          "field": "C_Project",
+          "references": "Project.SYSID",
+          "relationship": "many_to_one",
+          "description": "Dự án cha sở hữu công việc này"
+        },
+        {
+          "field": "AssignedTo",
+          "references": "User.SYSID",
+          "relationship": "many_to_one",
+          "description": "Nhân sự được giao thực thi công việc"
+        }
+      ],
+      "fields_count": 186,
+      "fields_placeholder_instruction": "Đã hoàn thiện đầy đủ 186 trường Planview Clarizen",
+      "fields": [
+        "SYSID",
+        "Name",
+        "State",
+        "PercentCompleted",
+        "StartDate",
+        "DueDate",
+        "ActualCost",
+        "PlannedCost",
+        "LastModified",
+        "C_Project"
+      ]
+    },
+    {
+      "table_name": "Target",
+      "endpoint_name": "target_query",
+      "entity_type": "Target",
+      "tier": 2,
+      "tier_description": "Tier 2: Target / OKR / KPI Mục tiêu chiến lược dự án (Phụ thuộc Project và User)",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "depends_on": ["Project", "User"],
+      "foreign_keys": [
+        {
+          "field": "Project",
+          "references": "Project.SYSID",
+          "relationship": "many_to_one",
+          "description": "Dự án gắn với mục tiêu OKR/KPI này"
+        },
+        {
+          "field": "TargetOwner",
+          "references": "User.SYSID",
+          "relationship": "many_to_one",
+          "description": "Cá nhân chịu trách nhiệm chỉ tiêu"
+        }
+      ],
+      "fields_placeholder_instruction": "BA điền danh sách trường mục tiêu OKR vào đây ngày mai",
+      "fields": [
+        "SYSID",
+        "Name",
+        "TargetValue",
+        "ActualValue",
+        "MetricUnit",
+        "StartDate",
+        "DueDate",
+        "Project",
+        "TargetOwner",
+        "LastModified"
+      ]
+    },
+    {
+      "table_name": "Giao_Ban_Ket_Luan",
+      "endpoint_name": "giao_ban_ket_luan_query",
+      "entity_type": "GiaoBanKetLuan",
+      "tier": 3,
+      "tier_description": "Tier 3: Biên bản giao ban / Kết luận cuộc họp / Chỉ đạo lãnh đạo / Action Items",
+      "primary_key": "SYSID",
+      "watermark_field": "LastModified",
+      "depends_on": ["Task", "Project", "User", "Target"],
+      "foreign_keys": [
+        {
+          "field": "Project",
+          "references": "Project.SYSID",
+          "relationship": "many_to_one",
+          "description": "Dự án được kết luận chỉ đạo trong cuộc họp"
+        },
+        {
+          "field": "RelatedTask",
+          "references": "Task.SYSID",
+          "relationship": "many_to_one",
+          "description": "Nhiệm vụ cụ thể được giao để thực thi kết luận"
+        },
+        {
+          "field": "AssignedUser",
+          "references": "User.SYSID",
+          "relationship": "many_to_one",
+          "description": "Đầu mối chịu trách nhiệm thực thi kết luận giao ban"
+        },
+        {
+          "field": "StrategicTarget",
+          "references": "Target.SYSID",
+          "relationship": "many_to_one",
+          "description": "Chỉ tiêu mục tiêu gắn với kết luận chỉ đạo"
+        }
+      ],
+      "fields_placeholder_instruction": "BA điền danh sách trường biên bản kết luận giao ban vào đây ngày mai",
+      "fields": [
+        "SYSID",
+        "MeetingDate",
+        "MeetingCode",
+        "ConclusionContent",
+        "DecisionType",
+        "Status",
+        "Deadline",
+        "Project",
+        "RelatedTask",
+        "AssignedUser",
+        "StrategicTarget",
+        "LastModified"
+      ]
+    }
+  ]
+}

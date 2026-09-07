@@ -728,6 +728,106 @@ def api_ingestion_pipeline(
         raise
 
 
+def resolve_dag_execution_waves(endpoint_names: List[str], registry_path: str = "tables_registry.json") -> List[List[str]]:
+    """Compute topological execution waves for interrelated endpoints.
+
+    Uses Kahn's algorithm to separate endpoints into sequential waves (tiers).
+    Endpoints in the same wave have no dependencies on each other and can run concurrently.
+    Subsequent waves only execute after all upstream dependencies have succeeded.
+
+    Args:
+        endpoint_names: List of all endpoint names configured.
+        registry_path: Path to tables_registry.json metadata.
+
+    Returns:
+        List[List[str]]: Sequential list of execution waves.
+    """
+    dependencies = {ep: [] for ep in endpoint_names}
+
+    if os.path.exists(registry_path):
+        try:
+            with open(registry_path, "r", encoding="utf-8") as f:
+                reg = json.load(f)
+            for t in reg.get("tables", []):
+                t_name = t.get("table_name")
+                if t_name in dependencies:
+                    deps = [d for d in t.get("depends_on", []) if d in endpoint_names and d != t_name]
+                    dependencies[t_name] = deps
+        except Exception as e:
+            logger.warning("Failed to parse dependencies from %s: %s", registry_path, str(e))
+
+    waves = []
+    resolved = set()
+    remaining = set(endpoint_names)
+
+    while remaining:
+        current_wave = [ep for ep in remaining if all(dep in resolved for dep in dependencies.get(ep, []))]
+        if not current_wave:
+            logger.warning("Circular or unresolvable dependency among: %s; falling back to remainder", remaining)
+            waves.append(sorted(list(remaining)))
+            break
+
+        current_wave.sort()
+        waves.append(current_wave)
+        for ep in current_wave:
+            resolved.add(ep)
+            remaining.remove(ep)
+
+    return waves
+
+
+@flow(
+    name="api_ingestion_dag_pipeline",
+    description="Master DAG orchestrator executing interrelated API endpoints in topological dependency waves.",
+    retries=0,
+)
+def api_ingestion_dag_pipeline(
+    config_path: str = "config.json",
+    env: str = "dev",
+    mode: str = "incremental",
+    window_start: Optional[str] = None,
+    window_end: Optional[str] = None,
+    spark_master: str = "local[*]",
+    dry_run: bool = False,
+):
+    """Topological DAG orchestrator for multi-endpoint execution.
+
+    Orchestrates interdependent endpoints (e.g. User & Project -> Task -> Timesheet)
+    wave-by-wave, guaranteeing foreign key parent data arrives before child entities.
+    """
+    log = get_run_logger()
+    log.info("Starting Master DAG Orchestration Pipeline (env=%s, mode=%s)", env, mode)
+
+    loader = ConfigLoader()
+    config = loader.load(config_path)
+
+    endpoint_names = [ep.name for ep in config.api.endpoints]
+    registry_path = os.path.join(os.path.dirname(config_path) or ".", "tables_registry.json")
+    waves = resolve_dag_execution_waves(endpoint_names, registry_path)
+
+    log.info("Topological DAG Execution Plan resolved into %d wave(s): %s", len(waves), waves)
+    overall_results = {}
+
+    for wave_num, wave in enumerate(waves, 1):
+        log.info("=== Executing Wave %d/%d: %s ===", wave_num, len(waves), wave)
+        for ep_name in wave:
+            log.info("--> Running pipeline for endpoint: %s (Wave %d)", ep_name, wave_num)
+            res = api_ingestion_pipeline(
+                config_path=config_path,
+                endpoint_name=ep_name,
+                env=env,
+                mode=mode,
+                window_start=window_start,
+                window_end=window_end,
+                spark_master=spark_master,
+                dry_run=dry_run,
+            )
+            overall_results[ep_name] = res
+
+    log.info("Master DAG Orchestration Pipeline completed successfully across all %d endpoints", len(overall_results))
+    return overall_results
+
+
 # ── CLI Entrypoint ───────────────────────────────────────────────────
 
 def parse_args():
@@ -814,20 +914,16 @@ if __name__ == "__main__":
     )
 
     if args.all_endpoints:
-        # Run pipeline for each configured endpoint
-        loader = ConfigLoader()
-        config = loader.load(args.config_path)
-        for ep in config.api.endpoints:
-            api_ingestion_pipeline(
-                config_path=args.config_path,
-                endpoint_name=ep.name,
-                env=args.env,
-                mode=args.mode,
-                window_start=args.window_start,
-                window_end=args.window_end,
-                spark_master=args.spark_master,
-                dry_run=args.dry_run,
-            )
+        # Run master DAG pipeline orchestrating endpoints in topological wave order
+        api_ingestion_dag_pipeline(
+            config_path=args.config_path,
+            env=args.env,
+            mode=args.mode,
+            window_start=args.window_start,
+            window_end=args.window_end,
+            spark_master=args.spark_master,
+            dry_run=args.dry_run,
+        )
     elif args.endpoint:
         api_ingestion_pipeline(
             config_path=args.config_path,

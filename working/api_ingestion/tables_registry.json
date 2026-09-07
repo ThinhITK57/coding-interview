@@ -17,6 +17,14 @@
       "description": "Bảng Fact Công việc / Tasks - Tần suất cập nhật cao",
       "primary_key": "SYSID",
       "watermark_field": "LastModified",
+      "depends_on": ["muc_2", "muc_3"],
+      "foreign_keys": [
+        {
+          "field": "C_Project",
+          "references": "muc_2.SYSID",
+          "description": "Liên kết Task với Project cha"
+        }
+      ],
       "fields": [
         "SYSID",
         "Name",
@@ -34,6 +42,8 @@
       "description": "Bảng Fact/Dim Dự án / Projects",
       "primary_key": "SYSID",
       "watermark_field": "LastModified",
+      "depends_on": [],
+      "foreign_keys": [],
       "fields": [
         "SYSID",
         "Name",
@@ -50,6 +60,14 @@
       "description": "Bảng Dimension Người dùng / Nhân sự",
       "primary_key": "SYSID",
       "watermark_field": "LastModified",
+      "depends_on": [],
+      "foreign_keys": [
+        {
+          "field": "DirectManager",
+          "references": "muc_3.SYSID",
+          "description": "Tự liên kết cấp quản lý trực tiếp"
+        }
+      ],
       "fields": [
         "SYSID",
         "UserName",
@@ -65,6 +83,14 @@
       "description": "Bảng Fact Chi phí / Nhật ký công việc / Giao dịch",
       "primary_key": "SYSID",
       "watermark_field": "LastModified",
+      "depends_on": ["muc_1", "muc_3"],
+      "foreign_keys": [
+        {
+          "field": "WorkItem",
+          "references": "muc_1.SYSID",
+          "description": "Liên kết Timesheet với Task được chấm công"
+        }
+      ],
       "fields": [
         "SYSID",
         "ReportedDate",

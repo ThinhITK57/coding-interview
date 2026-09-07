@@ -1,0 +1,41 @@
+# prefect.yaml — Official Deployment Specification for Prefect HQ Server
+# Docs: https://docs.prefect.io/v3/deploy
+
+# Pull step: Cách Worker lấy code về khi thực thi trên Worker Machine/Container
+pull:
+  - prefect.deployments.steps.git_clone:
+      repository: https://github.com/ThinhITK57/coding-interview.git
+      branch: enterprise-elt-pipeline
+
+# Deployments: Khai báo các lịch trình chạy tự động (Scheduling)
+deployments:
+  # 1. Lập lịch chạy toàn bộ 4 endpoints theo đúng thứ tự phụ thuộc dữ liệu DAG (02:00 AM hàng ngày)
+  - name: clarizen-all-endpoints-dag-daily
+    entrypoint: working/api_ingestion/prefect_flow.py:api_ingestion_dag_pipeline
+    work_pool:
+      name: default-agent-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      env: prod
+      mode: incremental
+    schedule:
+      cron: "0 2 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Daily scheduled ETL pipeline orchestrating all 4 interdependent endpoints (User, Project, Task, Timesheet) in topological DAG order."
+
+  # 2. Lập lịch chạy riêng endpoint Task (Mỗi giờ trong khung giờ làm việc 08:00 - 18:00 từ T2 - T6)
+  - name: clarizen-tasks-hourly
+    entrypoint: working/api_ingestion/prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: default-agent-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: muc_1
+      env: prod
+      mode: incremental
+    schedule:
+      cron: "0 8-18 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Hourly incremental task synchronization during business hours."
