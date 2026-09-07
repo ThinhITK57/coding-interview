@@ -126,13 +126,14 @@ class TrinoDDLGenerator:
         # Partition column at the end
         col_defs.append(f"    {partition_col} DATE")
 
+        col_defs_str = ",\n".join(col_defs)
         ddl = f"""-- ====================================================================
 -- TRINO DB 1: PERSONAL RAW SANDBOX (Dữ liệu thô thử nghiệm thuật toán)
 -- ====================================================================
 CREATE SCHEMA IF NOT EXISTS {self.catalog}.{self.personal_schema};
 
 CREATE TABLE IF NOT EXISTS {table_full_name} (
-{',\\n'.join(col_defs)}
+{col_defs_str}
 )
 WITH (
     format = 'PARQUET',
@@ -166,13 +167,14 @@ WITH (
         # Partition column at the end
         col_defs.append(f"    {partition_col} DATE")
 
+        col_defs_str = ",\n".join(col_defs)
         ddl = f"""-- ====================================================================
 -- TRINO DB 2: GLOBAL CLEAN WAREHOUSE (Dữ liệu sạch chuẩn hóa qua Hive Metastore)
 -- ====================================================================
 CREATE SCHEMA IF NOT EXISTS {self.catalog}.{self.clean_schema};
 
 CREATE TABLE IF NOT EXISTS {table_full_name} (
-{',\\n'.join(col_defs)}
+{col_defs_str}
 )
 WITH (
     format = 'PARQUET',

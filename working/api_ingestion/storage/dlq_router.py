@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +100,9 @@ class DLQRouter:
                 .collect()
             )
             for row in tag_counts:
-                error_breakdown[row["_error_tags"]] = row["count"]
+                tag_val = row["_error_tags"]
+                tag_key = ",".join(tag_val) if isinstance(tag_val, (list, tuple)) else str(tag_val)
+                error_breakdown[tag_key] = row["count"]
 
         summary = {
             "table_name": table_name,

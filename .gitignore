@@ -40,3 +40,7 @@ Thumbs.db
 
 # Sublime Files
 .sublime
+
+# Local Pipeline Data
+storage_data/
+checkpoints/
