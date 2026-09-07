@@ -50,31 +50,102 @@ Dự án được thiết kế theo nguyên tắc **Metadata-Driven** và **Deep
 1. 🗺️ **[Bản Đồ Điều Hướng & Tra Cứu Mã Nguồn (Code Map)](docs/CODE_MAP.md):** Tra cứu theo bài toán, sơ đồ end-to-end data flow.
 2. 📖 **[Kiến Trúc Tổng Thể (Architecture Blueprint)](docs/ARCHITECTURE_BLUEPRINT.md):** 5 bài toán kỹ thuật cốt lõi.
 3. 📋 **[Lộ Trình và Danh Sách Tickets (Roadmap & Tickets)](docs/ROADMAP_AND_TICKETS.md):** Chi tiết 5 tickets và acceptance criteria.
+4. 🧑‍🏫 **[Cẩm Nang Giải Trình Với Leader & Live Demo Thực Nghiệm](docs/LEADER_DEEP_DIVE_GUIDELINE.md):** Hướng dẫn chi tiết chạy thực nghiệm Mock Server, phân tích benchmark limit/offset và giải phẫu hành trình dữ liệu từ JSON thô đến bảng Marts trong Trino.
+5. 📊 **[Phân Tích Review Code Crawler & DBT Benchmark](docs/CRAWLER_CODE_REVIEW_AND_DBT_BENCHMARK.md):** Đánh giá chuyên sâu mô hình dbt, ERD, công thức EVM chuẩn PMI và bộ câu hỏi review code.
+6. 🛠️ **[Cẩm Nang Triển Khai & Test Tuần Tự Cho Máy Công Ty](docs/OFFLINE_IMPLEMENTATION_AND_TESTING_GUIDE.md):** Thứ tự gõ code và test từng module khi không có Git.
 
 ---
 
-## 🚀 Khởi Động Nhanh
+## 🚀 Hướng Dẫn Chạy Dự Án & Thực Nghiệm (Live Demo Guide)
 
-### 1. Chạy tương tác trên Apache Zeppelin (%livy.spark)
-Mở file [`notebooks/zeppelin_livy_test.py`](notebooks/zeppelin_livy_test.py), copy lần lượt từng Paragraph từ 1 đến 10 và paste vào Apache Zeppelin để chạy thử nghiệm tương tác.
+Hệ thống cung cấp sẵn bộ công cụ giả lập Mock Server và Thực nghiệm toàn trình độc lập (không cần kết nối internet hay API thật), giúp bạn tự tin chạy demo và giải trình với Leader:
 
-### 2. Sinh DDL và chạy trên Trino CLI (`trino.exe`)
-Mỗi khi pipeline chạy hoặc khi gọi `TrinoDDLGenerator`, file DDL tương thích với catalog `hive` sẽ được tự động xuất ra thư mục `generated_ddl/<table_name>_trino_ddl.sql`. Bạn mở `trino.exe`, dán các câu lệnh SQL vào là bảng hiện lên ngay lập tức!
+### ⚙️ Bước 0: Thiết lập biến môi trường chuẩn (PowerShell)
+```powershell
+# Chuyển vào thư mục mã nguồn
+Set-Location "d:\dataguystory\coding-interview-university\working\api_ingestion"
 
-### 3. Khởi chạy Pipeline điều phối (Local)
-```bash
-# Chạy 1 mục cụ thể với cửa sổ tự động (đọc từ Checkpoint)
+# Khai báo môi trường Java 8 & PySpark 2.3.2 cho Conda env planview-spark37
+$env:JAVA_HOME = "D:\miniconda-envs\envs\planview-spark37\Library"
+$env:SPARK_HOME = "D:\miniconda-envs\envs\planview-spark37\lib\site-packages\pyspark"
+$env:PYTHONIOENCODING = "utf-8"
+$env:PYSPARK_PYTHON = "D:\miniconda-envs\envs\planview-spark37\python.exe"
+$env:PYSPARK_DRIVER_PYTHON = "D:\miniconda-envs\envs\planview-spark37\python.exe"
+```
+
+---
+
+### 🖥️ Bước 1: Khởi động Mock Planview API Server (Terminal 1)
+Khởi chạy mock server giả lập API Planview Clarizen AdaptiveWork với 186 trường nghiệp vụ:
+```powershell
+& "D:\miniconda-envs\envs\planview-spark37\python.exe" scripts/mock_epm_server.py --port 8088 --records 1500
+```
+- Server sinh 1.500 bản ghi Tasks (chứa đầy đủ WBS, EVM, Financials, Dates, Duplicates và DLQ errors).
+- Server lắng nghe tại `http://127.0.0.1:8088/Task/query` và endpoint kiểm tra `http://127.0.0.1:8088/health`.
+- Thêm cờ `--faults` nếu muốn mô phỏng lỗi gián đoạn mạng (HTTP 429/503) để kiểm tra Circuit Breaker & Retry.
+
+---
+
+### 📈 Bước 2: Chạy Benchmark Phân Trang (Limit / Offset) (Terminal 2)
+Mở một cửa sổ PowerShell mới và chạy benchmark:
+```powershell
+& "D:\miniconda-envs\envs\planview-spark37\python.exe" scripts/benchmark_pagination_chunks.py http://127.0.0.1:8088
+```
+- Đo lường và so sánh 6 phương án phân trang (`limit = 10, 50, 100, 250, 500, 1000`).
+- **Kết luận thực nghiệm:** Phương án `limit = 250` đạt hiệu năng tối ưu nhất (giảm 77% số lượng requests HTTP so với mặc định `50`, tốc độ 10.714 rec/s, kích thước gói tin an toàn ~400KB).
+
+---
+
+### ⚡ Bước 3: Chạy Pipeline Biến Đổi Spark 2.3.2 (Terminal 2)
+Chạy quy trình làm phẳng, cách ly DLQ và khử trùng lặp Window Ranking bằng Spark 2.3.2:
+```powershell
+& "D:\miniconda-envs\envs\planview-spark37\python.exe" scripts/run_spark_transform_experiment.py ./storage_data/raw_backup/tasks_raw.json ./storage_data/warehouse
+```
+- **Làm phẳng đệ quy (`JSONFlattener`):** Tách các struct lồng nhau như `State.id` $\rightarrow$ `state_id`.
+- **Cách ly DLQ (`DLQRouter`):** Tự động phát hiện và chuyển 30 bản ghi lỗi (`id = null`) vào `./storage_data/warehouse/dlq`.
+- **Khử trùng lặp (`DedupEngine`):** Sử dụng `ROW_NUMBER() OVER (PARTITION BY id ORDER BY LastUpdatedOn DESC)` loại bỏ 90 bản ghi trùng lặp.
+- **Lưu trữ Parquet:** Ghi 1.380 bản ghi sạch vào kho Trino DB 1 (`personal_raw`) và Trino DB 2 (`global_clean`).
+
+---
+
+### 📐 Bước 4: Chạy Mô Hình Hóa dbt & Tính Toán Chỉ Số EVM Chuẩn PMI (Terminal 2)
+Chạy mô phỏng 3 tầng dbt (`stg_`, `int_`, `dim_`, `fct_`):
+```powershell
+& "D:\miniconda-envs\envs\planview-spark37\python.exe" scripts/run_dbt_simulation.py ./storage_data/warehouse/hive/global_clean/tasks ./storage_data/warehouse/marts
+```
+- **Tính toán EVM:** Tự động tính các chỉ số quản trị dự án quốc tế: $PV, EV, AC, CV, SV, CPI, SPI, EAC, ETC$.
+- **Gắn nhãn sức khỏe (Health Tag):** Gán trạng thái `ON_TRACK`, `AT_RISK`, `CRITICAL_DELAY` dựa trên tiến độ và chi phí.
+- **Xuất bản DWH:** Tạo bảng chiều `dim_tasks` và bảng sự kiện `fct_task_daily_snapshot` kèm bảng điều khiển trực quan (Dashboard Preview).
+
+---
+
+### 🔄 Bước 5: Chạy Pipeline Điều Phối & Các Chế Độ Khác
+
+#### A. Chạy kiểm tra kết nối trích xuất cơ bản (Client Test):
+```powershell
+& "D:\miniconda-envs\envs\planview-spark37\python.exe" main.py
+```
+
+#### B. Chạy Pipeline Điều Phối Prefect:
+```powershell
+# Chạy trích xuất 1 endpoint với cửa sổ tự động
 python prefect_flow.py --endpoint muc_1 --env dev
 
 # Chạy với cửa sổ thời gian chỉ định
 python prefect_flow.py --endpoint muc_1 --window-start 2026-09-01T00:00:00Z --window-end 2026-09-06T00:00:00Z
 
-# Chạy toàn bộ 4 endpoints
+# Chạy toàn bộ các endpoints
 python prefect_flow.py --all --env prod
 ```
 
-### 4. Khởi chạy bằng Docker-compose (Kết nối Prefect HQ từ xa)
-```bash
+#### C. Chạy tương tác trên Apache Zeppelin (%livy.spark):
+Mở file [`notebooks/zeppelin_livy_test.py`](notebooks/zeppelin_livy_test.py), copy lần lượt từng Paragraph từ 1 đến 10 và paste vào Apache Zeppelin để chạy thử nghiệm tương tác.
+
+#### D. Sinh DDL và chạy trên Trino CLI (`trino.exe`):
+Mỗi khi pipeline chạy hoặc khi gọi `TrinoDDLGenerator`, file DDL tương thích với catalog `hive` sẽ được tự động xuất ra thư mục `generated_ddl/<table_name>_trino_ddl.sql`. Bạn mở `trino.exe`, dán các câu lệnh SQL vào là bảng hiện lên ngay lập tức!
+
+#### E. Khởi chạy bằng Docker-compose (Kết nối Prefect HQ từ xa):
+```powershell
 docker-compose up -d
 ```
 Worker sẽ tự động kết nối với Prefect HQ server theo địa chỉ `PREFECT_API_URL` và lắng nghe các flow runs.
