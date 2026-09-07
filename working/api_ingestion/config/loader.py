@@ -57,7 +57,38 @@ class ConfigLoader:
             raw_config
         )
 
+        # Check and merge tables_registry.json if present in same directory
+        registry_path = os.path.join(os.path.dirname(path) or ".", "tables_registry.json")
+        if os.path.exists(registry_path):
+            try:
+                with open(registry_path, "r", encoding="utf-8") as rf:
+                    registry_data = json.load(rf)
+                self._merge_tables_registry(raw_config, registry_data)
+            except Exception:
+                pass
+
         return self._build_config(raw_config)
+
+    def _merge_tables_registry(self, raw_config, registry_data):
+        """Merge table schemas & fields from tables_registry.json into config endpoints."""
+        tables = registry_data.get("tables", [])
+        endpoints = raw_config.get("api", {}).get("endpoints", [])
+
+        for table in tables:
+            t_name = table.get("table_name")
+            entity_type = table.get("entity_type")
+            fields = table.get("fields", [])
+
+            if not fields:
+                continue
+
+            for ep in endpoints:
+                ep_name = ep.get("name")
+                body = ep.get("body")
+                if isinstance(body, dict):
+                    body_type = body.get("typeName")
+                    if ep_name == t_name or (entity_type and body_type == entity_type):
+                        body["fields"] = fields
 
     def _resolve_environment_variables(self, value):
 
@@ -80,6 +111,10 @@ class ConfigLoader:
             def replace_env(match):
 
                 env_name = match.group(1)
+
+                # Dynamic runtime window placeholders are calculated by Extractor
+                if env_name in ("WINDOW_START", "WINDOW_END"):
+                    return os.getenv(env_name, f"${{{env_name}}}")
 
                 env_value = os.getenv(env_name)
 

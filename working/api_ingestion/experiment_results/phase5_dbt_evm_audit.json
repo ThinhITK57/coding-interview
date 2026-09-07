@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-09-07T17:52:55.472694Z",
+  "timestamp": "2026-09-07T18:13:22.242924Z",
   "total_tasks_processed": 1395,
-  "duration_seconds": 3.14,
+  "duration_seconds": 2.61,
   "financial_summary": {
     "total_planned_value_usd": 3965147.1,
     "total_earned_value_usd": 3090675.6,
@@ -12,10 +12,10 @@
     "portfolio_spi": 0.779
   },
   "health_distribution": {
-    "COMPLETED": 375,
     "HIGH_RISK": 286,
-    "CRITICAL_DELAY": 233,
+    "COMPLETED": 375,
     "AT_RISK": 241,
+    "CRITICAL_DELAY": 233,
     "ON_TRACK": 260
   },
   "marts_outputs": {

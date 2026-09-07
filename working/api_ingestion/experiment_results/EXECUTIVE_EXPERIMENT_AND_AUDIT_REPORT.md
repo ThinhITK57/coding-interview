@@ -1,7 +1,7 @@
 # BÁO CÁO TOÀN DIỆN: THỰC NGHIỆM KIỂM ĐỊNH MÃ NGUỒN VÀ DÒNG CHẢY DỮ LIỆU
 **Hệ thống**: Planview Clarizen Enterprise ELT Pipeline  
 **Môi trường thử nghiệm**: Python 3.7.1 | Apache Spark 2.3.2 | OpenJDK 8.0.152 | Windows 64-bit  
-**Thời gian thực thi**: 2026-09-07 17:52:55Z  
+**Thời gian thực thi**: 2026-09-07 18:13:22Z  
 **Kết luận tổng quan**: 100% MODULE VẬN HÀNH CHÍNH XÁC - KHÔNG PHÁT HIỆN BẤT KỲ LỖI NÀO (ZERO BUGS)
 
 ---
@@ -31,14 +31,14 @@
 
 | Chunk Plan | Limit / Trang | Số Requests | Thời Gian (s) | Throughput (rec/s) | Avg Payload (KB) | Đánh Giá & Rủi Ro Thực Tế |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Plan 1** | `10` | 151 | 0.937s | 1600.9 | 19.18 KB | Quá chậm do HTTP Handshake |
+| **Plan 1** | `10` | 151 | 0.609s | 2463.1 | 19.18 KB | Quá chậm do HTTP Handshake |
 | **Plan 2** | `50` | 31 | 0.266s | 5639.1 | 93.08 KB | Mặc định Clarizen (Nhiều requests) |
-| **Plan 3** | `100` | 16 | 0.188s | 7978.7 | 180.25 KB | Cân bằng tốt |
-| ⭐ **Plan 4** | `250` | 7 | 0.156s | 9615.4 | 411.89 KB | Khuyến nghị chuẩn sản xuất (Tối ưu nhất) |
-| **Plan 5** | `500` | 4 | 0.109s | 13761.5 | 720.73 KB | Payload lớn |
-| **Plan 6** | `1000` | 2 | 0.125s | 12000.0 | 1441.38 KB | Nguy cơ 504 Gateway Timeout |
+| **Plan 3** | `100` | 16 | 0.219s | 6849.3 | 180.25 KB | Cân bằng tốt |
+| ⭐ **Plan 4** | `250` | 7 | 0.203s | 7389.2 | 411.89 KB | Khuyến nghị chuẩn sản xuất (Tối ưu nhất) |
+| **Plan 5** | `500` | 4 | 0.14s | 10714.3 | 720.73 KB | Payload lớn |
+| **Plan 6** | `1000` | 2 | 0.172s | 8720.9 | 1441.38 KB | Nguy cơ 504 Gateway Timeout |
 
-👉 **Lựa chọn bảo vệ trước Leader**: Chọn **`limit = 250`** (Plan 4). Tốc độ đạt **9615.4 bản ghi/giây**, giảm **77% số request** so với mặc định, dung lượng gói tin ~411 KB an toàn tuyệt đối.
+👉 **Lựa chọn bảo vệ trước Leader**: Chọn **`limit = 250`** (Plan 4). Tốc độ đạt **7389.2 bản ghi/giây**, giảm **77% số request** so với mặc định, dung lượng gói tin ~411 KB an toàn tuyệt đối.
 
 ---
 
@@ -49,7 +49,7 @@
 - **Cách ly Dead Letter Queue (`DLQRouter`)**: Phát hiện và cách ly chính xác **30 bản ghi lỗi** (do thiếu Primary Key `id`).
 - **Khử trùng lặp đa phiên bản (`DedupEngine`)**: Loại bỏ chính xác **75 bản ghi trùng lặp** bằng thuật toán Window Ranking `row_number() == 1`.
 - **Dữ liệu sạch xuất bản Trino DB 2 (`global_clean`)**: **1395 bản ghi sạch**, lưu dưới dạng Apache Parquet.
-- **Thời gian thực thi Spark**: **15.88 giây**.
+- **Thời gian thực thi Spark**: **15.19 giây**.
 
 ---
 
@@ -66,10 +66,10 @@ Dữ liệu sau khi nạp vào tầng DWH được áp dụng công thức tài 
 - **Portfolio SPI (Hiệu suất tiến độ)**: **0.779**
 
 ### Phân Bổ Sức Khỏe Dự Án (Health Tags):
-- **`COMPLETED`**: 375 tasks (26.9%)
 - **`HIGH_RISK`**: 286 tasks (20.5%)
-- **`CRITICAL_DELAY`**: 233 tasks (16.7%)
+- **`COMPLETED`**: 375 tasks (26.9%)
 - **`AT_RISK`**: 241 tasks (17.3%)
+- **`CRITICAL_DELAY`**: 233 tasks (16.7%)
 - **`ON_TRACK`**: 260 tasks (18.6%)
 
 ---

@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-09-07T17:52:34.468514Z",
+  "timestamp": "2026-09-07T18:13:02.643481Z",
   "dataset_size": 1500,
   "tested_plans": [
     {
       "limit": 10,
       "total_records": 1500,
       "http_requests": 151,
-      "duration_seconds": 0.937,
-      "throughput_rps": 1600.9,
+      "duration_seconds": 0.609,
+      "throughput_rps": 2463.1,
       "total_payload_kb": 2896.0,
       "avg_payload_kb": 19.18,
       "plan_name": "Plan 1"
@@ -26,8 +26,8 @@
       "limit": 100,
       "total_records": 1500,
       "http_requests": 16,
-      "duration_seconds": 0.188,
-      "throughput_rps": 7978.7,
+      "duration_seconds": 0.219,
+      "throughput_rps": 6849.3,
       "total_payload_kb": 2884.0,
       "avg_payload_kb": 180.25,
       "plan_name": "Plan 3"
@@ -36,8 +36,8 @@
       "limit": 250,
       "total_records": 1500,
       "http_requests": 7,
-      "duration_seconds": 0.156,
-      "throughput_rps": 9615.4,
+      "duration_seconds": 0.203,
+      "throughput_rps": 7389.2,
       "total_payload_kb": 2883.2,
       "avg_payload_kb": 411.89,
       "plan_name": "Plan 4"
@@ -46,8 +46,8 @@
       "limit": 500,
       "total_records": 1500,
       "http_requests": 4,
-      "duration_seconds": 0.109,
-      "throughput_rps": 13761.5,
+      "duration_seconds": 0.14,
+      "throughput_rps": 10714.3,
       "total_payload_kb": 2882.9,
       "avg_payload_kb": 720.73,
       "plan_name": "Plan 5"
@@ -56,8 +56,8 @@
       "limit": 1000,
       "total_records": 1500,
       "http_requests": 2,
-      "duration_seconds": 0.125,
-      "throughput_rps": 12000.0,
+      "duration_seconds": 0.172,
+      "throughput_rps": 8720.9,
       "total_payload_kb": 2882.8,
       "avg_payload_kb": 1441.38,
       "plan_name": "Plan 6"

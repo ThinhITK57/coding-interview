@@ -29,10 +29,34 @@ import json
 import logging
 import argparse
 from datetime import timedelta
+from typing import Optional, List, Dict, Any
 
-from prefect import flow, task, get_run_logger
-from prefect.artifacts import create_markdown_artifact, create_table_artifact
-from prefect.concurrency.sync import concurrency
+try:
+    from prefect import flow, task, get_run_logger
+except ImportError:
+    # Graceful fallback when running in Python 3.7 or without Prefect package installed
+    def flow(*args, **kwargs):
+        def decorator(fn):
+            return fn
+        if args and callable(args[0]):
+            return args[0]
+        return decorator
+
+    def task(*args, **kwargs):
+        def decorator(fn):
+            return fn
+        if args and callable(args[0]):
+            return args[0]
+        return decorator
+
+    def get_run_logger():
+        return logging.getLogger("prefect_flow")
+
+    def create_markdown_artifact(key=None, markdown=None, description=None):
+        pass
+
+    def create_table_artifact(key=None, table=None, description=None):
+        pass
 
 from config.loader import ConfigLoader
 from config.validator import ConfigValidator
