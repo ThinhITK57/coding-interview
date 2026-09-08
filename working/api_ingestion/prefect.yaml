@@ -9,7 +9,7 @@ pull:
 
 # Deployments: Khai báo các lịch trình chạy tự động (Scheduling)
 deployments:
-  # 1. Lập lịch chạy toàn bộ 4 endpoints theo đúng thứ tự phụ thuộc dữ liệu DAG (02:00 AM hàng ngày)
+  # 1. Lập lịch chạy toàn bộ 5 endpoints theo đúng thứ tự phụ thuộc dữ liệu DAG (02:00 AM hàng ngày)
   - name: clarizen-all-endpoints-dag-daily
     entrypoint: working/api_ingestion/prefect_flow.py:api_ingestion_dag_pipeline
     work_pool:
@@ -22,7 +22,7 @@ deployments:
     schedule:
       cron: "0 2 * * *"
       timezone: "Asia/Ho_Chi_Minh"
-    description: "Daily scheduled ETL pipeline orchestrating all 4 interdependent endpoints (User, Project, Task, Timesheet) in topological DAG order."
+    description: "Daily scheduled ETL pipeline orchestrating all 5 interdependent endpoints (BSC, Projects, Assignments, Targets, Tasks) in topological DAG order."
 
   # 2. Lập lịch chạy riêng endpoint Task (Mỗi giờ trong khung giờ làm việc 08:00 - 18:00 từ T2 - T6)
   - name: clarizen-tasks-hourly
@@ -32,7 +32,7 @@ deployments:
       work_queue_name: default
     parameters:
       config_path: config.json
-      endpoint_name: muc_1
+      endpoint_name: tasks
       env: prod
       mode: incremental
     schedule:
