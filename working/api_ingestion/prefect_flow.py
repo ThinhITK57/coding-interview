@@ -28,35 +28,89 @@ import sys
 import json
 import logging
 import argparse
-from datetime import timedelta
+from contextlib import contextmanager
+from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 
-try:
-    from prefect import flow, task, get_run_logger
-except ImportError:
-    # Graceful fallback when running in Python 3.7 or without Prefect package installed
+# Determine if standalone execution was requested via CLI flag or env var
+STANDALONE_MODE = (
+    "--standalone" in sys.argv
+    or "--no-prefect" in sys.argv
+    or os.environ.get("PREFECT_STANDALONE", "").lower() in ("1", "true", "yes")
+)
+
+HAS_PREFECT = False
+if not STANDALONE_MODE:
+    try:
+        from prefect import flow, task, get_run_logger
+        HAS_PREFECT = True
+    except ImportError:
+        HAS_PREFECT = False
+
+if not HAS_PREFECT:
+    # Graceful fallback when running in Python 3.7, without Prefect package installed, or with --standalone
     def flow(*args, **kwargs):
         def decorator(fn):
+            fn.fn = fn
             return fn
         if args and callable(args[0]):
+            args[0].fn = args[0]
             return args[0]
         return decorator
 
     def task(*args, **kwargs):
         def decorator(fn):
+            fn.fn = fn
             return fn
         if args and callable(args[0]):
+            args[0].fn = args[0]
             return args[0]
         return decorator
 
     def get_run_logger():
         return logging.getLogger("prefect_flow")
+else:
+    # Wrap get_run_logger to never throw MissingContextError
+    _raw_get_run_logger = get_run_logger
+    def get_run_logger():
+        try:
+            return _raw_get_run_logger()
+        except Exception:
+            return logging.getLogger("prefect_flow")
 
-    def create_markdown_artifact(key=None, markdown=None, description=None):
-        pass
+# Safe Artifacts handling (works whether Prefect is installed, offline, or absent)
+def create_markdown_artifact(key=None, markdown=None, description=None):
+    if HAS_PREFECT:
+        try:
+            from prefect.artifacts import create_markdown_artifact as _prefect_create_md
+            return _prefect_create_md(key=key, markdown=markdown, description=description)
+        except Exception as e:
+            logging.getLogger("prefect_flow").warning("Prefect markdown artifact not published: %s", e)
+    return None
 
-    def create_table_artifact(key=None, table=None, description=None):
-        pass
+def create_table_artifact(key=None, table=None, description=None):
+    if HAS_PREFECT:
+        try:
+            from prefect.artifacts import create_table_artifact as _prefect_create_tbl
+            return _prefect_create_tbl(key=key, table=table, description=description)
+        except Exception as e:
+            logging.getLogger("prefect_flow").warning("Prefect table artifact not published: %s", e)
+    return None
+
+# Safe Concurrency handling (prevents crash if Prefect is absent or concurrency limit not registered)
+@contextmanager
+def safe_concurrency(name, occupy=1):
+    if HAS_PREFECT:
+        try:
+            from prefect.concurrency.sync import concurrency as _prefect_concurrency
+            with _prefect_concurrency(name, occupy=occupy):
+                yield
+            return
+        except Exception:
+            pass
+    yield
+
+concurrency = safe_concurrency
 
 from config.loader import ConfigLoader
 from config.validator import ConfigValidator
@@ -554,14 +608,29 @@ def publish_daily_report(job_summary, quality_report):
     # Generate markdown report
     markdown_report = tracker.to_daily_report_markdown(job_summary)
 
-    # Publish as Prefect Markdown Artifact
-    create_markdown_artifact(
-        key=f"daily-report-{job_summary.get('endpoint', 'unknown')}",
-        markdown=markdown_report,
-        description=f"Daily ingestion report for {job_summary.get('endpoint', '')}",
-    )
+    # Always persist report locally as markdown file
+    try:
+        reports_dir = "./data/reports"
+        os.makedirs(reports_dir, exist_ok=True)
+        local_report_path = os.path.join(
+            reports_dir, f"daily_report_{job_summary.get('endpoint', 'unknown')}.md"
+        )
+        with open(local_report_path, "w", encoding="utf-8") as f:
+            f.write(markdown_report)
+        log.info("Local markdown report saved to: %s", local_report_path)
+    except Exception as e:
+        log.warning("Could not save local markdown report: %s", e)
 
-    log.info("Daily report published to Prefect HQ Artifacts")
+    # Publish as Prefect Markdown Artifact
+    try:
+        create_markdown_artifact(
+            key=f"daily-report-{job_summary.get('endpoint', 'unknown')}",
+            markdown=markdown_report,
+            description=f"Daily ingestion report for {job_summary.get('endpoint', '')}",
+        )
+        log.info("Daily report published to Prefect HQ Artifacts")
+    except Exception as e:
+        log.warning("Could not publish daily report to Prefect HQ: %s", e)
 
     # Also publish column stats as Prefect Table Artifact
     if quality_report and quality_report.column_stats:
@@ -576,13 +645,15 @@ def publish_daily_report(job_summary, quality_report):
                 "Mean": str(stats.get("mean", "")) if stats.get("mean") is not None else "—",
             })
 
-        create_table_artifact(
-            key=f"column-stats-{job_summary.get('endpoint', 'unknown')}",
-            table=table_data,
-            description=f"Column statistics for {job_summary.get('endpoint', '')}",
-        )
-
-        log.info("Column stats table published to Prefect HQ Artifacts")
+        try:
+            create_table_artifact(
+                key=f"column-stats-{job_summary.get('endpoint', 'unknown')}",
+                table=table_data,
+                description=f"Column statistics for {job_summary.get('endpoint', '')}",
+            )
+            log.info("Column stats table published to Prefect HQ Artifacts")
+        except Exception as e:
+            log.warning("Could not publish column stats to Prefect HQ: %s", e)
 
 
 # ── Main Flow ────────────────────────────────────────────────────────
@@ -734,11 +805,14 @@ def api_ingestion_pipeline(
         log.error("Pipeline failed: %s", str(e))
         summary = tracker.finish(status="FAILED")
 
-        # Still publish report on failure
-        publish_daily_report(
-            job_summary=summary,
-            quality_report=tracker._quality_report,
-        )
+        # Still publish report on failure (safely)
+        try:
+            publish_daily_report(
+                job_summary=summary,
+                quality_report=tracker._quality_report,
+            )
+        except Exception as pub_err:
+            log.warning("Could not publish failure report: %s", pub_err)
 
         raise
 
@@ -914,6 +988,13 @@ Examples:
         action="store_true",
         help="Validate config and exit without executing",
     )
+    parser.add_argument(
+        "--standalone",
+        "--no-prefect",
+        action="store_true",
+        dest="standalone",
+        help="Run synchronously in standalone Python mode (bypasses Prefect Server, UI, and network calls)",
+    )
 
     return parser.parse_args()
 
@@ -928,28 +1009,56 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    if args.all_endpoints:
-        # Run master DAG pipeline orchestrating endpoints in topological wave order
-        api_ingestion_dag_pipeline(
-            config_path=args.config_path,
-            env=args.env,
-            mode=args.mode,
-            window_start=args.window_start,
-            window_end=args.window_end,
-            spark_master=args.spark_master,
-            dry_run=args.dry_run,
-        )
-    elif args.endpoint:
-        api_ingestion_pipeline(
-            config_path=args.config_path,
-            endpoint_name=args.endpoint,
-            env=args.env,
-            mode=args.mode,
-            window_start=args.window_start,
-            window_end=args.window_end,
-            spark_master=args.spark_master,
-            dry_run=args.dry_run,
-        )
-    else:
-        print("Error: specify --endpoint NAME or --all")
+    runner_log = logging.getLogger("pipeline_runner")
+    if STANDALONE_MODE or args.standalone:
+        runner_log.info("Execution mode: STANDALONE (Bypassing Prefect Server/HQ orchestration)")
+
+    try:
+        if args.all_endpoints:
+            # Run master DAG pipeline orchestrating endpoints in topological wave order
+            api_ingestion_dag_pipeline(
+                config_path=args.config_path,
+                env=args.env,
+                mode=args.mode,
+                window_start=args.window_start,
+                window_end=args.window_end,
+                spark_master=args.spark_master,
+                dry_run=args.dry_run,
+            )
+        elif args.endpoint:
+            api_ingestion_pipeline(
+                config_path=args.config_path,
+                endpoint_name=args.endpoint,
+                env=args.env,
+                mode=args.mode,
+                window_start=args.window_start,
+                window_end=args.window_end,
+                spark_master=args.spark_master,
+                dry_run=args.dry_run,
+            )
+        else:
+            print("Error: specify --endpoint NAME or --all")
+            sys.exit(1)
+    except Exception as e:
+        err_type = type(e).__name__
+        err_msg = str(e)
+        runner_log.error("Pipeline run failed with [%s]: %s", err_type, err_msg)
+
+        combined_err = (err_type + " " + err_msg).lower()
+        is_prefect_err = any(k in combined_err for k in [
+            "prefect", "httpx", "connect", "401", "302", "unauthorized",
+            "authelia", "ssl", "certificate", "refused", "timeout"
+        ])
+        if is_prefect_err and not (args.standalone or STANDALONE_MODE):
+            runner_log.warning(
+                "\n" + "=" * 76 + "\n"
+                "[DIAGNOSTIC TIP: PREFECT SERVER / SSO CONNECTIVITY ISSUE DETECTED]\n"
+                "The exception above indicates that Prefect could not communicate with the\n"
+                "configured PREFECT_API_URL (e.g. Authelia SSO blocked CLI request or SSL cert).\n\n"
+                "To run this pipeline standalone WITHOUT connecting to Prefect Server, simply add:\n"
+                "    --standalone\n\n"
+                "Example:\n"
+                f"    python prefect_flow.py --endpoint {args.endpoint or 'tasks'} --env {args.env} --standalone\n"
+                "=" * 76
+            )
         sys.exit(1)
