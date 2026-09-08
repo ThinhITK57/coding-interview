@@ -122,9 +122,17 @@ class Extractor:
         )
 
     def _find_endpoint(self, endpoint_name):
-        """Find EndpointConfig by name."""
+        """Find EndpointConfig by name or alias."""
+        alias_map = {
+            "muc_1": "tasks", "task": "tasks", "tasks": "tasks",
+            "muc_2": "projects", "project": "projects", "projects": "projects",
+            "muc_3": "bsc", "objective": "bsc", "bsc": "bsc",
+            "muc_4": "assignments", "assignment": "assignments", "assignments": "assignments",
+            "muc_5": "targets", "target": "targets", "targets": "targets",
+        }
+        target_name = alias_map.get(endpoint_name.lower() if endpoint_name else "", endpoint_name)
         for ep in self._api_config.endpoints:
-            if ep.name == endpoint_name:
+            if ep.name == endpoint_name or ep.name == target_name:
                 return ep
         raise ValueError(f"Endpoint '{endpoint_name}' not found in config")
 

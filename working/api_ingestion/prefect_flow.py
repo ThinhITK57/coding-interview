@@ -88,12 +88,13 @@ logger = logging.getLogger(__name__)
     tags=["config", "setup"],
     retries=0,
 )
-def load_and_validate_config(config_path="config.json", env="dev"):
+def load_and_validate_config(config_path="config.json", env="dev", endpoint_name=None):
     """Load and validate pipeline configuration.
 
     Args:
         config_path: Path to config.json.
         env: Environment name (dev, staging, prod).
+        endpoint_name: Target endpoint name or alias.
 
     Returns:
         IngestionConfig: Validated configuration object.
@@ -102,6 +103,19 @@ def load_and_validate_config(config_path="config.json", env="dev"):
 
     loader = ConfigLoader()
     config = loader.load(config_path)
+
+    alias_map = {
+        "muc_1": "tasks", "task": "tasks", "tasks": "tasks",
+        "muc_2": "projects", "project": "projects", "projects": "projects",
+        "muc_3": "bsc", "objective": "bsc", "bsc": "bsc",
+        "muc_4": "assignments", "assignment": "assignments", "assignments": "assignments",
+        "muc_5": "targets", "target": "targets", "targets": "targets",
+    }
+    if endpoint_name:
+        resolved = alias_map.get(endpoint_name.lower(), endpoint_name)
+        config.job.endpoint = resolved
+    elif config.job.endpoint in alias_map:
+        config.job.endpoint = alias_map[config.job.endpoint]
 
     validator = ConfigValidator()
     config = validator.validate(config)
@@ -631,6 +645,7 @@ def api_ingestion_pipeline(
         config = load_and_validate_config(
             config_path=config_path,
             env=env,
+            endpoint_name=endpoint_name,
         )
 
         if dry_run:
