@@ -1,3 +1,4 @@
+import os
 import logging
 import json
 
@@ -31,15 +32,20 @@ class SparkSessionFactory:
             app_name: Spark application name.
             master: Spark master URL (local[*], yarn, spark://host:port).
             extra_config: Optional dict of additional Spark config key-value pairs.
-            minio_endpoint: S3A endpoint (e.g. "http://minio:9000").
-            minio_access_key: S3A access key.
-            minio_secret_key: S3A secret key.
+            minio_endpoint: S3A endpoint (e.g. "http://minio:9000"). If None, reads from MINIO_ENDPOINT env var.
+            minio_access_key: S3A access key. If None, reads from MINIO_ACCESS_KEY env var.
+            minio_secret_key: S3A secret key. If None, reads from MINIO_SECRET_KEY env var.
             enable_hive: If True, calls enableHiveSupport().
 
         Returns:
             SparkSession instance.
         """
         from pyspark.sql import SparkSession
+
+        # Auto-detect MinIO / S3A credentials from environment variables if not passed explicitly
+        s3_endpoint = minio_endpoint or os.getenv("MINIO_ENDPOINT") or os.getenv("S3_ENDPOINT")
+        s3_access_key = minio_access_key or os.getenv("MINIO_ACCESS_KEY") or os.getenv("AWS_ACCESS_KEY_ID")
+        s3_secret_key = minio_secret_key or os.getenv("MINIO_SECRET_KEY") or os.getenv("AWS_SECRET_ACCESS_KEY")
 
         builder = (
             SparkSession.builder
@@ -51,16 +57,21 @@ class SparkSessionFactory:
             .config("spark.sql.parquet.writeLegacyFormat", "true")
         )
 
-        # MinIO S3A configuration if provided
-        if minio_endpoint:
+        # MinIO S3A configuration if endpoint is found
+        if s3_endpoint:
             builder = (
                 builder
-                .config("spark.hadoop.fs.s3a.endpoint", minio_endpoint)
-                .config("spark.hadoop.fs.s3a.access.key", minio_access_key or "")
-                .config("spark.hadoop.fs.s3a.secret.key", minio_secret_key or "")
+                .config("spark.hadoop.fs.s3a.endpoint", s3_endpoint)
+                .config("spark.hadoop.fs.s3a.access.key", s3_access_key or "")
+                .config("spark.hadoop.fs.s3a.secret.key", s3_secret_key or "")
                 .config("spark.hadoop.fs.s3a.path.style.access", "true")
                 .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
             )
+            logger.info(json.dumps({
+                "event": "spark_s3a_configured",
+                "endpoint": s3_endpoint,
+                "has_access_key": bool(s3_access_key),
+            }))
 
         if enable_hive:
             try:
