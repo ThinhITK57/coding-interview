@@ -1,0 +1,24 @@
+version: '3.8'
+networks:
+  authelia-proxy-external:
+    external: true
+services:
+  api-ingestion-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_ingestion_worker
+    restart: unless-stopped
+    networks:
+      - authelia-proxy-external
+    extra_hosts:
+      - "prefect-external.viettelcyber.com:10.2.54.130.46"
+    environment:
+      - PREFECT_API_URL= ${PREFECT_API_URL:-http://prefect-server:4200/api}
+      - PREFECT_WORK_POOL_NAME=${PREFECT_WORK_POOL_NAME:-default-agent-pool}
+      - ENV=${ENV:-prod}
+      - PROJECT_API_KEY=${PROJECT_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./checkpoints:/app/checkpoints
+      

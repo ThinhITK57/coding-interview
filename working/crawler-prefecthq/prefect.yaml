@@ -1,0 +1,45 @@
+deployments:
+  - name: epm-all-endpoints-dag-daily
+    entrypoint: prefect_flow.py:api_ingestion_dag_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "0 2 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Daily scheduled ETL pipeline orchestrating all 5 endpoints"
+
+  - name: epm-tasks-hourly
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: tasks
+      env: prod
+      mode: incremental
+    schedule:
+      cron: "0 8-18 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Hourly incremental task sync during business hours."
+
+  - name: epm-projects-hourly
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: projects
+      env: prod
+      mode: incremental
+    schedule:
+      cron: "0 8-18 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Hourly incremental project sync during business hours."

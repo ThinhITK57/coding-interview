@@ -1,0 +1,95 @@
+###
+### A complete description of a Prefect Deployment for flow 'api_ingestion_pipeline'
+###
+name: epm-tasks-hourly
+description: null
+version: 8d01096876401416d9604c27304e59b1
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: epm-pool
+tags: []
+parameters:
+  config_path: config.json
+  endpoint_name: tasks
+  env: prod
+  mode: incremental
+schedule:
+  cron: 0 8-18 * * 1-5
+  timezone: Asia/Ho_Chi_Minh
+  day_or: true
+is_schedule_active: true
+infra_overrides:
+  env.MINIO_ENDPOINT: http://127.0.0.1:9000
+  env.MINIO_ACCESS_KEY: minioadmin
+  env.MINIO_SECRET_KEY: minioadmin123
+  env.MINIO_BUCKET: lakehouse
+  env.NO_PROXY: 127.0.0.1,localhost
+  env.no_proxy: 127.0.0.1,localhost
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: api_ingestion_pipeline
+manifest_path: null
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  _block_document_id: e2f52fd7-8fb4-4148-9cc3-64e39e9a9762
+  _block_document_name: anonymous-19fe0e74-b125-40b0-a7c3-148360770262
+  _is_anonymous: true
+  block_type_slug: process
+  _block_type_slug: process
+storage: null
+path: E:\thinhnt22\crawler-prefecthq
+entrypoint: prefect_flow.py:api_ingestion_pipeline
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    config_path:
+      title: config_path
+      default: config.json
+      position: 0
+      type: string
+    endpoint_name:
+      title: endpoint_name
+      default: Task
+      position: 1
+      type: string
+    env:
+      title: env
+      default: dev
+      position: 2
+      type: string
+    mode:
+      title: mode
+      default: incremental
+      position: 3
+      type: string
+    window_start:
+      title: window_start
+      position: 4
+      type: string
+    window_end:
+      title: window_end
+      position: 5
+      type: string
+    spark_master:
+      title: spark_master
+      default: local[*]
+      position: 6
+      type: string
+    dry_run:
+      title: dry_run
+      default: false
+      position: 7
+      type: boolean
+  required: null
+  definitions: null
+timestamp: '2026-09-11T01:43:28.772337+00:00'
+triggers: []
