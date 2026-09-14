@@ -1,0 +1,321 @@
+version: 2
+models:
+- name: crm_deal_quotation_products
+  description: Bảng này lưu trữ chi tiết các sản phẩm được báo giá trong các giao dịch/cơ hội CRM, bao gồm thông tin về giá, số lượng, chiết khấu và các yếu tố tài chính liên quan. Dữ liệu này thường được dùng để phân tích hiệu suất bán hàng, theo dõi trạng thái báo giá trong các báo cáo kinh doanh và dự báo.
+  meta:
+    label: "Deal Quotation Products"
+    owner: "huongnv1"
+    metrics:
+      quotation_product_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số dòng sản phẩm trong báo giá. Đây là measure mặc định cho số lượng quote lines.
+        label: "Quotation Product Count"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Quotation Product Count"
+          - "Số lượng báo giá sản phẩm"
+      total_final_total_amount:
+        type: sum
+        sql: ${TABLE}.final_total_amount
+        description: Tổng giá trị cuối cùng sau chiết khấu của các dòng báo giá. Đây là KPI gần nhất với giá trị kinh doanh.
+        label: "Total Final Total Amount"
+        category: "Business Value"
+        synonyms:
+          - "Total Final Total Amount"
+          - "Tổng tổng giá trị cuối cùng"
+      total_base_total_amount:
+        type: sum
+        sql: ${TABLE}.base_total_amount
+        description: Tổng giá trị gốc trước chiết khấu của các dòng báo giá.
+        label: "Total Base Total Amount"
+        category: "Business Value"
+        synonyms:
+          - "Total Base Total Amount"
+          - "Tổng gốc tổng giá trị"
+      total_discount_amount:
+        type: sum
+        sql: ${TABLE}.discount_amount
+        description: Tổng chiết khấu ở mức dòng sản phẩm.
+        label: "Total Discount Amount"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Total Discount Amount"
+          - "Tổng Discount giá trị"
+      total_quantity:
+        type: sum
+        sql: ${TABLE}.quantitative
+        description: Tổng số lượng sản phẩm trong các báo giá.
+        label: "Total Quantity"
+        category: "Operational KPI"
+        synonyms:
+          - "Total Quantity"
+          - "Tổng Quantity"
+      avg_final_total_amount:
+        type: average
+        sql: ${TABLE}.final_total_amount
+        description: Giá trị cuối cùng trung bình của một dòng sản phẩm báo giá.
+        label: "Avg Final Total Amount"
+        category: "Business Value"
+        synonyms:
+          - "Avg Final Total Amount"
+          - "Trung bình tổng giá trị cuối cùng"
+      avg_base_price:
+        type: average
+        sql: ${TABLE}.base_price
+        description: Đơn giá gốc trung bình.
+        label: "Avg Base Price"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Base Price"
+          - "Trung bình gốc giá"
+      effective_discount_rate:
+        type: number
+        sql: ROUND(${total_discount_amount} / NULLIF(${total_base_total_amount}, 0.0), 2)
+        description: 'VI: Tỷ lệ discount thực tế trên tổng giá trị gốc. | EN: Tỷ lệ discount thực tế trên tổng giá trị gốc.'
+        label: "Effective Discount Rate"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Effective Discount Rate"
+          - "Tỷ lệ hiệu dụng Discount"
+      total_global_discount_amount:
+        type: sum
+        sql: ${TABLE}.global_discount_amount
+        description: Tổng chiết khấu toàn báo giá.
+        label: "Total Global Discount Amount"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Total Global Discount Amount"
+          - "Tổng toàn cục Discount giá trị"
+      total_base_price:
+        type: sum
+        sql: ${TABLE}.base_price
+        description: Tổng đơn giá gốc của sản phẩm.
+        label: "Total Base Price"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Total Base Price"
+          - "Tổng gốc giá"
+      avg_base_total_amount:
+        type: average
+        sql: ${TABLE}.base_total_amount
+        description: Giá trị gốc trung bình của một dòng sản phẩm báo giá.
+        label: "Avg Base Total Amount"
+        category: "Business Value"
+        synonyms:
+          - "Avg Base Total Amount"
+          - "Trung bình gốc tổng giá trị"
+      avg_discount_amount:
+        type: average
+        sql: ${TABLE}.discount_amount
+        description: Chiết khấu trung bình ở mức dòng sản phẩm.
+        label: "Avg Discount Amount"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Discount Amount"
+          - "Trung bình Discount giá trị"
+      avg_global_discount_amount:
+        type: average
+        sql: ${TABLE}.global_discount_amount
+        description: Chiết khấu toàn báo giá trung bình.
+        label: "Avg Global Discount Amount"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Global Discount Amount"
+          - "Trung bình toàn cục Discount giá trị"
+      avg_quantity:
+        type: average
+        sql: ${TABLE}.quantitative
+        description: Số lượng trung bình trên mỗi dòng sản phẩm báo giá.
+        label: "Avg Quantity"
+        category: "Operational KPI"
+        synonyms:
+          - "Avg Quantity"
+          - "Trung bình Quantity"
+      max_final_total_amount:
+        type: max
+        sql: ${TABLE}.final_total_amount
+        description: Giá trị cuối cùng lớn nhất của một dòng sản phẩm báo giá.
+        label: "Max Final Total Amount"
+        category: "Business Value"
+        synonyms:
+          - "Max Final Total Amount"
+          - "Giá trị lớn nhất của tổng giá trị cuối cùng"
+      min_final_total_amount:
+        type: min
+        sql: ${TABLE}.final_total_amount
+        description: Giá trị cuối cùng nhỏ nhất của một dòng sản phẩm báo giá.
+        label: "Min Final Total Amount"
+        category: "Business Value"
+        synonyms:
+          - "Min Final Total Amount"
+          - "Giá trị nhỏ nhất của tổng giá trị cuối cùng"
+      discount_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN SUM(base_total_amount) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(base_total_amount - final_total_amount) / SUM(base_total_amount)\nEND, 2)"
+        description: Tỷ lệ giảm giá tổng thể giữa giá trị gốc và giá trị cuối cùng.
+        label: "Discount Rate"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Discount Rate"
+          - "Tỷ lệ Discount"
+      final_to_base_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN SUM(base_total_amount) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(final_total_amount) / SUM(base_total_amount)\nEND, 2)"
+        description: Tỷ lệ giá trị cuối cùng trên giá trị gốc.
+        label: "Final To Base Rate"
+        category: "Performance Ratio"
+        synonyms:
+          - "Final To Base Rate"
+          - "Tỷ lệ cuối cùng gốc"
+      quoted_product_count:
+        type: sum
+        sql: CASE WHEN quotation_status IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số dòng sản phẩm có trạng thái báo giá.
+        label: "Quoted Product Count"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Quoted Product Count"
+          - "Số lượng được báo giá sản phẩm"
+  columns:
+  - name: deal_id
+    description: Mã định danh duy nhất của giao dịch/cơ hội (cơ hội bán hàng) trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã giao dịch/cơ hội
+  - name: quotation_id
+    description: Mã định danh duy nhất của báo giá trong giao dịch/cơ hội CRM.
+    meta:
+      dimension:
+        type: string
+        label: Định danh báo giá
+  - name: product_line_no
+    description: Số thứ tự dòng sản phẩm trong báo giá, xác định vị trí của từng mặt hàng.
+    meta:
+      dimension:
+        type: number
+        label: Số dòng sản phẩm
+  - name: product_id
+    description: Mã định danh duy nhất của sản phẩm trong báo giá.
+    meta:
+      dimension:
+        type: string
+        label: Định danh sản phẩm
+  - name: quotation_created_at
+    description: Thời điểm mà báo giá được tạo trong hệ thống.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày tạo báo giá
+  - name: quotation_status
+    description: Trạng thái hiện tại của báo giá trong quy trình CRM.
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái báo giá
+  - name: quotation_lang
+    description: Ngôn ngữ được sử dụng để tạo ra báo giá cho khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Ngôn ngữ báo giá
+  - name: currency_code
+    description: Mã tiền tệ được sử dụng cho báo giá sản phẩm trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Mã tiền tệ
+  - name: global_discount
+    description: Mức chiết khấu áp dụng cho toàn bộ báo giá trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: number
+        label: Global discount
+  - name: global_discount_type
+    description: Loại chiết khấu toàn cục được áp dụng cho sản phẩm trong báo giá.
+    meta:
+      dimension:
+        type: string
+        label: Loại chiết khấu toàn cục
+  - name: product_name
+    description: Tên của sản phẩm được đề xuất trong báo giá giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Tên sản phẩm
+  - name: base_price
+    description: Giá cơ bản là mức giá đơn vị của sản phẩm trong báo giá trước khi áp dụng bất kỳ chiết khấu nào.
+    meta:
+      dimension:
+        type: number
+        label: Giá cơ bản
+  - name: quantitative
+    description: Số lượng sản phẩm được đề xuất trong báo giá.
+    meta:
+      dimension:
+        type: number
+        label: Quantitative
+  - name: unit
+    description: Product Unit Type
+    meta:
+      dimension:
+        type: string
+        label: Loại đơn vị triển khai SPDV
+  - name: product_unit
+    description: Đơn vị tính của sản phẩm trong báo giá.
+    meta:
+      dimension:
+        type: string
+        label: đơn vị
+  - name: duration
+    description: Thời gian (số ngày hoặc số tháng) mà sản phẩm được sử dụng trong báo giá.
+    meta:
+      dimension:
+        type: number
+        label: Thời gian báo giá
+  - name: package
+    description: Tên gói sản phẩm được đề xuất trong báo giá.
+    meta:
+      dimension:
+        type: string
+        label: Hình thức đóng gói SPDV
+  - name: vat
+    description: Thuế giá trị gia tăng (%) áp dụng cho sản phẩm trong báo giá.
+    meta:
+      dimension:
+        type: number
+        label: thuế VAT
+  - name: discount_amount
+    description: Số tiền giảm giá/chiết khấu
+    meta:
+      dimension:
+        type: number
+        label: Discount Amount
+  - name: discount_type
+    description: Loại chiết khấu được áp dụng cho sản phẩm trong báo giá.
+    meta:
+      dimension:
+        type: string
+        label: Loại chiết khấu
+  - name: final_total_amount
+    description: Tổng số tiền của báo giá sau khi áp dụng các giảm giá, thuế và các điều chỉnh khác.
+    meta:
+      dimension:
+        type: number
+        label: Tổng tiền cuối cùng
+  - name: base_total_amount
+    description: Tổng giá trị cơ bản của sản phẩm trong báo giá, chưa tính giảm giá và thuế.
+    meta:
+      dimension:
+        type: number
+        label: Tổng tiền cơ bản
+  - name: id
+    description: Mã định danh duy nhất của sản phẩm trong báo giá giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Mã ID
+    data_tests:
+    - not_null
+    - unique

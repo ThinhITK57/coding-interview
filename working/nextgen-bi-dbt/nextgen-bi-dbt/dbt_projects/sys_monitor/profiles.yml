@@ -1,0 +1,23 @@
+sys_monitor:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('SYS_MONITOR_HOST', 'localhost') }}"
+      port: "{{ env_var('SYS_MONITOR_PORT', 5432) | int }}"
+      user: "{{ env_var('SYS_MONITOR_USER', 'postgres') }}"
+      password: "{{ env_var('SYS_MONITOR_PASSWORD', 'Welcome1') }}"
+      dbname: "{{ env_var('SYS_MONITOR_DATABASE', 'postgres') }}"
+      schema: "{{ env_var('SYS_MONITOR_SCHEMA', 'public') }}"
+      threads: 4
+      sslmode: disable
+    staging:
+      type: postgres
+      host: "{{ env_var('SYS_MONITOR_HOST', 'localhost') }}"
+      port: "{{ env_var('SYS_MONITOR_PORT', 5432) | int  }}"
+      user: "{{ env_var('SYS_MONITOR_USER', 'postgres') }}"
+      password: "{{ env_var('SYS_MONITOR_PASSWORD', 'Welcome1') }}"
+      dbname: "{{ env_var('SYS_MONITOR_DATABASE', 'postgres') }}"
+      schema: "{{ env_var('SYS_MONITOR_SCHEMA', 'public') }}"
+      threads: 4
+      sslmode: disable

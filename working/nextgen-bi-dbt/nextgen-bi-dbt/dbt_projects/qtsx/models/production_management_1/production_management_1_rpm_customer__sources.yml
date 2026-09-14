@@ -1,0 +1,18 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_rpm_customer
+    description: "Nguồn Power BI: RPM_Customer"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_current_status_name
+      description: "Cột ISSUE_CURRENT_STATUS_NAME"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"

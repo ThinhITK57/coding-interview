@@ -1,0 +1,307 @@
+version: 2
+models:
+- name: crm_sales_accounts
+  description: Bảng crm_sales_accounts lưu trữ thông tin chi tiết về các tài khoản khách hàng doanh nghiệp (company) trong hệ thống CRM.
+  columns:
+  - name: id
+    description: Mã định danh duy nhất của tài khoản bán hàng.
+    meta:
+      dimension:
+        type: string
+        label: Mã tài khoản
+    data_tests:
+    - not_null
+    - unique
+  - name: is_partner
+    description: is_partner
+  - name: name
+    description: Tên khách hàng hoặc tên công ty được sử dụng để nhận diện khách hàng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Tên khách hàng
+        synonyms:
+          - khách hàng
+          - tên khách hàng
+          - công ty
+          - tên công ty
+          - doanh nghiệp
+          - tên doanh nghiệp
+          - customer
+          - customer name
+          - company
+          - company name
+  - name: address
+    description: Địa chỉ của khách hàng hoặc đối tác kinh doanh.
+    meta:
+      dimension:
+        type: string
+        label: Địa chỉ
+  - name: city
+    description: Thành phố nơi công ty khách hàng đặt trụ sở.
+    meta:
+      dimension:
+        type: string
+        label: Thành phố
+  - name: state
+    description: Tỉnh hoặc tiểu bang nơi tài khoản khách hàng đặt trụ sở.
+    meta:
+      dimension:
+        type: string
+        label: Tỉnh
+  - name: zipcode
+    description: Mã bưu điện của khách hàng hoặc địa chỉ doanh nghiệp.
+    meta:
+      dimension:
+        type: string
+        label: Mã bưu điện
+  - name: country
+    description: Quốc gia nơi công ty khách hàng đăng ký hoạt động.
+    meta:
+      dimension:
+        type: string
+        label: Quốc gia
+  - name: number_of_employees
+    description: Số lượng nhân viên của tài khoản khách hàng.
+    meta:
+      dimension:
+        type: number
+        label: Số lượng nhân viên
+  - name: annual_revenue
+    description: annual_revenue
+  - name: website
+    description: Địa chỉ website của tài khoản khách hàng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Website
+  - name: am_username
+    description: Tên đăng nhập của người quản lý tài khoản chịu trách nhiệm chăm sóc khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Tên đăng nhập AM
+  # - name: sales_admin
+  #   description: Tên nhân viên quản lý bán hàng chịu trách nhiệm cho tài khoản này.
+  #   meta:
+  #     dimension:
+  #       type: string
+  #       label: Người quản lý bán hàng
+  - name: phone
+    description: Số điện thoại liên hệ của khách hàng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Số điện thoại
+  - name: open_deals_amount
+    description: Tổng giá trị các giao dịch/cơ hội đang mở của tài khoản.
+    meta:
+      dimension:
+        type: number
+        label: Tổng giá trị giao dịch/cơ hội mở
+  - name: open_deals_count
+    description: Số lượng giao dịch/cơ hội (deal) đang mở của tài khoản.
+    meta:
+      dimension:
+        type: number
+        label: Tổng số giao dịch/cơ hội đang mở
+  - name: won_deals_amount
+    description: Tổng giá trị tiền tệ của các giao dịch/cơ hội đã thắng của tài khoản.
+    meta:
+      dimension:
+        type: number
+        label: Tổng giá trị giao dịch/cơ hội thắng
+  - name: won_deals_count
+    description: Số lượng giao dịch/cơ hội thành công (được thắng) của tài khoản.
+    meta:
+      dimension:
+        type: number
+        label: Số hợp đồng thắng
+  - name: tax_code
+    description: Mã số thuế của khách hàng hoặc công ty trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã thuế
+  - name: company_id
+    description: Mã định danh duy nhất của công ty trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: company_id
+  - name: company_alias
+    description: Tên thay thế của khách hàng hoặc công ty, bao gồm tên viết tắt, tên gọi ngắn hoặc tên thường được sử dụng để nhận diện khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Tên thay thế khách hàng
+        synonyms:
+          - tên thay thế
+          - tên viết tắt
+          - viết tắt
+          - bí danh công ty
+          - biệt danh công ty
+          - tên gọi khác
+          - tên gọi ngắn
+          - alias
+          - company alias
+          - short name
+  - name: customer_segment_l1
+    description: Mức phân khúc khách hàng cấp 1. Phân loại theo người dùng cuối (KH cuối)
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 1
+  - name: customer_segment_l2
+    description: Mức phân khúc cấp 2. Phân loại theo người dùng cuối (KH cuối)
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 2
+  - name: customer_segment_l3
+    description: Mức phân khúc cấp 3. Phân loại theo người dùng cuối (KH cuối)
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 3
+  - name: incorporation_date
+    description: Ngày mà công ty được thành lập hoặc đăng ký kinh doanh.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày thành lập
+  - name: initial_source
+    description: Nguồn gốc ban đầu mà tài khoản được tạo hoặc tiếp cận.
+    meta:
+      dimension:
+        type: string
+        label: Nguồn ban đầu
+  - name: warm_up_source
+    description: Nguồn khởi tạo (warm‑up) của tài khoản trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Nguồn khởi tạo
+  - name: using_soc
+    description: Cho biết tài khoản có áp dụng tiêu chuẩn SOC hay không.
+    meta:
+      dimension:
+        type: string
+        label: Có sử dụng SOC
+  - name: vcs_soc_others
+    description: Thông tin về các kênh hoặc nguồn liên hệ khác mà khách hàng được ghi nhận trong hệ thống VCS.
+    meta:
+      dimension:
+        type: string
+        label: Có dùng SOC khác
+  - name: soc_brand
+    description: Thương hiệu SOC (Service Organization Control) của tài khoản.
+    meta:
+      dimension:
+        type: string
+        label: Thương hiệu SOC đang dùng
+  - name: service_level
+    description: 'Mức độ dịch vụ mà khách hàng được cung cấp (ví dụ: Gold, Silver, Platinum).'
+    meta:
+      dimension:
+        type: string
+        label: Cấp độ dịch vụ
+  - name: created_at
+    description: Ngày mà tài khoản khách hàng được tạo trong hệ thống CRM.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày tạo bản ghi
+  - name: updated_at
+    description: Thời điểm cập nhật cuối cùng của thông tin tài khoản bán hàng.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày cập nhật bản ghi
+  - name: days_since_update
+    description: Số ngày đã trôi qua kể từ khi thông tin tài khoản được cập nhật lần cuối.
+    meta:
+      dimension:
+        type: number
+        label: Số ngày kể từ lần cập nhật cuối
+  - name: parent_sales_account_id
+    description: Mã định danh tài khoản cha, dùng để xác định quan hệ phân cấp.
+    meta:
+      dimension:
+        type: string
+        label: parent_sales_account_id
+  - name: recent_note
+    description: recent_note
+  - name: last_contacted_via_sales_activity
+    description: Ngày cuối cùng tài khoản được liên hệ qua hoạt động bán hàng.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày liên hệ cuối cùng qua hoạt động bán hàng
+  - name: last_contacted_sales_activity_mode
+    description: Phương thức hoặc kênh mà nhân viên bán hàng đã liên hệ với khách hàng lần cuối.
+    meta:
+      dimension:
+        type: string
+        label: Phương thức liên hệ cuối cùng
+  - name: last_assigned_at
+    description: Ngày cuối cùng tài khoản được giao cho nhân viên bán hàng.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày giao việc cuối
+  - name: renewal_date
+    description: renewal_date
+  - name: business_type
+    description: Loại hình kinh doanh của tài khoản khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Loại hình kinh doanh
+  - name: industry_type
+    description: Loại ngành công nghiệp mà tài khoản khách hàng đang hoạt động.
+    meta:
+      dimension:
+        type: string
+        label: Loại hình doanh nghiệp
+  meta:
+    label: "Sales Accounts"
+    owner: "huongnv1"
+    metrics:
+      total_account_count:
+        type: count_distinct
+        sql: '1.0'
+        description: Total number of CRM accounts
+        label: "Account Count"
+        category: "Customer Analytics"
+        synonyms:
+          - "Account Count"
+          - "Số lượng Account"
+     
+      number_of_won_customer:
+        type: count_distinct
+        sql: CASE WHEN COALESCE(${TABLE}.won_deals_count, 0.0) >= 1.0 THEN ${TABLE}.id END
+        description: Distinct number of WON customers.
+        label: "Number Of WON Customer"
+        category: "Customer Analytics"
+        synonyms:
+          - "Number Of WON Customer"
+          - "Số lượng khách hàng có Deal thành công"
+    
+      total_industry_count:
+        label: "Industry Count"
+        category: "Volume & Coverage"
+        synonyms:
+          - "Industry Count"
+          - "Số lượng ngành"
+        type: count_distinct
+        sql: ${TABLE}.industry_type
+        
+      total_business_type_count:
+        label: "Business Type Count"
+        category: "Volume & Coverage"
+        synonyms:
+          - "Business Type Count"
+          - "Số lượng kinh doanh loại"
+        type: count_distinct
+        sql: ${TABLE}.business_type

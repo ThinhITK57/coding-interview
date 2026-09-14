@@ -1,0 +1,233 @@
+version: 2
+
+models:
+  - name: crm_contacts
+    description: |
+      Danh sách thông tin liên hệ (Contact) trong hệ thống CRM.
+
+      Grain: 1 record tương ứng với 1 Contact, định danh duy nhất bởi id.
+
+      Model dùng để phân tích:
+      - Số lượng Contact
+      - Contact theo trạng thái
+      - Contact theo nguồn tạo/nguồn tiếp cận
+      - Contact theo Sales Account
+      - Contact theo Account Manager (AM)
+      - Contact theo mức độ quan tâm/hỗ trợ
+      - Contact theo thời gian tạo, cập nhật, phân công và liên hệ gần nhất
+
+      Quy tắc semantic:
+      - id là định danh duy nhất của Contact.
+      - Khi đếm Contact phải ưu tiên COUNT DISTINCT(id).
+      - Các trường *_name là dimension dùng để hiển thị/filter.
+      - Các trường *_id là dimension định danh, không dùng để hiển thị thay cho *_name nếu *_name có sẵn.
+      - created_at là thời điểm Contact được tạo.
+      - updated_at là thời điểm Contact được cập nhật lần cuối.
+      - last_assigned_at là thời điểm Contact được phân công AM gần nhất.
+      - last_contacted_at là thời điểm Contact được liên hệ gần nhất.
+      - last_contacted_via_sales_activity là thời điểm Contact được liên hệ gần nhất thông qua Sales Activity.
+      - Không suy diễn hoặc tự mapping giá trị giữa các dimension nếu không có mapping được khai báo.
+
+    metrics:
+
+      - name: contact_count
+        label: Số lượng Contact
+        description: |
+          Số lượng Contact duy nhất.
+          Phải sử dụng COUNT DISTINCT trên id, không sử dụng COUNT(*) để tránh
+          đếm trùng Contact nếu dữ liệu bị duplicate.
+        type: count_distinct
+        sql: ${id}
+
+      - name: contacted_contact_count
+        label: Số Contact đã được liên hệ
+        description: |
+          Số lượng Contact duy nhất đã từng được liên hệ.
+          Contact được xem là đã liên hệ khi last_contacted_at khác NULL.
+        type: count_distinct
+        sql: |
+          CASE
+            WHEN ${last_contacted_at} IS NOT NULL THEN ${id}
+          END
+
+      - name: assigned_contact_count
+        label: Số Contact đã được phân công
+        description: |
+          Số lượng Contact duy nhất đã từng được phân công.
+        type: count_distinct
+        sql: |
+          CASE
+            WHEN ${last_assigned_at} IS NOT NULL THEN ${id}
+          END
+
+      - name: contact_with_sales_activity_count
+        label: Số Contact có Sales Activity
+        description: |
+          Số lượng Contact duy nhất có lịch sử liên hệ thông qua Sales Activity.
+        type: count_distinct
+        sql: |
+          CASE
+            WHEN ${last_contacted_via_sales_activity} IS NOT NULL THEN ${id}
+          END
+          
+    columns:
+
+      - name: id
+        description: |
+          ID duy nhất của Contact.
+          Dùng làm khóa định danh và để COUNT DISTINCT Contact.
+        meta:
+          dimension:
+            type: string
+            hidden: true
+
+      - name: display_name
+        description: Tên hiển thị của Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: job_title
+        description: Chức danh/vị trí công việc của Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: company_name
+        description: Tên công ty của Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: partner_name
+        description: ID của Partner liên quan đến Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: sales_account_id
+        description: ID của Sales Account mà Contact thuộc về.
+        meta:
+          dimension:
+            type: string
+            hidden: true
+
+      - name: sales_account_name
+        description: Tên Sales Account mà Contact thuộc về.
+        meta:
+          dimension:
+            type: string
+
+      - name: user_am_id
+        description: ID của User/Account Manager được phân công cho Contact.
+        meta:
+          dimension:
+            type: string
+            hidden: true
+
+      - name: user_am_name
+        description: Tên Account Manager được phân công cho Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: am_fullname
+        description: Họ và tên đầy đủ của Account Manager phụ trách Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: presales_name
+        description: Tên nhân sự Presales phụ trách hoặc liên quan đến Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: center_name
+        description: Tên trung tâm/đơn vị phụ trách Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: contact_status_id
+        description: ID trạng thái của Contact.
+        meta:
+          dimension:
+            type: number
+            hidden: true
+
+      - name: contact_status_name
+        description: Tên trạng thái hiện tại của Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: contact_forecast_type
+        description: Loại forecast được gán cho Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: last_contacted_sales_activity_mode
+        description: |
+          Phương thức của Sales Activity được sử dụng trong lần liên hệ gần nhất.
+        meta:
+          dimension:
+            type: string
+
+      - name: warm_up_source
+        description: Nguồn Warm-up của Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: initial_source
+        description: Nguồn ban đầu khi Contact được tạo hoặc ghi nhận vào CRM.
+        meta:
+          dimension:
+            type: string
+
+      - name: level_of_support
+        description: Mức độ hỗ trợ của Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: level_of_interest
+        description: Mức độ quan tâm của Contact.
+        meta:
+          dimension:
+            type: string
+
+      - name: last_assigned_at
+        description: Thời điểm Contact được phân công gần nhất.
+        meta:
+          dimension:
+            type: timestamp
+
+      - name: last_contacted_at
+        description: Thời điểm Contact được liên hệ gần nhất.
+        meta:
+          dimension:
+            type: timestamp
+
+      - name: last_contacted_via_sales_activity
+        description: |
+          Thời điểm Contact được liên hệ gần nhất thông qua Sales Activity.
+        meta:
+          dimension:
+            type: timestamp
+
+      - name: created_at
+        description: Thời điểm Contact được tạo trong CRM.
+        meta:
+          dimension:
+            type: timestamp
+
+      - name: updated_at
+        description: Thời điểm thông tin Contact được cập nhật lần cuối.
+        meta:
+          dimension:
+            type: timestamp
+
+    

@@ -1,0 +1,41 @@
+version: 2
+sources:
+- name: bi_silver__finance
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: finance'
+  tables:
+  - name: finance_revenue_cost_items
+    description: >
+      Bảng theo dõi điều chỉnh của Tài chính về tình hình doanh thu và chi phí của công ty.
+      Dữ liệu được ghi nhận theo chu kỳ báo cáo tháng,
+      loại khoản mục tài chính, nhóm khoản mục cấp 2 và mã khoản mục. Bảng phục vụ phân tích
+      tình hình doanh thu, chi phí và biến động tài chính tổng hợp của công ty.
+
+    columns:
+    - name: report_date
+      description: Ngày báo cáo của khoản mục doanh thu hoặc chi phí.
+
+    - name: item_type_code
+      description: Mã loại khoản mục tài chính. DT là Doanh thu, CP là Chi phí.
+      tests:
+        - not_null
+        - accepted_values:
+            values: ['DT', 'CP']
+      meta:
+        dimension:
+          label: "Mã loại khoản mục"
+    - name: item_type_name
+      description: Tên loại khoản mục tài chính, gồm Doanh thu hoặc Chi phí.
+
+    - name: item_category_level_2
+      description: Nhóm khoản mục tài chính cấp 2 do Tài chính theo dõi và điều chỉnh.
+
+    - name: item_code
+      description: Mã khoản mục tài chính dùng để định danh chi tiết từng khoản doanh thu hoặc chi phí.
+
+    - name: base_currency_amount
+      description: Giá trị khoản mục doanh thu hoặc chi phí theo đồng tiền cơ sở.
+
+    - name: currency_code
+      description: Mã đồng tiền cơ sở của giá trị khoản mục. Hiện tại mặc định là VND.

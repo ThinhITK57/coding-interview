@@ -1,0 +1,490 @@
+version: 2
+
+models:
+  - name: crm_am_kpi_raw_events
+    description: >
+      Dữ liệu sự kiện KPI của Account Manager (AM) từ CRM và các hệ thống liên quan.
+      Mỗi record đại diện cho một sự kiện hoặc trạng thái được sử dụng để tính toán
+      KPI của AM theo kỳ báo cáo.
+
+    # ============================================================
+    # LIGHTDASH METRICS
+    # ============================================================
+
+    meta:
+      label: "CRM AM KPI Raw Events"
+      group_label: "AM Dashboard"
+      owner: "huongnv1"
+
+      metrics:
+
+        # --------------------------------------------------------
+        # EVENT
+        # --------------------------------------------------------
+
+        total_event_count:
+          type: count
+          sql: ${TABLE}.source_type
+          label: "Total Events"
+          description: "Tổng số sự kiện KPI."
+
+        # --------------------------------------------------------
+        # REVENUE
+        # --------------------------------------------------------
+
+        total_revenue_amount:
+          type: sum
+          sql: >
+            COALESCE(${TABLE}.renewal_revenue_amount, 0)
+            + COALESCE(${TABLE}.new_revenue_amount, 0)
+          label: "Total Revenue"
+          description: "Tổng doanh thu Renewal + New/Upsales."
+          format: "₫#,##0"
+
+        total_renewal_revenue_amount:
+          type: sum
+          sql: ${TABLE}.renewal_revenue_amount
+          label: "Total Renewal Revenue"
+          description: "Tổng doanh thu Renewal."
+          format: "₫#,##0"
+
+        total_new_revenue_amount:
+          type: sum
+          sql: ${TABLE}.new_revenue_amount
+          label: "Total New Revenue"
+          description: "Tổng doanh thu New và Upsales."
+          format: "₫#,##0"
+
+        # --------------------------------------------------------
+        # RECEIVABLE
+        # --------------------------------------------------------
+
+        total_initial_receivable_amount:
+          type: sum
+          sql: ${TABLE}.initial_receivable_amount
+          label: "Total Initial Receivable"
+          description: "Tổng giá trị công nợ phải thu ban đầu."
+          format: "₫#,##0"
+
+        total_remaining_balance_amount:
+          type: sum
+          sql: ${TABLE}.remaining_balance_amount
+          label: "Total Remaining Balance"
+          description: "Tổng giá trị công nợ còn lại."
+          format: "₫#,##0"
+
+        receivable_remaining_rate:
+          type: number
+          sql: |
+            CASE
+              WHEN SUM(${TABLE}.initial_receivable_amount) <> 0
+              THEN
+                SUM(${TABLE}.remaining_balance_amount)
+                / SUM(${TABLE}.initial_receivable_amount)
+              ELSE NULL
+            END
+          label: "Receivable Remaining Rate"
+          description: >
+            Tỷ lệ tổng công nợ còn lại trên tổng công nợ phải thu ban đầu.
+          format: "0.00%"
+
+        # --------------------------------------------------------
+        # CUSTOMER
+        # --------------------------------------------------------
+
+        total_new_customer_count:
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${TABLE}.is_company_created = TRUE
+              THEN ${TABLE}.company_id
+            END
+          label: "New Customers"
+          description: "Số Company mới."
+
+        total_managed_customer_count:
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${TABLE}.is_managed_company = TRUE
+              THEN ${TABLE}.company_id
+            END
+          label: "Managed Customers"
+          description: "Số Company đang được AM quản lý."
+
+        total_customers_with_interaction_count:
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${TABLE}.is_valid_company_interaction = TRUE
+              THEN ${TABLE}.company_id
+            END
+          label: "Customers With Interaction"
+          description: "Số Company có interaction hợp lệ."
+
+        customer_interaction_rate:
+          type: number
+          sql: |
+            CASE
+              WHEN COUNT(DISTINCT CASE
+                     WHEN ${TABLE}.is_managed_company = TRUE
+                     THEN ${TABLE}.company_id
+                   END) > 0
+              THEN
+                CAST(
+                  COUNT(DISTINCT CASE
+                    WHEN ${TABLE}.is_valid_company_interaction = TRUE
+                    THEN ${TABLE}.company_id
+                  END)
+                  AS DOUBLE
+                )
+                /
+                COUNT(DISTINCT CASE
+                  WHEN ${TABLE}.is_managed_company = TRUE
+                  THEN ${TABLE}.company_id
+                END)
+              ELSE NULL
+            END
+          label: "Customer Interaction Rate"
+          description: >
+            Tỷ lệ Company được quản lý có interaction hợp lệ.
+          format: "0.00%"
+
+        # --------------------------------------------------------
+        # QUOTATION
+        # --------------------------------------------------------
+
+        total_quotation_count:
+          type: count_distinct
+          sql: ${TABLE}.quotation_id
+          label: "Quotations"
+          description: "Số Quotation."
+
+        # --------------------------------------------------------
+        # CONTACT / DATA ENTRY
+        # --------------------------------------------------------
+
+        total_assigned_contact_count:
+          type: count_distinct
+          sql: ${TABLE}.contact_id
+          label: "Assigned Contacts"
+          description: "Số Contact được assign cho AM."
+
+        total_contacts_completed_24h_count:
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${TABLE}.is_completed_within_24h = TRUE
+              THEN ${TABLE}.contact_id
+            END
+          label: "Contacts Completed Within 24h"
+          description: >
+            Số Contact được hoàn tất nhập dữ liệu trong 24 giờ.
+
+        data_entry_completion_rate:
+          type: number
+          sql: |
+            CASE
+              WHEN COUNT(DISTINCT ${TABLE}.contact_id) > 0
+              THEN
+                CAST(
+                  COUNT(DISTINCT CASE
+                    WHEN ${TABLE}.is_completed_within_24h = TRUE
+                    THEN ${TABLE}.contact_id
+                  END)
+                  AS DOUBLE
+                )
+                /
+                COUNT(DISTINCT ${TABLE}.contact_id)
+              ELSE NULL
+            END
+          label: "Data Entry Completion Rate"
+          description: >
+            Tỷ lệ Contact hoàn tất nhập dữ liệu trong vòng 24 giờ.
+          format: "0.00%"
+
+    # ============================================================
+    # COLUMNS / DIMENSIONS
+    # ============================================================
+
+    columns:
+
+      # ============================================================
+      # TIME
+      # ============================================================
+
+      - name: report_month
+        description: "Tháng báo cáo KPI, được chuẩn hóa về ngày đầu tháng."
+        meta:
+          dimension:
+            type: date
+            label: "Report Month"
+            time_intervals:
+              - YEAR
+              - QUARTER
+              - MONTH
+              - WEEK
+              - DAY
+
+      - name: event_at
+        description: "Thời điểm phát sinh sự kiện KPI."
+        meta:
+          dimension:
+            type: timestamp
+            label: "Event Time"
+            time_intervals:
+              - YEAR
+              - QUARTER
+              - MONTH
+              - WEEK
+              - DAY
+              - HOUR
+
+      # ============================================================
+      # ACCOUNT MANAGER
+      # ============================================================
+
+      - name: am_user_id
+        description: "ID của Account Manager."
+        meta:
+          dimension:
+            type: string
+            label: "AM User ID"
+
+      - name: am_user_name
+        description: "Tên hiển thị của Account Manager."
+        meta:
+          dimension:
+            type: string
+            label: "AM"
+
+      - name: am_group
+        description: >
+          Nhóm Account Manager. Các nhóm hiện tại gồm UNNAMED, VVIP,
+          CHANNEL, INTERNAL, INTERNATIONAL và OTHER.
+        meta:
+          dimension:
+            type: string
+            label: "AM Group"
+
+      - name: am_status
+        description: "Trạng thái của Account Manager."
+        meta:
+          dimension:
+            type: string
+            label: "AM Status"
+
+      # ============================================================
+      # EVENT
+      # ============================================================
+
+      - name: source_type
+        description: >
+          Loại sự kiện KPI. Giá trị gồm REVENUE, RECEIVABLE, NEW_COMPANY,
+          MANAGED_COMPANY, QUOTATION, CONTACT_DATA_ENTRY và
+          COMPANY_INTERACTION.
+        meta:
+          dimension:
+            type: string
+            label: "Source Type"
+
+      - name: object_type
+        description: "Loại đối tượng CRM liên quan đến sự kiện."
+        meta:
+          dimension:
+            type: string
+            label: "Object Type"
+
+      # ============================================================
+      # CRM OBJECT IDS
+      # ============================================================
+
+      - name: contact_id
+        description: "ID Contact liên quan đến sự kiện."
+        meta:
+          dimension:
+            type: string
+            label: "Contact ID"
+
+      - name: company_id
+        description: "ID Company/Sales Account liên quan đến sự kiện."
+        meta:
+          dimension:
+            type: string
+            label: "Company ID"
+
+      - name: deal_id
+        description: "ID Deal liên quan đến sự kiện."
+        meta:
+          dimension:
+            type: string
+            label: "Deal ID"
+
+      - name: quotation_id
+        description: "ID Quotation liên quan đến sự kiện."
+        meta:
+          dimension:
+            type: string
+            label: "Quotation ID"
+
+      - name: activity_history_id
+        description: "ID lịch sử hoạt động CRM."
+        meta:
+          dimension:
+            type: string
+            label: "Activity History ID"
+
+      # ============================================================
+      # CONTACT DATA ENTRY
+      # ============================================================
+
+      - name: last_assigned_at
+        description: "Thời điểm Contact được assign cho AM."
+        meta:
+          dimension:
+            type: timestamp
+            label: "Last Assigned At"
+            time_intervals:
+              - YEAR
+              - QUARTER
+              - MONTH
+              - WEEK
+              - DAY
+              - HOUR
+
+      - name: contact_updated_at
+        description: "Thời điểm Contact được cập nhật."
+        meta:
+          dimension:
+            type: timestamp
+            label: "Contact Updated At"
+            time_intervals:
+              - YEAR
+              - QUARTER
+              - MONTH
+              - DAY
+              - HOUR
+
+      - name: company_updated_at
+        description: "Thời điểm Company được cập nhật."
+        meta:
+          dimension:
+            type: timestamp
+            label: "Company Updated At"
+            time_intervals:
+              - YEAR
+              - QUARTER
+              - MONTH
+              - DAY
+              - HOUR
+
+      - name: data_entry_completed_at
+        description: "Thời điểm hoàn tất cập nhật dữ liệu Contact và Company."
+        meta:
+          dimension:
+            type: timestamp
+            label: "Data Entry Completed At"
+            time_intervals:
+              - YEAR
+              - QUARTER
+              - MONTH
+              - DAY
+              - HOUR
+
+      - name: is_completed_within_24h
+        description: >
+          Cho biết dữ liệu Contact/Company có được hoàn tất trong vòng
+          24 giờ kể từ thời điểm assign hay không.
+        meta:
+          dimension:
+            type: boolean
+            label: "Completed Within 24h"
+
+      # ============================================================
+      # COMPANY
+      # ============================================================
+
+      - name: is_company_created
+        description: "Cho biết Company có phải là Company mới được tạo hay không."
+        meta:
+          dimension:
+            type: boolean
+            label: "Company Created"
+
+      - name: is_managed_company
+        description: >
+          Cho biết Company có thuộc danh sách Company được AM quản lý
+          hay không.
+        meta:
+          dimension:
+            type: boolean
+            label: "Managed Company"
+
+      - name: is_valid_company_interaction
+        description: >
+          Cho biết interaction có hợp lệ và được tính vào KPI tương tác
+          khách hàng của AM hay không.
+        meta:
+          dimension:
+            type: boolean
+            label: "Valid Company Interaction"
+
+      # ============================================================
+      # REVENUE
+      # ============================================================
+
+      - name: renewal_revenue_amount
+        description: "Doanh thu Renewal thực tế, đơn vị VND."
+        meta:
+          dimension:
+            type: number
+            label: "Renewal Revenue"
+          metrics:
+            total_renewal_revenue:
+              type: sum
+              label: "Total Renewal Revenue"
+              description: "Tổng doanh thu Renewal."
+              format: "₫#,##0"
+
+      - name: new_revenue_amount
+        description: "Doanh thu New và Upsales thực tế, đơn vị VND."
+        meta:
+          dimension:
+            type: number
+            label: "New Revenue"
+          metrics:
+            total_new_revenue:
+              type: sum
+              label: "Total New Revenue"
+              description: "Tổng doanh thu New và Upsales."
+              format: "₫#,##0"
+
+      # ============================================================
+      # RECEIVABLE
+      # ============================================================
+
+      - name: initial_receivable_amount
+        description: "Giá trị công nợ phải thu ban đầu, đơn vị VND."
+        meta:
+          dimension:
+            type: number
+            label: "Initial Receivable"
+          metrics:
+            total_initial_receivable:
+              type: sum
+              label: "Total Initial Receivable"
+              description: "Tổng giá trị công nợ phải thu ban đầu."
+              format: "₫#,##0"
+
+      - name: remaining_balance_amount
+        description: "Giá trị công nợ còn lại, đơn vị VND."
+        meta:
+          dimension:
+            type: number
+            label: "Remaining Balance"
+          metrics:
+            total_remaining_balance:
+              type: sum
+              label: "Total Remaining Balance"
+              description: "Tổng giá trị công nợ còn lại."
+              format: "₫#,##0"

@@ -1,0 +1,56 @@
+version: 2
+
+sources:
+  - name: bi_silver__finance
+    database: hive
+    schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+    description: "Silver layer sources for domain: finance"
+
+    tables:
+      - name: finance_revenue_plan
+        description: >
+          Lưu trữ dữ liệu kế hoạch doanh thu của công ty theo từng kỳ kế hoạch.
+          Kế hoạch doanh thu gồm ba mức: Kế hoạch Tập đoàn, MUST và NICE.
+          Trong đó, Kế hoạch Tập đoàn là chỉ tiêu doanh thu do Tập đoàn Viettel giao
+          và là chỉ tiêu kế hoạch mặc định được ưu tiên sử dụng khi người dùng hỏi về
+          kế hoạch doanh thu, chỉ tiêu doanh thu hoặc target doanh thu mà không nêu rõ
+          MUST hoặc NICE. Bảng đồng thời được phân bổ theo các phân khúc khách hàng,
+          phục vụ theo dõi mức độ hoàn thành kế hoạch, phân tích Actual vs Plan và
+          đánh giá kết quả kinh doanh.
+
+        columns:
+          - name: plan_date
+            description: Ngày hoặc kỳ kế hoạch áp dụng các chỉ tiêu doanh thu.
+
+          - name: plan_year
+            description: Năm kế hoạch.
+
+          - name: plan_month
+            description: Tháng kế hoạch.
+
+          - name: plan_viettel_group_amount
+            description: >
+              Chỉ tiêu doanh thu do Tập đoàn Viettel giao cho công ty, đơn vị triệu VND.
+              Đây là chỉ tiêu kế hoạch mặc định được ưu tiên sử dụng khi người dùng hỏi
+              về kế hoạch doanh thu, chỉ tiêu doanh thu hoặc target doanh thu mà không
+              nêu rõ MUST hoặc NICE.
+
+          - name: plan_must_amount
+            description: Mục tiêu doanh thu MUST, là mức tối thiểu cần đạt, đơn vị triệu VND.
+
+          - name: plan_nice_amount
+            description: Mục tiêu doanh thu NICE, là mức kỳ vọng hoặc Stretch Goal, đơn vị triệu VND.
+
+          - name: currency_code
+            description: Mã tiền tệ sử dụng trong kế hoạch. Hiện tại được chuẩn hóa về VND.
+
+          - name: customer_segment_l1
+            description: >
+              Phân khúc khách hàng cấp 1 (ví dụ: Nội bộ, Bên ngoài, Quốc tế).
+              Đây là cấp phân khúc mặc định được ưu tiên sử dụng trong phân tích và trả lời
+              khi người dùng chỉ hỏi theo phân khúc khách hàng mà không chỉ định cấp phân khúc.
+
+          - name: customer_segment_l2
+            description: >
+              Phân khúc khách hàng cấp 2 (ví dụ: SI nội bộ, SI ngoài, Direct và các nhóm
+              khách hàng chi tiết khác), được sử dụng khi cần phân tích sâu hơn theo phân khúc.

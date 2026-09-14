@@ -1,0 +1,36 @@
+version: 2
+
+sources:
+- name: bi_silver__finance
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: "Silver layer sources for domain: finance"
+
+  tables:
+  - name: finance_cost_plan
+    description: >
+      Lưu trữ dữ liệu kế hoạch tài chính, bao gồm ngân sách dự kiến và các chỉ tiêu kế hoạch
+      về chi phí. Bảng là cơ sở để phân tích so sánh Thực tế với Kế hoạch (Actual vs Plan),
+      phục vụ kiểm soát ngân sách, theo dõi hạn mức chi tiêu và đánh giá mức độ thực hiện kế hoạch.
+
+    columns:
+      - name: plan_date
+        description: Ngày kế hoạch của khoản chi phí dự kiến.
+
+      - name: plan_year
+        description: Năm kế hoạch, được lấy từ plan_date.
+
+      - name: plan_month
+        description: Tháng kế hoạch, được lấy từ plan_date.
+
+      - name: cost_code
+        description: Mã khoản mục chi phí trong kế hoạch tài chính.
+
+      - name: cost_group
+        description: Nhóm chi phí trong kế hoạch tài chính.
+
+      - name: expected_cost_value
+        description: Giá trị chi phí dự kiến theo kế hoạch, đơn vị triệu VND, không bao gồm VAT.
+
+      - name: currency_code
+        description: Mã tiền tệ sử dụng trong kế hoạch. Hiện tại được chuẩn hóa về VND.

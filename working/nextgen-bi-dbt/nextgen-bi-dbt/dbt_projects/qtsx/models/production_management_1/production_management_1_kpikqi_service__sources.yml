@@ -1,0 +1,70 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_kpikqi_service
+    description: "Nguồn Power BI: KPIKQI dịch vụ"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: report_date
+      description: "Cột Ngày_báo_cáo_18900"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: report_date_2
+      description: "Cột Ngày Báo cáo"
+    - name: period_result
+      description: "Cột PeriodResult"
+    - name: target_spdv
+      description: "Cột Chỉ tiêu - spdv"
+    - name: target
+      description: "Cột Target"
+    - name: unit
+      description: "Cột Đơn vị"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: vs_target
+      description: "Cột So với target"
+    - name: evaluation
+      description: "Cột Đánh giá"
+    - name: color
+      description: "Cột Màu sắc"
+    - name: kpi_alert
+      description: "Cột Cảnh báo KPI"
+    - name: result_prev_1_period
+      description: "Cột Kết quả 1 kỳ trước"
+    - name: result_prev_2_periods
+      description: "Cột Kết quả 2 kỳ trước"
+    - name: vs_target_prev_1_period
+      description: "Cột So với Target 1 kỳ trước"
+    - name: vs_target_prev_2_periods
+      description: "Cột So với Target 2 kỳ trước"
+    - name: evaluation_prev_1_period
+      description: "Cột Đánh giá 1 kỳ trước"
+    - name: evaluation_prev_2_periods
+      description: "Cột Đánh giá 2 kỳ trước"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: result
+      description: "Cột Kết quả"
+    - name: kpi_type
+      description: "Cột Loại KPI"
+    - name: viettel
+      description: "Cột Viettel"
+    - name: socp
+      description: "Cột SOCP"
+    - name: external_customer
+      description: "Cột KH ngoài"
+    - name: customer_name
+      description: "Cột CustomerName"
+    - name: customer_type
+      description: "Cột CustomerType"
+    - name: column12
+      description: "Cột Column12"

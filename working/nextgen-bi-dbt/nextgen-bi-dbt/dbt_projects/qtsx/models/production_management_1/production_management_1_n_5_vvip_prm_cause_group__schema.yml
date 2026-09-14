@@ -1,0 +1,36 @@
+version: 2
+models:
+- name: production_management_1_n_5_vvip_prm_cause_group
+  description: "Bảng production_management_1_n_5_vvip_prm_cause_group (nguồn Power BI: 5VVIP _ PRM Nhóm nguyên nhân)."
+  meta:
+    label: "5VVIP _ PRM Nhóm nguyên nhân"
+    powerbi_source: "5VVIP _ PRM Nhóm nguyên nhân"
+  columns:
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong 5VVIP _ PRM Nhóm nguyên nhân."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_id
+    description: "Cột ISSUE_ID trong 5VVIP _ PRM Nhóm nguyên nhân."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_ID"
+        hidden: true
+  - name: custom_field_id
+    description: "Cột CUSTOM_FIELD_ID trong 5VVIP _ PRM Nhóm nguyên nhân."
+    meta:
+      dimension:
+        type: number
+        label: "CUSTOM_FIELD_ID"
+        hidden: true
+  - name: cause_group
+    description: "Cột Nhóm_nguyên_nhân_11962 trong 5VVIP _ PRM Nhóm nguyên nhân."
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm_nguyên_nhân_11962"
+        hidden: true

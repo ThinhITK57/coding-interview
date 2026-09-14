@@ -1,0 +1,160 @@
+version: 2
+
+models:
+  - name: cx_lifecycle_customer_product_snapshot
+    description: >
+      Bảng snapshot khách hàng theo từng sản phẩm.
+
+      Mỗi dòng tương ứng 1 khách hàng - 1 sản phẩm - 1 ngày snapshot (period_end).
+
+      Dùng để phân tích retention, upsell, churn theo sản phẩm.
+
+      QUAN TRỌNG:
+      - Luôn dùng period_end làm trục thời gian chính, bên cạnh đó hãy kết hợp với year, quarter, month để filter nếu câu hỏi có đề cập đến
+
+    meta:
+      label: "Snapshot vòng đời khách hàng theo sản phẩm dịch vụ"
+      owner: "lyttt3"
+      metrics:
+
+        - name: active_customers_by_product
+          label: Khách hàng active theo sản phẩm dịch vụ
+          description: Số khách hàng đang active theo từng sản phẩm
+          type: count_distinct
+          sql: |
+            CASE WHEN is_active = 1.0 THEN tax_code END
+
+        - name: renewal_customers_by_product
+          label: Khách hàng gia hạn theo sản phẩm dịch vụ
+          description: Khách hàng có phát sinh gia hạn theo sản phẩm dịch vụ
+          type: count_distinct
+          sql: |
+            CASE WHEN is_renewal = 1.0 THEN tax_code END
+
+        - name: upsell_customers_by_product
+          label: Khách hàng upsell theo sản phẩm
+          description: Khách hàng có phát sinh upsell theo sản phẩm
+          type: count_distinct
+          sql: |
+            CASE WHEN is_upsell = 1.0 THEN tax_code END
+
+        - name: new_customers_by_product
+          label: Khách hàng mới theo sản phẩm dịch vụ
+          description: Khách hàng mới phát sinh hợp đồng đăng ký sản phẩm dịch vụ đó
+          type: count_distinct
+          sql: |
+            CASE WHEN is_new_customer_product = 1.0 THEN tax_code END
+
+        - name: old_customers_by_product
+          label: Khách hàng cũ theo sản phẩm dịch vụ
+          description: Khách hàng có phát sinh hợp đồng đăng ký sản phẩm dịch vụ đó mà chưa hết hạn
+          type: count_distinct
+          sql: |
+            CASE WHEN is_new_customer_product = 0.0 and is_active = 1.0 THEN tax_code END
+
+        # - name: no_of_products_per_customer
+        #   label: Số sản phẩm trung bình trên mỗi khách hàng
+        #   description: Số sản phẩm khách hàng sử dụng
+        #   type: average
+        #   sql: total_product
+
+        # - name: no_of_contracts_per_customer
+        #   label: Số hợp đồng trung bình trên mỗi khách hàng
+        #   description: Số hợp đồng của mỗi khách hàng
+        #   type: average
+        #   sql: total_contract
+
+        # -----------------------------
+        # RATE METRICS
+        # -----------------------------
+
+        - name: churn_rate_per_product
+          label: Tỷ lệ churn theo sản phẩm dịch vụ
+          description: Tỷ lệ khách hàng rời bỏ trên tổng khách hàng theo từng sản phẩm dịch vụ
+          type: number
+          sql: |
+            1.0 * COUNT(DISTINCT CASE WHEN is_churned = 1.0 THEN tax_code END)
+            / NULLIF(COUNT(DISTINCT tax_code), 0.0)
+
+        - name: renewal_rate_per_product
+          label: Tỷ lệ gia hạn theo sản phẩm dịch vụ
+          description: Tỷ lệ khách hàng có gia hạn trên tổng khách hàng theo từng sản phẩm dịch vụ
+          type: number
+          sql: |
+            1.0 * COUNT(DISTINCT CASE WHEN is_renewal = 1.0 THEN tax_code END)
+            / NULLIF(COUNT(DISTINCT tax_code), 0.0)
+
+        - name: new_customer_rate_per_product
+          label: Tỷ lệ khách mới theo sản phẩm dịch vụ
+          description: Tỷ lệ khách hàng mới trên tổng khách hàng theo từng sản phẩm dịch vụ
+          type: number
+          sql: |
+            1.0 * COUNT(DISTINCT CASE WHEN is_new_customer_product = 1.0 THEN tax_code END)
+            / NULLIF(COUNT(DISTINCT tax_code), 0.0)
+      
+    columns:
+      - name: year
+        description: Năm của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến năm.
+
+      - name: quarter
+        description: Quý của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến quý.
+
+      - name: month
+        description: Tháng của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến tháng.
+
+      - name: period_start
+        description: Ngày đầu tiên của kỳ snapshot.
+
+      - name: period_end
+        description: Ngày cuối cùng của kỳ snapshot. Các chỉ số trạng thái (active, grace period, expiring,...) được xác định tại thời điểm này.
+
+      - name: tax_code
+        description: Mã số thuế khách hàng
+
+      - name: product_category
+        description: Nhóm sản phẩm dịch vụ
+
+      - name: is_active
+        description: Khách hàng đang active với sản phẩm tại thời điểm snapshot
+
+      - name: is_expiring_90d
+        description: Sản phẩm sắp hết hạn trong 90 ngày
+
+      - name: is_grace_period
+        description: Sản phẩm dịch vụ đang trong thời gian gia hạn
+
+      - name: is_new_customer_vcs
+        description: Khách hàng mới của VCS nói chung
+
+      - name: is_new_customer_product
+        description: Khách hàng mới theo sản phẩm dịch vụ cụ thể
+
+      - name: is_renewal
+        description: Có phát sinh gia hạn theo sản phẩm dịch vụ
+
+      - name: is_upsell
+        description: Có phát sinh upsell theo sản phẩm dịch vụ
+
+      - name: is_returning_customer
+        description: Khách hàng rời bỏ và quay lại sử dụng sản phẩm dịch vụ
+
+      - name: latest_expire_date
+        description: Ngày hết hạn gần nhất theo sản phẩm dịch vụ
+
+      - name: is_churned
+        description: Khách hàng đã churn (mất khách) theo sản phẩm dịch vụ
+
+      # -------------------------------------------------------------
+      # TẠM ẨN: CÁC CỘT THỪA (Không có trong bảng)
+      # -------------------------------------------------------------
+      # - name: is_new_customer
+      #   description: Khách hàng mới theo sản phẩm dịch vụ (Gốc)
+      #
+      # - name: latest_sign_date
+      #   description: Ngày ký gần nhất theo sản phẩm dịch vụ
+      #
+      # - name: total_contract
+      #   description: Tổng số hợp đồng theo sản phẩm dịch vụ
+      #
+      # - name: total_product
+      #   description: Tổng số sản phẩm khách hàng sử dụng

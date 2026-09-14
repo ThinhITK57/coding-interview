@@ -1,0 +1,44 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_mm_release_versions
+    description: "Nguồn Power BI: mmRelease_Versions"
+    columns:
+    - name: project_key
+      description: "Cột projectKey"
+    - name: project_name
+      description: "Cột projectName"
+    - name: issue_key
+      description: "Cột issueKey"
+    - name: parent_issue_key
+      description: "Cột parentIssueKey"
+    - name: summary
+      description: "Cột summary"
+    - name: author_key
+      description: "Cột authorKey"
+    - name: author_display_name
+      description: "Cột authorDisplayName"
+    - name: author_email
+      description: "Cột authorEmail"
+    - name: time_spent_seconds
+      description: "Cột timeSpentSeconds"
+    - name: start_date
+      description: "Cột startDate"
+    - name: fix_versions
+      description: "Cột fixVersions"
+    - name: fix_version_release_dates
+      description: "Cột fixVersionReleaseDates"
+    - name: custom_field
+      description: "Cột customField_21000"
+    - name: custom_field_2
+      description: "Cột customField_21500"
+    - name: mm_fixversion_col
+      description: "Cột mm_fixversion_col"
+    - name: end_of_month
+      description: "Cột EndOfMonth"
+    - name: working_days
+      description: "Cột Số ngày làm việc"

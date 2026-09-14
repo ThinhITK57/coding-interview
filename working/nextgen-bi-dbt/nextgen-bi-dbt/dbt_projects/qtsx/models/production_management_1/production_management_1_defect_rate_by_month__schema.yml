@@ -1,0 +1,69 @@
+version: 2
+models:
+- name: production_management_1_defect_rate_by_month
+  description: >-
+    Điểm defect và man-month gộp về grain THÁNG (không giữ khối), phục vụ measure
+    '% Tỉ lệ defect' vốn dùng REMOVEFILTERS('Khối') ở cả tử lẫn mẫu.
+  meta:
+    label: "Tỉ lệ defect theo tháng"
+    metrics:
+      pct_rate_defect:
+        type: number
+        sql: "CASE WHEN SUM(defect_score) IS NULL OR SUM(man_month) IS NULL THEN NULL ELSE SUM(defect_score) / NULLIF(SUM(man_month), 0) END"
+        label: "% Tỉ lệ defect"
+        description: >-
+          DAX: VAR Defect_Score = CALCULATE(SUM(Defect[Điểm quy đổi]), REMOVEFILTERS('Khối'))
+          VAR HR_MM = CALCULATE(SUM('mamday hr'[man month]), REMOVEFILTERS('Khối'))
+          RETURN IF(ISBLANK(Defect_Score) || ISBLANK(HR_MM), BLANK(), DIVIDE(Defect_Score, HR_MM))
+        round: 2
+      sum_defect_score:
+        type: sum
+        sql: defect_score
+        label: "Điểm defect"
+        description: "DAX: SUM(Defect[Điểm quy đổi])"
+  columns:
+  - name: month_start
+    description: "Đầu tháng."
+    meta:
+      dimension:
+        type: date
+        label: "Tháng"
+  - name: year_value
+    description: "Năm."
+    meta:
+      dimension:
+        type: string
+        label: "Year"
+  - name: month_year
+    description: "Định dạng MMM YYYY."
+    meta:
+      dimension:
+        type: string
+        label: "MonthYear"
+  - name: quarter_year
+    description: "Định dạng Qn YYYY."
+    meta:
+      dimension:
+        type: string
+        label: "QuarterYear"
+  - name: month_sort_key
+    description: "yyyymm dùng để sắp xếp."
+    meta:
+      dimension:
+        type: number
+        label: "Month sort key"
+        hidden: true
+  - name: defect_score
+    description: "SUM(Defect[Điểm quy đổi]) trong tháng, mọi khối."
+    meta:
+      dimension:
+        type: number
+        label: "Điểm defect"
+        hidden: true
+  - name: man_month
+    description: "SUM('mamday hr'[man month]) trong tháng, mọi khối."
+    meta:
+      dimension:
+        type: number
+        label: "MM"
+        hidden: true

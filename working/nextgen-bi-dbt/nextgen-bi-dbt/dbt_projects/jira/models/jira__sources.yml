@@ -1,0 +1,69 @@
+version: 2
+sources:
+- name: bi_silver__jira
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: jira'
+  tables:
+  - name: jira_msn
+    description: "Lưu trữ dữ liệu chi tiết về các phiếu công việc (Issues/Tasks/Nhiệm vụ) từ hệ thống quản lý dự án Jira. Bảng theo dõi toàn bộ vòng đời của một nhiệm vụ từ khi khởi tạo, phân công người thực hiện, đến khi thay đổi trạng thái và hoàn thành, phục vụ phân tích năng suất nhân sự và tiến độ dự án."
+    columns:
+    - name: key
+      description: "(Primary Key) Mã định danh duy nhất của ticket (Ví dụ: IT-123)."
+      tests:
+      - not_null
+      - unique
+    - name: start_date
+      description: Ngày bắt đầu thực hiện nhiệm vụ thực tế.
+    - name: summary
+      description: Tiêu đề hoặc tóm tắt nội dung chính của nhiệm vụ.
+    - name: issuetype
+      description: Column issuetype in jira_msn
+    - name: status
+      description: Trạng thái hiện tại của quy trình (TODO, In Progress, Done, Hủy, ...).
+    - name: assignee
+      description: Tên đăng nhập (username) của người chịu trách nhiệm thực hiện.
+    - name: projectkey
+      description: 'Mã dự án chứa ticket này (Ví dụ: MASS09, TI18).'
+    - name: department_center
+      description: Trung tâm hoặc phòng ban quản lý công việc này.
+    - name: task_type
+      description: Phân loại nhiệm vụ theo mục tiêu (BSC, Chỉ tiêu điều hành, Team).
+    - name: duedate
+      description: Hạn chót (Deadline) phải hoàn thành công việc.
+    - name: created
+      description: Ngày tạo phiếu yêu cầu trên hệ thống.
+    - name: updated
+      description: Ngày có sự thay đổi thông tin cuối cùng trên ticket.
+  - name: jira_task_operation
+    description: "Lưu trữ dữ liệu vận hành chi tiết các nhiệm vụ (Tasks/Issues) trên hệ thống Jira. Bảng tập trung vào việc quản lý quy trình giao việc, mức độ ưu tiên và thời hạn hoàn thành, phục vụ mục tiêu phân tích tải công việc (Workload), đo lường KPI hoàn thành đúng hạn và tối ưu hóa nguồn lực nhân sự trong các đơn vị vận hành."
+    columns:
+    - name: key
+      description: "(Primary Key) Mã định danh duy nhất của ticket công việc."
+      tests:
+      - not_null
+      - unique
+    - name: start_date
+      description: Ngày thực tế bắt đầu triển khai nhiệm vụ.
+    - name: due_date
+      description: Hạn chót phải hoàn thành nhiệm vụ theo kế hoạch.
+    - name: summary
+      description: Tiêu đề ngắn mô tả nội dung nhiệm vụ.
+    - name: issue_type
+      description: 'Loại issue (ví dụ: Bug, Task, Story) trong hệ thống Jira.'
+    - name: priority
+      description: Mức độ ưu tiên (Critical, High, Medium, Low).
+    - name: status
+      description: Trạng thái hiện tại của công việc trong Jira.
+    - name: assignor
+      description: Người chịu trách nhiệm giao nhiệm vụ trong hệ thống JIRA.
+    - name: work_group
+      description: Nhóm nghiệp vụ cụ thể xử lý task (KLGB, CVCT, EAT...).
+    - name: department_center
+      description: Trung tâm hoặc bộ phận chịu trách nhiệm thực hiện công việc trong Jira.
+    - name: assignee
+      description: Username của người nhận và chịu trách nhiệm thực hiện.
+    - name: created
+      description: Ngày khởi tạo nhiệm vụ trên hệ thống.
+    - name: updated
+      description: Ngày cập nhật trạng thái hoặc nội dung cuối cùng.

@@ -1,0 +1,28 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_deal_quotations
+    description: Bảng này lưu trữ các báo giá liên quan đến các giao dịch trong hệ thống CRM, bao gồm thông tin về tiền tệ, trạng thái và các chiết khấu áp dụng. Nó được sử dụng để phân tích hiệu suất bán hàng, theo dõi tỷ lệ chuyển đổi từ báo giá sang hợp đồng và lập báo cáo doanh số theo thời gian và khu vực.
+    columns:
+    - name: deal_id
+      description: Mã định danh duy nhất của giao dịch (deal) trong hệ thống CRM.
+      tests:
+      - not_null
+    - name: quotation_id
+      description: Mã định danh duy nhất của báo giá trong hệ thống CRM.
+    - name: created_at
+      description: Thời điểm tạo báo giá trong hệ thống CRM.
+    - name: status
+      description: Trạng thái hiện tại của báo giá trong giao dịch CRM.
+    - name: tlang
+      description: Ngôn ngữ được sử dụng cho báo giá trong giao dịch.
+    - name: currency_code
+      description: Mã tiền tệ được sử dụng cho báo giá trong CRM.
+    - name: global_discount
+      description: Mức chiết khấu toàn cục được áp dụng cho báo giá trong giao dịch.
+    - name: global_discount_type
+      description: Loại giảm giá toàn cục được áp dụng cho báo giá trong CRM.

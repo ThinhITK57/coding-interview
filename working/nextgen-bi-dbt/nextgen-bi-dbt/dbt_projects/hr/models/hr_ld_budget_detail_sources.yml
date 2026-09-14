@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: "Silver layer sources for domain: hr"
+  tables:
+  - name: hr_ld_budget_detail
+    description: >
+      Bảng **hr_ld_budget_detail** lưu trữ thông tin ngân sách đào tạo theo từng loại ngân sách
+      trong năm 2026. Dữ liệu được lấy từ snapshot mới nhất của nguồn ngân sách đào tạo,
+      bao gồm tổng ngân sách được phân bổ, giá trị đã đề nghị phê duyệt, giá trị đã sử dụng
+      và ngân sách còn lại. Bảng được sử dụng để theo dõi tình hình sử dụng ngân sách L&D,
+      đánh giá mức độ giải ngân và hỗ trợ báo cáo quản trị chi phí đào tạo.
+
+    columns:
+    - name: year
+      description: Năm ngân sách đào tạo.
+
+    - name: budget_type
+      description: Loại ngân sách đào tạo hoặc nhóm chi phí đào tạo.
+
+    - name: budget_amount
+      description: Tổng ngân sách đào tạo được phân bổ theo loại ngân sách.
+
+    - name: approval_request_amount
+      description: Tổng giá trị ngân sách đã được đề nghị phê duyệt theo loại ngân sách.
+
+    - name: spent_amount
+      description: Tổng giá trị ngân sách đào tạo đã sử dụng theo loại ngân sách.
+
+    - name: remaining_amount
+      description: Giá trị ngân sách đào tạo còn lại theo loại ngân sách, sau khi trừ phần đã sử dụng hoặc đã ghi nhận theo dữ liệu nguồn.

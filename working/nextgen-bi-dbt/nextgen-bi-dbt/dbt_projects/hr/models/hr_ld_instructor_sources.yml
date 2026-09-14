@@ -1,0 +1,68 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_instructor
+    description: >
+      Bảng **hr_ld_instructor** lưu trữ thông tin giảng viên tham gia hoạt động đào tạo nội bộ,
+      bao gồm thông tin cá nhân, đơn vị công tác, lớp đào tạo giảng dạy, thời lượng giảng dạy,
+      chi phí giảng viên và kết quả đánh giá chất lượng giảng dạy. Dữ liệu được sử dụng để
+      theo dõi hiệu quả đội ngũ giảng viên, đánh giá chất lượng đào tạo và hỗ trợ công tác
+      quản lý chi phí đào tạo nội bộ.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi giảng dạy
+      tests:
+        - not_null
+        - unique
+
+    - name: employee_code
+      description: Mã định danh duy nhất của giảng viên
+
+    - name: full_name
+      description: Họ và tên giảng viên
+
+    - name: business_email
+      description: Địa chỉ email công việc của giảng viên
+
+    - name: instructor_group
+      description: Nhóm hoặc loại giảng viên theo phân loại đào tạo nội bộ
+
+    - name: division_n
+      description: Khối chức năng mà giảng viên trực thuộc
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 của giảng viên
+
+    - name: class_code
+      description: Mã lớp đào tạo mà giảng viên tham gia giảng dạy
+
+    - name: class_name
+      description: Tên lớp đào tạo mà giảng viên tham gia giảng dạy
+
+    - name: teaching_duration
+      description: "Tổng thời lượng giảng dạy của giảng viên (đơn vị: giờ)"
+
+    - name: instructor_fee
+      description: "Chi phí hoặc thù lao giảng dạy được chi trả cho giảng viên (đơn vị: VND)"
+
+    - name: instructor_rating
+      description: Điểm đánh giá chất lượng giảng dạy của giảng viên
+
+    - name: start_date
+      description: Ngày bắt đầu giảng dạy của lớp đào tạo
+
+    - name: end_date
+      description: Ngày kết thúc giảng dạy của lớp đào tạo
+
+    - name: month
+      description: Tháng ghi nhận hoạt động giảng dạy
+
+    - name: year
+      description: Năm ghi nhận hoạt động giảng dạy

@@ -1,0 +1,22 @@
+version: 2
+models:
+- name: production_management_1_muc_order_table
+  description: "Bảng production_management_1_muc_order_table (nguồn Power BI: Muc_Order_Table)."
+  meta:
+    label: "Muc_Order_Table"
+    powerbi_source: "Muc_Order_Table"
+  columns:
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong Muc_Order_Table."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+        hidden: true
+  - name: muc_order
+    description: "Cột Muc_Order trong Muc_Order_Table."
+    meta:
+      dimension:
+        type: number
+        label: "Muc_Order"
+        hidden: true

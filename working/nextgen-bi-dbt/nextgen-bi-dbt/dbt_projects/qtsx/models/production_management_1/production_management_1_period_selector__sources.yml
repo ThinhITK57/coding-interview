@@ -1,0 +1,14 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_period_selector
+    description: "Nguồn Power BI: PeriodSelector"
+    columns:
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: period_value
+      description: "Cột PeriodValue"

@@ -1,0 +1,97 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_sales_accounts
+    description: Bảng crm_sales_accounts lưu trữ thông tin chi tiết về các tài khoản khách hàng doanh nghiệp (company) trong hệ thống CRM.
+    columns:
+    - name: id
+      description: Mã định danh duy nhất của tài khoản bán hàng.
+      tests:
+      - not_null
+      - unique
+    - name: is_partner
+      description: Column is_partner in crm_sales_accounts
+    - name: name
+      description: Tên của tài khoản khách hàng trong hệ thống CRM.
+    - name: address
+      description: Địa chỉ của khách hàng hoặc đối tác kinh doanh.
+    - name: city
+      description: Thành phố nơi công ty khách hàng đặt trụ sở.
+    - name: state
+      description: Tỉnh hoặc tiểu bang nơi tài khoản khách hàng đặt trụ sở.
+    - name: zipcode
+      description: Mã bưu điện của khách hàng hoặc địa chỉ doanh nghiệp.
+    - name: country
+      description: Quốc gia nơi công ty khách hàng đăng ký hoạt động.
+    - name: number_of_employees
+      description: Số lượng nhân viên của tài khoản khách hàng.
+    - name: annual_revenue
+      description: Column annual_revenue in crm_sales_accounts
+    - name: website
+      description: Địa chỉ website của tài khoản khách hàng trong hệ thống CRM.
+    - name: am_username
+      description: Tên đăng nhập của người quản lý tài khoản chịu trách nhiệm chăm sóc khách hàng.
+    - name: sales_admin
+      description: Tên nhân viên quản lý bán hàng chịu trách nhiệm cho tài khoản này.
+    - name: phone
+      description: Số điện thoại liên hệ của khách hàng trong hệ thống CRM.
+    - name: open_deals_amount
+      description: Tổng giá trị các giao dịch đang mở của tài khoản.
+    - name: open_deals_count
+      description: Số lượng giao dịch (deal) đang mở của tài khoản.
+    - name: won_deals_amount
+      description: Tổng giá trị tiền tệ của các giao dịch đã thắng của tài khoản.
+    - name: won_deals_count
+      description: Số lượng giao dịch thành công (được thắng) của tài khoản.
+    - name: tax_code
+      description: Mã số thuế của khách hàng hoặc công ty trong hệ thống CRM.
+    - name: company_id
+      description: Mã định danh duy nhất của công ty trong hệ thống CRM.
+    - name: company_alias
+      description: Tên viết tắt hoặc biệt danh của công ty được sử dụng trong hệ thống CRM.
+    - name: customer_segment_l1
+      description: Mức phân khúc khách hàng cấp 1 của tài khoản bán hàng.
+    - name: customer_segment_l2
+      description: Mức phân khúc cấp 2 của tài khoản khách hàng, dùng để nhóm khách hàng theo tiêu chí kinh doanh.
+    - name: customer_segment_l3
+      description: Mức phân khúc cấp 3 của tài khoản khách hàng trong hệ thống CRM.
+    - name: incorporation_date
+      description: Ngày mà công ty được thành lập hoặc đăng ký kinh doanh.
+    - name: initial_source
+      description: Nguồn gốc ban đầu mà tài khoản được tạo hoặc tiếp cận.
+    - name: warm_up_source
+      description: Nguồn khởi tạo (warm‑up) của tài khoản trong hệ thống CRM.
+    - name: using_soc
+      description: Cho biết tài khoản có áp dụng tiêu chuẩn SOC hay không.
+    - name: vcs_soc_others
+      description: Thông tin về các kênh hoặc nguồn liên hệ khác mà khách hàng được ghi nhận trong hệ thống VCS.
+    - name: soc_brand
+      description: Thương hiệu SOC (Service Organization Control) của tài khoản.
+    - name: service_level
+      description: 'Mức độ dịch vụ mà khách hàng được cung cấp (ví dụ: Gold, Silver, Platinum).'
+    - name: created_at
+      description: Ngày mà tài khoản khách hàng được tạo trong hệ thống CRM.
+    - name: updated_at
+      description: Thời điểm cập nhật cuối cùng của thông tin tài khoản bán hàng.
+    - name: days_since_update
+      description: Số ngày đã trôi qua kể từ khi thông tin tài khoản được cập nhật lần cuối.
+    - name: parent_sales_account_id
+      description: Mã định danh tài khoản cha, dùng để xác định quan hệ phân cấp.
+    - name: recent_note
+      description: Column recent_note in crm_sales_accounts
+    - name: last_contacted_via_sales_activity
+      description: Ngày cuối cùng tài khoản được liên hệ qua hoạt động bán hàng.
+    - name: last_contacted_sales_activity_mode
+      description: Phương thức hoặc kênh mà nhân viên bán hàng đã liên hệ với khách hàng lần cuối.
+    - name: last_assigned_at
+      description: Ngày cuối cùng tài khoản được giao cho nhân viên bán hàng.
+    - name: renewal_date
+      description: Column renewal_date in crm_sales_accounts
+    - name: business_type
+      description: Loại hình kinh doanh của tài khoản khách hàng.
+    - name: industry_type
+      description: Loại ngành công nghiệp mà tài khoản khách hàng đang hoạt động.

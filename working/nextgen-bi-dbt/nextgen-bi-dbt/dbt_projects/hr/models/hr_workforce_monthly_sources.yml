@@ -1,0 +1,167 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: "Silver layer sources for domain: hr"
+  tables:
+  - name: hr_workforce_monthly
+    description: >
+      Bảng **hr_workforce_monthly** lưu trữ dữ liệu tổng hợp biến động nguồn nhân lực theo từng tháng,
+      được tổng hợp theo các chiều phân tích như đơn vị tổ chức, loại hợp đồng, nhóm nguồn lực,
+      cấp bậc công việc, vị trí, vùng năng lực, thâm niên và giới tính. Bảng bao gồm các chỉ số
+      về nhân sự đầu kỳ, cuối kỳ, nhân sự bình quân, tuyển mới, nghỉ việc, nghỉ việc tự nguyện,
+      nghỉ việc theo quyết định công ty, nghỉ việc sớm, thăng chức, thay đổi cấp bậc vị trí,
+      thay đổi vùng năng lực, luân chuyển nội bộ, kết quả đánh giá hiệu suất và các tỷ lệ quản trị
+      nhân sự. Dữ liệu được sinh đầy đủ theo tháng từ dim_date; với các tháng không có snapshot trực tiếp,
+      hệ thống sử dụng cơ chế backfill hoặc carry-forward để đảm bảo có dữ liệu phục vụ theo dõi xu hướng
+      quá khứ và dự báo tương lai.
+
+    columns:
+      - name: report_year
+        description: Năm báo cáo của dữ liệu Workforce.
+
+      - name: snapshot_year_month
+        description: Tháng báo cáo của dữ liệu Workforce theo định dạng YYYYMM.
+
+      - name: snapshot_month
+        description: Ngày đầu tháng của kỳ báo cáo, được dùng làm mốc thời gian snapshot theo tháng.
+
+      - name: snapshot_month_label
+        description: Nhãn hiển thị của tháng báo cáo theo định dạng yyyy-MMM, ví dụ 2025-Jan.
+
+      - name: month_start
+        description: Ngày đầu tiên của kỳ báo cáo tháng.
+
+      - name: month_end
+        description: Ngày cuối cùng của kỳ báo cáo tháng.
+
+      - name: division_n
+        description: Khối hoặc đơn vị cấp cao của nhân sự tại kỳ báo cáo.
+
+      - name: department_n_1
+        description: Đơn vị tổ chức cấp 1 của nhân sự tại kỳ báo cáo.
+
+      - name: department_n_2
+        description: Đơn vị tổ chức cấp 2 của nhân sự tại kỳ báo cáo.
+
+      - name: department_n_3
+        description: Đơn vị tổ chức cấp 3 của nhân sự tại kỳ báo cáo.
+
+      - name: contract_type
+        description: Loại hợp đồng của nhân sự tại kỳ báo cáo.
+
+      - name: resource_type
+        description: Nhóm nguồn lực của nhân sự tại kỳ báo cáo, dùng để phân loại nguồn lực chính, thuê ngoài, sinh viên, fresher hoặc các nhóm nhân sự đặc thù khác.
+
+      - name: job_level
+        description: Nhóm chức danh hoặc vai trò công việc của nhân sự tại kỳ báo cáo.
+
+      - name: position_level
+        description: Cấp bậc vị trí của nhân sự tại kỳ báo cáo.
+
+      - name: hierarchy_level
+        description: Thứ tự phân cấp của position_level, dùng để sắp xếp cấp bậc nhân sự trong cơ cấu tổ chức.
+
+      - name: competency_zone
+        description: Vùng năng lực hoặc nhóm chuyên môn của nhân sự tại kỳ báo cáo.
+
+      - name: tenure_group
+        description: Nhóm thâm niên làm việc của nhân sự tại kỳ báo cáo.
+
+      - name: gender
+        description: Giới tính của nhân sự.
+
+      - name: source_snapshot_date
+        description: Ngày snapshot nguồn được chọn để đại diện cho tháng báo cáo.
+
+      - name: snapshot_fill_type
+        description: Loại phương pháp lấy snapshot cho tháng báo cáo. NORMAL là có snapshot đúng tháng; BACKFILL là dùng snapshot tương lai gần nhất để lấp dữ liệu cho các tháng trước đó trong cùng năm; CARRY_FORWARD là dùng snapshot gần nhất trước đó để kéo tiếp cho các tháng sau; RESIGNED_ONLY là bản ghi chỉ có trong nguồn nghỉ việc.
+
+      - name: opening_headcount
+        description: Số lượng nhân sự đầu kỳ của nhóm phân tích, được lấy bằng số lượng nhân sự cuối kỳ của tháng liền trước theo cùng tổ hợp chiều phân tích.
+
+      - name: closing_headcount
+        description: Số lượng nhân sự cuối kỳ được tính toán tại ngày cuối tháng báo cáo, bao gồm các nhân sự có ngày vào làm trước hoặc bằng cuối tháng và chưa nghỉ việc tính đến cuối tháng.
+
+      - name: avg_headcount
+        description: Số lượng nhân sự bình quân trong kỳ, được tính bằng trung bình cộng giữa số lượng nhân sự đầu kỳ và số lượng nhân sự cuối kỳ.
+
+      - name: new_hire_count
+        description: Số lượng nhân sự tuyển mới trong kỳ báo cáo, xác định theo ngày vào làm VCS thuộc tháng báo cáo.
+
+      - name: resigned_count
+        description: Tổng số nhân sự nghỉ việc trong kỳ báo cáo, xác định theo ngày nghỉ việc thuộc tháng báo cáo.
+
+      - name: voluntary_exit_count
+        description: Số lượng nhân sự nghỉ việc tự nguyện trong kỳ báo cáo.
+
+      - name: company_termination_count
+        description: Số lượng nhân sự chấm dứt hợp đồng theo quyết định của công ty trong kỳ báo cáo.
+
+      - name: quick_quit_count
+        description: Số lượng nhân sự nghỉ việc sớm trong kỳ báo cáo, được xác định khi khoảng cách từ ngày vào làm đến ngày nghỉ việc nhỏ hơn hoặc bằng 90 ngày.
+
+      - name: promotion_count
+        description: Số lượng nhân sự có thay đổi cấp bậc vị trí hoặc vùng năng lực so với snapshot tháng trước trong các kỳ có snapshot NORMAL.
+
+      - name: position_level_change_count
+        description: Số lượng nhân sự thay đổi cấp bậc vị trí so với snapshot tháng trước trong các kỳ có snapshot NORMAL.
+
+      - name: competency_zone_change_count
+        description: Số lượng nhân sự thay đổi vùng năng lực hoặc chuyên môn so với snapshot tháng trước trong các kỳ có snapshot NORMAL.
+
+      - name: internal_transfer_in
+        description: Số lượng nhân sự chuyển nội bộ vào nhóm phân tích hiện tại trong kỳ báo cáo, được xác định khi nhân sự thay đổi đơn vị tổ chức so với snapshot tháng trước.
+
+      - name: internal_transfer_out
+        description: Số lượng nhân sự chuyển nội bộ ra khỏi nhóm phân tích hiện tại trong kỳ báo cáo, được xác định khi nhân sự thay đổi đơn vị tổ chức so với snapshot tháng trước.
+
+      - name: internal_transfer_net
+        description: Biến động nhân sự thuần do luân chuyển nội bộ trong kỳ, bằng số nhân sự chuyển vào trừ số nhân sự chuyển ra.
+
+      - name: net_change
+        description: Biến động nhân sự thuần trong kỳ, được tính bằng số tuyển mới cộng số chuyển nội bộ vào, trừ số chuyển nội bộ ra và trừ số nghỉ việc.
+
+      - name: snapshot_closing_headcount
+        description: Số lượng nhân sự cuối kỳ theo trạng thái active trong snapshot nguồn được chọn, dùng để đối soát với số lượng nhân sự cuối kỳ tính toán.
+
+      - name: headcount_variance
+        description: Chênh lệch giữa số lượng nhân sự cuối kỳ theo snapshot nguồn và số lượng nhân sự cuối kỳ tính toán, bằng snapshot_closing_headcount trừ closing_headcount.
+
+      - name: attrition_rate
+        description: Tỷ lệ nghỉ việc trong kỳ trên nhân sự bình quân, được tính bằng resigned_count chia cho avg_headcount.
+
+      - name: turnover_rate
+        description: Tỷ lệ biến động nhân sự trong kỳ, hiện được tính bằng resigned_count chia cho avg_headcount.
+
+      - name: voluntary_turnover_rate
+        description: Tỷ lệ nghỉ việc tự nguyện trong kỳ trên nhân sự bình quân, được tính bằng voluntary_exit_count chia cho avg_headcount.
+
+      - name: involuntary_turnover_rate
+        description: Tỷ lệ nghỉ việc theo quyết định của công ty trong kỳ trên nhân sự bình quân, được tính bằng company_termination_count chia cho avg_headcount.
+
+      - name: quick_quit_rate_by_avg_headcount
+        description: Tỷ lệ nghỉ việc sớm trên nhân sự bình quân, được tính bằng quick_quit_count chia cho avg_headcount.
+
+      - name: quick_quit_rate_by_new_hire
+        description: Tỷ lệ nghỉ việc sớm trên tổng số nhân sự tuyển mới trong kỳ, được tính bằng quick_quit_count chia cho new_hire_count.
+
+      - name: hiring_rate
+        description: Tỷ lệ tuyển mới trên nhân sự bình quân, được tính bằng new_hire_count chia cho avg_headcount.
+
+      - name: promotion_rate
+        description: Tỷ lệ nhân sự có thay đổi cấp bậc vị trí hoặc vùng năng lực trên nhân sự bình quân, được tính bằng promotion_count chia cho avg_headcount.
+
+      - name: performance_employee_count
+        description: Số lượng nhân sự có kết quả đánh giá hiệu suất trong kỳ đánh giá tương ứng với tháng báo cáo.
+
+      - name: performance_not_pass_count
+        description: Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Không đạt trong kỳ đánh giá tương ứng với tháng báo cáo.
+
+      - name: performance_pass_count
+        description: Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Đạt trong kỳ đánh giá tương ứng với tháng báo cáo.
+
+      - name: performance_exceed_count
+        description: Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Vượt yêu cầu trong kỳ đánh giá tương ứng với tháng báo cáo.

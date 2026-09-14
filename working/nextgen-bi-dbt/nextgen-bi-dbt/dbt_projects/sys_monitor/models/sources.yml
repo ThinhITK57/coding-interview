@@ -1,0 +1,54 @@
+version: 2
+
+sources:
+  - name: raw_lightdash_system
+    description: "Raw Lightdash system tables for observability and adoption KPIs."
+    database: postgres
+    schema: public
+    tables:
+      - name: users
+        description: "System users."
+      - name: emails
+        description: "User email addresses."
+      - name: projects
+        description: "Lightdash projects."
+      - name: organizations
+        description: "Lightdash organizations."
+      - name: project_memberships
+        description: "Direct project memberships."
+      - name: project_group_access
+        description: "Project access granted to groups."
+      - name: group_memberships
+        description: "Users inside groups."
+      - name: organization_memberships
+        description: "Organization memberships and roles."
+      - name: saved_queries
+        description: "Saved charts."
+      - name: dashboards
+        description: "Dashboards."
+      - name: ai_agent
+        description: "AI agents."
+      - name: ai_thread
+        description: "AI threads."
+      - name: ai_prompt
+        description: "AI prompts and responses."
+      - name: ai_agent_tool_call
+        description: "AI tool calls triggered by prompts."
+      - name: ai_agent_tool_result
+        description: "AI tool call results produced by prompts."
+      - name: managed_agent_settings
+        description: "Managed agent settings per project."
+      - name: managed_agent_actions
+        description: "Managed agent actions and reversals."
+      - name: scheduler_log
+        description: "Scheduler execution logs."
+      - name: jobs
+        description: "Background jobs."
+      - name: job_steps
+        description: "Background job steps."
+      - name: analytics_chart_views
+        description: "Chart view analytics."
+      - name: analytics_dashboard_views
+        description: "Dashboard view analytics."
+      - name: analytics_app_views
+        description: "Application view analytics."

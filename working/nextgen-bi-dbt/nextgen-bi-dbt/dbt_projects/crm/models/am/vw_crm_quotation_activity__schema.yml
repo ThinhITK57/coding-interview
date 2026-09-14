@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: vw_crm_quotation_activity
+    description: |
+      Quotation-level CRM statistics.
+
+      Grain:
+        1 row = 1 Quotation.
+
+      Used to analyze quotation creation, quotation status,
+      discounts, currency, and associated Opportunity/customer.
+    
+    meta:
+      group_label: AM Dashboard
+      owner: huongnv1
+
+    columns:
+
+      - name: object_id
+        description: Unique quotation ID.
+
+      - name: object_type
+        description: CRM object type. Always QUOTATION.
+
+      - name: am_user_id
+        description: Account Manager ID associated with the Opportunity.
+
+      - name: am_user_name
+        description: Account Manager name associated with the Opportunity.
+
+      - name: activity_date
+        description: Quotation creation date.
+
+      - name: created_at
+        description: Quotation creation timestamp.
+
+      - name: is_created
+        description: Indicates whether the quotation was created.
+
+      - name: status
+        description: Quotation status.
+
+      - name: currency_code
+        description: Quotation currency.
+
+      - name: global_discount
+        description: Global quotation discount amount or value.
+
+      - name: global_discount_type
+        description: Type of global quotation discount.
+
+      - name: deal_id
+        description: Opportunity associated with the quotation.
+
+      - name: deal_name
+        description: Opportunity name associated with the quotation.
+
+      - name: company_id
+        description: Company associated with the Opportunity.
+
+      - name: company_name
+        description: Company name associated with the Opportunity.

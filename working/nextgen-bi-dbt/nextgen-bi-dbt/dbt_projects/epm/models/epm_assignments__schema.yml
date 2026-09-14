@@ -1,0 +1,200 @@
+version: 2
+
+models:
+  - name: epm_assignments
+    description: >
+      Bảng lưu trữ thông tin chi tiết về các Phiếu giao nhiệm vụ (Assignments / PGNV) 
+      của tổ chức, dùng làm thành phần cốt lõi để đánh giá hiệu suất của các Phòng ban, 
+      Trung tâm qua các kỳ (tháng, quý, năm).
+
+      Grain: Một dòng tương ứng với một bản ghi Phiếu giao nhiệm vụ.
+
+      Semantic & Rules:
+      - c_total_assignment_weight_result là căn cứ chính thức để xếp loại lao động và chi trả thưởng hiệu quả.
+      - Được cấu thành từ sự kết hợp giữa mục tiêu BSC và mục tiêu riêng của đơn vị.
+    meta:
+      label: "Phiếu giao nhiệm vụ (Assignments)"
+      group_label: "EPM Dashboard"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Assignments"
+        grain: "One row per assignment record"
+        primary_date: "c_end_date"
+        primary_department_dimension: "c_department"
+        primary_assignee_dimension: "c_assignee"
+        primary_assignor_dimension: "c_assignor"
+
+        metric_rules:
+          total_assignments_count: "Tổng số lượng phiếu giao nhiệm vụ được tạo."
+          avg_achievement_rate: "Tỷ lệ hoàn thành nhiệm vụ trung bình của các đơn vị."
+
+        restrictions:
+          - "Sử dụng c_end_date làm mốc thời gian chốt đánh giá kết quả giao nhiệm vụ."
+          - "Căn cứ điểm số từ c_total_assignment_weight_result để đánh giá KPI đơn vị, không dùng trực tiếp % hoàn thành task thông thường."
+
+      metrics:
+        - name: total_assignments_count
+          label: "Tổng số PGNV"
+          description: "Tổng số lượng bản ghi phiếu giao nhiệm vụ."
+          type: count
+          sql: ${sysid}
+
+        - name: avg_achievement_rate
+          label: "Tỷ lệ hoàn thành trung bình"
+          description: "Trung bình cộng tỷ lệ hoàn thành (c_achievement_rate) của các phiếu giao nhiệm vụ."
+          type: average
+          sql: ${c_achievement_rate}
+
+    columns:
+      - name: sysid
+        description: "Mã định danh duy nhất của bản ghi giao việc."
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "Assignment ID"
+
+      - name: name
+        description: "Tên bản giao việc / Tiêu đề phiếu giao nhiệm vụ KPI."
+        meta:
+          dimension:
+            type: string
+            label: "Tên PGNV"
+
+      - name: description
+        description: "Thuyết minh chi tiết nội dung giao việc và các lưu ý chỉ đạo điều hành."
+        meta:
+          dimension:
+            type: string
+            label: "Mô tả nội dung"
+
+      - name: created_by
+        description: "Nhân sự khởi tạo phiếu giao việc trong hệ thống."
+        meta:
+          dimension:
+            type: string
+            label: "Người tạo"
+
+      - name: c_assignor
+        description: "Người giao việc / Thủ trưởng đơn vị phê duyệt giao nhiệm vụ KPI."
+        meta:
+          dimension:
+            type: string
+            label: "Người giao việc"
+
+      - name: c_assignee
+        description: "Người nhận việc / Cán bộ nhân viên chịu trách nhiệm thực thi."
+        meta:
+          dimension:
+            type: string
+            label: "Người nhận việc"
+
+      - name: c_start_date
+        description: "Ngày bắt đầu có hiệu lực của bản giao nhiệm vụ."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày bắt đầu"
+            time_intervals: [DAY, WEEK, MONTH, QUARTER, YEAR]
+
+      - name: c_end_date
+        description: "Hạn cuối hoàn thành và chốt đánh giá kết quả công việc."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn hoàn thành"
+            time_intervals: [DAY, WEEK, MONTH, QUARTER, YEAR]
+
+      - name: c_parent_assignment
+        description: "Khóa ngoại trỏ đến Phiếu giao việc cha cấp trên (Giao từ Cấp Trưởng phòng xuống Nhân viên)."
+        meta:
+          dimension:
+            type: string
+            label: "PGNV cha"
+
+      - name: c_department
+        description: "Phòng ban / Đơn vị tiếp nhận khối lượng công việc (PB, TT)."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban / Đơn vị"
+
+      - name: entity_owner
+        description: "Người sở hữu bản ghi trong hệ thống bảo mật phân quyền."
+        meta:
+          dimension:
+            type: string
+            label: "Chủ sở hữu bản ghi"
+
+      - name: c_achievement_rate
+        description: "Tỷ lệ Hoàn thành Nhiệm vụ (%): Đánh giá tổng thể mức độ hoàn thành bản giao việc."
+        meta:
+          dimension:
+            type: number
+            label: "Tỷ lệ hoàn thành (%)"
+
+      - name: c_total_weight
+        description: "Tổng trọng số quy chuẩn của bản giao việc (chuẩn hóa = 100%)."
+        meta:
+          dimension:
+            type: number
+            label: "Tổng trọng số"
+
+      - name: c_sum_target_weight_percent
+        description: "Tổng tỷ lệ trọng số của toàn bộ các chỉ tiêu định lượng (Target) gắn trong Assignment."
+        meta:
+          dimension:
+            type: number
+            label: "Tổng trọng số chỉ tiêu"
+
+      - name: last_updated_on
+        description: "Watermark gia số thời gian dùng để cào dữ liệu tăng dần (Incremental)."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày cập nhật cuối"
+
+      - name: last_updated_by_system_on
+        description: "Dấu thời gian hệ thống tự động chạy batch tính toán lại điểm kết quả."
+        meta:
+          dimension:
+            type: date
+            label: "Hệ thống cập nhật lúc"
+
+      - name: created_on
+        description: "Thời điểm tạo bản ghi phiếu giao việc."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày tạo"
+
+      - name: external_id
+        description: "Mã tham chiếu văn bản chỉ đạo hoặc số quyết định bổ nhiệm/giao việc."
+        meta:
+          dimension:
+            type: string
+            label: "Mã tham chiếu ngoài"
+
+      - name: entity_type
+        description: "Luôn mang giá trị cố định Assignment."
+        meta:
+          dimension:
+            type: string
+            label: "Loại đối tượng"
+
+      - name: c_total_assignment_weight_result
+        description: "Điểm Đánh giá KPI Cuối cùng: Căn cứ chính thức để xếp loại lao động và chi trả thưởng hiệu quả (A, B, C)."
+        meta:
+          dimension:
+            type: number
+            label: "Điểm kết quả KPI"
+
+  
+
+  
+
+  
+  

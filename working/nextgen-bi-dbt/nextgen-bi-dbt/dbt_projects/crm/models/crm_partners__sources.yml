@@ -1,0 +1,49 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_partners
+    description: Bảng crm_partners lưu trữ thông tin các đối tác kinh doanh, bao gồm dữ liệu nhận dạng, liên hệ, địa chỉ và trạng thái hợp đồng. Dữ liệu phục vụ quản lý quan hệ đối tác, phân tích hiệu suất và hỗ trợ chiến lược hợp tác.
+    columns:
+    - name: id
+      description: Mã định danh duy nhất của đối tác
+      tests:
+      - not_null
+      - unique
+    - name: partner_name
+      description: Tên đối tác (công ty, khách hàng, nhà cung cấp)
+    - name: document_number
+      description: Số hoặc mã định danh tài liệu/hợp đồng đối tác
+    - name: company_alias
+      description: Tên gọi thay thế hoặc biệt danh của công ty đối tác trong hệ thống CRM.
+    - name: partner_address
+      description: Địa chỉ của đối tác trong hệ thống CRM.
+    - name: country
+      description: Quốc gia nơi đối tác hoạt động
+    - name: contact_name
+      description: Tên người liên hệ chính
+    - name: contact_position
+      description: Column contact_position in crm_partners
+    - name: contact_mobile
+      description: Số điện thoại di động của người liên hệ chính
+    - name: contact_email
+      description: Email của người liên hệ chính
+    - name: effective_date
+      description: Ngày bắt đầu hiệu lực của đối tác/hợp đồng
+    - name: expiration_date
+      description: Ngày hết hiệu lực của đối tác/hợp đồng
+    - name: partner_type
+      description: Loại hình hoặc nhóm mà đối tác thuộc, xác định vai trò kinh doanh của họ.
+    - name: document_type
+      description: Loại tài liệu hoặc hợp đồng đối tác (PDF, DOCX, Agreement…)
+    - name: partner_status
+      description: Trạng thái hợp tác hiện tại của đối tác (Active, Expired…)
+    - name: partner_type_vi
+      description: Column partner_type_vi in crm_partners
+    - name: document_format_vi
+      description: Column document_format_vi in crm_partners
+    - name: partner_status_vi
+      description: Column partner_status_vi in crm_partners

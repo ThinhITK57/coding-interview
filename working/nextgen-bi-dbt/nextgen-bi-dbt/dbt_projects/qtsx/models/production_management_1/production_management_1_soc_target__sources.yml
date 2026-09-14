@@ -1,0 +1,28 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_soc_target
+    description: "Nguồn Power BI: SOC_Target"
+    columns:
+    - name: customer
+      description: "Cột Khách hàng"
+    - name: summary
+      description: "Cột Summary"
+    - name: customer_s_severity
+      description: "Cột Customer's severity"
+    - name: id
+      description: "Cột ID"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: target
+      description: "Cột Target"
+    - name: unit_of_measure
+      description: "Cột Đơn vị tính"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: key_target
+      description: "Cột Key_target"

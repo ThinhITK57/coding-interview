@@ -1,0 +1,16 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_man_month_qa
+    description: "Nguồn Power BI: Man_month_QA"
+    columns:
+    - name: product_service
+      description: "Cột Sản phẩm/dịch vụ"
+    - name: man_month
+      description: "Cột man month"
+    - name: date_value
+      description: "Cột ngày tháng"

@@ -1,0 +1,83 @@
+version: 2
+models:
+- name: production_management_1_rpm_risk_problem
+  description: "Bảng production_management_1_rpm_risk_problem (nguồn Power BI: RPM_Risk-Problem)."
+  meta:
+    label: "RPM_Risk-Problem"
+    powerbi_source: "RPM_Risk-Problem"
+    joins:
+    - join: production_management_1_rpm_customer
+      sql_on: "${production_management_1_rpm_risk_problem.customers} = ${production_management_1_rpm_customer.issue_key}"
+      relationship: many-to-one
+    - join: production_management_1_vvip
+      sql_on: "${production_management_1_rpm_risk_problem.customer_name} = ${production_management_1_vvip.org_name}"
+      relationship: many-to-many
+    metrics:
+      count_id:
+        type: count
+        sql: id
+        label: "Count of Id"
+        description: "Sinh từ Power BI: count(RPM_Risk-Problem.Id)"
+  columns:
+  - name: id
+    description: "Cột Id trong RPM_Risk-Problem."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong RPM_Risk-Problem."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong RPM_Risk-Problem."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong RPM_Risk-Problem."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong RPM_Risk-Problem."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong RPM_Risk-Problem."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+  - name: customers
+    description: "Cột Customers_13905 trong RPM_Risk-Problem."
+    meta:
+      dimension:
+        type: string
+        label: "Customers_13905"
+        hidden: true
+  - name: customer_name
+    description: "Cột CUstomer name trong RPM_Risk-Problem. Cột tính toán, DAX gốc: LOOKUPVALUE('RPM_Customer'[ISSUE_SUMMARY],RPM_Customer[ISSUE_KEY],'RPM_Risk-Problem'[Customers_13905])"
+    meta:
+      dimension:
+        type: string
+        label: "CUstomer name"
+        hidden: true
+  - name: record_date
+    description: "Cột Ngày ghi nhận trong RPM_Risk-Problem. Cột tính toán, DAX gốc: DATE(YEAR('RPM_Risk-Problem'[ISSUE_CREATED]),MONTH('RPM_Risk-Problem'[ISSUE_CREATED]),DAY('RPM_Risk-Problem'[ISSUE_CREATED]))"
+    meta:
+      dimension:
+        type: date
+        label: "Ngày ghi nhận"
+        hidden: true

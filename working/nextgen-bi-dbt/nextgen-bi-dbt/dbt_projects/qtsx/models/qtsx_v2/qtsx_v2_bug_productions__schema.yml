@@ -1,0 +1,105 @@
+version: 2
+models:
+- name: qtsx_v2_bug_productions
+  description: "Bảng qtsx_v2_bug_productions (nguồn Power BI: bug productions)."
+  meta:
+    label: "bug productions"
+    powerbi_source: "bug productions"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_bug_productions.projectname} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      bug_count:
+        type: count
+        sql: "CASE WHEN priority IN ('High', 'Highest', 'Critical') THEN 1 END"
+        label: "Bug Count"
+        round: 0
+        description: "DAX: CALCULATE(COUNTROWS('bug productions'), FILTER('bug productions', 'bug productions'[priority] in{\"High\",\"Highest\",\"Critical\"}))"
+      bug_count_v2:
+        type: number
+        sql: "COALESCE(${count_rows}, 0)"
+        label: "Bug Count v2"
+        round: 0
+        description: "DAX: IF ( ISBLANK(SELECTEDVALUE('Project'[Project Name])), BLANK(), COALESCE(COUNTROWS('bug productions'), 0) )"
+      count_rows:
+        type: count
+        sql: "*"
+        label: "Số dòng"
+        description: "Metric phụ sinh từ DAX: COUNT(*)"
+      project_fail:
+        type: count_distinct
+        sql: projectname
+        label: "Project Fail"
+        description: "DAX: DISTINCTCOUNT('bug productions'[projectname])"
+  columns:
+  - name: issuekey
+    description: "Cột issuekey trong bug productions."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong bug productions."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: projectname
+    description: "Cột projectname trong bug productions."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+        hidden: true
+  - name: resolutiondate
+    description: "Cột resolutiondate trong bug productions."
+    meta:
+      dimension:
+        type: string
+        label: "resolutiondate"
+        hidden: true
+  - name: priority
+    description: "Cột priority trong bug productions."
+    meta:
+      dimension:
+        type: string
+        label: "priority"
+        hidden: true
+  - name: status
+    description: "Cột status trong bug productions."
+    meta:
+      dimension:
+        type: string
+        label: "status"
+        hidden: true
+  - name: created
+    description: "Cột created trong bug productions."
+    meta:
+      dimension:
+        type: date
+        label: "created"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong bug productions. Cột tính toán, DAX gốc: FORMAT('bug productions'[created], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong bug productions. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'bug productions'[projectname] in {\"aJiant\", \"NSM - NDR\", \"SOC PLATFORM\", \"VCS_ Consolidate Platform\", \"VCS-CyCir\", \"VCS-CyM\",\"VCS-InT INSIDER THREAT\"} , \"TT.Enterprise\", 'bug productions'[projectname] in {\"BRG\",\"Cloudrity Self Service\",\"F2DR\",\"LIG\",\"TML\",\"V-AntiDDoS\",\"VCS TAS\",\"Trách Nhiệm Xã Hội\",\"VCS-Hub\"}, \"TT.Telco\", 'bug productions'[projectname] in {\"M-Suite\",\"Security Chatbot\",\"VCS-KIAN\",\"TTSX_Sản phẩm nội bộ\"},\"TT.SX\", 'bug productions'[projectname] in {\"Threat Intelligence\"},\"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true
+  - name: bug_score
+    description: "Cột Điểm bug trong bug productions. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'bug productions'[priority] = \"Critical\" , 5, 'bug productions'[priority] = \"high\" || 'bug productions'[priority] = \"Highest\", 3, 1)"
+    meta:
+      dimension:
+        type: number
+        label: "Điểm bug"
+        hidden: true

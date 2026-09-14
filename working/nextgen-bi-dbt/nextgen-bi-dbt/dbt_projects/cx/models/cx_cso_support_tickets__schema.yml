@@ -1,0 +1,964 @@
+version: 2
+models:
+- name: cx_cso_support_tickets
+  description: >
+      Lưu trữ vòng đời của một yêu cầu hỗ trợ (ticket) từ lúc tiếp nhận đến khi đóng,
+      phục vụ phân tích hiệu suất vận hành (SLA) và trải nghiệm khách hàng (CX).
+
+      Keywords: 'ticket; support ticket; customer support; helpdesk; incident; issue;
+      request; SLA; overdue; violation; response time; resolution time; TTR; backlog;
+      open ticket; closed ticket; resolved ticket; ticket status; priority; severity;
+      urgency; agent; L1; L2; L3; L4; assigned; unassigned; customer group; segment;
+      channel; email; chat; hotline; issue category; issue type; root cause; CSAT;
+      satisfaction; sentiment; positive; negative; duplicate; reopened'
+      
+      Semantic:
+      - Luôn sử dụng mặc định created_at trong các báo cáo theo thời gian, trừ trường hợp người dùng yêu cầu hoặc chỉ định cụ thể trong mô tả theo từng field/dimension
+
+  meta:
+    label: "CSO Support Tickets"
+    owner: "lyttt3"
+    metrics:
+      ticket_count:
+        type: count_distinct
+        sql: ${TABLE}.ticket_id
+        description: Tổng số ticket duy nhất, đếm theo ticket_id.
+        label: "Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Ticket Count"
+          - "Số lượng ticket"
+      distinct_ticket_count:
+        type: count_distinct
+        sql: ${TABLE}.ticket_id
+        description: 'VI: Số ticket duy nhất. | EN: Số ticket duy nhất.'
+        label: "Distinct Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Distinct Ticket Count"
+          - "Số lượng ticket duy nhất"
+      avg_agent_reply_count:
+        type: average
+        sql: ${TABLE}.agent_reply_count
+        description: Số lượng phản hồi/trao đổi trung bình do nhân viên (agent) thực hiện trên mỗi ticket. Phản ánh mức độ tương tác cần thiết để xử lý vấn đề.
+        label: "Avg Agent Reply Count"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Agent Reply Count"
+          - "Trung bình số lượng phản hồi của agent"
+      overdue_ticket_count:
+        type: sum
+        sql: CASE WHEN is_overdue THEN 1.0 ELSE 0.0 END
+        description: Số ticket quá hạn SLA.
+        label: "Overdue Ticket Count"
+        category: "Service Quality"
+        synonyms:
+          - "Overdue Ticket Count"
+          - "Số lượng ticket quá hạn"
+      avg_first_response_minutes:
+        type: average
+        sql: ${TABLE}.first_response_time_minutes
+        description: 'VI: Thời gian phản hồi đầu tiên trung bình (phút). | EN: Thời gian phản hồi đầu tiên trung bình (phút).'
+        label: "Avg First Response Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Avg First Response Minutes"
+          - "Trung bình đầu tiên phản hồi phút"
+      avg_resolution_time_minutes:
+        type: average
+        sql: ${TABLE}.resolution_time_minutes
+        description: 'VI: Thời gian xử lý trung bình (phút). | EN: Thời gian xử lý trung bình (phút).'
+        label: "Avg Resolution Time Minutes"
+        category: "Operational KPI"
+        synonyms:
+          - "Avg Resolution Time Minutes"
+          - "Trung bình thời gian xử lý (phút)"
+      sla_breach_count:
+        type: sum
+        sql: CASE WHEN COALESCE(${TABLE}.l1_violated, false) OR COALESCE(${TABLE}.l2_violated, false) OR COALESCE(${TABLE}.l3_violated, false) OR COALESCE(${TABLE}.l4_violated, false) THEN 1.0 ELSE 0.0 END
+        description: 'VI: Số ticket vi phạm bất kỳ cấp SLA nào. | EN: Số ticket vi phạm bất kỳ cấp SLA nào.'
+        label: "SLA Breach Count"
+        category: "Service Quality"
+        synonyms:
+          - "SLA Breach Count"
+          - "Số lượng vi phạm SLA"
+      sla_breach_rate:
+        type: number
+        sql: ${sla_breach_count} / NULLIF(${ticket_count}, 0.0)
+        description: 'VI: Tỷ lệ ticket vi phạm SLA. | EN: Tỷ lệ ticket vi phạm SLA.'
+        label: "SLA Breach Rate"
+        category: "Service Quality"
+        synonyms:
+          - "SLA Breach Rate"
+          - "Tỷ lệ vi phạm SLA"
+      duplicated_ticket_count:
+        type: sum
+        sql: CASE WHEN is_duplicated_ticket THEN 1.0 ELSE 0.0 END
+        description: Số ticket bị trùng lặp.
+        label: "Duplicated Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Duplicated Ticket Count"
+          - "Số lượng ticket trùng lặp"
+      reopened_ticket_count:
+        type: sum
+        sql: CASE WHEN is_reopened_by_cx THEN 1.0 ELSE 0.0 END
+        description: Số ticket bị khách hàng mở lại.
+        label: "Reopened Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Reopened Ticket Count"
+          - "Số lượng ticket mở lại"
+      sla_violated_ticket_count:
+        type: sum
+        sql: CASE WHEN violated_level > 0.0 THEN 1.0 ELSE 0.0 END
+        description: Số ticket có vi phạm SLA.
+        label: "SLA Violated Ticket Count"
+        category: "Service Quality"
+        synonyms:
+          - "SLA Violated Ticket Count"
+          - "Số lượng vi phạm SLA ticket"
+      non_violated_ticket_count:
+        type: sum
+        sql: CASE WHEN violated_level = 0.0 THEN 1.0 ELSE 0.0 END
+        description: Số ticket không vi phạm SLA.
+        label: "Non Violated Ticket Count"
+        category: "Service Quality"
+        synonyms:
+          - "Non Violated Ticket Count"
+          - "Số lượng không vi phạm ticket"
+      responded_ticket_count:
+        type: sum
+        sql: CASE WHEN first_responded_at IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số ticket đã có phản hồi đầu tiên.
+        label: "Responded Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Responded Ticket Count"
+          - "Số lượng Responded ticket"
+      resolved_ticket_count:
+        type: sum
+        sql: CASE WHEN resolved_at IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số ticket đã được resolve.
+        label: "Resolved Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Resolved Ticket Count"
+          - "Số lượng đã xử lý ticket"
+      closed_ticket_count:
+        type: count_distinct
+        sql: CASE WHEN UPPER(status_name) ='CLOSED' THEN ticket_id END
+        description: Số ticket đã đóng.
+        label: "Closed Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Closed Ticket Count"
+          - "Số lượng đã đóng ticket"
+      open_ticket_count:
+        type: count_distinct
+        sql: CASE WHEN UPPER(status_name) <> 'CLOSED' THEN ticket_id END
+        description: Số ticket còn đang mở hoặc đang xử lý. Dùng cho backlog.
+        label: "Open Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Open Ticket Count"
+          - "Số lượng đang mở ticket"
+      unassigned_ticket_count:
+        type: sum
+        sql: CASE WHEN UPPER(assigned_agent_stage) = 'UNASSIGNED' THEN 1.0 ELSE 0.0 END
+        description: Số ticket chưa được gán agent xử lý.
+        label: "Unassigned Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Unassigned Ticket Count"
+          - "Số lượng chưa phân công ticket"
+      negative_sentiment_ticket_count:
+        type: sum
+        sql: CASE WHEN LOWER(sentiment) = 'negative' or LOWER(sentiment) = 'very negative' THEN 1.0 ELSE 0.0 END
+        description: Số ticket có sentiment tiêu cực.
+        label: "Negative Sentiment Ticket Count"
+        category: "Customer Experience"
+        synonyms:
+          - "Negative Sentiment Ticket Count"
+          - "Số lượng tiêu cực cảm xúc ticket"
+      positive_sentiment_ticket_count:
+        type: sum
+        sql: CASE WHEN LOWER(sentiment) = 'positive' THEN 1.0 ELSE 0.0 END
+        description: Số ticket có sentiment tích cực.
+        label: "Positive Sentiment Ticket Count"
+        category: "Customer Experience"
+        synonyms:
+          - "Positive Sentiment Ticket Count"
+          - "Số lượng tích cực cảm xúc ticket"
+      normal_sentiment_ticket_count:
+        type: sum
+        sql: CASE WHEN LOWER(sentiment) = 'neutral' THEN 1.0 ELSE 0.0 END
+        description: Số ticket có sentiment bình thường.
+        label: "Normal Sentiment Ticket Count"
+        category: "Customer Experience"
+        synonyms:
+          - "Normal Sentiment Ticket Count"
+          - "Số lượng trung tính cảm xúc ticket"
+      positive_sentiment_rate:
+        type: number
+        sql: 1.0 * ${positive_sentiment_ticket_count} / NULLIF(${ticket_count}, 0.0)
+        description: Tỷ lệ ticket có sentiment tích cực trên tổng số ticket.
+        label: "Positive Sentiment Rate"
+        category: "Customer Experience"
+        synonyms:
+          - "Positive Sentiment Rate"
+          - "Tỷ lệ tích cực cảm xúc"
+      negative_sentiment_rate:
+        type: number
+        sql: 1.0 * ${negative_sentiment_ticket_count} / NULLIF(${ticket_count}, 0.0)
+        description: Tỷ lệ ticket có sentiment tiêu cực trên tổng số ticket.
+        label: "Negative Sentiment Rate"
+        category: "Customer Experience"
+        synonyms:
+          - "Negative Sentiment Rate"
+          - "Tỷ lệ tiêu cực cảm xúc"
+      normal_sentiment_rate:
+        type: number
+        sql: 1.0 * ${normal_sentiment_ticket_count} / NULLIF(${ticket_count}, 0.0)
+        description: Tỷ lệ ticket có sentiment bình thường trên tổng số ticket.
+        label: "Normal Sentiment Rate"
+        category: "Customer Experience"
+        synonyms:
+          - "Normal Sentiment Rate"
+          - "Tỷ lệ trung tính cảm xúc"
+      avg_response_time_minutes:
+        type: average
+        sql: ${TABLE}.response_time_minutes
+        description: Thời gian phản hồi trung bình tính theo phút.
+        label: "Avg Response Time Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Response Time Minutes"
+          - "Trung bình thời gian phản hồi (phút)"
+      avg_time_to_response_minutes:
+        type: average
+        sql: ${TABLE}.time_to_response_minutes
+        description: Thời gian trung bình tới phản hồi đầu tiên.
+        label: "Avg Time To Response Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Time To Response Minutes"
+          - "Trung bình thời gian phản hồi phút"
+      avg_l1_time_actual_minutes:
+        type: average
+        sql: ${TABLE}.l1_time_actual_minutes
+        description: Thời gian xử lý trung bình của tuyến L1.
+        label: "Avg L1 Time Actual Minutes"
+        category: "Operational KPI"
+        synonyms:
+          - "Avg L1 Time Actual Minutes"
+          - "Trung bình L1 thời gian thực tế phút"
+      avg_l2_time_actual_minutes:
+        type: average
+        sql: ${TABLE}.l2_time_actual_minutes
+        description: Thời gian xử lý trung bình của tuyến L2.
+        label: "Avg L2 Time Actual Minutes"
+        category: "Operational KPI"
+        synonyms:
+          - "Avg L2 Time Actual Minutes"
+          - "Trung bình L2 thời gian thực tế phút"
+      avg_l3_time_actual_minutes:
+        type: average
+        sql: ${TABLE}.l3_time_actual_minutes
+        description: Thời gian xử lý trung bình của tuyến L3.
+        label: "Avg L3 Time Actual Minutes"
+        category: "Operational KPI"
+        synonyms:
+          - "Avg L3 Time Actual Minutes"
+          - "Trung bình L3 thời gian thực tế phút"
+      avg_l4_time_actual_minutes:
+        type: average
+        sql: ${TABLE}.l4_time_actual_minutes
+        description: Thời gian xử lý trung bình của tuyến L4.
+        label: "Avg L4 Time Actual Minutes"
+        category: "Operational KPI"
+        synonyms:
+          - "Avg L4 Time Actual Minutes"
+          - "Trung bình L4 thời gian thực tế phút"
+      avg_due_date_changes:
+        type: average
+        sql: ${TABLE}.number_of_due_date_changes
+        description: Số lần thay đổi due date trung bình trên mỗi ticket.
+        label: "Avg Due Date Changes"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Due Date Changes"
+          - "Trung bình đến hạn ngày Changes"
+      total_due_date_changes:
+        type: sum
+        sql: ${TABLE}.number_of_due_date_changes
+        description: Tổng số lần thay đổi due date.
+        label: "Total Due Date Changes"
+        category: "Operational KPI"
+        synonyms:
+          - "Total Due Date Changes"
+          - "Tổng đến hạn ngày Changes"
+      avg_customer_satisfaction_rating:
+        type: average
+        sql: ${TABLE}.customer_satisfaction_rating
+        description: Điểm hài lòng khách hàng trung bình.
+        label: "Avg Customer Satisfaction Rating"
+        category: "Customer Analytics"
+        synonyms:
+          - "Avg Customer Satisfaction Rating"
+          - "Trung bình khách hàng Satisfaction Rating"
+      avg_violated_level:
+        type: average
+        sql: ${TABLE}.violated_level
+        description: Mức vi phạm SLA trung bình.
+        label: "Avg Violated Level"
+        category: "Operational KPI"
+        synonyms:
+          - "Avg Violated Level"
+          - "Trung bình vi phạm cấp độ"
+      overdue_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN is_overdue THEN ticket_id END)\n  / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket quá hạn trên tổng số ticket.
+        label: "Overdue Rate"
+        category: "Service Quality"
+        synonyms:
+          - "Overdue Rate"
+          - "Tỷ lệ quá hạn"
+      reopen_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN is_reopened_by_cx THEN ticket_id END)\n   / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket được ReOpen/mở lại/kích hoạt lại từ CX.
+        label: "Reopen Rate"
+        category: "Support Operations"
+        synonyms:
+          - "Reopen Rate"
+          - "Tỷ lệ mở lại"
+      duplicated_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN is_duplicated_ticket THEN ticket_id END)\n   / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket trùng lặp.
+        label: "Duplicated Rate"
+        category: "Support Operations"
+        synonyms:
+          - "Duplicated Rate"
+          - "Tỷ lệ trùng lặp"
+      sla_violation_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN violated_level > 0.0 THEN ticket_id END)\n    / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket có vi phạm SLA.
+        label: "SLA Violation Rate"
+        category: "Service Quality"
+        synonyms:
+          - "SLA Violation Rate"
+          - "Tỷ lệ vi phạm SLA"
+      sla_compliance_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN violated_level = 0.0 THEN ticket_id END)\n    / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket không vi phạm SLA.
+        label: "SLA Compliance Rate"
+        category: "Service Quality"
+        synonyms:
+          - "SLA Compliance Rate"
+          - "Tỷ lệ SLA tuân thủ"
+      response_coverage_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN first_responded_at IS NOT NULL THEN ticket_id END)\n   / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket đã có phản hồi đầu tiên.
+        label: "Response Coverage Rate"
+        category: "Support Operations"
+        synonyms:
+          - "Response Coverage Rate"
+          - "Tỷ lệ phản hồi bao phủ"
+      resolution_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN resolved_at IS NOT NULL THEN ticket_id END)\n    / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket đã resolve.
+        label: "Resolution Rate"
+        category: "Support Operations"
+        synonyms:
+          - "Resolution Rate"
+          - "Tỷ lệ xử lý"
+      closure_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN closed_at IS NOT NULL THEN ticket_id END)\n    / COUNT(DISTINCT ticket_id)\nEND"
+        description: Tỷ lệ ticket đã đóng.
+        label: "Closure Rate"
+        category: "Support Operations"
+        synonyms:
+          - "Closure Rate"
+          - "Tỷ lệ đóng"
+      csat_coverage_rate:
+        type: number
+        sql: "CASE\n  WHEN COUNT(*) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(CASE WHEN customer_satisfaction_rating IS NOT NULL THEN 1.0 ELSE 0.0 END) / COUNT(*)\nEND"
+        description: Tỷ lệ ticket có phản hồi điểm hài lòng.
+        label: "CSAT Coverage Rate"
+        category: "Customer Experience"
+        synonyms:
+          - "CSAT Coverage Rate"
+          - "Tỷ lệ CSAT bao phủ"
+      avg_resolve_time_minutes:
+        type: average
+        sql: date_diff('minute', ${TABLE}.created_at, ${TABLE}.resolved_at)
+        description: Average time to resolve tickets in minutes. Calculated from created_at to resolved_at.
+        label: "Avg Resolve Time Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Resolve Time Minutes"
+          - "Trung bình thời gian xử lý (phút)"
+      min_resolve_time_minutes:
+        type: min
+        sql: date_diff('minute', ${TABLE}.created_at, ${TABLE}.resolved_at)
+        description: Fastest resolution time observed among tickets, in minutes.
+        label: "Min Resolve Time Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Min Resolve Time Minutes"
+          - "Thời gian xử lý nhỏ nhất (phút)"
+      max_resolve_time_minutes:
+        type: max
+        sql: date_diff('minute', ${TABLE}.created_at, ${TABLE}.resolved_at)
+        description: Longest resolution time observed among tickets, in minutes.
+        label: "Max Resolve Time Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Max Resolve Time Minutes"
+          - "Thời gian xử lý lớn nhất (phút)"
+      total_resolve_time_minutes:
+        type: sum
+        sql: date_diff('minute', ${TABLE}.created_at, ${TABLE}.resolved_at)
+        description: Total accumulated resolution time across all tickets, in minutes.
+        label: "Total Resolve Time Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Total Resolve Time Minutes"
+          - "Tổng thời gian xử lý (phút)"
+      min_agent_reply_count:
+        type: min
+        sql: ${TABLE}.agent_reply_count
+        description: Số lượng phản hồi/trao đổi thấp nhất của agent ghi nhận trên một ticket.
+        label: "Min Agent Reply Count"
+        category: "Support Operations"
+        synonyms:
+          - "Min Agent Reply Count"
+          - "Giá trị nhỏ nhất của số lượng phản hồi của agent"
+      max_agent_reply_count:
+        type: max
+        sql: ${TABLE}.agent_reply_count
+        description: Số lượng phản hồi/trao đổi cao nhất của agent ghi nhận trên một ticket.
+        label: "Max Agent Reply Count"
+        category: "Support Operations"
+        synonyms:
+          - "Max Agent Reply Count"
+          - "Giá trị lớn nhất của số lượng phản hồi của agent"
+      total_agent_reply_count:
+        type: sum
+        sql: ${TABLE}.agent_reply_count
+        description: Tổng số phản hồi/trao đổi của agent trên toàn bộ các ticket. Dùng để đo lường tổng khối lượng công việc hỗ trợ.
+        label: "Total Agent Reply Count"
+        category: "Support Operations"
+        synonyms:
+          - "Total Agent Reply Count"
+          - "Tổng số lượng phản hồi của agent"
+  columns:
+  - name: ticket_id
+    description: Mã định danh duy nhất của phiếu hỗ trợ khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Mã ticket
+    tests:
+    - not_null
+    - unique
+  - name: subject
+    description: Tiêu đề mô tả ngắn gọn vấn đề hoặc yêu cầu của ticket.
+    meta:
+      dimension:
+        type: string
+        label: tiêu đề ticket
+  - name: customer_group
+    description: 'Phân hạng khách hàng theo cấp độ: VVIP, VIP, Growth, Standard'
+    meta:
+      dimension:
+        type: string
+        label: loại khách hàng
+  - name: status_name
+    description: Trạng thái hiện tại của phiếu hỗ trợ khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: trạng thái ticket
+  - name: priority_level
+    description: Mức độ ưu tiên của ticket hỗ trợ, thể hiện mức quan trọng cần xử lý.
+    meta:
+      dimension:
+        type: string
+        label: cấp độ ưu tiên
+  - name: created_at
+    description: Thời điểm mà ticket được tạo trong hệ thống. 
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày tạo
+        synonyms:
+          - Ngày báo cáo
+          - Ngày ghi nhận
+
+  - name: updated_at
+    description: Thời gian cập nhật cuối cùng của ticket trong hệ thống.
+    meta:
+      dimension:
+        type: timestamp
+        label: thời gian cập nhật
+  - name: first_responded_at
+    description: Thời gian phản hồi đầu tiên của ticket từ nhân viên hỗ trợ.
+    meta:
+      dimension:
+        type: timestamp
+        label: thời gian phản hồi đầu tiên
+  - name: fr_due_by
+    description: Hạn chót (deadline) mà nhân viên phải gửi phản hồi đầu tiên cho khách hàng để không vi phạm SLA phản hồi (SLA / RT).
+    meta:
+      dimension:
+        type: timestamp
+        label: Hạn chót phản hồi lần đầu
+  - name: due_by
+    description: Hạn chót (deadline) để xử lý dứt điểm và đóng ticket để không vi phạm SLA giải quyết (SLA / TTR).
+    meta:
+      dimension:
+        type: timestamp
+        label: Hạn chót hoàn thành ticket
+  - name: resolved_at
+    description: Thời điểm mà ticket được giải quyết và đóng lại.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày giải quyết
+  - name: closed_at
+    description: Ngày mà ticket được đóng trong hệ thống hỗ trợ khách hàng.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày đóng
+  - name: call_reminder
+    description: Trạng thái hoặc nội dung nhắc nhở thực hiện cuộc gọi với khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: nhắc gọi
+  - name: issue_category
+    description: Loại vấn đề hoặc chủ đề của ticket hỗ trợ khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: category
+  - name: is_vcs
+    description: Cho biết ticket có được tạo từ kênh VCS (Voice Call Service) hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: có phải VCS
+  - name: l1
+    description: True xác định ticket đã trải qua xử lý tại cấp độ 1
+    meta:
+      dimension:
+        type: boolean
+        label: cấp độ 1
+  - name: l2
+    description: True xác định ticket đã trải qua xử lý tại cấp độ 2
+    meta:
+      dimension:
+        type: boolean
+        label: cấp độ L2
+  - name: l3
+    description: True xác định ticket đã trải qua xử lý tại cấp độ 3
+    meta:
+      dimension:
+        type: boolean
+        label: cấp độ L3
+  - name: l4
+    description: True xác định ticket đã trải qua xử lý tại cấp độ 4
+    meta:
+      dimension:
+        type: boolean
+        label: cấp độ L4
+  - name: is_duplicated_ticket
+    description: Cho biết ticket có phải là bản sao của ticket đã tồn tại hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: ticket trùng lặp
+  - name: is_reopened_by_cx
+    description: Cho biết ticket có được đưa vào báo cáo trải nghiệm khách hàng (CX) hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: báo cáo CX
+  - name: assigned_to
+    description: Tên hoặc mã nhân viên hỗ trợ cấp 1 chịu trách nhiệm xử lý ticket.
+    meta:
+      dimension:
+        type: string
+        label: đại lý cấp 1
+  - name: action_program
+    description: Tên chương trình hoặc biện pháp hành động được áp dụng cho ticket.
+    meta:
+      dimension:
+        type: string
+        label: chương trình hành động
+  - name: company_alias
+    description: Tên công ty được viết tắt liên quan tới yêu cầu hỗ trợ trong ticket.
+    meta:
+      dimension:
+        type: string
+        label: công ty
+  - name: customer_satisfaction_rating
+    description: Mức độ hài lòng của khách hàng được ghi lại sau khi giải quyết ticket.
+    meta:
+      dimension:
+        type: number
+        label: đánh giá hài lòng của khách hàng
+  - name: customer_entry_channel
+    description: Kênh mà khách hàng sử dụng để tạo yêu cầu hỗ trợ.
+    meta:
+      dimension:
+        type: string
+        label: kênh khách hàng
+  - name: customer_respond_date
+    description: Ngày mà khách hàng trả lời hoặc phản hồi lại yêu cầu hỗ trợ.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày phản hồi của khách hàng
+  - name: communication_effectiveness
+    description: Mức độ hiệu quả của giao tiếp trong quá trình xử lý ticket.
+    meta:
+      dimension:
+        type: string
+        label: hiệu quả giao tiếp
+  - name: imported_ticket_date
+    description: Ngày mà vé hỗ trợ được nhập vào hệ thống.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày nhập vé
+  - name: imported_ticket_due_date
+    description: Ngày dự kiến hoàn thành (hạn chót) của ticket được nhập vào hệ thống.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày đáo hạn ticket
+  - name: incident_root_cause
+    description: Nguyên nhân gốc gây ra sự cố được ghi nhận trong ticket hỗ trợ.
+    meta:
+      dimension:
+        type: string
+        label: nguyên nhân gốc
+  - name: issues_type
+    description: Loại vấn đề được ghi nhận trong ticket hỗ trợ khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: loại vấn đề
+  - name: note
+    description: Nội dung ghi chú do nhân viên hỗ trợ nhập vào mỗi ticket.
+    meta:
+      dimension:
+        type: string
+        label: ghi chú
+  - name: number_of_due_date_changes
+    description: Số lần ngày đáo hạn của ticket được thay đổi.
+    meta:
+      dimension:
+        type: number
+        label: số lần thay đổi ngày đáo hạn
+  - name: old_due_date
+    description: Ngày đáo hạn ban đầu của ticket trước khi được thay đổi.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày đáo hạn cũ
+  - name: is_one_day_before_due
+    description: Cho biết ticket còn lại một ngày trước ngày đáo hạn.
+    meta:
+      dimension:
+        type: boolean
+        label: còn một ngày đến hạn
+  - name: is_one_hour_before_due
+    description: Cho biết ticket có đang trong khoảng thời gian một giờ trước hạn chót hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: cảnh báo 1 giờ trước hạn
+  - name: reason
+    description: Lý do khách hàng tạo hoặc yêu cầu hỗ trợ trong ticket.
+    meta:
+      dimension:
+        type: string
+        label: lý do
+  - name: related_ticket
+    description: Mã vé hoặc mã yêu cầu hỗ trợ được liên kết với vé hiện tại.
+    meta:
+      dimension:
+        type: string
+        label: vé liên quan
+  - name: is_reminder_update
+    description: Cho biết ticket đã được cập nhật nhắc nhở hay chưa.
+    meta:
+      dimension:
+        type: boolean
+        label: cập nhật nhắc nhở
+  - name: is_notification
+    description: Cho biết ticket có được gửi thông báo cho khách hàng hoặc nhân viên hỗ trợ hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: thông báo
+  - name: is_overdue
+    description: Cho biết ticket đã vượt quá thời hạn xử lý hay chưa.
+    meta:
+      dimension:
+        type: boolean
+        label: quá hạn
+  - name: response_time_minutes
+    description: Thời gian để nhân viên hỗ trợ trả lời yêu cầu của khách hàng, tính bằng phút.
+    meta:
+      dimension:
+        type: number
+        label: thời gian phản hồi (phút)
+  - name: sentiment
+    description: Mức độ cảm xúc của khách hàng thể hiện qua ticket, như tích cực, tiêu cực hoặc trung tính.
+    meta:
+      dimension:
+        type: string
+        label: cảm xúc
+  - name: severity_level
+    description: Mức độ nghiêm trọng của ticket phản ánh mức độ ưu tiên xử lý và tác động kinh doanh.
+    meta:
+      dimension:
+        type: string
+        label: severity level
+  - name: spam_type
+    description: Loại spam được gán cho mỗi ticket, cho biết nội dung hoặc tính chất spam của yêu cầu.
+    meta:
+      dimension:
+        type: string
+        label: loại spam
+  - name: support_category
+    description: Loại danh mục hỗ trợ mà khách hàng yêu cầu trong phiếu dịch vụ.
+    meta:
+      dimension:
+        type: string
+        label: loại hỗ trợ
+  - name: is_third_four_time
+    description: Cho biết ticket đã được xử lý ở lần trả lời thứ ba hoặc thứ tư hay chưa.
+    meta:
+      dimension:
+        type: boolean
+        label: cờ lần trả lời thứ ba
+  - name: ttr_overdue
+    description: Cho biết ticket có vượt quá thời gian giải quyết mục tiêu (TTR) so với SLA hay không.
+    meta:
+      dimension:
+        type: string
+        label: ttr_overdue
+  - name: urgency_level
+    description: Column urgency_level from bi_silver.cx_cso_support_tickets
+  - name: resolution_time_minutes
+    description: Thời gian (tính bằng phút) mà yêu cầu hỗ trợ được giải quyết hoàn toàn.
+    meta:
+      dimension:
+        type: number
+        label: thời gian giải quyết (phút)
+  - name: first_response_time_minutes
+    description: Thời gian tính bằng phút từ khi ticket được tạo đến khi nhận được phản hồi đầu tiên của nhân viên hỗ trợ.
+    meta:
+      dimension:
+        type: number
+        label: thời gian phản hồi đầu tiên (phút)
+  - name: l1_time_actual_minutes
+    description: Thời gian thực tế mà nhóm hỗ trợ cấp 1 (L1) đã dành để xử lý ticket, tính bằng phút.
+    meta:
+      dimension:
+        type: number
+        label: thời gian thực tế L1 (phút)
+  - name: l1_time_allowed_minutes
+    description: Thời gian tối đa (phút) mà cấp độ hỗ trợ L1 được phép xử lý một ticket.
+    meta:
+      dimension:
+        type: number
+        label: thời gian cho phép L1 (phút)
+  - name: l1_violated
+    description: Cho biết ticket có vi phạm tiêu chuẩn thời gian phản hồi cấp độ 1 hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: vi phạm L1
+  - name: l2_time_actual_minutes
+    description: Thời gian thực tế (phút) mà nhóm hỗ trợ cấp 2 (L2) dành để xử lý ticket.
+    meta:
+      dimension:
+        type: number
+        label: thời gian thực tế L2 (phút)
+  - name: l2_time_allowed_minutes
+    description: Thời gian tối đa (phút) được phép để xử lý ticket ở cấp độ L2 theo quy định SLA.
+    meta:
+      dimension:
+        type: number
+        label: thời gian cho phép L2 (phút)
+  - name: l2_violated
+    description: Cho biết ticket có vi phạm thời gian đáp ứng mức độ 2 (L2) hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: vi phạm L2
+  - name: l3_time_actual_minutes
+    description: Thời gian thực tế (tính bằng phút) mà mức hỗ trợ L3 đã xử lý ticket.
+    meta:
+      dimension:
+        type: number
+        label: thời gian thực tế L3 (phút)
+  - name: l3_time_allowed_minutes
+    description: Thời gian tối đa được phép xử lý ticket ở mức độ L3, tính bằng phút.
+    meta:
+      dimension:
+        type: number
+        label: thời gian cho phép L3 (phút)
+  - name: l3_violated
+    description: Cho biết ticket có vi phạm tiêu chuẩn thời gian phản hồi mức độ 3 (L3) hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: vi phạm L3
+  - name: l4_time_actual_minutes
+    description: Thời gian thực tế (phút) mà ticket được xử lý ở cấp độ L4.
+    meta:
+      dimension:
+        type: number
+        label: thời gian thực tế L4 (phút)
+  - name: l4_time_allowed_minutes
+    description: Thời gian tối đa (phút) được phép để xử lý ticket ở cấp độ L4.
+    meta:
+      dimension:
+        type: number
+        label: thời gian cho phép L4 (phút)
+  - name: l4_violated
+    description: Cho biết ticket có vi phạm ngưỡng thời gian mức độ 4 (L4) hay không.
+    meta:
+      dimension:
+        type: boolean
+        label: vi phạm L4
+  - name: time_to_response_minutes
+    description: Thời gian tính bằng phút từ khi ticket được tạo đến khi nhận được phản hồi đầu tiên.
+    meta:
+      dimension:
+        label: thời gian phản hồi (phút)
+        type: number
+  - name: assigned_agent_stage
+    description: Giai đoạn hiện tại của ticket mà nhân viên hỗ trợ được giao.
+    meta:
+      dimension:
+        type: string
+        label: giai đoạn nhân viên phụ trách
+  - name: violated_level
+    description: Mức độ vi phạm SLA của ticket hỗ trợ, thể hiện mức độ nghiêm trọng của việc không đáp ứng thời gian quy định.
+    meta:
+      dimension:
+        type: number
+        label: mức độ vi phạm
+  - name: requester_name
+    description: Tên của người tạo hoặc yêu cầu hỗ trợ trong phiếu.
+    meta:
+      dimension:
+        type: string
+        label: Tên người yêu cầu
+  - name: company_name
+    description: Tên công ty đầy đủ liên quan tới yêu cầu hỗ trợ trong ticket.
+    meta:
+      dimension:
+        type: string
+        label: tên công ty
+  - name: agent_name
+    description: Tên của nhân viên hỗ trợ xử lý ticket.
+    meta:
+      dimension:
+        type: string
+        label: tên agent
+  - name: resolution_time_in_business_hours
+    description: Thời gian giải quyết ticket tính theo giờ làm việc.
+    meta:
+      dimension:
+        type: number
+        label: thời gian giải quyết
+  - name: agent_reply_count
+    description: Số lần nhân viên hỗ trợ phản hồi trong ticket, nếu nhỏ hơn hoặc bằng 3 có nghĩa ticket này được hoàn thành ngay lần đầu
+    meta:
+      dimension:
+        label: số lần phản hồi
+        type: number
+  - name: first_response_date
+    description: Ngày và giờ phản hồi đầu tiên của nhân viên cho khách hàng.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày phản hồi đầu tiên
+  - name: due_date_change_count
+    description: Số lần thay đổi hạn chót (due date) của ticket.
+    meta:
+      dimension:
+        type: number
+        label: số lần đổi hạn
+  - name: tickets_first_responded_within_sla
+    description: Đánh dấu ticket có phản hồi đầu tiên nằm trong hạn SLA hay không.
+    meta:
+      dimension:
+        type: string
+        label: phản hồi trong hạn
+  - name: tickets_resolved_within_sla
+    description: Đánh dấu ticket được giải quyết xong trong thời hạn SLA hay không.
+    meta:
+      dimension:
+        type: string
+        label: giải quyết đúng hạn
+  - name: ttr_time_minutes
+    description: Thời gian giải quyết ticket (Time to Resolve) tính bằng phút.
+    meta:
+      dimension:
+        type: number
+        label: thời gian xử lý phút
+  - name: customer_segment_l1
+    description: Phân khúc  khách hàng  cấp 1 của giao dịch, thể hiện nhóm thị trường hoặc loại khách hàng chính.
+    meta:
+      dimension:
+        type: string
+        label: phân khúc cấp 1
+  - name: customer_segment_l2
+    description: Mức phân khúc khách hàng cấp 2 của giao dịch, cho biết nhóm khách hàng hoặc ngành nghề chi tiết hơn.
+    meta:
+      dimension:
+        type: string
+        label: phân khúc cấp 2
+  - name: customer_segment_l3
+    description: Phân khúc khách hàng cấp 3 của giao dịch, mô tả chi tiết nhóm khách hàng hoặc thị trường mà cơ hội kinh doanh thuộc về.
+    meta:
+      dimension:
+        type: string
+        label: phân khúc cấp 3
+  - name: day_of_week
+    description: Column day_of_week from bi_silver.cx_cso_support_tickets
+  - name: day_type
+    description: Column day_type from bi_silver.cx_cso_support_tickets
+  - name: product_category_code
+    description: Column product_category_code from bi_silver.cx_cso_support_tickets
+  - name: product_category
+    description: Phân loại sản phẩm/dịch vụ liên quan đến ticket.
+    meta:
+      dimension:
+        type: string
+        label: loại sản phẩm
+  - name: product_item_type
+    description: Loại mặt hàng (Product/Service) trong bảng giá.
+    meta:
+      dimension:
+        type: string
+        label: loại mặt hàng

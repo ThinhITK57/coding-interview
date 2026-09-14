@@ -1,0 +1,54 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_n_5_vvip_prm
+    description: "Nguồn Power BI: 5VVIP_PRM"
+    columns:
+    - name: work_around_due
+      description: "Cột Work_Around_Due"
+    - name: work_around_breached
+      description: "Cột Work_Around_Breached"
+    - name: permanent_fix_due
+      description: "Cột Triệt_để_Due"
+    - name: permanent_fix_breached
+      description: "Cột Triệt_để_Breached"
+    - name: deploy_permanent_solution_due
+      description: "Cột Triển_khai_GPTT_Due"
+    - name: deploy_permanent_solution_breached
+      description: "Cột Triển_khai_GPTT_Breached"
+    - name: deploy_workaround_solution_due
+      description: "Cột Triển_khai_GPTĐ_Due"
+    - name: deploy_workaround_solution_breached
+      description: "Cột Triển_khai_GPTĐ_Breached"
+    - name: resolve_date
+      description: "Cột Resolve_Date_12007"
+    - name: cause_due
+      description: "Cột Nguyên_nhân_Due"
+    - name: cause_breached
+      description: "Cột Nguyên_nhân_Breached"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_reporter_name
+      description: "Cột ISSUE_REPORTER_NAME"
+    - name: issue_project_key
+      description: "Cột ISSUE_PROJECT_KEY"
+    - name: issue_priority
+      description: "Cột ISSUE_PRIORITY"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_due_date
+      description: "Cột ISSUE_DUE_DATE"
+    - name: issue_current_status_name
+      description: "Cột ISSUE_CURRENT_STATUS_NAME"
+    - name: issue_created
+      description: "Cột ISSUE_CREATED"
+    - name: id
+      description: "Cột Id"
+    - name: permanent_fix_deadline
+      description: "Cột Deadline_Triệt_để_12104"
+    - name: cause_deadline
+      description: "Cột Deadline_nguyên_nhân_12103"

@@ -1,0 +1,235 @@
+version: 2
+
+models:
+- name: hr_ld_instructor
+  description: >
+    Bảng **hr_ld_instructor** lưu trữ thông tin giảng viên tham gia hoạt động đào tạo nội bộ,
+    bao gồm thông tin cá nhân, đơn vị công tác, lớp đào tạo giảng dạy, thời lượng giảng dạy,
+    chi phí giảng viên và kết quả đánh giá chất lượng giảng dạy. Dữ liệu được sử dụng để
+    theo dõi hiệu quả đội ngũ giảng viên, đánh giá chất lượng đào tạo và hỗ trợ công tác
+    quản lý chi phí đào tạo nội bộ.
+
+  meta:
+    label: "Instructor"
+    owner: "tranpth"
+
+    metrics:
+      instructor_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng giảng viên tham gia hoạt động đào tạo."
+        label: "Instructor Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số giảng viên"
+          - "Tổng số giảng viên"
+          - "Instructor Count"
+
+      teaching_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi giảng dạy được ghi nhận."
+        label: "Teaching Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi giảng dạy"
+          - "Teaching Record Count"
+
+      class_taught_count:
+        type: count_distinct
+        sql: ${TABLE}.class_code
+        description: "Số lượng lớp đào tạo được giảng dạy."
+        label: "Class Taught Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số lớp giảng dạy"
+          - "Class Taught Count"
+
+      total_teaching_hours:
+        type: sum
+        sql: ${TABLE}.teaching_duration
+        description: "Tổng số giờ giảng dạy của giảng viên."
+        label: "Total Teaching Hours"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng giờ giảng dạy"
+          - "Teaching Hours"
+          - "Total Teaching Hours"
+
+      avg_teaching_hours:
+        type: average
+        sql: ${TABLE}.teaching_duration
+        description: "Số giờ giảng dạy trung bình trên mỗi bản ghi giảng dạy."
+        label: "Average Teaching Hours"
+        category: "Learning & Development"
+        synonyms:
+          - "Giờ giảng dạy trung bình"
+          - "Average Teaching Hours"
+
+      instructor_fee_amount:
+        type: sum
+        sql: ${TABLE}.instructor_fee
+        description: "Tổng chi phí hoặc thù lao giảng dạy được chi trả cho giảng viên."
+        label: "Instructor Fee Amount"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng chi phí giảng viên"
+          - "Tổng thù lao giảng viên"
+          - "Instructor Fee Amount"
+
+      avg_instructor_fee:
+        type: average
+        sql: ${TABLE}.instructor_fee
+        description: "Chi phí giảng dạy trung bình trên mỗi bản ghi."
+        label: "Average Instructor Fee"
+        category: "Learning & Development"
+        synonyms:
+          - "Chi phí giảng viên trung bình"
+          - "Average Instructor Fee"
+
+      avg_instructor_rating:
+        type: average
+        sql: ${TABLE}.instructor_rating
+        description: "Điểm đánh giá chất lượng giảng dạy trung bình của giảng viên."
+        label: "Average Instructor Rating"
+        category: "Learning & Development"
+        synonyms:
+          - "Điểm đánh giá giảng viên"
+          - "Điểm giảng dạy trung bình"
+          - "Average Instructor Rating"
+
+      teaching_cost_per_hour:
+        type: number
+        sql: ${instructor_fee_amount} / NULLIF(${total_teaching_hours}, 0.0)
+        description: "Chi phí giảng dạy trung bình trên mỗi giờ đào tạo."
+        label: "Teaching Cost Per Hour"
+        category: "Learning & Development"
+        synonyms:
+          - "Chi phí trên giờ giảng"
+          - "Cost Per Teaching Hour"
+
+      avg_class_per_instructor:
+        type: number
+        sql: ${class_taught_count} / NULLIF(${instructor_count}, 0.0)
+        description: "Số lớp giảng dạy trung bình trên mỗi giảng viên."
+        label: "Average Class Per Instructor"
+        category: "Learning & Development"
+        synonyms:
+          - "Số lớp trung bình mỗi giảng viên"
+          - "Average Class Per Instructor"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi giảng dạy
+      meta:
+        dimension:
+          type: number
+          label: "Teaching Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: employee_code
+      description: Mã định danh duy nhất của giảng viên
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: full_name
+      description: Họ và tên giảng viên
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: business_email
+      description: Địa chỉ email công việc của giảng viên
+      meta:
+        dimension:
+          type: string
+          label: "Business Email"
+
+    - name: instructor_group
+      description: Nhóm hoặc loại giảng viên theo phân loại đào tạo nội bộ
+      meta:
+        dimension:
+          type: string
+          label: "Instructor Group"
+
+    - name: division_n
+      description: Khối chức năng mà giảng viên trực thuộc
+      meta:
+        dimension:
+          type: string
+          label: "Division"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 của giảng viên
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: class_code
+      description: Mã lớp đào tạo mà giảng viên tham gia giảng dạy
+      meta:
+        dimension:
+          type: string
+          label: "Class Code"
+
+    - name: class_name
+      description: Tên lớp đào tạo mà giảng viên tham gia giảng dạy
+      meta:
+        dimension:
+          type: string
+          label: "Class Name"
+
+    - name: teaching_duration
+      description: Tổng thời lượng giảng dạy của giảng viên (đơn vị giờ)
+      meta:
+        dimension:
+          type: number
+          label: "Teaching Duration"
+
+    - name: instructor_fee
+      description: Chi phí hoặc thù lao giảng dạy được chi trả cho giảng viên
+      meta:
+        dimension:
+          type: number
+          label: "Instructor Fee"
+
+    - name: instructor_rating
+      description: Điểm đánh giá chất lượng giảng dạy của giảng viên
+      meta:
+        dimension:
+          type: number
+          label: "Instructor Rating"
+
+    - name: start_date
+      description: Ngày bắt đầu giảng dạy của lớp đào tạo
+      meta:
+        dimension:
+          type: timestamp
+          label: "Start Date"
+
+    - name: end_date
+      description: Ngày kết thúc giảng dạy của lớp đào tạo
+      meta:
+        dimension:
+          type: timestamp
+          label: "End Date"
+
+    - name: month
+      description: Tháng ghi nhận hoạt động giảng dạy
+      meta:
+        dimension:
+          type: number
+          label: "Month"
+
+    - name: year
+      description: Năm ghi nhận hoạt động giảng dạy
+      meta:
+        dimension:
+          type: number
+          label: "Year"

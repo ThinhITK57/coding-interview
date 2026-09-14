@@ -1,0 +1,28 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_cycle_time
+    description: "Nguồn Power BI: Cycle Time"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_project_id
+      description: "Cột ISSUE_PROJECT_ID"
+    - name: design_review_done_date
+      description: "Cột Ngày_Done_ĐGTK_13449"
+    - name: days_to_done
+      description: "Cột Số ngày done"
+    - name: division
+      description: "Cột Khối"
+    - name: issue_key_prefix
+      description: "Cột ISSUE_KEY_PREFIX"
+    - name: project_name
+      description: "Cột PROJECT NAME"

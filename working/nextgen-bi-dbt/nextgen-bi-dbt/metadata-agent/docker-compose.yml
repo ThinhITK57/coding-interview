@@ -1,0 +1,35 @@
+services:
+  metadata-agent:
+    container_name: metadata-agent
+    build:
+      context: ..
+      dockerfile: metadata-agent/Dockerfile
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
+    env_file:
+      - .env.local
+    environment:
+      CRON_SCHEDULE: ${CRON_SCHEDULE:-*/30 * * * *}
+      RUN_ON_STARTUP: ${RUN_ON_STARTUP:-true}
+      DBT_SCRIPT: ${DBT_SCRIPT:-/workspace/dbt_projects/scripts/s3-build-upload-openmetadata-local.sh}
+      DBT_DOMAINS: ${DBT_DOMAINS:-crm}
+      DBT_RUN_ARGS: ${DBT_RUN_ARGS:-}
+      DBT_PROJECTS_ROOT: /workspace/dbt_projects
+      ENV_FILE: ${ENV_FILE:-/workspace/dbt_projects/.env.s3.local}
+      ENABLE_GIT_PULL: ${ENABLE_GIT_PULL:-false}
+      REPO_DIR: /workspace/repo
+      GIT_BRANCH: ${GIT_BRANCH:-master}
+      GIT_LAST_SHA_FILE: ${GIT_LAST_SHA_FILE:-/var/lib/metadata-agent/last_master.sha}
+      LOG_FILE: /var/log/metadata-agent/cron.log
+      OM_RETRY_MAX_ATTEMPTS: ${OM_RETRY_MAX_ATTEMPTS:-4}
+      OM_RETRY_INITIAL_DELAY_SECONDS: ${OM_RETRY_INITIAL_DELAY_SECONDS:-1}
+      OM_RETRY_MAX_DELAY_SECONDS: ${OM_RETRY_MAX_DELAY_SECONDS:-8}
+    volumes:
+      - ../dbt_projects:/workspace/dbt_projects
+      - ..:/workspace/repo
+      - ./logs:/var/log/metadata-agent
+      - ./state:/var/lib/metadata-agent

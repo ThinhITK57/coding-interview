@@ -1,0 +1,9 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_deal_reason_stats
+    description: '[CRM] Bảng thống kê lý do theo deals và số lượng'

@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: vw_crm_sales_account_activity
+    description: |
+      Sales Account/customer-level CRM statistics.
+
+      Grain:
+        1 row = 1 Sales Account.
+
+      Used to analyze customer/account creation, updates,
+      customer contact coverage, pipeline, and revenue.
+    meta:
+      group_label: AM Dashboard
+      owner: huongnv1
+
+    columns:
+
+      - name: object_id
+        description: Unique Sales Account ID.
+
+      - name: object_type
+        description: CRM object type. Always SALES_ACCOUNT.
+
+      - name: am_user_id
+        description: Account Manager ID associated with the Sales Account.
+
+      - name: am_user_name
+        description: Account Manager name associated with the Sales Account.
+
+      - name: activity_date
+        description: Date used for Sales Account statistics.
+
+      - name: created_at
+        description: Sales Account creation timestamp.
+
+      - name: updated_at
+        description: Last Sales Account update timestamp.
+
+      - name: is_created
+        description: Indicates whether the Sales Account was created.
+
+      - name: is_updated
+        description: Indicates whether the Sales Account was updated.
+
+      - name: is_contacted
+        description: Indicates whether customer contact information exists.
+
+      - name: days_since_update
+        description: Number of days since the Sales Account was last updated.
+
+      - name: last_contacted_at
+        description: Last recorded customer contact timestamp.
+
+      - name: last_contacted_via_sales_activity
+        description: Last customer contact timestamp through sales activity.
+
+      - name: last_contacted_mode
+        description: Last customer contact channel/mode.
+
+      - name: name
+        description: Sales Account/customer name.
+
+      - name: company_id
+        description: Company ID associated with the Sales Account.
+
+      - name: company_alias
+        description: Company alias.
+
+      - name: tax_code
+        description: Customer tax code.
+
+      - name: customer_segment_l1
+        description: Customer segment level 1.
+
+      - name: customer_segment_l2
+        description: Customer segment level 2.
+
+      - name: customer_segment_l3
+        description: Customer segment level 3.
+
+      - name: open_deals_count
+        description: Number of open Opportunities.
+
+      - name: open_deals_amount
+        description: Total amount of open Opportunities.
+
+      - name: won_deals_count
+        description: Number of won Opportunities.
+
+      - name: won_deals_amount
+        description: Total amount of won Opportunities.

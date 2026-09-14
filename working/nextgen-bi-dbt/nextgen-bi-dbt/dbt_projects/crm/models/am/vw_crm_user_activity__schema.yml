@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: vw_crm_user_activity
+    description: |
+      CRM user activity and login status.
+
+      Grain:
+        1 row = 1 CRM user.
+
+      Used to analyze CRM adoption, active users,
+      recent login status, team membership, and AM availability.
+
+      IMPORTANT:
+      last_login_at represents the latest known login timestamp.
+      It does NOT represent the number of logins or active sessions.
+      
+    meta:
+      group_label: AM Dashboard
+      owner: huongnv1
+
+    columns:
+
+      - name: am_user_id
+        description: Unique CRM user ID.
+
+      - name: am_user_name
+        description: CRM user display name.
+
+      - name: email
+        description: CRM user email.
+
+      - name: is_active
+        description: Indicates whether the CRM user is active.
+
+      - name: job_title
+        description: CRM user job title.
+
+      - name: role_name
+        description: CRM role name.
+
+      - name: team_name
+        description: CRM team name.
+      - name: territory_name
+        description: territory_name.
+
+      - name: last_login_at
+        description: Latest known CRM login timestamp.
+
+      - name: has_login
+        description: Indicates whether the user has a known login timestamp.
+
+      - name: login_last_1d
+        description: Indicates whether the latest login occurred within the last day.
+
+      - name: login_last_7d
+        description: Indicates whether the latest login occurred within the last 7 days.
+
+      - name: login_last_30d
+        description: Indicates whether the latest login occurred within the last 30 days.

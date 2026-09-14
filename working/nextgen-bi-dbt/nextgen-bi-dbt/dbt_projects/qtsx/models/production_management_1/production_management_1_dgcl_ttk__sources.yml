@@ -1,0 +1,26 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_dgcl_ttk
+    description: "Nguồn Power BI: ĐGCL TTK"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: evaluation_completion_date
+      description: "Cột Ngày_hoàn_thành_đánh_giá_12133"
+    - name: project
+      description: "Cột Project_12130"
+    - name: completion_date_old
+      description: "Cột ngày hoàn thành old"
+    - name: release_frequency
+      description: "Cột tần suất release"
+    - name: division
+      description: "Cột Khối"

@@ -1,0 +1,68 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_learner
+    description: >
+      Bảng **hr_ld_learner** lưu trữ thông tin nhân viên tham gia các chương trình
+      đào tạo, bao gồm thông tin học viên, khóa học, lớp học, kết quả học tập,
+      thời lượng đào tạo và trạng thái tham gia học tập. Dữ liệu được sử dụng để
+      theo dõi tình hình tham gia đào tạo, đánh giá kết quả học tập và hỗ trợ
+      phân tích hiệu quả các chương trình đào tạo trong tổ chức.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi tham gia đào tạo
+      tests:
+        - not_null
+        - unique
+
+    - name: employee_code
+      description: Mã định danh duy nhất của nhân viên tham gia đào tạo
+
+    - name: full_name
+      description: Họ và tên học viên
+
+    - name: employee_object
+      description: Nhóm đối tượng nhân sự theo phân loại quản trị nội bộ
+
+    - name: division_n
+      description: Khối chức năng mà học viên trực thuộc
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 của học viên
+
+    - name: class_code
+      description: Mã lớp đào tạo mà học viên tham gia
+
+    - name: class_name
+      description: Tên lớp đào tạo mà học viên tham gia
+
+    - name: course_name
+      description: Tên khóa học mà học viên tham gia
+
+    - name: learning_result
+      description: Kết quả học tập hoặc kết quả hoàn thành khóa đào tạo của học viên
+
+    - name: learning_duration_hours
+      description: "Tổng thời lượng đào tạo của khóa học mà học viên tham gia (đơn vị: giờ)"
+
+    - name: start_date
+      description: Ngày bắt đầu khóa học hoặc lớp đào tạo
+
+    - name: end_date
+      description: Ngày kết thúc khóa học hoặc lớp đào tạo
+
+    - name: month
+      description: Tháng ghi nhận hoạt động đào tạo
+
+    - name: year
+      description: Năm ghi nhận hoạt động đào tạo
+
+    - name: lxp_status_note
+      description: Ghi chú trạng thái học tập hoặc trạng thái xử lý trên hệ thống LXP

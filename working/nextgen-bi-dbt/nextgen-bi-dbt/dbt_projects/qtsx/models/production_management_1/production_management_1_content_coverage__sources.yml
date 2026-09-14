@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_content_coverage
+    description: "Nguồn Power BI: Độ phủ Content"
+    columns:
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: product
+      description: "Cột Sản phẩm"
+    - name: quantity
+      description: "Cột Số lượng"
+    - name: rate
+      description: "Cột Tỷ lệ"
+    - name: content_coverage_pct
+      description: "Cột % Phủ content"

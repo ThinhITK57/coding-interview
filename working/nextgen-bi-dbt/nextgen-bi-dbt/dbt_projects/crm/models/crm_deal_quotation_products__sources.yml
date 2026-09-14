@@ -1,0 +1,59 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_deal_quotation_products
+    description: Bảng này lưu trữ chi tiết các sản phẩm được báo giá trong các giao dịch CRM, bao gồm thông tin về giá, số lượng, chiết khấu và các yếu tố tài chính liên quan. Dữ liệu này thường được dùng để phân tích hiệu suất bán hàng, theo dõi trạng thái báo giá trong các báo cáo kinh doanh và dự báo.
+    columns:
+    - name: deal_id
+      description: Mã định danh duy nhất của giao dịch (cơ hội bán hàng) trong hệ thống CRM.
+    - name: quotation_id
+      description: Mã định danh duy nhất của báo giá trong giao dịch CRM.
+    - name: product_line_no
+      description: Số thứ tự dòng sản phẩm trong báo giá, xác định vị trí của từng mặt hàng.
+    - name: product_id
+      description: Mã định danh duy nhất của sản phẩm trong báo giá.
+    - name: quotation_created_at
+      description: Thời điểm mà báo giá được tạo trong hệ thống.
+    - name: quotation_status
+      description: Trạng thái hiện tại của báo giá trong quy trình CRM.
+    - name: quotation_lang
+      description: Ngôn ngữ được sử dụng để tạo ra báo giá cho khách hàng.
+    - name: currency_code
+      description: Mã tiền tệ được sử dụng cho báo giá sản phẩm trong giao dịch.
+    - name: global_discount
+      description: Mức chiết khấu áp dụng cho toàn bộ báo giá trong giao dịch.
+    - name: global_discount_type
+      description: Loại chiết khấu toàn cục được áp dụng cho sản phẩm trong báo giá.
+    - name: product_name
+      description: Tên của sản phẩm được đề xuất trong báo giá giao dịch.
+    - name: base_price
+      description: Giá cơ bản là mức giá đơn vị của sản phẩm trong báo giá trước khi áp dụng bất kỳ chiết khấu nào.
+    - name: quantitative
+      description: Số lượng sản phẩm được đề xuất trong báo giá.
+    - name: unit
+      description: Column unit in crm_deal_quotation_products
+    - name: product_unit
+      description: Đơn vị tính của sản phẩm trong báo giá.
+    - name: duration
+      description: Thời gian (số ngày hoặc số tháng) mà sản phẩm được sử dụng trong báo giá.
+    - name: package
+      description: Tên gói sản phẩm được đề xuất trong báo giá.
+    - name: vat
+      description: Thuế giá trị gia tăng (%) áp dụng cho sản phẩm trong báo giá.
+    - name: discount_amount
+      description: Column discount_amount in crm_deal_quotation_products
+    - name: discount_type
+      description: Loại chiết khấu được áp dụng cho sản phẩm trong báo giá.
+    - name: final_total_amount
+      description: Tổng số tiền của báo giá sau khi áp dụng các giảm giá, thuế và các điều chỉnh khác.
+    - name: base_total_amount
+      description: Tổng giá trị cơ bản của sản phẩm trong báo giá, chưa tính giảm giá và thuế.
+    - name: id
+      description: Mã định danh duy nhất của sản phẩm trong báo giá giao dịch.
+      tests:
+      - not_null
+      - unique

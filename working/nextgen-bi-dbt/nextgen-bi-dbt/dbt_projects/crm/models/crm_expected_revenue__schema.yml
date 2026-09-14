@@ -1,0 +1,385 @@
+version: 2
+
+models:
+  - name: crm_expected_revenue
+    description: >
+      [CRM] Doanh thu dự kiến/pipeline value cho các cơ hội chưa ký hợp đồng (doanh thu dự ước chưa ký hợp đồng),
+      đã phân bổ theo kỳ thanh toán đến từng SPDV. Bảng cung cấp doanh thu dự kiến, pipeline value.
+      Semantic: 
+        - Hỏi 'doanh thu', với thời gian trong tương lai sẽ là doanh thu dự kiến, pipeline value và bóc tách theo cơ cấu. Tương tự khi hỏi N tháng đầu năm, hay N tháng cuối năm cũng cần đánh giá là tương lai hay quá khứ
+        - Bảng chứa danh sách dự án lên doanh thu chưa ký hợp đồng (dùng deal_name, contract_number), danh sách dự án dự kiến lên doanh thu.
+        - revenue_segment_l1:  Dù người dùng có hỏi "KH" hay không, thì khi hỏi doanh thu , phân bổ doanh thu , kế hoạch doanh thu , tỷ lệ hoàn thành, mà có hỏi đến "phân khúc/cắt lớp" , thì cần sử dụng  revenue_segment_l1. Trừ khi người dùng chỉ định rõ sang cắt lớp khác
+        - Bảng này không cung cấp doanh số
+        - Khi hỏi đến doanh thu theo trung tâm/đơn vị kinh doanh, sử dụng bảng crm_product_service_group_mapping để lọc lấy product_category rồi filter tiếp bảng này
+        - doanh thu ước chưa ký hợp đồng, doanh thu ước cơ hội: là Doanh thu pipeline value theo kỳ ước (các tháng tương lai, tính cả tháng hiện tại)
+        - Khi hỏi doanh thu nhóm SDPV (có thể cắt lớp theo thời gian), không chỉ rõ nhóm nào thì mặc định nhóm tập đoàn product_service_group. Nếu tên nhóm có trong product_service_group thì ưu tiên, trừ trường hợp người dùng chỉ định rõ nhóm theo VCS
+        - Khi có yêu cầu cắt lớp theo thời gian, nếu người dùng không chỉ định rõ thì ưu tiên mặc định ngày ghi nhận doanh thu payment_date, trừ trường hợp người dùng chỉ định rõ trường thời gian khác
+        
+    meta:
+      label: CRM Expected Revenue
+      owner: huongnv1
+      joins:
+        - join: crm_deals
+          sql_on: ${crm_expected_revenue.deal_id} = ${crm_deals.deal_id}
+          relationship: many-to-one
+      metrics:
+        product_revenue_amount:
+          type: sum
+          sql: vnd_amount
+          label: Giá trị Pipeline
+          description: Tổng giá trị doanh thu của toàn bộ Opportunity.
+          synonyms:
+            - pipeline value
+            - gross pipeline
+            - opportunity value
+
+        pipeline_revenue_amount:
+          type: sum
+          sql: vnd_amount
+          label: Doanh thu Pipeline
+          description: Doanh thu Pipeline theo giá trị kỳ vọng (Expected Revenue chưa ký hợp đồng).
+          synonyms:
+            - expected revenue  chưa ký hợp đồng
+            - weighted pipeline
+            - pipeline revenue
+
+        carryover_renew_expected_revenue_amount:
+          type: sum
+          sql: "CASE WHEN product_type = 'Renew' AND is_in_year = false THEN vnd_amount  ELSE 0.0 END"
+          label: Doanh thu Renew vắt năm
+          description: Doanh thu Pipeline của các hợp đồng Renew từ các năm trước.
+
+        in_year_renew_expected_revenue_amount:
+          type: sum
+          sql: "CASE WHEN product_type = 'Renew' AND is_in_year = true THEN vnd_amount ELSE 0.0 END"
+          label: Doanh thu Renew trong năm
+          description: Doanh thu Pipeline của các hợp đồng Renew phát sinh trong năm hiện tại.
+
+        expected_non_si_revenue_amount:
+          type: sum
+          sql: "CASE WHEN product_category <> 'SI' THEN vnd_amount ELSE 0.0 END"
+          label: Doanh thu ngoài SI
+          description: Doanh thu Pipeline của các sản phẩm không thuộc nhóm SI.
+
+        expected_si_revenue_amount:
+          type: sum
+          sql: "CASE WHEN product_category = 'SI' THEN vnd_amount ELSE 0.0 END"
+          label: Doanh thu SI
+          description: Doanh thu Pipeline của các sản phẩm thuộc nhóm SI.
+
+        expected_arr_amount:
+          type: sum
+          sql: "CASE WHEN is_recurring = true THEN vnd_amount ELSE 0.0 END"
+          label: Doanh thu ARR
+          description: Doanh thu Pipeline của các sản phẩm ARR (Recurring Revenue).
+
+        expected_non_arr_amount:
+          type: sum
+          sql: "CASE WHEN is_recurring != true THEN vnd_amount ELSE 0.0 END"
+          label: Doanh thu Non-ARR
+          description: Doanh thu Pipeline của các sản phẩm không thuộc ARR, bao gồm cả giá trị NULL.
+
+    columns:
+      - name: payment_date
+        description: Ngày bắt đầu kỳ thanh toán/phân bổ.
+        meta:
+          dimension:
+            type: timestamp
+            label: Ngày báo cáo dự kiến
+            synonyms:
+            - Ngày báo cáo
+            - Kỳ báo cáo
+            - Thời gian báo cáo
+            - Thời điểm báo cáo
+            - Thời gian báo cáo
+            - Ngày ghi nhận số tiền
+            - Kỳ thanh toán
+            - Kỳ phân bổ doanh thu
+            - Ngày phân bổ doanh thu
+            - Ngày ghi nhận giá trị
+            - Ngày dự kiến
+            - Ngày tính tiền
+            - pipeline date
+      # - name: payment_period_start_date
+      #   description: Ngày bắt đầu kỳ phân bổ.
+      # - name: payment_period_end_date
+      #   description: Ngày kết thúc kỳ phân bổ.
+      - name: deal_id
+        description: Mã deal/cơ hội.
+        meta:
+          dimension:
+            type: string
+            label: Mã deal
+            synonyms:
+            - Mã cơ hội
+            - định danh ID
+            - mã opp
+            - opportunity id
+      - name: deal_name
+        description: Tên giao dịch/cơ hội hoặc tên cơ hội bán hàng
+      # - name: update_at
+      #   description: Thời điểm cập nhật bản ghi.
+      - name: product_total_value
+        description: Tổng giá trị sản phẩm trước khi chia kỳ.
+      - name: currency_amount
+        description: Giá trị theo nguyên tệ.
+        meta:
+          dimension:
+            type: number
+            label: Giá trị theo nguyên tệ.
+      - name: vnd_amount
+        description: Giá trị VND của kỳ phân bổ.
+        meta:
+          dimension:
+            type: number
+            label: Giá trị VND của kỳ phân bổ
+      - name: currency_code
+        description: Mã tiền tệ.
+      - name: payment_index
+        description: Thứ tự kỳ phân bổ.
+      - name: used_days
+        description: Số ngày sử dụng trong kỳ.
+        meta:
+          dimension:
+            type: number
+            label: Số ngày sử dụng trong kỳ.
+      - name: exchange_rate
+        description: Tỷ giá quy đổi sang VND.
+      # - name: carry_over_date
+      #   description: Mốc ngày tham chiếu để xác định vắt năm.
+      # - name: actual_start_date
+      #   description: Ngày bắt đầu actual.
+      # - name: forecast_start_date
+      #   description: Ngày bắt đầu forecast.
+      - name: is_in_year
+        description: TRUE nếu trong năm, FALSE nếu vắt năm.
+      # - name: due_date
+      #   description: Ngày đến hạn.
+      # - name: sign_date
+      #   description: Ngày ký hợp đồng.
+      - name: expected_close_date
+        description: Ngày kỳ vọng ký thành công.
+        meta:
+          dimension:
+            type: timestamp
+            label: Ngày kỳ vọng ký thành công
+            synonyms:
+
+      - name: contract_expire_date
+        description: Ngày hết hạn hợp đồng.
+        meta:
+          dimension:
+            type: timestamp
+            label: Ngày hết hạn hợp đồng.
+            synonyms:
+      # - name: fac_date
+      #   description: Ngày FAC/nghiệm thu.
+      - name: vat
+        description: Thuế VAT.
+      - name: product_type
+        description: Loại deal sản phẩm (New/Renew/Renewal/Upsales).
+      - name: product_version
+        description: Phiên bản sản phẩm.
+      - name: deployment_type
+        description: Hình thức triển khai.
+      - name: product_category
+        description: Danh mục SPDV.
+      - name: product_category_code
+        description: Mã Danh mục SPDV.
+      - name: product_category_index
+        description: Mã dòng phân bổ sản phẩm.
+      - name: pricebook_id
+        description: Mã pricebook.
+      - name: is_recurring
+        description: Có tính chất ARR hay không.
+      - name: territory_name
+        description: Khu vực.
+      - name: product_index
+        description: Chỉ số dòng sản phẩm trong deal.
+      - name: customer_id
+        description: Mã khách hàng.
+      - name: customer_name
+        description: Tên khách hàng hoặc tên công ty được sử dụng để nhận diện khách hàng trong hệ thống CRM.
+        meta:
+          dimension:
+            type: string
+            label: Tên khách hàng
+            synonyms:
+              - khách hàng
+              - tên khách hàng
+              - công ty
+              - tên công ty
+              - doanh nghiệp
+              - tên doanh nghiệp
+              - customer
+              - customer name
+              - company
+              - company name
+
+      - name: company_alias
+        description: Tên thay thế của khách hàng hoặc công ty, bao gồm tên viết tắt, tên gọi ngắn hoặc tên thường được sử dụng để nhận diện khách hàng.
+        meta:
+          dimension:
+            type: string
+            label: Tên thay thế khách hàng
+            synonyms:
+              - tên thay thế
+              - tên viết tắt
+              - viết tắt
+              - bí danh công ty
+              - biệt danh công ty
+              - tên gọi khác
+              - tên gọi ngắn
+              - alias
+              - company alias
+              - short name
+      - name: vvip_segment
+        description: Nhóm VIP/VVIP
+      - name: deal_stage_name
+        description: Giai đoạn deal.
+      - name: probability
+        description: Xác suất thành công (0-100).
+        meta:
+          dimension:
+            type: number
+            label: Xác suất thành công (0-100).
+            synonyms:
+            - cơ hội cao khi >= 70
+            - cơ hội thấp khi < 70
+      - name: am_username
+        description: Tài khoản AM.
+      - name: team_name
+        description: Team AM.
+      - name: contract_id
+        description: Mã hợp đồng.
+      - name: contract_number
+        description: Số hợp đồng.
+      - name: contract_total_days
+        description: Tổng số ngày hợp đồng/phân bổ.
+      - name: revenue_type
+        description: Loại doanh thu.
+      - name: revenue_segment_l1
+        description: Phân khúc khách hàng Bóc tách phân loại theo góc nhìn từ báo cáo doanh thu tập đoàn
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc doanh thu
+            synonyms:
+            - Ngoài
+            - Nội Bộ
+            - Quốc Tế
+            - Thị Trường
+            - Khác
+            - Khách hàng ngoài
+            - International
+            - Nội bộ
+            - Khác
+            - Bộ Quốc phòng
+            - Nhóm Khách hàng
+            - Nhóm KH
+      - name: customer_segment_l1
+        description: Phân khúc khách hàng cấp 1.
+      - name: customer_segment_l2
+        description: Phân khúc khách hàng cấp 2.
+      - name: customer_segment_l3
+        description: Phân khúc khách hàng cấp 3.
+      - name: sales_admin_username
+        description: Tài khoản Sales Admin.
+      - name: contract_allocation_id
+        description: Mã phân bổ hợp đồng.
+      - name: channel_name
+        description: Kênh kinh doanh.
+        meta:
+          dimension:
+            type: string
+            label: Kênh khách hàng
+            synonyms:
+            - segment kênh
+            - Partner = Đối tác
+            - Direct = Trực tiếp
+            - Kênh bán
+            - Kênh kinh doanh
+            - Kênh khách hàng
+      - name: am_group
+        description: Nhóm AM quản trị.
+      - name: deal_type
+        description: Loại deal.
+      - name: am_territory_name
+        description: Khu vực AM quản lý.
+      - name: forecast_category
+        description: Nhóm forecast trên CRM.
+      # - name: report_customer_segment
+      #   description: "Nhóm khách hàng tổng hợp theo quy tắc lát cắt trong tài liệu metrics."
+      #   meta:
+      #     dimension:
+      #       type: string
+      #       label: "Nhóm khách hàng báo cáo"
+      - name: channel_am
+        description: "Nhóm khách hàng tổng hợp theo quy tắc lát cắt trong tài liệu metrics."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm AM kênh"
+      - name: vvip_am
+        description: "Nhóm AM VVIP"
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm AM VVIP"
+      - name: internal_am
+        description: "Phân nhóm nội bộ theo customer_segment_l1."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm AM nội bộ"
+      - name: opportunity_level
+        description: >
+          Mức độ cơ hội của deal. Giá trị gồm:
+          'Cao' = cơ hội cao = probability >= 70,
+          'Thấp' = cơ hội thấp =  probability < 70,
+          'Đã ký' = deal đã ký hợp đồng.
+        meta:
+          dimension:
+            type: string
+            label: Mức độ cơ hội
+      - name: deal_status
+        description: >
+          Trạng thái cơ hội
+        meta:
+          dimension:
+            type: string
+            label: Trạng thái cơ hội
+      - name: product_service_group_vcs
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm VCS.
+        meta:
+          dimension:
+            type: string
+            label: Nhóm sản phẩm/dịch vụ theo phân nhóm VCS
+            synonyms:
+            - Nhóm SPDV vận hành nội bộ VCS
+            - Nhóm Mass
+            - Nhóm Sản phẩm mới
+            - Nhóm MSS-Hệ sinh thái SOC
+            - Nhóm SP Standalone
+            - Nhóm Telco
+            - Nhóm Professional Services
+            - Nhóm MSS-CA
+            - Nhóm MSS-MDR Service
+            - Nhóm kinh doanh SI
+            - Nhóm SP Standalone-SPDV MỚI
+
+      - name: product_service_group
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ. 
+        meta:
+          dimension:
+            type: string
+            label: hóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ
+            synonyms:
+            - Nhóm SPDV báo cáo tập đoàn
+            - SPDV MỚI
+            - SP An ninh Viễn thông
+            - Hệ sinh thái SOC
+            - KHÁC (PC, PM phát sinh)
+            - Dịch vụ ATTT chuyên sâu = Nhóm Professional Services = Dịch vụ ATTT chuyên nghiệp

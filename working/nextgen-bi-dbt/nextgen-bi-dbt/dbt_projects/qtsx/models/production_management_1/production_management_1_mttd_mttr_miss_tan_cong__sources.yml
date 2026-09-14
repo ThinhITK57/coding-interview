@@ -1,0 +1,46 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_mttd_mttr_miss_tan_cong
+    description: "Nguồn Power BI: MTTD-MTTR_Miss Tấn công"
+    columns:
+    - name: column4
+      description: "Cột Column4"
+    - name: column17
+      description: "Cột Column17"
+    - name: column18
+      description: "Cột Column18"
+    - name: quarter
+      description: "Cột Quý"
+    - name: month_value
+      description: "Cột Tháng"
+    - name: customer
+      description: "Cột Khách hàng"
+    - name: rport_kpi_in_period
+      description: "Cột Rport KPI trong kỳ"
+    - name: total_incident_cases
+      description: "Cột Tổng số case incident"
+    - name: mttd_h
+      description: "Cột (MTTD)(h)"
+    - name: ctkt_m05_mttd_24h
+      description: "Cột CTKT M05 (MTTD)24h"
+    - name: evaluation_mttd
+      description: "Cột Đánh giá (MTTD)"
+    - name: mttr_h
+      description: "Cột (MTTR)(h)"
+    - name: ctkt_mttr_20h
+      description: "Cột CTKT (MTTR)20h"
+    - name: evaluation_m06_mttr
+      description: "Cột Đánh giá M06(MTTR)"
+    - name: missed_critical_alerts
+      description: "Cột Số lượng cảnh báo mức NGHIÊM TRỌNG mà hệ thống không phát hiện được"
+    - name: ctkt
+      description: "Cột CTKT"
+    - name: evaluation
+      description: "Cột Đánh giá"
+    - name: missed_normal_alerts
+      description: "Cột Số lượng cảnh báo mức THÔNG THƯỜNG mà hệ thống không phát hiện được"

@@ -1,0 +1,32 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_mart_estimated_revenue
+  - name: crm_mart_revenue_performance_month
+  - name: crm_revenue_reconciliation
+  - name: finance_contract_collected_invoices
+  - name: crm_business_unit_revenue_kpi_plan
+  - name: crm_revenue_plan_month
+  - name: crm_deal_allocated_products
+  - name: crm_deal_products
+  - name: crm_activity_history
+  - name: crm_am_activity_agg_daily
+  - name: crm_am_activity_daily
+  - name: crm_product_service_group_mapping
+  - name: crm_contacts
+  - name: vw_crm_user_activity
+  - name: vw_crm_quotation_activity
+  - name: vw_crm_deal_activity
+  - name: vw_crm_contract_activity
+  - name: vw_crm_contact_activity
+  - name: vw_crm_sales_account_activity
+  - name: vw_crm_am_object_activity
+  - name: vw_crm_am_daily
+  - name: crm_committed_revenue
+  - name: crm_expected_revenue
+  - name: crm_am_kpi_raw_events
+  - name: crm_am_kpi_event_monthly

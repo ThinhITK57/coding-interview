@@ -1,0 +1,265 @@
+version: 2
+models:
+- name: qtsx_v2_pyc_os_done_release
+  description: "Bảng qtsx_v2_pyc_os_done_release (nguồn Power BI: PYC OS done release)."
+  meta:
+    label: "PYC OS done release"
+    powerbi_source: "PYC OS done release"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_pyc_os_done_release.project_2} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      average_so_ngay_tu_nghiem_thu_den_release:
+        type: average
+        sql: so_ngay_tu_nghiem_thu_den_release
+        label: "Cycle time"
+        round: 2
+        description: "Sinh từ Power BI: average(PYC OS done release.So_ngay_tu_Nghiem_thu_den_Release)"
+      sum_mm_pyc_thuc_te:
+        type: sum
+        sql: mm_pyc_thuc_te
+        label: "MM released"
+        description: "Sinh từ Power BI: sum(PYC OS done release.MM_PYC_Thực_tế_10823)"
+      sum_so_ngay_tu_nghiem_thu_den_release:
+        type: sum
+        sql: so_ngay_tu_nghiem_thu_den_release
+        label: "Sum of So_ngay_tu_Nghiem_thu_den_Release"
+        round: 0
+        description: "Sinh từ Power BI: sum(PYC OS done release.So_ngay_tu_Nghiem_thu_den_Release)"
+  columns:
+  - name: id
+    description: "Cột Id trong PYC OS done release."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong PYC OS done release."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: issue_current_assignee_name
+    description: "Cột ISSUE_CURRENT_ASSIGNEE_NAME trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_ASSIGNEE_NAME"
+        hidden: true
+  - name: on_time_check
+    description: "Cột Check_đúng_hạn_10804 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Check_đúng_hạn_10804"
+        hidden: true
+  - name: internal_due_date
+    description: "Cột Due_date_nội_bộ_10613 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Due_date_nội_bộ_10613"
+        hidden: true
+  - name: project
+    description: "Cột Dự_án_10706 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Dự_án_10706"
+        hidden: true
+  - name: type_os
+    description: "Cột Loại_OS_10843 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Loại_OS_10843"
+        hidden: true
+  - name: mm_pyc
+    description: "Cột MM_PYC_10705 trong PYC OS done release."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_10705"
+        hidden: true
+  - name: mm_pyc_thuc_te
+    description: "Cột MM_PYC_Thực_tế_10823 trong PYC OS done release."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_Thực_tế_10823"
+        hidden: true
+  - name: mm_ttsx_du_kien
+    description: "Cột MM_TTSX_Dự_kiến_10840 trong PYC OS done release."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Dự_kiến_10840"
+        hidden: true
+  - name: mm_ttsx_estimate
+    description: "Cột MM_TTSX_Estimate_10830 trong PYC OS done release."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Estimate_10830"
+        hidden: true
+  - name: ttsx_pm_commit_date
+    description: "Cột Ngày_PM_TTSX_commit_10808 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_PM_TTSX_commit_10808"
+        hidden: true
+  - name: ttsx_planned_date
+    description: "Cột Ngày_TTSX_Dự_kiến_10841 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_TTSX_Dự_kiến_10841"
+        hidden: true
+  - name: ttsx_commit_date
+    description: "Cột Ngày_TTSX_commit_10845 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_TTSX_commit_10845"
+        hidden: true
+  - name: ttsx_commit_jmcf_date
+    description: "Cột Ngày_TTSX_commit_JMCF_10838 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Ngày_TTSX_commit_JMCF_10838"
+        hidden: true
+  - name: acceptance_completion_date
+    description: "Cột Ngày_hoàn_thành_nghiệm_thu_10805 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_hoàn_thành_nghiệm_thu_10805"
+        hidden: true
+  - name: expected_ttsx_handover_date
+    description: "Cột Ngày_kỳ_vọng_TTSX_bàn_giao_10151 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_kỳ_vọng_TTSX_bàn_giao_10151"
+        hidden: true
+  - name: expected_release_date
+    description: "Cột Ngày_kỳ_vọng_release_10817 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_kỳ_vọng_release_10817"
+        hidden: true
+  - name: acceptance_success_date
+    description: "Cột Ngày_nghiệm_thu_thành_công_10847 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_nghiệm_thu_thành_công_10847"
+        hidden: true
+  - name: payment_date
+    description: "Cột Ngày_thanh_toán_10839 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_thanh_toán_10839"
+        hidden: true
+  - name: request_created_date
+    description: "Cột Ngày_tạo_PYC_10708 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_tạo_PYC_10708"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_10803 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT_10803"
+        hidden: true
+  - name: payment_status
+    description: "Cột Trạng_thái_thanh_toán_10810 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Trạng_thái_thanh_toán_10810"
+        hidden: true
+  - name: order_value
+    description: "Cột Đơn_hàng_10707 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn_hàng_10707"
+        hidden: true
+  - name: partner
+    description: "Cột Đối_tác_10801 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Đối_tác_10801"
+        hidden: true
+  - name: partner_by_contract
+    description: "Cột Đối_tác_theo_HĐ_10842 trong PYC OS done release."
+    meta:
+      dimension:
+        type: string
+        label: "Đối_tác_theo_HĐ_10842"
+        hidden: true
+  - name: project_2
+    description: "Cột project trong PYC OS done release. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'PYC OS done release'[TTSX_PRODUCT_10803] = \"Pentest Platform\", \"VAPT (Pentest)\", 'PYC OS done release'[TTSX_PRODUCT_10803] )"
+    meta:
+      dimension:
+        type: string
+        label: "project"
+  - name: handover_date
+    description: "Cột Ngày_bàn_giao_10849 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_bàn_giao_10849"
+        hidden: true
+  - name: release_date
+    description: "Cột Ngày_Release_10806 trong PYC OS done release."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_Release_10806"
+        hidden: true
+  - name: so_ngay_tu_nghiem_thu_den_release
+    description: "Cột So_ngay_tu_Nghiem_thu_den_Release trong PYC OS done release. Cột tính toán, DAX gốc: DATEDIFF( 'PYC OS done release'[Ngày_hoàn_thành_nghiệm_thu_10805], 'PYC OS done release'[Ngày_Release_10806], DAY )"
+    meta:
+      dimension:
+        type: number
+        label: "So_ngay_tu_Nghiem_thu_den_Release"
+        hidden: true

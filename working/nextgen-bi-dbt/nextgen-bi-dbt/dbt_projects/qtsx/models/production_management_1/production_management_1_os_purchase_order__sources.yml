@@ -1,0 +1,30 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_os_purchase_order
+    description: "Nguồn Power BI: OS- Đơn đặt hàng"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_created
+      description: "Cột ISSUE_CREATED"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_priority
+      description: "Cột ISSUE_PRIORITY"
+    - name: issue_project_id
+      description: "Cột ISSUE_PROJECT_ID"
+    - name: order_value
+      description: "Cột Đơn_hàng_13421"
+    - name: issue_current_status_name
+      description: "Cột ISSUE_CURRENT_STATUS_NAME"
+    - name: ttsx_product
+      description: "Cột TTSX_PRODUCT_16800"
+    - name: severity
+      description: "Cột Severity_11301"

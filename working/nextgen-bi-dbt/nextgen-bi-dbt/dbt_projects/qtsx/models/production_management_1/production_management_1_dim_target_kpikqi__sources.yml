@@ -1,0 +1,32 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_dim_target_kpikqi
+    description: "Nguồn Power BI: Dim_TargetKPIKQI"
+    columns:
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: target
+      description: "Cột Target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: kpi_type
+      description: "Cột Loại KPI"
+    - name: note
+      description: "Cột Note"
+    - name: viettel
+      description: "Cột Viettel"
+    - name: viettel_socp
+      description: "Cột Viettel - SOCP"
+    - name: external_customer
+      description: "Cột KH ngoài"
+    - name: sp_metric
+      description: "Cột SP-MEtric"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: unit
+      description: "Cột Đơn vị"

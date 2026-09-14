@@ -1,0 +1,7 @@
+
+dbt-core==1.11.7
+dbt-trino==1.11.7
+dbt-postgres==1.10.0
+boto3
+openmetadata-ingestion[dbt]==1.12.8
+cachetools==7.1.4

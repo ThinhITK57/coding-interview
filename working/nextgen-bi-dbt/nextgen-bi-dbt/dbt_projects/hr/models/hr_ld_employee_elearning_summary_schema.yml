@@ -1,0 +1,151 @@
+version: 2
+
+models:
+- name: hr_ld_employee_elearning_summary
+  description: >
+    Bảng **hr_ld_employee_elearning_summary** lưu trữ thông tin tổng hợp về
+    hoạt động học tập trực tuyến của nhân viên trên các nền tảng đào tạo điện tử.
+    Dữ liệu bao gồm thông tin nhân viên, nền tảng học tập, khóa học đã tham gia
+    và số lượng khóa học hoàn thành hoặc được ghi nhận. Dữ liệu được sử dụng để
+    theo dõi mức độ tham gia đào tạo, đánh giá hiệu quả học tập và hỗ trợ công tác
+    quản lý, phát triển năng lực nhân sự.
+
+  meta:
+    label: "Employee eLearning Summary"
+    owner: "tranpth"
+    metrics:
+      elearning_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi học tập trực tuyến."
+        label: "eLearning Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi eLearning"
+          - "Tổng số bản ghi học trực tuyến"
+          - "eLearning Record Count"
+
+      elearning_employee_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng nhân viên tham gia học tập trực tuyến."
+        label: "eLearning Employee Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số học viên eLearning"
+          - "Số nhân viên học online"
+          - "eLearning Employee Count"
+
+      total_course_count:
+        type: sum
+        sql: ${TABLE}.course_count
+        description: "Tổng số khóa học trực tuyến được ghi nhận trên các nền tảng đào tạo."
+        label: "Total Course Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng số khóa học"
+          - "Tổng khóa học eLearning"
+          - "Total Course Count"
+
+      unique_course_count:
+        type: count_distinct
+        sql: ${TABLE}.course_name
+        description: "Số lượng khóa học trực tuyến khác nhau được ghi nhận."
+        label: "Unique Course Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số khóa học khác nhau"
+          - "Số lượng khóa học"
+          - "Unique Course Count"
+
+      learning_platform_count:
+        type: count_distinct
+        sql: ${TABLE}.learning_platform
+        description: "Số lượng nền tảng đào tạo trực tuyến được sử dụng."
+        label: "Learning Platform Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số nền tảng đào tạo"
+          - "Số nền tảng eLearning"
+          - "Learning Platform Count"
+
+      avg_course_per_employee:
+        type: number
+        sql: ${total_course_count} / NULLIF(${elearning_employee_count}, 0.0)
+        description: "Số khóa học trực tuyến trung bình trên mỗi nhân viên."
+        label: "Average Course per Employee"
+        category: "Learning & Development"
+        synonyms:
+          - "Khóa học trung bình mỗi nhân viên"
+          - "Số khóa học trung bình/người"
+          - "Average Course per Employee"
+
+      avg_course_per_platform:
+        type: number
+        sql: ${total_course_count} / NULLIF(${learning_platform_count}, 0.0)
+        description: "Số khóa học trực tuyến trung bình trên mỗi nền tảng đào tạo."
+        label: "Average Course per Platform"
+        category: "Learning & Development"
+        synonyms:
+          - "Khóa học trung bình mỗi nền tảng"
+          - "Average Course per Platform"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi học tập trực tuyến
+      meta:
+        dimension:
+          type: number
+          label: "eLearning Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: employee_code
+      description: Mã định danh duy nhất của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: full_name
+      description: Họ và tên nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: business_email
+      description: Địa chỉ email công việc của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Business Email"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: course_count
+      description: Tổng số khóa học trực tuyến mà nhân viên đã tham gia hoặc được ghi nhận
+      meta:
+        dimension:
+          type: number
+          label: "Course Count"
+
+    - name: learning_platform
+      description: Nền tảng đào tạo trực tuyến mà nhân viên sử dụng
+      meta:
+        dimension:
+          type: string
+          label: "Learning Platform"
+
+    - name: course_name
+      description: Tên khóa học trực tuyến mà nhân viên tham gia
+      meta:
+        dimension:
+          type: string
+          label: "Course Name"

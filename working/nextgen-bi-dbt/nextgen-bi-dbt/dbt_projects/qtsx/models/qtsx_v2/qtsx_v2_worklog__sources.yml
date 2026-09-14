@@ -1,0 +1,42 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_worklog
+    description: "Nguồn Power BI: worklog"
+    columns:
+    - name: issue_id
+      description: "Cột issueId"
+    - name: id
+      description: "Cột ID"
+    - name: project_key
+      description: "Cột projectKey"
+    - name: comment_value
+      description: "Cột comment"
+    - name: time_spent
+      description: "Cột timeSpent"
+    - name: updated_date
+      description: "Cột updatedDate"
+    - name: started_date
+      description: "Cột startedDate"
+    - name: created_date
+      description: "Cột createdDate"
+    - name: author_full_name
+      description: "Cột authorFullName"
+    - name: author_user_name
+      description: "Cột authorUserName"
+    - name: category_name
+      description: "Cột categoryName"
+    - name: hour_value
+      description: "Cột hour"
+    - name: mm_worklog
+      description: "Cột MM Worklog"
+    - name: working_days_worklog
+      description: "Cột Working Days worklog"
+    - name: year_month
+      description: "Cột YearMonth"
+    - name: issuetype
+      description: "Cột issuetype"

@@ -1,0 +1,110 @@
+version: 2
+models:
+- name: qtsx_v2_bug_os
+  description: "Bảng qtsx_v2_bug_os (nguồn Power BI: bug OS)."
+  meta:
+    label: "bug OS"
+    powerbi_source: "bug OS"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_bug_os.project} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      count_issuekey:
+        type: count
+        sql: issuekey
+        label: "Số bug"
+        description: "Sinh từ Power BI: count(bug OS.issuekey)"
+      tong_he_so_bug:
+        type: sum
+        sql: bug_weight
+        label: "Tong_He_So_Bug"
+        description: "DAX: SUM('Bug OS'[Hệ số Bug])"
+  columns:
+  - name: issueid
+    description: "Cột issueid trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "issueid"
+        hidden: true
+  - name: issuekey
+    description: "Cột issuekey trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+  - name: priority
+    description: "Cột priority trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "priority"
+        hidden: true
+  - name: created
+    description: "Cột created trong bug OS."
+    meta:
+      dimension:
+        type: date
+        label: "created"
+  - name: summary
+    description: "Cột summary trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+  - name: projectname
+    description: "Cột projectname trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+  - name: status
+    description: "Cột status trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "status"
+        hidden: true
+  - name: ttsx_production
+    description: "Cột TTSX PRODUCTION trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX PRODUCTION"
+        hidden: true
+  - name: order_value
+    description: "Cột Đơn hàng trong bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn hàng"
+        hidden: true
+  - name: bug_weight
+    description: "Cột Hệ số Bug trong bug OS. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'bug OS'[priority] = \"Critical\" || 'bug OS'[priority] = \"High\" || 'bug OS'[priority] = \"Highest\",5, 'bug OS'[priority] = \"Medium\", 3, 1 )"
+    meta:
+      dimension:
+        type: number
+        label: "Hệ số Bug"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong bug OS. Cột tính toán, DAX gốc: FORMAT('bug OS'[created], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong bug OS. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'bug OS'[projectname] in {\"CyM OS 2023\", \"CyM_OS_2024\", \"CyM_OS_2025\",\"SOC Platform_OS_2025\"} , \"TT.Enterprise\", 'bug OS'[projectname] in {\"BRG\",\"Cloudrity_OS\",\"F2DR\",\"LIG\",\"TML\",\"V-AntiDDoS\",\"VCS TAS\",\"Trách Nhiệm Xã Hội\",\"VCS-Hub\"}, \"TT.Telco\", 'bug OS'[projectname] in {\"M-Suite\",\"Security Chatbot\",\"VCS-KIAN\",\"TTSX_Sản phẩm nội bộ\"},\"TT.SX\", 'bug OS'[projectname] in {\"MASS PLATFORM OS 2023\",\"SecurityChatbot_OS_2024\"},\"TT.SOC\", 'bug OS'[projectname] in {\"Pentest Platform_OS\"},\"TT.DVATTT\", 'bug OS'[projectname] in {\"Threat Intelligence\",\"TI Platform_OS\"},\"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true
+  - name: project
+    description: "Cột Project trong bug OS. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'bug OS'[projectname] = \"Cloudrity_OS\" , \"Cloudrity Self Service\", 'bug OS'[projectname] = \"CyM OS 2023\" , \"VCS-CyM\", 'bug OS'[projectname] = \"CyM OS 2024\" , \"VCS-CyM\", 'bug OS'[projectname] = \"CyM OS 2025\" , \"VCS-CyM\", 'bug OS'[projectname] = \"CyM_OS_2024\" , \"VCS-CyM\", 'bug OS'[projectname] = \"CyM_OS_2025\" , \"VCS-CyM\", 'bug OS'[projectname] = \"EDR_Agent_OS\" , \"aJiant\", 'bug OS'[projectname] = \"EDR_OS\" , \"aJiant\", 'bug OS'[projectname] = \"MASS PLATFORM OS 2023\" , \"Cloudrity Self Service\", 'bug OS'[projectname] = \"SecurityChatbot_OS_2024\" , \"Security Chatbot\", 'bug OS'[projectname] = \"SOC Platform_OS_2025\" , \"SOC PLATFORM\", 'bug OS'[projectname] = \"Pentest Platform_OS\" , \"VAPT (Pentest)\", 'bug OS'[projectname] = \"TI Platform_OS\" , \"VCS - TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Project"
+        hidden: true

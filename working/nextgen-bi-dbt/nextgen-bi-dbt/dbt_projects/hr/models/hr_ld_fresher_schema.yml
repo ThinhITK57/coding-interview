@@ -1,0 +1,203 @@
+version: 2
+
+models:
+- name: hr_ld_fresher
+  description: >
+    Bảng **hr_ld_fresher** lưu trữ thông tin quá trình đào tạo và phát triển của
+    nhân sự Fresher, bao gồm thông tin cá nhân, lộ trình đào tạo, người hướng dẫn,
+    kết quả học tập, quá trình đào tạo thực tế (OJT) và kết quả đánh giá sau đào tạo.
+    Dữ liệu được sử dụng để theo dõi tiến độ đào tạo, đánh giá chất lượng chương trình
+    Fresher và hỗ trợ công tác phát triển nguồn nhân lực mới.
+
+  meta:
+    label: "Fresher Training"
+    owner: "tranpth"
+    metrics:
+      fresher_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng Fresher tham gia chương trình đào tạo."
+        label: "Fresher Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số lượng Fresher"
+          - "Tổng số Fresher"
+          - "Fresher Count"
+
+      fresher_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi đào tạo Fresher."
+        label: "Fresher Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi Fresher"
+          - "Fresher Record Count"
+
+      avg_fresher_score:
+        type: average
+        sql: ${TABLE}.average_score
+        description: "Điểm trung bình đánh giá kết quả đào tạo của Fresher."
+        label: "Average Fresher Score"
+        category: "Learning & Development"
+        synonyms:
+          - "Điểm trung bình Fresher"
+          - "Average Fresher Score"
+
+      ojt_fresher_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN UPPER(${TABLE}.training_phase) LIKE '%OJT%'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng Fresher có training_phase chứa OJT tại thời điểm ghi nhận dữ liệu."
+        label: "OJT Fresher Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher OJT"
+          - "OJT Fresher Count"
+
+      theory_fresher_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.training_phase = 'Lý thuyết'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng Fresher có training_phase ở trạng thái Lý thuyết tại thời điểm ghi nhận dữ liệu."
+        label: "Theory Fresher Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher học lý thuyết"
+          - "Theory Fresher Count"
+
+      completed_fresher_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.training_result IS NOT NULL
+              AND TRIM(${TABLE}.training_result) <> ''
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng Fresher có ghi nhận kết quả cuối cùng của chương trình đào tạo."
+        label: "Completed Fresher Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher có kết quả đào tạo"
+          - "Completed Fresher Count"
+
+      avg_training_days:
+        type: average
+        sql: date_diff('day', CAST(${TABLE}.onboard_date AS date), CAST(${TABLE}.ojt_end_date AS date))
+        description: "Số ngày đào tạo trung bình từ ngày Fresher onboard đến ngày kết thúc OJT."
+        label: "Average Training Days"
+        category: "Learning & Development"
+        synonyms:
+          - "Thời gian đào tạo trung bình"
+          - "Average Training Days"
+
+      avg_ojt_days:
+        type: average
+        sql: date_diff('day', CAST(${TABLE}.ojt_start_date AS date), CAST(${TABLE}.ojt_end_date AS date))
+        description: "Số ngày OJT trung bình của Fresher."
+        label: "Average OJT Days"
+        category: "Learning & Development"
+        synonyms:
+          - "Thời gian OJT trung bình"
+          - "Average OJT Days"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi đào tạo Fresher
+      meta:
+        dimension:
+          type: number
+          label: "Fresher Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: employee_code
+      description: Mã định danh của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: onboard_date
+      description: Ngày nhân sự Fresher bắt đầu tham gia chương trình đào tạo hoặc gia nhập công ty
+      meta:
+        dimension:
+          type: timestamp
+          label: "Onboard Date"
+
+    - name: training_phase
+      description: Giai đoạn đào tạo hiện tại hoặc đã hoàn thành của Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Training Phase"
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Training Major"
+
+    - name: mentor_name
+      description: Họ và tên người hướng dẫn hoặc mentor phụ trách Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Mentor Name"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 tiếp nhận hoặc quản lý Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: average_score
+      description: Điểm trung bình đánh giá kết quả đào tạo của Fresher
+      meta:
+        dimension:
+          type: number
+          label: "Average Score"
+
+    - name: ojt_start_date
+      description: Ngày bắt đầu chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+      meta:
+        dimension:
+          type: timestamp
+          label: "OJT Start Date"
+
+    - name: ojt_end_date
+      description: Ngày kết thúc chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+      meta:
+        dimension:
+          type: timestamp
+          label: "OJT End Date"
+
+    - name: employment_type
+      description: Loại hình tuyển dụng hoặc hình thức làm việc của Fresher sau đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Employment Type"
+
+    - name: training_result
+      description: Kết quả đánh giá cuối cùng của chương trình đào tạo Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Training Result"

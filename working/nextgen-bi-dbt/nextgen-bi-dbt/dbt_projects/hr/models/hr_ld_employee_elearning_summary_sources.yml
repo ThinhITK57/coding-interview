@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_employee_elearning_summary
+    description: >
+      Bảng **hr_ld_employee_elearning_summary** lưu trữ thông tin tổng hợp về
+      hoạt động học tập trực tuyến của nhân viên trên các nền tảng đào tạo điện tử.
+      Dữ liệu bao gồm thông tin nhân viên, nền tảng học tập, khóa học đã tham gia
+      và số lượng khóa học hoàn thành hoặc được ghi nhận. Dữ liệu được sử dụng để
+      theo dõi mức độ tham gia đào tạo, đánh giá hiệu quả học tập và hỗ trợ công tác
+      quản lý, phát triển năng lực nhân sự.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi học tập trực tuyến
+      tests:
+        - not_null
+        - unique
+
+    - name: employee_code
+      description: Mã định danh duy nhất của nhân viên
+
+    - name: full_name
+      description: Họ và tên nhân viên
+
+    - name: business_email
+      description: Địa chỉ email công việc của nhân viên
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 của nhân viên
+
+    - name: course_count
+      description: Tổng số khóa học trực tuyến mà nhân viên đã tham gia hoặc được ghi nhận
+
+    - name: learning_platform
+      description: Nền tảng đào tạo trực tuyến mà nhân viên sử dụng
+
+    - name: course_name
+      description: Tên khóa học trực tuyến mà nhân viên tham gia

@@ -1,0 +1,48 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_kpikqi_all
+    description: "Nguồn Power BI: KPIKQI_ALL"
+    columns:
+    - name: report_date
+      description: "Cột Ngày báo cáo"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: result
+      description: "Cột Kết quả"
+    - name: evaluation
+      description: "Cột Đánh giá"
+    - name: target
+      description: "Cột Target"
+    - name: unit_of_measure
+      description: "Cột Đơn vị tính"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: result_prev_1_period
+      description: "Cột Kết quả 1 kỳ trước"
+    - name: result_prev_2_periods
+      description: "Cột Kết quả 2 kỳ trước"
+    - name: kpi_trend
+      description: "Cột Xu hướng KPI"
+    - name: center
+      description: "Cột Trung tâm"
+    - name: year_week
+      description: "Cột YearWeek"
+    - name: week
+      description: "Cột Week"
+    - name: evaluation_v2
+      description: "Cột Đánh giá v2"
+    - name: vs_target
+      description: "Cột So với target"
+    - name: trend_v2
+      description: "Cột Trend v2"
+    - name: so_with_period_n_1_td
+      description: "Cột So với kỳ N-1 (TĐ)"

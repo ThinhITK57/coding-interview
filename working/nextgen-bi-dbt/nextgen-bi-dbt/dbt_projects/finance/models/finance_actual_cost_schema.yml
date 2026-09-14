@@ -1,0 +1,202 @@
+version: 2
+
+models:
+  - name: finance_actual_cost
+    description: >
+      Lưu trữ chi tiết chi phí thực tế (Actual Cost) theo nhóm sản phẩm/dịch vụ.
+      Mỗi bản ghi thể hiện chi phí thực tế của một nhóm sản phẩm/dịch vụ tại một thời điểm,
+      đồng thời được phân loại theo Trung tâm N-1 và khu vực địa lý để phục vụ phân tích P&L,
+      kiểm soát ngân sách và đánh giá hiệu quả chi phí.
+
+      Đây không phải bảng tổng hợp chi phí toàn công ty. Chỉ sử dụng bảng này khi phân tích
+      chi phí theo nhóm sản phẩm/dịch vụ thông qua product_category hoặc product_category_code.
+      Nếu người dùng hỏi tổng chi phí, cơ cấu chi phí hoặc các chỉ tiêu tài chính của toàn công ty
+      mà không đề cập đến nhóm sản phẩm/dịch vụ, nên ưu tiên sử dụng
+      finance_revenue_cost_items.
+
+    meta:
+      label: "Chi phí thực tế theo nhóm sản phẩm dịch vụ"
+      owner: "sonnv1"
+
+      metrics:
+        total_actual_cost:
+          type: sum
+          sql: ${TABLE}.base_currency_amount
+          description: >
+            Tổng chi phí thực tế được phân loại theo nhóm sản phẩm/dịch vụ,
+            không bao gồm VAT. Không phải tổng chi phí toàn công ty.
+          label: "Tổng chi phí thực tế theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Tổng chi phí theo sản phẩm"
+            - "Chi phí thực tế theo sản phẩm"
+            - "Chi phí theo nhóm sản phẩm dịch vụ"
+            - "Actual Cost by Product Category"
+            - "Total Actual Cost"
+
+        avg_actual_cost:
+          type: average
+          sql: ${TABLE}.base_currency_amount
+          description: >
+            Giá trị chi phí thực tế trung bình được phân loại theo nhóm sản phẩm/dịch vụ,
+            không bao gồm VAT.
+          label: "Chi phí thực tế trung bình theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Chi phí trung bình theo sản phẩm"
+            - "Average Actual Cost by Product Category"
+            - "Avg Actual Cost"
+
+        max_actual_cost:
+          type: max
+          sql: ${TABLE}.base_currency_amount
+          description: >
+            Giá trị chi phí thực tế lớn nhất được phân loại theo nhóm sản phẩm/dịch vụ,
+            không bao gồm VAT.
+          label: "Chi phí thực tế lớn nhất theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Chi phí lớn nhất theo sản phẩm"
+            - "Maximum Actual Cost by Product Category"
+            - "Max Actual Cost"
+
+        min_actual_cost:
+          type: min
+          sql: ${TABLE}.base_currency_amount
+          description: >
+            Giá trị chi phí thực tế nhỏ nhất được phân loại theo nhóm sản phẩm/dịch vụ,
+            không bao gồm VAT.
+          label: "Chi phí thực tế nhỏ nhất theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Chi phí nhỏ nhất theo sản phẩm"
+            - "Minimum Actual Cost by Product Category"
+            - "Min Actual Cost"
+
+        total_cost_record_count:
+          type: count
+          sql: "1.0"
+          description: Số lượng bản ghi chi phí thực tế theo nhóm sản phẩm/dịch vụ.
+          label: "Số bản ghi chi phí theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Số bản ghi chi phí"
+            - "Số dòng chi phí"
+            - "Cost Record Count"
+
+        distinct_product_category_count:
+          type: count_distinct
+          sql: ${TABLE}.product_category
+          description: Số lượng nhóm sản phẩm/dịch vụ phát sinh chi phí thực tế.
+          label: "Số nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Số danh mục sản phẩm"
+            - "Số nhóm sản phẩm"
+            - "Distinct Product Category Count"
+
+        distinct_cost_group_count:
+          type: count_distinct
+          sql: ${TABLE}.cost_group
+          description: Số lượng nhóm chi phí phát sinh trong dữ liệu chi phí thực tế theo nhóm sản phẩm/dịch vụ.
+          label: "Số nhóm chi phí"
+          category: "Chi phí"
+          synonyms:
+            - "Nhóm chi phí"
+            - "Số nhóm chi phí"
+            - "Distinct Cost Group Count"
+
+        distinct_business_unit_count:
+          type: count_distinct
+          sql: ${TABLE}.business_unit_level_1
+          description: Số lượng Trung tâm N-1 phát sinh chi phí thực tế theo nhóm sản phẩm/dịch vụ.
+          label: "Số Trung tâm N-1"
+          category: "Đơn vị"
+          synonyms:
+            - "Trung tâm"
+            - "Trung tâm N-1"
+            - "Distinct Business Unit Count"
+
+    columns:
+      - name: report_date
+        description: Ngày ghi nhận chi phí theo nhóm sản phẩm/dịch vụ, thường là ngày cuối tháng hoặc ngày hạch toán.
+        meta:
+          dimension:
+            type: timestamp
+            label: "Ngày báo cáo"
+
+      - name: report_year
+        description: Năm báo cáo được lấy từ report_date.
+        meta:
+          dimension:
+            type: number
+            label: "Năm báo cáo"
+
+      - name: report_month
+        description: Tháng báo cáo được lấy từ report_date.
+        meta:
+          dimension:
+            type: number
+            label: "Tháng báo cáo"
+
+      - name: old_category
+        description: Danh mục chi phí theo phân loại cũ.
+        meta:
+          dimension:
+            type: string
+            label: "Danh mục cũ"
+
+      - name: product_category_code
+        description: >
+          Mã nhóm sản phẩm/dịch vụ. Đây là khóa chính để phân tích hoặc kết nối
+          dữ liệu chi phí theo nhóm sản phẩm/dịch vụ.
+        meta:
+          dimension:
+            type: string
+            label: "Mã nhóm sản phẩm dịch vụ"
+
+      - name: cost_group
+        description: Nhóm bản chất chi phí như khấu hao, nhân công, thuê ngoài hoặc phân bổ.
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm chi phí"
+
+      - name: base_currency_amount
+        description: >
+          Giá trị chi phí thực tế theo đồng tiền cơ sở, đơn vị triệu VND,
+          không bao gồm VAT và được phân loại theo nhóm sản phẩm/dịch vụ.
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị chi phí"
+
+      - name: currency_code
+        description: Mã đồng tiền sử dụng. Hiện tại mặc định là VND.
+        meta:
+          dimension:
+            type: string
+            label: "Mã tiền tệ"
+
+      - name: territory_name
+        description: Khu vực phát sinh chi phí theo nhóm sản phẩm/dịch vụ.
+        meta:
+          dimension:
+            type: string
+            label: "Khu vực"
+
+      - name: product_category
+        description: >
+          Tên nhóm sản phẩm/dịch vụ. Đây là chiều phân tích trọng tâm của bảng.
+          Chỉ sử dụng bảng này khi câu hỏi có liên quan đến nhóm sản phẩm/dịch vụ.
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm sản phẩm dịch vụ"
+
+      - name: business_unit_level_1
+        description: Trung tâm N-1 chịu trách nhiệm phát sinh chi phí của từng nhóm sản phẩm/dịch vụ.
+        meta:
+          dimension:
+            type: string
+            label: "Trung tâm N-1"

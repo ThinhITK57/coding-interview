@@ -1,0 +1,49 @@
+# VIẾT TAY — khai báo các VIEW ở tầng silver làm source cho dbt.
+#
+# DDL của toàn bộ view: powerbi/QTSX V2-parquet/create_views_trino.sql
+# (chạy sau create_tables_trino.sql, trước `dbt run`).
+#
+# Tên source cố ý KHÁC `pbi_silver__qtsx_v2` — đó là source sinh tự động từ
+# mapping.yml (34 bảng Power BI), nằm ở file qtsx_v2__source.yml mà run.py ghi lại
+# mỗi lần chạy. Tách ra thì phần viết tay không bị mất.
+#
+# Hai nhóm:
+#   - không hậu tố : model dbt viết tay, không phải bảng Power BI
+#   - hậu tố _calc : bảng Power BI có dữ liệu export RỖNG (DAX calculated table /
+#                    calculated column) nên phải dựng lại; tên silver đã bị bảng
+#                    rỗng chiếm. `sql_overrides/<model>.sql` trỏ model vào view.
+#
+# View nội bộ `qtsx_v2_kpikqi_tkcg_base_calc` KHÔNG khai ở đây vì không model nào
+# đọc trực tiếp — chỉ 3 view _kpikqi_tkcg_report* dùng nó.
+version: 2
+sources:
+- name: pbi_silver_views__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "View viết tay ở tầng silver cho domain qtsx_v2 (đổi grain / dựng lại bảng DAX)."
+  tables:
+
+  # ----- model viết tay: đổi grain, không phải bảng Power BI ------------------
+  - name: qtsx_v2_mm_ratio_by_project_month
+    description: >-
+      10 bảng gộp về grain (YearMonth × sản phẩm) rồi ghép ngang, cho toàn bộ
+      measure "chia cho man-month" và các thẻ đếm "n SP Passed / n SP Failed".
+
+  # ----- dựng lại bảng DAX calculated table -----------------------------------
+  - name: qtsx_v2_dim_date_calc
+    description: "Dim_Date dựng lại bằng SQL (bảng silver 2.222 dòng nhưng 12/15 cột rỗng, 50 chart dùng)."
+  - name: qtsx_v2_dim_customer_calc
+    description: "Dim_Customer = FILTER(DISTINCT(KPIKQI_nocodb[CustomerName]), NOT ISBLANK(...))."
+  - name: qtsx_v2_kpikqi_tkcg_report_calc
+    description: >-
+      KPIKQI_TKCG_Report = UNION(_Week, _Month, _Quater) trên 'KPIKQI Dịch vụ TKCG'
+      (16.771 dòng). Đây là nhánh thứ 3 mà qtsx_v2_kpikqi_all trước đây còn thiếu.
+  - name: qtsx_v2_kpikqi_tkcg_report_month_calc
+    description: "KPIKQI_TKCG_Report_Month: 3 metric × (ngày báo cáo × sản phẩm), ngữ cảnh Tick Month = 1."
+  - name: qtsx_v2_kpikqi_tkcg_report_quater_calc
+    description: "KPIKQI_TKCG_Report_Quater: như _Month nhưng dùng measure '- Trung bình Quý', ngữ cảnh Tick Quý = 1."
+  - name: qtsx_v2_kpikqi_all_calc
+    description: >-
+      KPIKQI_ALL = UNION('KPIKQI tuần Jira', FILTER('KPIKQI_cloudrity', ...),
+      KPIKQI_TKCG_Report) + 7 calculated column. Đủ cả 3 nhánh (bản sql_overrides
+      trước đây thiếu nhánh TKCG = 2.187/8.122 dòng, toàn bộ Trung tâm 'TT.SI').

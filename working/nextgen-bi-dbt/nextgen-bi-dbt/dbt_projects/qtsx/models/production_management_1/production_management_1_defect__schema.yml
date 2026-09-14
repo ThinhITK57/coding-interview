@@ -1,0 +1,105 @@
+version: 2
+models:
+- name: production_management_1_defect
+  description: "Bảng production_management_1_defect (nguồn Power BI: Defect)."
+  meta:
+    label: "Defect"
+    powerbi_source: "Defect"
+    joins:
+    - join: production_management_1_division
+      sql_on: "${production_management_1_defect.division} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_defect.issue_project_id} = ${production_management_1_project_name.id}"
+      relationship: many-to-many
+    metrics:
+      tong_tiket_done:
+        type: count_distinct
+        sql: "CASE WHEN status_done_defect = 'Done' THEN issue_key END"
+        label: "Tổng Tiket Done"
+        description: "DAX: CALCULATE(DISTINCTCOUNT(Defect[ISSUE_KEY]), FILTER(Defect, Defect[Status done defect] = \"Done\"))"
+  columns:
+  - name: id
+    description: "Cột Id trong Defect."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_resolved
+    description: "Cột ISSUE_RESOLVED trong Defect."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_RESOLVED"
+        hidden: true
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Defect."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Defect."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: status_done_defect
+    description: "Cột Status done defect trong Defect. Cột tính toán, DAX gốc: SWITCH( Defect[ISSUE_CURRENT_STATUS_NAME], \"Done\", \"Done\", \"todo\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Status done defect"
+        hidden: true
+  - name: converted_score
+    description: "Cột Điểm quy đổi trong Defect. Cột tính toán, DAX gốc: SWITCH( 'Defect'[ISSUE_PRIORITY], \"High\", 3, \"Highest\", 3, \"Critcal\", 5, 1 )"
+    meta:
+      dimension:
+        type: number
+        label: "Điểm quy đổi"
+        hidden: true
+  - name: division
+    description: "Cột Khối trong Defect. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[Khối],'milestone Versions_Projects'[Id],'Defect'[ISSUE_PROJECT_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+        hidden: true
+  - name: date_value
+    description: "Cột Date trong Defect. Cột tính toán, DAX gốc: DATE(YEAR('Defect'[ISSUE_CREATED]), MONTH('Defect'[ISSUE_CREATED]), Day('Defect'[ISSUE_CREATED]))"
+    meta:
+      dimension:
+        type: date
+        label: "Date"
+        hidden: true

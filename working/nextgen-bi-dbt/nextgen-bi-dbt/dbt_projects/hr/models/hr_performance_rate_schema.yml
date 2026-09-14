@@ -1,0 +1,349 @@
+version: 2
+
+models:
+- name: hr_performance_rate
+  description: >
+    Bảng **hr_performance_rate** lưu trữ dữ liệu kết quả đánh giá hiệu suất nhân sự theo từng kỳ đánh giá,
+    được tổng hợp từ dữ liệu nhân sự đang làm việc và nhân sự đã nghỉ việc. Bảng bao gồm thông tin định danh
+    nhân sự, email, giới tính, nhóm tuổi, loại hợp đồng, nhóm nguồn lực, trạng thái hiện tại, cơ cấu tổ chức,
+    chi nhánh, thâm niên, cấp bậc công việc, vùng năng lực, điểm đánh giá hiệu suất, kết quả phân loại hiệu suất
+    và thông tin KI. Dữ liệu được sử dụng để phân tích chất lượng hiệu suất nhân sự, theo dõi tỷ lệ Không đạt,
+    Đạt, Vượt yêu cầu theo kỳ đánh giá, đơn vị, nhóm nguồn lực, cấp bậc, vùng năng lực và trạng thái nhân sự.
+
+  meta:
+    label: "Performance Rate"
+    owner: "tranpth"
+
+    metrics:
+      performance_employee_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Tổng số nhân sự có kết quả đánh giá hiệu suất."
+        label: "Performance Employee Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự được đánh giá"
+          - "Số nhân sự có đánh giá hiệu suất"
+          - "Performance Employee Count"
+
+      performance_record_count:
+        type: count
+        sql: ${TABLE}.employee_code
+        description: "Tổng số bản ghi đánh giá hiệu suất nhân sự."
+        label: "Performance Record Count"
+        category: "Performance"
+        synonyms:
+          - "Số bản ghi đánh giá"
+          - "Số lượt đánh giá hiệu suất"
+          - "Performance Record Count"
+
+      active_performance_employee_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.latest_status = 'Active'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng nhân sự đang làm việc có kết quả đánh giá hiệu suất."
+        label: "Active Performance Employee Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự active được đánh giá"
+          - "Nhân sự đang làm việc có đánh giá"
+          - "Active Performance Employee Count"
+
+      resigned_performance_employee_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.latest_status = 'Resigned'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng nhân sự đã nghỉ việc có kết quả đánh giá hiệu suất."
+        label: "Resigned Performance Employee Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự nghỉ việc có đánh giá"
+          - "Resigned Performance Employee Count"
+
+      performance_not_pass_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.performance_result = 'Không đạt'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Không đạt."
+        label: "Performance Not Pass Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự không đạt"
+          - "Nhân sự hiệu suất không đạt"
+          - "Performance Not Pass Count"
+
+      performance_pass_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.performance_result = 'Đạt'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Đạt."
+        label: "Performance Pass Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự đạt"
+          - "Nhân sự hiệu suất đạt"
+          - "Performance Pass Count"
+
+      performance_exceed_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.performance_result = 'Vượt yêu cầu'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Vượt yêu cầu."
+        label: "Performance Exceed Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự vượt yêu cầu"
+          - "Nhân sự hiệu suất vượt yêu cầu"
+          - "Performance Exceed Count"
+
+      performance_not_pass_rate:
+        type: number
+        sql: >
+          100.0 * ${performance_not_pass_count}
+          / NULLIF(${performance_employee_count}, 0.0)
+        description: "Tỷ lệ nhân sự có kết quả đánh giá hiệu suất Không đạt trên tổng số nhân sự được đánh giá."
+        label: "Performance Not Pass Rate (%)"
+        category: "Performance"
+
+      performance_pass_rate:
+        type: number
+        sql: >
+          100.0 * ${performance_pass_count}
+          / NULLIF(${performance_employee_count}, 0.0)
+        description: "Tỷ lệ nhân sự có kết quả đánh giá hiệu suất Đạt trên tổng số nhân sự được đánh giá."
+        label: "Performance Pass Rate (%)"
+        category: "Performance"
+
+      performance_exceed_rate:
+        type: number
+        sql: >
+          100.0 * ${performance_exceed_count}
+          / NULLIF(${performance_employee_count}, 0.0)
+        description: "Tỷ lệ nhân sự có kết quả đánh giá hiệu suất Vượt yêu cầu trên tổng số nhân sự được đánh giá."
+        label: "Performance Exceed Rate (%)"
+        category: "Performance"
+
+      average_performance_score:
+        type: average
+        sql: ${TABLE}.score
+        description: "Điểm đánh giá hiệu suất trung bình của nhân sự."
+        label: "Average Performance Score"
+        category: "Performance"
+        synonyms:
+          - "Điểm hiệu suất trung bình"
+          - "Điểm PR trung bình"
+          - "Average Performance Score"
+
+      max_performance_score:
+        type: max
+        sql: ${TABLE}.score
+        description: "Điểm đánh giá hiệu suất cao nhất trong tập dữ liệu."
+        label: "Max Performance Score"
+        category: "Performance"
+
+      min_performance_score:
+        type: min
+        sql: ${TABLE}.score
+        description: "Điểm đánh giá hiệu suất thấp nhất trong tập dữ liệu."
+        label: "Min Performance Score"
+        category: "Performance"
+
+  columns:
+    - name: employee_code
+      description: Mã định danh của nhân sự được đánh giá hiệu suất
+      meta:
+        dimension:
+          type: string
+          label: "Mã nhân viên"
+      tests:
+        - not_null
+
+    - name: employee_name
+      description: Họ và tên của nhân sự được đánh giá hiệu suất
+      meta:
+        dimension:
+          type: string
+          label: "Họ tên nhân sự"
+
+    - name: username
+      description: Tên đăng nhập được trích xuất từ email công việc của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Username"
+
+    - name: business_email
+      description: Địa chỉ email công việc của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Business Email"
+
+    - name: gender
+      description: Giới tính của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Giới tính"
+
+    - name: age_group
+      description: Nhóm tuổi của nhân sự tại thời điểm ghi nhận dữ liệu
+      meta:
+        dimension:
+          type: string
+          label: "Nhóm tuổi"
+
+    - name: contract_type
+      description: Loại hợp đồng hoặc hình thức ký kết với nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Loại hợp đồng"
+
+    - name: resource_type
+      description: Nhóm nguồn lực nhân sự được chuẩn hóa từ nhóm nhân sự, cấp quản lý hoặc cấp bậc nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Nhóm nguồn lực"
+
+    - name: hire_date_vcs
+      description: Ngày nhân sự bắt đầu làm việc tại VCS
+      meta:
+        dimension:
+          type: timestamp
+          label: "Hire Date VCS"
+
+    - name: latest_status
+      description: Trạng thái làm việc mới nhất của nhân sự, gồm Active nếu chưa có ngày nghỉ việc và Resigned nếu có ngày nghỉ việc
+      meta:
+        dimension:
+          type: string
+          label: "Trạng thái gần nhất"
+
+    - name: division_n
+      description: Khối hoặc đơn vị cấp cao của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Khối N"
+
+    - name: department_n_1
+      description: Đơn vị tổ chức cấp 1 của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Trung tâm N-1"
+
+    - name: department_n_2
+      description: Đơn vị tổ chức cấp 2 của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Bộ phận N-2"
+
+    - name: department_n_3
+      description: Đơn vị tổ chức cấp 3 của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Phòng ban N-3"
+
+    - name: branch
+      description: Chi nhánh hoặc địa điểm làm việc của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Chi nhánh"
+
+    - name: tenure
+      description: Thông tin thâm niên của nhân sự theo dữ liệu nguồn
+      meta:
+        dimension:
+          type: string
+          label: "Thâm niên"
+
+    - name: tenure_group
+      description: Nhóm thâm niên làm việc của nhân sự tại kỳ đánh giá
+      meta:
+        dimension:
+          type: string
+          label: "Nhóm thâm niên"
+
+    - name: job_level
+      description: Cấp bậc hoặc level công việc của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Job Level"
+
+    - name: position_level
+      description: Cấp bậc vị trí của nhân sự, ưu tiên cấp quản lý nếu có, nếu không sử dụng level nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Cấp bậc level"
+
+    - name: competency_zone
+      description: Vùng năng lực hoặc khu vực chuyên môn của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Vùng năng lực"
+
+    - name: role_base
+      description: Nhóm vai trò hoặc chức danh công việc cơ sở của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Role Base"
+
+    - name: evaluation_date
+      description: Ngày kỳ đánh giá hiệu suất của nhân sự
+      meta:
+        dimension:
+          type: date
+          label: "Evaluation Date"
+
+    - name: score
+      description: Điểm đánh giá hiệu suất của nhân sự trong kỳ đánh giá
+      meta:
+        dimension:
+          type: number
+          label: "Performance Score"
+
+    - name: performance_result
+      description: Kết quả phân loại đánh giá hiệu suất của nhân sự, gồm Không đạt, Đạt và Vượt yêu cầu
+      meta:
+        dimension:
+          type: string
+          label: "Performance Result"
+
+    - name: ki
+      description: Thông tin KI hoặc chỉ số đánh giá bổ sung của nhân sự trong kỳ đánh giá
+      meta:
+        dimension:
+          type: string
+          label: "KI"
+
+    - name: termination_date
+      description: Ngày kết thúc làm việc hoặc ngày nghỉ việc của nhân sự, nếu có
+      meta:
+        dimension:
+          type: timestamp
+          label: "Termination Date"

@@ -1,0 +1,68 @@
+version: 2
+models:
+- name: production_management_1_mm_release_issue2
+  description: "Bảng production_management_1_mm_release_issue2 (nguồn Power BI: MM Release_issue2)."
+  meta:
+    label: "MM Release_issue2"
+    powerbi_source: "MM Release_issue2"
+    joins:
+    - join: production_management_1_issues_fix_versions
+      sql_on: "${production_management_1_mm_release_issue2.issue_key} = ${production_management_1_issues_fix_versions.issue_key}"
+      relationship: one-to-one
+  columns:
+  - name: id
+    description: "Cột Id trong MM Release_issue2."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong MM Release_issue2."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong MM Release_issue2."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_current_parent
+    description: "Cột ISSUE_CURRENT_PARENT trong MM Release_issue2."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_PARENT"
+        hidden: true
+  - name: cso_ticket_link
+    description: "Cột CSO_Ticket_link_12542 trong MM Release_issue2."
+    meta:
+      dimension:
+        type: string
+        label: "CSO_Ticket_link_12542"
+        hidden: true
+  - name: link_ticket_cso
+    description: "Cột Link_Ticket_CSO_13625 trong MM Release_issue2."
+    meta:
+      dimension:
+        type: string
+        label: "Link_Ticket_CSO_13625"
+        hidden: true
+  - name: parent_issue_num
+    description: "Cột parent_issue_num trong MM Release_issue2. Cột tính toán, DAX gốc: RIGHT( 'MM Release_issue2'[ISSUE_KEY], LEN('MM Release_issue2'[ISSUE_KEY]) - FIND(\"-\", 'MM Release_issue2'[ISSUE_KEY]) )"
+    meta:
+      dimension:
+        type: string
+        label: "parent_issue_num"
+        hidden: true
+  - name: cso_ticket_link_2
+    description: "Cột CSO Ticket Link trong MM Release_issue2. Cột tính toán, DAX gốc: IF('MM Release_issue2'[CSO_Ticket_link_12542] <> BLANK(),'MM Release_issue2'[CSO_Ticket_link_12542], 'MM Release_issue2'[Link_Ticket_CSO_13625])"
+    meta:
+      dimension:
+        type: string
+        label: "CSO Ticket Link"
+        hidden: true

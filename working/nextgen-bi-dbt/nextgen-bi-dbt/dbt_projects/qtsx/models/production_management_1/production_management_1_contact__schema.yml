@@ -1,0 +1,96 @@
+version: 2
+models:
+- name: production_management_1_contact
+  description: "Bảng production_management_1_contact (nguồn Power BI: contact)."
+  meta:
+    label: "contact"
+    powerbi_source: "contact"
+    joins:
+    - join: production_management_1_vvip
+      sql_on: "${production_management_1_contact.adjusted_name_new} = ${production_management_1_vvip.org_name}"
+      relationship: many-to-many
+  columns:
+  - name: index_value
+    description: "Cột index trong contact."
+    meta:
+      dimension:
+        type: number
+        label: "index"
+        hidden: true
+  - name: job_level
+    description: "Cột Cấp bậc trong contact."
+    meta:
+      dimension:
+        type: string
+        label: "Cấp bậc"
+        hidden: true
+  - name: email
+    description: "Cột Email trong contact."
+    meta:
+      dimension:
+        type: string
+        label: "Email"
+        hidden: true
+  - name: is_current
+    description: "Cột IsCurrent trong contact."
+    meta:
+      dimension:
+        type: boolean
+        label: "IsCurrent"
+        hidden: true
+  - name: start_date
+    description: "Cột Ngày bắt đầu trong contact."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày bắt đầu"
+        hidden: true
+  - name: so_luong_spsu_dung
+    description: "Cột SoLuongSPSuDung trong contact."
+    meta:
+      dimension:
+        type: number
+        label: "SoLuongSPSuDung"
+        hidden: true
+  - name: end_date
+    description: "Cột Ngày kết thúc trong contact."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày kết thúc"
+        hidden: true
+  - name: adjusted_name_old
+    description: "Cột Tên đã hiệu chỉnh cũ trong contact."
+    meta:
+      dimension:
+        type: string
+        label: "Tên đã hiệu chỉnh cũ"
+        hidden: true
+  - name: adjusted_name_new
+    description: "Cột Tên đã hiệu chỉnh mới trong contact."
+    meta:
+      dimension:
+        type: string
+        label: "Tên đã hiệu chỉnh mới"
+        hidden: true
+  - name: organization_kh_tu_dien
+    description: "Cột Tổ chức_KH tự điền trong contact."
+    meta:
+      dimension:
+        type: string
+        label: "Tổ chức_KH tự điền"
+        hidden: true
+  - name: organization_check_by_hd
+    description: "Cột Tổ chức_check theo HĐ trong contact."
+    meta:
+      dimension:
+        type: string
+        label: "Tổ chức_check theo HĐ"
+        hidden: true
+  - name: job_position
+    description: "Cột Vị trí công tác trong contact."
+    meta:
+      dimension:
+        type: string
+        label: "Vị trí công tác"
+        hidden: true

@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_personnel_structure
+    description: "Nguồn Power BI: Cơ cấu nhân sự"
+    columns:
+    - name: project_name
+      description: "Cột Tên dự án"
+    - name: charter_tds
+      description: "Cột Charter TDS"
+    - name: charter_os
+      description: "Cột Charter OS"
+    - name: cumulative_5_months_tds
+      description: "Cột LK 5 tháng TDS"
+    - name: cumulative_5_months_os
+      description: "Cột LK 5 tháng OS"

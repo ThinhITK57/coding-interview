@@ -1,0 +1,86 @@
+version: 2
+models:
+- name: qtsx_v2_bug
+  description: "Bảng qtsx_v2_bug (nguồn Power BI: Bug)."
+  meta:
+    label: "Bug"
+    powerbi_source: "Bug"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_bug.projectname} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      count_distinct_issuekey:
+        type: count_distinct
+        sql: issuekey
+        label: "Count of issuekey"
+        description: "Sinh từ Power BI: count_distinct(Bug.issuekey)"
+      total_bug:
+        type: sum
+        sql: bug_score
+        label: "Total bug"
+        description: "DAX: SUM('Bug'[Điểm bug])"
+  columns:
+  - name: issuekey
+    description: "Cột issuekey trong Bug."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong Bug."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: projectname
+    description: "Cột projectname trong Bug."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+        hidden: true
+  - name: resolutiondate
+    description: "Cột resolutiondate trong Bug."
+    meta:
+      dimension:
+        type: string
+        label: "resolutiondate"
+        hidden: true
+  - name: priority
+    description: "Cột priority trong Bug."
+    meta:
+      dimension:
+        type: string
+        label: "priority"
+        hidden: true
+  - name: status
+    description: "Cột status trong Bug."
+    meta:
+      dimension:
+        type: string
+        label: "status"
+        hidden: true
+  - name: created
+    description: "Cột created trong Bug."
+    meta:
+      dimension:
+        type: date
+        label: "created"
+        hidden: true
+  - name: bug_score
+    description: "Cột Điểm bug trong Bug. Cột tính toán, DAX gốc: SWITCH( TRUE(), Bug[priority] = \"Critical\" , 5, Bug[priority] = \"high\" || Bug[priority] = \"Highest\", 3, 1)"
+    meta:
+      dimension:
+        type: number
+        label: "Điểm bug"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong Bug. Cột tính toán, DAX gốc: FORMAT('Bug'[created], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true

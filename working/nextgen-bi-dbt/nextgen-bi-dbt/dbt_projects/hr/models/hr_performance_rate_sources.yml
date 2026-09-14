@@ -1,0 +1,105 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: "Silver layer sources for domain: hr"
+  tables:
+  - name: hr_performance_rate
+    description: >
+      Bảng **hr_performance_rate** lưu trữ dữ liệu đánh giá hiệu suất nhân sự theo từng kỳ đánh giá.
+      Dữ liệu được tổng hợp từ thông tin nhân viên, hợp đồng, nhóm nguồn lực, thâm niên, vị trí, vùng năng lực và điểm
+      đánh giá hiệu suất. Mỗi bản ghi đại diện cho kết quả đánh giá của một nhân sự tại một ngày đánh giá.
+      Bảng được sử dụng để phân tích phân bố kết quả hiệu suất, theo dõi tỷ lệ Không đạt, Đạt, Vượt yêu cầu,
+      đánh giá chất lượng nhân sự theo đơn vị, cấp bậc, nhóm nguồn lực và hỗ trợ các báo cáo Workforce.
+
+    columns:
+      - name: employee_id
+        description: Mã định danh của nhân sự trong dữ liệu đánh giá hiệu suất.
+        tests:
+          - not_null
+
+      - name: employee_name
+        description: Họ và tên nhân sự được đánh giá hiệu suất.
+
+      - name: username
+        description: Tên tài khoản nội bộ của nhân sự, được lấy từ phần trước ký tự @ trong email công việc.
+
+      - name: business_email
+        description: Email công việc của nhân sự, được chuẩn hóa về chữ thường.
+
+      - name: gender
+        description: Giới tính của nhân sự.
+
+      - name: age_group
+        description: Nhóm tuổi của nhân sự tại thời điểm dữ liệu nguồn được ghi nhận.
+
+      - name: contract_type
+        description: Loại hợp đồng của nhân sự, được lấy từ thông tin onboard hoặc nghỉ việc.
+
+      - name: resource_type
+        description: >
+          Nhóm nguồn lực của nhân sự.
+          Các nhóm chính gồm TDS-NDS-HDDV, CTV, SV+Fresher, IS/OS hoặc nhóm nguồn lực khác theo dữ liệu HR.
+
+      - name: hire_date_vcs
+        description: Ngày nhân sự gia nhập VCS.
+
+      - name: division_n
+        description: Khối hoặc đơn vị cấp N của nhân sự tại thời điểm đánh giá.
+
+      - name: department_n_1
+        description: Đơn vị tổ chức cấp N-1 (Trung tâm) của nhân sự tại thời điểm đánh giá.
+
+      - name: department_n_2
+        description: Đơn vị tổ chức cấp N-2 của nhân sự tại thời điểm đánh giá.
+
+      - name: department_n_3
+        description: Đơn vị tổ chức cấp N-3 của nhân sự tại thời điểm đánh giá.
+
+      - name: branch
+        description: Chi nhánh hoặc địa bàn làm việc của nhân sự.
+
+      - name: tenure
+        description: Thông tin thâm niên gốc của nhân sự theo dữ liệu nguồn.
+
+      - name: tenure_group
+        description: >
+          Nhóm thâm niên của nhân sự tại ngày đánh giá, được tính từ hire_date_vcs đến evaluation_date.
+          Các nhóm gồm Unknown, <6M, 6M-1Y, 1-3Y, 3-5Y, 5-7Y, 7-10Y và >10Y.
+
+      - name: job_level
+        description: Cấp bậc công việc hoặc level của nhân sự theo dữ liệu nguồn.
+
+      - name: position_level
+        description: >
+          Cấp bậc vị trí của nhân sự.
+
+      - name: competency_zone
+        description: Vùng năng lực hoặc nhóm chuyên môn của nhân sự.
+
+      - name: role_base
+        description: Vai trò, chức danh hoặc vị trí công việc cơ sở của nhân sự.
+
+      - name: evaluation_date
+        description: Ngày đánh giá hiệu suất, tương ứng với ngày cuối quý của kỳ đánh giá.
+        tests:
+          - not_null
+
+      - name: score
+        description: Điểm đánh giá hiệu suất gốc của nhân sự trong kỳ đánh giá.
+
+      - name: performance_result
+        description: >
+          Kết quả phân loại hiệu suất được suy ra từ score. Nếu score nhỏ hơn 250 thì Không đạt,
+          từ 250 đến 349 là Đạt, từ 350 trở lên là Vượt yêu cầu.
+
+      - name: ki
+        description: Chỉ số KI hoặc thông tin đánh giá bổ sung đi kèm kỳ đánh giá, áp dụng cho các kỳ có dữ liệu KI.
+
+      - name: termination_date
+        description: Ngày nghỉ việc hoặc ngày chấm dứt hợp đồng của nhân sự nếu có.
+
+      - name: crawled_at_ts
+        description: Thời điểm dữ liệu được crawl hoặc ghi nhận từ hệ thống nguồn.

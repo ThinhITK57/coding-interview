@@ -1,0 +1,166 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_deals
+    description: Bảng crm_deals lưu trữ thông tin chi tiết về các giao dịch trong hệ thống CRM, bao gồm dữ liệu về khách hàng, công ty, giai đoạn bán hàng, giá trị giao dịch, ngân sách dự kiến cho giao dịch, xác suất thành công và các chỉ số liên quan đến quản lý cơ hội bán hàng. Bảng này được sử dụng để phân tích hiệu suất bán hàng, doanh số bán hàng, theo dõi vòng đời giao dịch, đánh giá chiến lược kinh doanh, và hỗ trợ quản lý dự án/nhân sự bán hàng.
+    columns:
+    - name: deal_id
+      description: Mã định danh duy nhất của giao dịch trong hệ thống CRM.
+      tests:
+      - not_null
+    - name: deal_name
+      description: Tên giao dịch hoặc tên cơ hội bán hàng, dùng để nhận diện cơ hội trong CRM.
+    - name: currency_amount
+      description: Giá trị giao dịch theo đơn vị tiền tệ gốc tương ứng trong cột currency_code.
+    - name: vnd_amount
+      description: Giá trị giao dịch quy đổi sang VND, dùng để so sánh nội bộ, doanh số bán hàng
+    - name: expected_close_date
+      description: Ngày kỳ vọng giao dịch sẽ được chốt và hoàn tất.
+    - name: closed_date
+      description: Ngày mà giao dịch được đóng hoặc ký hợp đồng.
+    - name: stage_updated_time
+      description: Thời gian cập nhật lần cuối của giai đoạn giao dịch.
+    - name: days_to_close
+      description: Số ngày từ khi tạo đến khi giao dịch đóng thành công.
+    - name: days_since_last_update
+      description: Column days_since_last_update in crm_deals
+    - name: is_deal_locked
+      description: Cho biết giao dịch đã bị khóa và không thể chỉnh sửa dữ liệu giá trị
+    - name: usd_to_vnd
+      description: Tỷ giá chuyển đổi từ đô la Mỹ (USD) sang đồng Việt Nam (VND) được sử dụng theo từng giao dịch
+    - name: get_live_date
+      description: Ngày mà hợp đồng hoặc đề nghị bắt đầu có hiệu lực và được triển khai thực tế.
+    - name: periodicity
+      description: Chu kỳ hoặc tần suất thanh toán, gia hạn của giao dịch trong CRM.
+    - name: is_select_viettel
+      description: Column is_select_viettel in crm_deals
+    - name: has_budget
+      description: Cho biết giao dịch có ngân sách dự kiến hay không.
+    - name: company_id
+      description: Mã định danh duy nhất của công ty liên quan đến giao dịch.
+    - name: company_alias
+      description: Tên viết tắt hoặc biệt danh của công ty trong hệ thống CRM.
+    - name: budget_amount
+      description: Ngân sách dự kiến cho giao dịch, giúp đánh giá kế hoạch chi tiêu.
+    - name: vvip_segment
+      description: Nhóm VIP/VVIP
+    - name: customer_segment_l1
+      description: Phân khúc  khách hàng  cấp 1. Phân loại theo người dùng cuối (KH cuối)
+    - name: customer_segment_l2
+      description: Mức phân khúc khách hàng cấp 2. Phân loại theo người dùng cuối (KH cuối)
+    - name: customer_segment_l3
+      description: Phân khúc khách hàng cấp 3. Phân loại theo người dùng cuối (KH cuối)
+    - name: channel
+      description: Kênh mà giao dịch được thực hiện, thể hiện cách thức tiếp cận hoặc bán hàng.
+    - name: opportunity_weight_pct
+      description: Trọng số cơ hội kinh doanh, thể hiện mức độ ưu tiên hoặc quan trọng (0-100%)
+    - name: bidding_required
+      description: Cho biết liệu giao dịch có yêu cầu đấu thầu hay không.
+    - name: presales_name
+      description: Tên của nhân viên tiền bán hàng (presales) phụ trách giao dịch.
+    - name: project_manager
+      description: Tên người chịu trách nhiệm quản lý và giám sát dự án bán hàng trong giao dịch.
+    - name: sales_admin
+      description: Tên người quản trị bán hàng phụ trách giao dịch.
+    - name: partner_id
+      description: Column partner_id in crm_deals
+    - name: contract_id
+      description: Mã định danh duy nhất của hợp đồng trong hệ thống CRM.
+    - name: initial_source
+      description: Nguồn gốc ban đầu mà giao dịch được tạo ra.
+    - name: warm_up_source
+      description: Nguồn gốc khởi tạo hoặc tiếp cận ban đầu của khách hàng tiềm năng trước khi chuyển sang giai đoạn giao dịch.
+    - name: territory_name
+      description: Tên khu vực hoặc vùng địa lý của khách hàng/Công ty
+    - name: contract_duration_month
+      description: Thời gian ký kết hợp đồng tính bằng số tháng.
+    - name: is_created_contract
+      description: Column is_created_contract in crm_deals
+    - name: expire_date
+      description: Ngày mà giao dịch sẽ hết hiệu lực nếu không được ký hoặc hoàn thành.
+    - name: company_name
+      description: Tên công ty hoặc khách hàng liên quan đến giao dịch.
+    - name: company_address
+      description: Địa chỉ của công ty khách hàng trong giao dịch.
+    - name: company_province
+      description: Tỉnh hoặc thành phố nơi công ty khách hàng đặt trụ sở.
+    - name: company_country
+      description: Quốc gia của công ty khách hàng trong giao dịch.
+    - name: company_email
+      description: Column company_email in crm_deals
+    - name: company_phone
+      description: Column company_phone in crm_deals
+    - name: company_contact
+      description: Tên người đại diện hoặc người liên hệ của công ty trong giao dịch.
+    - name: currency_code
+      description: Mã tiền tệ được sử dụng cho giao dịch trong CRM.
+    - name: quotation_status
+      description: Trạng thái hiện tại của báo giá trong quy trình bán hàng.
+    - name: fac_date
+      description: Ngày thực hiện hoạt động đầu tiên của giao dịch.
+    - name: am_username
+      description: Tên đăng nhập của người quản lý tài khoản (Account Manager) phụ trách giao dịch.
+    - name: check_change
+      description: Column check_change in crm_deals
+    - name: probability
+      description: Xác suất thành công của giao dịch (0-100%), dùng để dự báo cơ hội chốt.
+    - name: updated_at
+      description: Thời gian cập nhật cuối cùng của giao dịch trong CRM.
+    - name: created_at
+      description: Thời điểm tạo giao dịch trong hệ thống CRM.
+    - name: deal_stage_id
+      description: Mã định danh của giai đoạn trong quy trình bán hàng.
+    - name: deal_status
+      description: Trạng thái hiện tại của giao dịch/Deal trong CRM.
+    - name: deal_payment_status_id
+      description: Mã trạng thái thanh toán của giao dịch.
+    - name: age
+      description: Column age in crm_deals
+    - name: recent_note
+      description: Ghi chú mới nhất được nhập cho giao dịch trong CRM.
+    - name: next_scheduled_activity_time
+      description: Thời gian dự kiến cho hoạt động tiếp theo của giao dịch trong CRM.
+    - name: last_assigned_at
+      description: Thời điểm cuối cùng mà giao dịch được giao cho người phụ trách.
+    - name: last_contacted_activity_status
+      description: Trạng thái của hoạt động cuối cùng mà nhân viên bán hàng đã liên hệ với khách hàng trong giao dịch.
+    - name: last_contacted_activity_time
+      description: Thời gian hoạt động liên hệ cuối cùng với cơ hội bán hàng.
+    - name: expected_deal_value
+      description: Giá trị dự kiến của giao dịch, thể hiện mức giá trị hợp đồng (doanh số) ước tính khi giao dịch thành công.
+    - name: signing_delay_days
+      description: Số ngày chậm ký hợp đồng giữa ngày dự kiến và ngày thực tế ký hợp đồng.
+    - name: am_user_id
+      description: Mã người dùng của nhân viên quản lý tài khoản chịu trách nhiệm giao dịch.
+    - name: sales_account_id
+      description: Mã định danh tài khoản bán hàng chịu trách nhiệm cho giao dịch.
+    - name: deal_type_id
+      description: Mã loại giao dịch, xác định kiểu hợp đồng hoặc cơ hội bán hàng.
+    - name: deal_reason_id
+      description: Mã định danh cho lý do của giao dịch trong CRM.
+    - name: currency_id
+      description: Column currency_id in crm_deals
+    - name: vnd_to_usd
+      description: Column vnd_to_usd in crm_deals
+    - name: deal_payment_status
+      description: Trạng thái thanh toán của giao dịch, cho biết giao dịch đã được thanh toán, đang chờ hoặc chưa thanh toán.
+    - name: deal_stage_name
+      description: Tên giai đoạn hiện tại của giao dịch trong quy trình bán hàng.
+    - name: sign_date
+      description: Ngày mà khách hàng ký hợp đồng trong giao dịch.
+    - name: deal_stage_code
+      description: Mã thể hiện giai đoạn hiện tại của một giao dịch trong quy trình bán hàng.
+    - name: due_date
+      description: Ngày đáo hạn của giao dịch, thể hiện thời hạn cần hoàn thành hoặc thanh toán.
+    - name: is_signed
+      description: Column is_signed in crm_deals
+    - name: probability_bucket
+      description: Trạng thái mô tả mức độ xác suất thành công của cơ hội bán hàng.
+    - name: contract_type
+      description: Loại hợp đồng mô tả hình thức hoặc nhóm của hợp đồng ký kết với khách hàng.
+    - name: deal_reason
+      description: Nguyên nhân tạo ra giao dịch hoặc lý do thất bại, hỗ trợ phân tích nguyên nhân.

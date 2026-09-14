@@ -1,0 +1,63 @@
+version: 2
+
+sources:
+  - name: bi_silver__finance
+    database: hive
+    schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+    description: "Silver layer sources for domain: finance"
+
+    tables:
+      - name: finance_actual_cost
+        description: >
+          Lưu trữ chi tiết chi phí thực tế (Actual Cost) theo nhóm sản phẩm/dịch vụ.
+          Mỗi bản ghi thể hiện chi phí thực tế của một nhóm sản phẩm/dịch vụ tại một thời điểm,
+          đồng thời được phân loại theo Trung tâm N-1 và khu vực địa lý để phục vụ phân tích P&L,
+          kiểm soát ngân sách và đánh giá hiệu quả chi phí.
+
+          Đây không phải bảng tổng hợp chi phí toàn công ty. Chỉ sử dụng bảng này khi phân tích
+          chi phí theo nhóm sản phẩm/dịch vụ thông qua product_category hoặc product_category_code.
+          Nếu người dùng hỏi tổng chi phí hoặc các chỉ tiêu tài chính của toàn công ty mà không đề cập
+          đến nhóm sản phẩm/dịch vụ, nên ưu tiên sử dụng finance_revenue_cost_items.
+
+        columns:
+          - name: report_date
+            description: Ngày ghi nhận chi phí theo nhóm sản phẩm/dịch vụ.
+
+          - name: report_year
+            description: Năm báo cáo được lấy từ report_date.
+
+          - name: report_month
+            description: Tháng báo cáo được lấy từ report_date.
+
+          - name: old_category
+            description: Danh mục chi phí theo phân loại cũ.
+
+          - name: product_category_code
+            description: >
+              Mã nhóm sản phẩm/dịch vụ. Đây là khóa chính để phân tích hoặc kết nối
+              dữ liệu chi phí theo nhóm sản phẩm/dịch vụ.
+
+          - name: cost_group
+            description: >
+              Nhóm bản chất chi phí như khấu hao, nhân công, thuê ngoài hoặc phân bổ.
+
+          - name: base_currency_amount
+            description: >
+              Giá trị chi phí thực tế đã quy đổi về đồng tiền cơ sở (VND),
+              không bao gồm VAT.
+
+          - name: currency_code
+            description: Mã loại tiền tệ gốc của chứng từ.
+
+          - name: territory_name
+            description: >
+              Khu vực địa lý phát sinh chi phí của nhóm sản phẩm/dịch vụ.
+
+          - name: product_category
+            description: >
+              Tên nhóm sản phẩm/dịch vụ. Đây là chiều phân tích trọng tâm của bảng.
+              Chỉ sử dụng bảng này khi câu hỏi có liên quan đến nhóm sản phẩm/dịch vụ.
+
+          - name: business_unit_level_1
+            description: >
+              Trung tâm N-1 chịu trách nhiệm phát sinh chi phí của từng nhóm sản phẩm/dịch vụ.

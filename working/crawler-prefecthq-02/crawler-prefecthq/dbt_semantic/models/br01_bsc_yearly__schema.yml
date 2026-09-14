@@ -1,0 +1,181 @@
+version: 2
+
+models:
+  - name: br01_bsc_yearly
+    description: >
+      Báo cáo BSC trong năm (Business Requirement 1).
+      Cung cấp bức tranh toàn cảnh về tiến độ hoàn thành các chỉ tiêu định lượng (Targets)
+      gắn liền với Mục tiêu chiến lược BSC (Objectives) và Dự án (Projects).
+      Bảng vật lý chỉ chứa đúng 17 cột dữ liệu gốc/chuẩn hóa được DA phê duyệt.
+      Mọi chỉ số tính toán suy diễn (Measures/Metrics) được định nghĩa tại tầng Semantic Layer của dbt.
+
+      Grain: Một dòng tương ứng với một chỉ tiêu định lượng thuộc kỳ đánh giá BSC.
+
+    meta:
+      label: "Báo cáo BSC Trong Năm (BR-01)"
+      group_label: "Executive EPM Reports"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Targets joined with Objectives & Assignments"
+        grain: "One row per quantitative BSC target"
+        primary_department_dimension: "c_department"
+        primary_assignee_dimension: "c_assignee"
+        primary_objective_dimension: "associated_objective"
+
+        restrictions:
+          - "Không thực hiện tính toán cột suy diễn trực tiếp trong bảng vật lý."
+          - "Chỉ tiêu M (Must-have) là chỉ tiêu bắt buộc phải đạt."
+          - "Chỉ tiêu N (Nice-to-have) là chỉ tiêu khuyến khích phấn đấu thêm."
+
+        # ĐỊNH NGHĨA CÁC CHỈ SỐ SUY DIỄN DÀNH CHO GenBI & DATA ANALYSTS
+        derived_measures:
+          - name: "achievement_rate_m"
+            label: "Tỷ lệ Hoàn thành M (%)"
+            formula: "CASE WHEN target_value_m > 0 THEN (target_result_m / target_value_m) * 100.0 ELSE NULL END"
+            description: "Mức độ hoàn thành chỉ tiêu cốt lõi (Must-have)."
+            format: "percentage"
+
+          - name: "achievement_rate_n"
+            label: "Tỷ lệ Hoàn thành N (%)"
+            formula: "CASE WHEN target_value_n > 0 THEN (target_result_n / target_value_n) * 100.0 ELSE NULL END"
+            description: "Mức độ hoàn thành chỉ tiêu nâng cao (Nice-to-have)."
+            format: "percentage"
+
+          - name: "gap_m"
+            label: "Khoảng cách Chỉ tiêu M"
+            formula: "target_value_m - COALESCE(target_result_m, 0.0)"
+            description: "Chênh lệch giữa giá trị mục tiêu M và kết quả thực tế đạt được."
+            format: "decimal"
+
+          - name: "gap_n"
+            label: "Khoảng cách Chỉ tiêu N"
+            formula: "target_value_n - COALESCE(target_result_n, 0.0)"
+            description: "Chênh lệch giữa giá trị mục tiêu N và kết quả thực tế đạt được."
+            format: "decimal"
+
+          - name: "is_achieved_m"
+            label: "Đạt Chỉ tiêu M"
+            formula: "CASE WHEN target_result_m >= target_value_m THEN 1 ELSE 0 END"
+            description: "Cờ nhị phân xác định chỉ tiêu M đã hoàn thành (1) hay chưa (0)."
+            format: "boolean"
+
+    columns:
+      - name: associated_objective
+        description: "Khóa ngoại trỏ đến Mục tiêu chiến lược BSC (SYSID của bảng Objectives)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Mục tiêu BSC"
+
+      - name: associated_item
+        description: "Khóa ngoại trỏ đến Dự án liên kết thực hiện (SYSID của bảng Projects)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Dự án Liên kết"
+
+      - name: target_type
+        description: "Phân loại chỉ tiêu (Càng cao càng tốt, Càng thấp càng tốt, Duy trì trong ngưỡng)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại Chỉ tiêu"
+
+      - name: parent_target
+        description: "Khóa ngoại trỏ đến Chỉ tiêu cha cấp trên (Phân cấp cây chỉ tiêu)."
+        meta:
+          dimension:
+            type: string
+            label: "Chỉ tiêu Cha"
+
+      - name: c_department
+        description: "Phòng ban / Đơn vị chịu trách nhiệm thực hiện chỉ tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban"
+
+      - name: name
+        description: "Tên chỉ tiêu định lượng (ví dụ: Tăng trưởng doanh thu 25%)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Chỉ tiêu"
+
+      - name: c_assignee
+        description: "Cán bộ / Nhân sự được giao cam kết thực hiện chỉ tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Người Thực hiện"
+
+      - name: unit
+        description: "Đơn vị tính (%, VND, USD, Khách hàng, Hệ thống)."
+        meta:
+          dimension:
+            type: string
+            label: "Đơn vị tính"
+
+      - name: target_date_m
+        description: "Hạn chốt hoàn thành mức cam kết tối thiểu (Must-have)."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn chốt M"
+
+      - name: target_value_m
+        description: "Giá trị định lượng cam kết bắt buộc phải đạt (M)."
+        meta:
+          measure:
+            type: sum
+            label: "Giá trị Mục tiêu M"
+
+      - name: target_date_n
+        description: "Hạn chốt hoàn thành mức nâng cao khuyến khích (Nice-to-have)."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn chốt N"
+
+      - name: target_value_n
+        description: "Giá trị định lượng mục tiêu nâng cao (N)."
+        meta:
+          measure:
+            type: sum
+            label: "Giá trị Mục tiêu N"
+
+      - name: state
+        description: "Trạng thái vòng đời chỉ tiêu (/State/Active, /State/Completed)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái Vòng đời"
+
+      - name: status
+        description: "Đánh giá hiện trạng tiến độ (Đạt, Vượt, Chưa đạt, Đang theo dõi)."
+        meta:
+          dimension:
+            type: string
+            label: "Tình trạng Tiến độ"
+
+      - name: target_result_m
+        description: "Kết quả thực tế đạt được tương ứng với mốc M."
+        meta:
+          measure:
+            type: sum
+            label: "Kết quả Thực tế M"
+
+      - name: target_result_n
+        description: "Kết quả thực tế đạt được tương ứng với mốc N."
+        meta:
+          measure:
+            type: sum
+            label: "Kết quả Thực tế N"
+
+      - name: assignor
+        description: "Lãnh đạo / Người giao chỉ tiêu (trích xuất từ PGNV hoặc trường c_assignor)."
+        meta:
+          dimension:
+            type: string
+            label: "Người Giao"

@@ -1,0 +1,57 @@
+version: 2
+models:
+- name: production_management_1_os_logwork
+  description: "Bảng production_management_1_os_logwork (nguồn Power BI: OS-Logwork)."
+  meta:
+    label: "OS-Logwork"
+    powerbi_source: "OS-Logwork"
+  columns:
+  - name: id
+    description: "Cột Id trong OS-Logwork."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong OS-Logwork."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong OS-Logwork."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: issue_time_spent
+    description: "Cột ISSUE_TIME_SPENT trong OS-Logwork."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_TIME_SPENT"
+        hidden: true
+  - name: issue_time_spent_with_st
+    description: "Cột ISSUE_TIME_SPENT_WITH_ST trong OS-Logwork."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_TIME_SPENT_WITH_ST"
+        hidden: true
+  - name: order_value
+    description: "Cột Đơn_hàng_13421 trong OS-Logwork."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn_hàng_13421"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT NAME trong OS-Logwork. Cột tính toán, DAX gốc: LOOKUPVALUE('OS-Project Logwork'[PROJECT_NAME],'OS-Project Logwork'[Id],'OS-Logwork'[ISSUE_PROJECT_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT NAME"
+        hidden: true

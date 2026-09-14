@@ -1,0 +1,60 @@
+version: 2
+models:
+- name: production_management_1_milestone_versions
+  description: "Bảng production_management_1_milestone_versions (nguồn Power BI: Milestone Versions)."
+  meta:
+    label: "Milestone Versions"
+    powerbi_source: "Milestone Versions"
+  columns:
+  - name: id
+    description: "Cột Id trong Milestone Versions."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: version_project_key
+    description: "Cột VERSION_PROJECT_KEY trong Milestone Versions."
+    meta:
+      dimension:
+        type: string
+        label: "VERSION_PROJECT_KEY"
+        hidden: true
+  - name: version_release_date
+    description: "Cột VERSION_RELEASE_DATE trong Milestone Versions."
+    meta:
+      dimension:
+        type: timestamp
+        label: "VERSION_RELEASE_DATE"
+  - name: version_start_date
+    description: "Cột VERSION_START_DATE trong Milestone Versions."
+    meta:
+      dimension:
+        type: timestamp
+        label: "VERSION_START_DATE"
+  - name: version_released
+    description: "Cột VERSION_RELEASED trong Milestone Versions."
+    meta:
+      dimension:
+        type: boolean
+        label: "VERSION_RELEASED"
+        hidden: true
+  - name: version_name
+    description: "Cột VERSION_NAME trong Milestone Versions."
+    meta:
+      dimension:
+        type: string
+        label: "VERSION_NAME"
+  - name: version_description
+    description: "Cột VERSION_DESCRIPTION trong Milestone Versions."
+    meta:
+      dimension:
+        type: string
+        label: "VERSION_DESCRIPTION"
+        hidden: true
+  - name: version_des_change
+    description: "Cột Version_DES_Change trong Milestone Versions. Cột tính toán, DAX gốc: IF('Milestone Versions'[VERSION_DESCRIPTION] <> BLank(),'Milestone Versions'[VERSION_DESCRIPTION],\"Đang cập nhật\")"
+    meta:
+      dimension:
+        type: string
+        label: "Version_DES_Change"

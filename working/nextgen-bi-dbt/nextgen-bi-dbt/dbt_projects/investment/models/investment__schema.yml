@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: investment__placeholder
+    description: Placeholder model for investment domain project.
+    meta:
+      label: "INVESTMENT - investment__placeholder"
+      owner: "PhuocND1"

@@ -1,0 +1,150 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_all
+  description: "Bảng qtsx_v2_kpikqi_all (nguồn Power BI: KPIKQI_ALL)."
+  meta:
+    label: "KPIKQI_ALL"
+    powerbi_source: "KPIKQI_ALL"
+    metrics:
+      count_evaluation_v2:
+        type: count
+        sql: evaluation_v2
+        label: "Count of Đánh giá v2"
+        description: "Sinh từ Power BI: count(KPIKQI_ALL.Đánh giá v2)"
+      spdv_fail_count_all:
+        type: count_distinct
+        sql: "CASE WHEN evaluation_v2 = 'Fail' THEN spdv END"
+        label: "SPDV FAIL (all)"
+        description: "DAX: [SPDV Count all] khi Dim_Status[Status] = \"Fail\" — SPDV có ít nhất một dòng [Đánh giá v2] = \"Fail\"."
+      spdv_fail_count_all_evaluation:
+        type: count_distinct
+        sql: "CASE WHEN evaluation = 'Fail' THEN spdv END"
+        label: "SPDV FAIL (theo Đánh giá gốc)"
+        description: "Bản dùng cột [Đánh giá] thay vì [Đánh giá v2] — measure [SPDV Status all], [SPDV Status all color] và [SPDV Tooltip all] của Power BI lọc theo cột này."
+      spdv_pass_count_all:
+        type: number
+        sql: "COUNT(DISTINCT spdv) - COUNT(DISTINCT CASE WHEN evaluation_v2 = 'Fail' THEN spdv END)"
+        label: "SPDV PASSED (all)"
+        description: "DAX: [SPDV Count all] khi Dim_Status[Status] = \"Pass\" — SPDV không có dòng \"Fail\" nào."
+  columns:
+  - name: report_date
+    description: "Dựng lại từ UNION 3 nhánh ('KPIKQI tuần Jira' / 'KPIKQI_cloudrity' / KPIKQI_TKCG_Report) — xem create_views_trino.sql."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+  - name: result
+    description: "Cột Kết quả trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+  - name: target
+    description: "Cột Target trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 1 kỳ trước"
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 2 kỳ trước"
+        hidden: true
+  - name: kpi_trend
+    description: "Cột Xu hướng KPI trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng KPI"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong KPIKQI_ALL. Cột tính toán, DAX gốc: SWITCH( TRUE(), KPIKQI_ALL[SPDV] = \"EDR\" || KPIKQI_ALL[SPDV] = \"SE\" || KPIKQI_ALL[SPDV] = \"SOAR\" || KPIKQI_ALL[SPDV] = \"NSM\" || KPIKQI_ALL[SPDV] = \"NDR\" || KPIKQI_ALL[SPDV] = \"SOC PLATFORM\" || KPIKQI_ALL[SPDV] = \"SIEM\" , \"TT.Enterprise\", KPIKQI_ALL[SPDV] = \"SOC\" || KPIKQI_ALL[SPDV] = \"Threat hunting\" || KPIKQI_ALL[SPDV] = \"Hunting-SOC\", \"TT.SOC\", KPIKQI_ALL[SPDV] = \"M-Suite\" || KPIKQI_ALL[SPDV] = \"OpenStack-Lab\" || KPIKQI_ALL[SPDV] = \"OpenStack-Production\" || KPIKQI_ALL[SPDV] = \"VCS-KIAN\" || KPIKQI_ALL[SPDV] = \"KIAN\", \"TT.SX\", KPIKQI_ALL[SPDV] = \"Cloudrity Self Service\" || KPIKQI_ALL[SPDV] = \"V-AntiDDoS\" || KPIKQI_ALL[SPDV] = \"Cloudrity\" || KPIKQI_ALL[SPDV] = \"AntiDDoS\", \"TT.Telco\", KPIKQI_ALL[SPDV] = \"Audit ANHT\" || KPIKQI_ALL[SPDV] = \"Pentest-TTDVATTT\" || KPIKQI_ALL[SPDV] = \"Pentest-VPMN\" || KPIKQI_ALL[SPDV] = \"Redteam\", \"TTDVATTT\", KPIKQI_ALL[SPDV] = \"Threat Intelligence\" || KPIKQI_ALL[SPDV] = \"TI Sản phẩm\" || KPIKQI_ALL[SPDV] in{\"ThreatHunting-VPMB\",\"ThreatHunting-VPMN\"}, \"TT.TI\", KPIKQI_ALL[SPDV] = \"TKCG\", \"TT.SI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+  - name: year_week
+    description: "Cột YearWeek trong KPIKQI_ALL. Cột tính toán, DAX gốc: YEAR(KPIKQI_ALL[Ngày báo cáo]) & \"-W\" & FORMAT(KPIKQI_ALL[Week], \"00\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearWeek"
+        hidden: true
+  - name: week
+    description: "Cột Week trong KPIKQI_ALL. Cột tính toán, DAX gốc: WEEKNUM(KPIKQI_ALL[Ngày báo cáo], 2)"
+    meta:
+      dimension:
+        type: number
+        label: "Week"
+        hidden: true
+  - name: evaluation_v2
+    description: "Cột Đánh giá v2 trong KPIKQI_ALL. Cột tính toán, DAX gốc: SWITCH( TRUE(), NOT ISBLANK('KPIKQI_ALL'[So với target]) && 'KPIKQI_ALL'[So với target] <= 0, \"Pass\", NOT ISBLANK('KPIKQI_ALL'[Kết quả]) && 'KPIKQI_ALL'[Target] = 'KPIKQI_ALL'[Kết quả], \"Pass\", ISBLANK('KPIKQI_ALL'[So với target]) , BLANK(), \"Fail\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá v2"
+  - name: vs_target
+    description: "Cột So với target trong KPIKQI_ALL. Cột tính toán, DAX gốc: VAR _Target = KPIKQI_ALL[Target] VAR _Result = KPIKQI_ALL[Kết quả] VAR _Condition= UPPER(TRIM(KPIKQI_ALL[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+        hidden: true
+  - name: trend_v2
+    description: "Cột Trend v2 trong KPIKQI_ALL. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI_ALL'[Xu hướng KPI] = \"Decline\", \"Suy giảm\", 'KPIKQI_ALL'[Xu hướng KPI] = \"Improve\", \"Cải thiện\", 'KPIKQI_ALL'[Xu hướng KPI] = \"Maintain\", \"Duy trì\", 'KPIKQI_ALL'[Xu hướng KPI] )"
+    meta:
+      dimension:
+        type: string
+        label: "Trend"
+  - name: so_with_period_n_1_td
+    description: "Cột So với kỳ N-1 (TĐ) trong KPIKQI_ALL. Cột tính toán, DAX gốc: VAR CurrentResult = KPIKQI_ALL[Kết quả] -- Tháng N VAR PrevResult = KPIKQI_ALL[Kết quả 1 kỳ trước] -- Tháng N-1 VAR Conditioncheck = KPIKQI_ALL[Điều kiện] RETURN IF( OR( ISBLANK(CurrentResult), ISBLANK(PrevResult) ), BLANK(), SWITCH( TRUE(), -- Trường hợp >= : (Tháng N-1 - Tháng N) / (100 - Tháng N-1) Conditioncheck = \">=\", DIVIDE(PrevResult - CurrentResult, 100 - PrevResult), -- Trường hợp <= : (Tháng N - Tháng N-1) / Tháng N-1 Conditioncheck = \"<=\", DIVIDE(CurrentResult - PrevResult, PrevResult), -- Trường hợp = : Đúng bằng thì trả về 0 (Không chênh lệch), khác thì BLANK() Conditioncheck = \"=\", IF(CurrentResult = PrevResult, 0, BLANK()), BLANK() ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với kỳ N-1 (TĐ)"
+        hidden: true

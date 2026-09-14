@@ -1,0 +1,50 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_kpikqi_service_tkcg
+    description: "Nguồn Power BI: KPIKQI Dịch vụ TKCG"
+    columns:
+    - name: summary
+      description: "Cột summary"
+    - name: description
+      description: "Cột description"
+    - name: report_date
+      description: "Cột Ngày báo cáo"
+    - name: contract_type
+      description: "Cột Loại_hợp_đồng_20400"
+    - name: co_soc247
+      description: "Cột Có_SOC247_20401"
+    - name: product
+      description: "Cột Sản_phẩm_20403"
+    - name: version
+      description: "Cột Version_12333"
+    - name: latest_version
+      description: "Cột Latest Version"
+    - name: update_start_date
+      description: "Cột Ngày bắt đầu update"
+    - name: update_date
+      description: "Cột Ngày update"
+    - name: latency
+      description: "Cột Độ_trễ_20408"
+    - name: agent_latest
+      description: "Cột Agent latest"
+    - name: agent_online
+      description: "Cột Agent online"
+    - name: exception_reason
+      description: "Cột Lý do exception"
+    - name: update_frequency
+      description: "Cột Tần suất update"
+    - name: exception_value
+      description: "Cột Exception"
+    - name: tick_month
+      description: "Cột Tick Month"
+    - name: month_key
+      description: "Cột MonthKey"
+    - name: quarter
+      description: "Cột Quý"
+    - name: tick_quarter
+      description: "Cột Tick Quý"

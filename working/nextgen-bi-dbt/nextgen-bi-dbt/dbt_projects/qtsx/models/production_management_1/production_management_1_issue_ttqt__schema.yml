@@ -1,0 +1,75 @@
+version: 2
+models:
+- name: production_management_1_issue_ttqt
+  description: "Bảng production_management_1_issue_ttqt (nguồn Power BI: ISSUE TTQT)."
+  meta:
+    label: "ISSUE TTQT"
+    powerbi_source: "ISSUE TTQT"
+  columns:
+  - name: id
+    description: "Cột Id trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "Vấn đề"
+  - name: issue_description
+    description: "Cột ISSUE_DESCRIPTION trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "Mô tả"
+  - name: solution_action
+    description: "Cột Giải_pháp_Action__22102 trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "Giải pháp"
+  - name: cause
+    description: "Cột Nguyên_nhân_22101 trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "Nguyên nhân"
+  - name: date_value
+    description: "Cột Ngày_21701 trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày"
+  - name: classification
+    description: "Cột Phân loại trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "Phân loại"
+  - name: owner_department
+    description: "Cột BP Phụ trách trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "BP Phụ trách"
+  - name: spdv
+    description: "Cột SPDV trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: impact
+    description: "Cột Ảnh_hưởng_22100 trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "Ảnh hưởng"
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong ISSUE TTQT."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"

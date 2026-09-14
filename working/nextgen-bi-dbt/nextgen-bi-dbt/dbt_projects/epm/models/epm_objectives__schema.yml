@@ -1,0 +1,180 @@
+version: 2
+
+models:
+  - name: epm_objectives
+    description: >
+      Bảng lưu trữ thông tin về các mục tiêu chiến lược (BSC / Objectives) 
+      bắt nguồn từ định hướng của Ban Giám đốc và được phân bổ xuống các đơn vị.
+
+      Grain: Một dòng tương ứng với một mục tiêu chiến lược.
+    meta:
+      label: "Mục tiêu chiến lược (Objectives)"
+      group_label: "EPM Dashboard"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Objectives"
+        grain: "One row per strategic objective"
+        primary_date: "end_date"
+        primary_department_dimension: "c_department"
+
+        restrictions:
+          - "Sử dụng để phân rã luồng dữ liệu từ BSC xuống PGNV của các Khối/Phòng ban."
+
+    columns:
+      - name: sysid
+        description: "Mã định danh duy nhất của mục tiêu BSC."
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "Objective ID"
+
+      - name: name
+        description: "Tên mục tiêu chiến lược / Tiêu đề nghị quyết giao ban."
+        meta:
+          dimension:
+            type: string
+            label: "Tên mục tiêu"
+
+      - name: description
+        description: "Nội dung thuyết minh chi tiết về mục tiêu, định hướng chỉ đạo của Lãnh đạo."
+        meta:
+          dimension:
+            type: string
+            label: "Mô tả mục tiêu"
+
+      - name: created_by
+        description: "Người tạo và thời điểm tạo mục tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Người tạo"
+
+      - name: c_assignee
+        description: "Lãnh đạo / Cá nhân chịu trách nhiệm chính trước HĐQT về mục tiêu này."
+        meta:
+          dimension:
+            type: string
+            label: "Người phụ trách"
+
+      - name: start_date
+        description: "Ngày bắt đầu kỳ đánh giá mục tiêu chiến lược."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày bắt đầu"
+
+      - name: end_date
+        description: "Ngày kết thúc kỳ đánh giá chiến lược."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày kết thúc"
+
+      - name: parent_objective
+        description: "Khóa ngoại trỏ đến Mục tiêu cha cấp trên (Phân cấp từ Tập đoàn xuống Khối/Phòng)."
+        meta:
+          dimension:
+            type: string
+            label: "Mục tiêu cha"
+
+      - name: state
+        description: "Trạng thái vòng đời mục tiêu (/State/Draft, /State/Active, /State/Completed)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái vòng đời"
+
+      - name: status
+        description: "Đánh giá hiện trạng: Đang thực hiện, Hoàn thành, Hủy bỏ."
+        meta:
+          dimension:
+            type: string
+            label: "Tình trạng"
+
+      - name: c_department
+        description: "Khối / Phòng ban chịu trách nhiệm chính."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban"
+
+      - name: c_objective_type
+        description: "Phân loại mục tiêu theo 4 viễn cảnh BSC: Tài chính, Khách hàng, Quy trình nội bộ, Học hỏi & Phát triển."
+        meta:
+          dimension:
+            type: string
+            label: "Viễn cảnh BSC"
+
+      - name: entity_owner
+        description: "Người sở hữu bản ghi trong hệ thống."
+        meta:
+          dimension:
+            type: string
+            label: "Chủ sở hữu"
+
+      - name: last_updated_on
+        description: "Người cập nhật và Watermark gia số để cào dữ liệu tăng dần."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày cập nhật"
+
+      - name: last_updated_by_system_on
+        description: "Dấu thời gian hệ thống tự động cập nhật số liệu rollup."
+        meta:
+          dimension:
+            type: date
+            label: "Hệ thống cập nhật"
+
+      - name: created_on
+        description: "Người tạo và thời điểm tạo mục tiêu."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày tạo"
+
+      - name: weight
+        description: "Trọng số của mục tiêu này trong toàn bộ thẻ điểm BSC."
+        meta:
+          dimension:
+            type: number
+            label: "Trọng số BSC"
+
+      - name: percent_of_plan
+        description: "Tỷ lệ hoàn thành so với kế hoạch."
+        meta:
+          dimension:
+            type: number
+            label: "Tỷ lệ hoàn thành KH"
+
+      - name: actual_percent
+        description: "% tiến độ thực tế đã hoàn thành của mục tiêu."
+        meta:
+          dimension:
+            type: number
+            label: "Tiến độ thực tế (%)"
+
+      - name: planned_percent
+        description: "% tiến độ cần đạt được theo kế hoạch tại thời điểm xét duyệt."
+        meta:
+          dimension:
+            type: number
+            label: "Tiến độ kế hoạch (%)"
+
+      - name: external_id
+        description: "Mã số văn bản, số hiệu nghị quyết HĐQT hoặc biên bản họp giao ban."
+        meta:
+          dimension:
+            type: string
+            label: "Mã ngoài"
+
+      - name: entity_type
+        description: "Luôn mang giá trị cố định Objective (hoặc BSC)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại entity"

@@ -1,0 +1,14 @@
+version: 2
+models:
+- name: qtsx_v2_dim_status
+  description: "Bảng qtsx_v2_dim_status (nguồn Power BI: Dim_Status)."
+  meta:
+    label: "Dim_Status"
+    powerbi_source: "Dim_Status"
+  columns:
+  - name: status
+    description: "Cột Status trong Dim_Status."
+    meta:
+      dimension:
+        type: string
+        label: "Status"

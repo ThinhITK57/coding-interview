@@ -1,0 +1,40 @@
+version: 2
+
+sources:
+- name: bi_silver__finance
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: "Silver layer sources for domain: finance"
+
+  tables:
+  - name: finance_fact_ratios
+    description: >
+      Lưu trữ các chỉ số tài chính (Financial Ratios) đã được tính toán sẵn theo từng kỳ báo cáo.
+      Đây là bảng snapshot chỉ số tài chính, mỗi bản ghi tương ứng với giá trị của một chỉ số
+      tại một thời điểm báo cáo. Khi phân tích theo nhiều tháng, quý, năm hoặc YTD, giá trị
+      của chỉ số được hiểu là giá trị tại kỳ báo cáo cuối cùng trong phạm vi được chọn,
+      không cộng dồn, không lấy trung bình và không tính lại từ các kỳ trước.
+
+    columns:
+      - name: report_date
+        description: >
+          Ngày báo cáo của chỉ số tài chính, thường là ngày chốt kỳ như cuối tháng,
+          cuối quý hoặc cuối năm.
+
+      - name: metric_code
+        description: >
+          Mã định danh duy nhất của chỉ số tài chính, ví dụ: REVENUE, COST,
+          PROFIT, EBITDA, ROE, ROS, CURRENT_RATIO.
+
+      - name: metric_name
+        description: >
+          Tên hiển thị của chỉ số tài chính theo quy định của Phòng Tài chính,
+          ví dụ: Tổng doanh thu, Lợi nhuận, EBITDA, ROE.
+
+      - name: metric_value
+        description: >
+          Giá trị của chỉ số tài chính tại thời điểm báo cáo. Đây là giá trị snapshot
+          đã được tính sẵn. Khi phân tích nhiều tháng, quý, năm hoặc YTD, lấy giá trị
+          tại kỳ báo cáo cuối cùng trong phạm vi được chọn, không cộng dồn và không lấy trung bình.
+          Đối với các chỉ số tiền tệ, giá trị được lưu theo đơn vị triệu VND và không bao gồm VAT.
+          Đối với các chỉ số tỷ lệ, giá trị được lưu theo đơn vị gốc của chỉ số như %, lần hoặc hệ số.

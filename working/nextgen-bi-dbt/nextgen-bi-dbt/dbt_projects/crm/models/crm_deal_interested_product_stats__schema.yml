@@ -1,0 +1,92 @@
+version: 2
+models:
+- name: crm_deal_interested_product_stats
+  description: '[CRM] Dữ liệu thống kê số lượng deal theo nhóm sản phẩm quan tâm. Phù hợp để phân tích danh sách sản phẩm/dịch vụ được quan tâm và xếp hạng mức độ quan tâm theo sản phẩm.'
+  meta:
+    label: "Deal Interested Product Statistics"
+    owner: "huongnv1"
+    dimensions:
+      product_category:
+        type: string
+        sql: UPPER(${TABLE}.product_category)
+        label: Product Category
+        description: Nhóm sản phẩm hoặc dịch vụ mà deal quan tâm. Đây là dimension chính để phân tích top sản phẩm/dịch vụ.
+        synonyms:
+          - "Product Category"
+          - "Sản phẩm danh mục"
+      deal_volume_bucket:
+        type: string
+        sql: "CASE\n  WHEN ${TABLE}.number_of_deals IS NULL THEN 'unknown'\n  WHEN ${TABLE}.number_of_deals < 10.0 THEN 'lt_10'\n  WHEN ${TABLE}.number_of_deals < 50.0 THEN 'from_10_to_49'\n  WHEN ${TABLE}.number_of_deals < 100.0 THEN 'from_50_to_99'\n  WHEN ${TABLE}.number_of_deals < 500.0 THEN 'from_100_to_499'\n  ELSE 'gte_500'\nEND"
+        label: Deal Volume Bucket
+        description: Nhóm số lượng deal theo mức độ quan tâm, phù hợp cho histogram hoặc biểu đồ cơ cấu.
+        synonyms:
+          - "Deal Volume Bucket"
+          - "Nhóm khối lượng deal"
+    metrics:
+      product_category_count:
+        type: count
+        sql: '1.0'
+        description: Số dòng thống kê theo nhóm sản phẩm. Không phải số lượng deal thực tế.
+        label: "Product Category Count"
+        category: "Sales Performance"
+        synonyms:
+          - "Product Category Count"
+          - "Số lượng sản phẩm danh mục"
+      total_number_of_deals:
+        type: sum
+        sql: ${TABLE}.number_of_deals
+        description: Tổng số lượng deal quan tâm đến các nhóm sản phẩm.
+        label: "Total Number Of Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Total Number Of Deals"
+          - "Tổng số deal"
+      avg_number_of_deals:
+        type: average
+        sql: ${TABLE}.number_of_deals
+        description: Số lượng deal trung bình trên mỗi nhóm sản phẩm.
+        label: "Avg Number Of Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg Number Of Deals"
+          - "Số lượng deal trung bình"
+      max_number_of_deals:
+        type: max
+        sql: ${TABLE}.number_of_deals
+        description: Số lượng deal lớn nhất của một nhóm sản phẩm.
+        label: "Max Number Of Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Max Number Of Deals"
+          - "Giá trị lớn nhất của số lượng deal"
+      min_number_of_deals:
+        type: min
+        sql: ${TABLE}.number_of_deals
+        description: Số lượng deal nhỏ nhất của một nhóm sản phẩm.
+        label: "Min Number Of Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Min Number Of Deals"
+          - "Giá trị nhỏ nhất của số lượng deal"
+      top_interest_share:
+        type: number
+        sql: "CASE\n  WHEN SUM(number_of_deals) = 0.0 THEN 0.0\n  ELSE 1.0 * MAX(number_of_deals) / SUM(number_of_deals)\nEND"
+        description: Tỷ trọng số deal của nhóm sản phẩm được quan tâm nhiều nhất trên tổng số deal.
+        label: "Top Interest Share"
+        category: "Sales Performance"
+        synonyms:
+          - "Top Interest Share"
+          - "Tỷ trọng quan tâm cao nhất"
+  columns:
+  - name: product_category
+    description: Nhóm sản phẩm hoặc dịch vụ mà deal quan tâm. Đây là dimension chính để phân tích top sản phẩm/dịch vụ.
+    meta:
+      dimension:
+        type: string
+        label: Product Category
+  - name: number_of_deals
+    description: Số lượng deal quan tâm đến từng nhóm sản phẩm.
+    meta:
+      dimension:
+        type: number
+        label: Number Of Deals

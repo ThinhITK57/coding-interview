@@ -1,0 +1,29 @@
+version: 2
+models:
+- name: production_management_1_fix_versions_2
+  description: "Bảng production_management_1_fix_versions_2 (nguồn Power BI: FixVersions (2))."
+  meta:
+    label: "FixVersions (2)"
+    powerbi_source: "FixVersions (2)"
+  columns:
+  - name: id
+    description: "Cột Id trong FixVersions (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: fix_version_issue_id
+    description: "Cột FIX_VERSION_ISSUE_ID trong FixVersions (2)."
+    meta:
+      dimension:
+        type: number
+        label: "FIX_VERSION_ISSUE_ID"
+        hidden: true
+  - name: fix_version_name
+    description: "Cột FIX_VERSION_NAME trong FixVersions (2)."
+    meta:
+      dimension:
+        type: string
+        label: "FIX_VERSION_NAME"
+        hidden: true

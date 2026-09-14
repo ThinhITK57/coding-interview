@@ -1,0 +1,708 @@
+version: 2
+
+models:
+  - name: dim_system_kpi_catalog
+    description: "Catalog of A/C technical KPIs with Prometheus coverage flags."
+    meta:
+      label: "System KPI Catalog"
+      group_label: "Observability"
+      metrics:
+        total_kpis:
+          type: count_distinct
+          label: "Total KPIs"
+          sql: "${metric_code}"
+        prometheus_ticked_kpis:
+          type: count_distinct
+          label: "Prometheus Ticked KPIs"
+          sql: "CASE WHEN ${is_prometheus_ticked} THEN ${metric_code} END"
+        prometheus_coverage_rate:
+          type: number
+          label: "Prometheus Coverage Rate"
+          sql: "${prometheus_ticked_kpis} / NULLIF(${total_kpis}, 0)"
+        category_a_ticked_kpis:
+          type: count_distinct
+          label: "Category A Ticked KPIs"
+          sql: "CASE WHEN ${metric_category} = 'A' AND ${is_prometheus_ticked} THEN ${metric_code} END"
+        category_c_ticked_kpis:
+          type: count_distinct
+          label: "Category C Ticked KPIs"
+          sql: "CASE WHEN ${metric_category} = 'C' AND ${is_prometheus_ticked} THEN ${metric_code} END"
+        ticked_kpi_share_a:
+          type: number
+          label: "Ticked KPI Share A"
+          sql: "${category_a_ticked_kpis} / NULLIF(${prometheus_ticked_kpis}, 0)"
+        ticked_kpi_share_c:
+          type: number
+          label: "Ticked KPI Share C"
+          sql: "${category_c_ticked_kpis} / NULLIF(${prometheus_ticked_kpis}, 0)"
+    columns:
+      - name: metric_code
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "Metric Code"
+      - name: metric_category
+        meta:
+          dimension:
+            type: string
+            label: "Category"
+      - name: metric_name
+        meta:
+          dimension:
+            type: string
+            label: "Metric Name"
+      - name: is_prometheus_ticked
+        meta:
+          dimension:
+            type: boolean
+            label: "Prometheus Ticked"
+      - name: measurement_source
+        meta:
+          dimension:
+            type: string
+            label: "Measurement Source"
+      - name: measurement_frequency
+        meta:
+          dimension:
+            type: string
+            label: "Measurement Frequency"
+      - name: owner_note
+        meta:
+          dimension:
+            type: string
+            label: "Owner Note"
+
+  - name: fct_system_inventory
+    description: "Current inventory counts for the Lightdash system."
+    meta:
+      label: "System Inventory"
+      group_label: "Observability"
+      metrics:
+        total_inventory_count:
+          type: sum
+          label: "Total Inventory Count"
+          sql: "${entity_count}"
+        core_inventory_count:
+          type: sum
+          label: "Core Inventory Count"
+          sql: "CASE WHEN ${inventory_group} = 'core' THEN ${entity_count} END"
+        ai_inventory_count:
+          type: sum
+          label: "AI Inventory Count"
+          sql: "CASE WHEN ${inventory_group} = 'ai' THEN ${entity_count} END"
+        ops_inventory_count:
+          type: sum
+          label: "Ops Inventory Count"
+          sql: "CASE WHEN ${inventory_group} = 'ops' THEN ${entity_count} END"
+        ai_share_of_inventory:
+          type: number
+          label: "AI Share of Inventory"
+          sql: "${ai_inventory_count} / NULLIF(${total_inventory_count}, 0)"
+    columns:
+      - name: inventory_group
+        meta:
+          dimension:
+            type: string
+            label: "Inventory Group"
+      - name: inventory_item
+        meta:
+          dimension:
+            type: string
+            label: "Inventory Item"
+      - name: source_table
+        meta:
+          dimension:
+            type: string
+            label: "Source Table"
+      - name: entity_count
+        meta:
+          dimension:
+            type: number
+            label: "Entity Count"
+      - name: notes
+        meta:
+          dimension:
+            type: string
+            label: "Notes"
+
+  - name: fct_ai_thread_response_times
+    description: "Conversation-level AI prompt response times derived from ai_prompt timestamps."
+    meta:
+      label: "AI Thread Response Times"
+      group_label: "Observability"
+      metrics:
+        avg_response_time:
+          type: average
+          label: "Average Response Time"
+          sql: "${average_response_time_seconds}"
+        response_time_p95:
+          type: percentile
+          label: "Response Time P95"
+          sql: "${average_response_time_seconds}"
+          percentile: 95
+        response_time_p99:
+          type: percentile
+          label: "Response Time P99"
+          sql: "${average_response_time_seconds}"
+          percentile: 99
+        total_thread_prompts:
+          type: sum
+          label: "Thread Prompts"
+          sql: "${prompt_count}"
+        total_thread_responded_prompts:
+          type: sum
+          label: "Thread Responded Prompts"
+          sql: "${responded_prompt_count}"
+        prompt_response_rate:
+          type: number
+          label: "Prompt Response Rate"
+          sql: "${total_thread_responded_prompts} / NULLIF(${total_thread_prompts}, 0)"
+    columns:
+      - name: ai_thread_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "AI Thread UUID"
+      - name: thread_created_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Thread Created At"
+      - name: prompt_count
+        meta:
+          dimension:
+            type: number
+            label: "Prompt Count"
+      - name: responded_prompt_count
+        meta:
+          dimension:
+            type: number
+            label: "Responded Prompt Count"
+      - name: average_response_time_seconds
+        meta:
+          dimension:
+            type: number
+            label: "Average Response Time (Seconds)"
+
+  - name: fct_ai_thread_tool_calls
+    description: "Conversation-level AI tool call counts."
+    meta:
+      label: "AI Thread Tool Calls"
+      group_label: "Observability"
+      metrics:
+        total_thread_tool_calls:
+          type: sum
+          label: "Total Tool Calls"
+          sql: "${tool_call_count}"
+        average_tool_calls_per_conversation:
+          type: average
+          label: "Average Tool Calls per Conversation"
+          sql: "${tool_call_count}"
+        ai_thread_count:
+          type: count_distinct
+          label: "Total AI Threads"
+          sql: "${ai_thread_uuid}"
+    columns:
+      - name: ai_thread_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "AI Thread UUID"
+      - name: agent_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Agent UUID"
+      - name: agent_name
+        meta:
+          dimension:
+            type: string
+            label: "Agent Name"
+      - name: project_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Project UUID"
+      - name: created_from
+        meta:
+          dimension:
+            type: string
+            label: "Created From"
+      - name: thread_created_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Thread Created At"
+      - name: tool_call_count
+        meta:
+          dimension:
+            type: number
+            label: "Tool Call Count"
+
+  - name: fct_ai_thread_characters
+    description: "Conversation-level AI character usage statistics for token analysis."
+    meta:
+      label: "AI Thread Characters"
+      group_label: "Observability"
+    metrics:
+        total_prompt_characters:
+          type: sum
+          label: "Total Prompt Characters"
+          sql: "${total_prompt_characters}"
+        total_response_characters:
+          type: sum
+          label: "Total Response Characters"
+          sql: "${total_response_characters}"
+        total_characters:
+          type: sum
+          label: "Total Characters"
+          sql: "${total_characters}"
+        avg_prompt_characters_per_thread:
+          type: average
+          label: "Average Prompt Characters per Thread"
+          sql: "${total_prompt_characters}"
+        avg_response_characters_per_thread:
+          type: average
+          label: "Average Response Characters per Thread"
+          sql: "${total_response_characters}"
+        avg_characters_per_thread:
+          type: average
+          label: "Average Total Characters per Thread"
+          sql: "${total_characters}"
+        ai_thread_count:
+          type: count_distinct
+          label: "Total AI Threads"
+          sql: "${ai_thread_uuid}"
+    columns:
+      - name: ai_thread_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "AI Thread UUID"
+      - name: thread_created_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Thread Created At"
+      - name: prompt_count
+        meta:
+          dimension:
+            type: number
+            label: "Prompt Count"
+      - name: total_prompt_characters
+        meta:
+          dimension:
+            type: number
+            label: "Total Prompt Characters"
+      - name: total_response_characters
+        meta:
+          dimension:
+            type: number
+            label: "Total Response Characters"
+      - name: total_characters
+        meta:
+          dimension:
+            type: number
+            label: "Total Characters"
+      - name: avg_prompt_characters_per_prompt
+        meta:
+          dimension:
+            type: number
+            label: "Average Prompt Characters per Prompt"
+      - name: avg_response_characters_per_prompt
+        meta:
+          dimension:
+            type: number
+            label: "Average Response Characters per Prompt"
+      - name: avg_total_characters
+        meta:
+          dimension:
+            type: number
+            label: "Average Total Characters per Prompt"
+      - name: avg_characters_per_thread
+        meta:
+          dimension:
+            type: number
+            label: "Average Characters per Thread"
+
+  - name: dim_technical_kpi_dbt_coverage
+    description: "DBT coverage map for the technical KPI catalog."
+    meta:
+      label: "Technical KPI DBT Coverage"
+      group_label: "Observability"
+      metrics:
+        total_technical_kpis:
+          type: count_distinct
+          label: "Total Technical KPIs"
+          sql: "${kpi_code}"
+        dbt_covered_kpis:
+          type: count_distinct
+          label: "DBT Covered KPIs"
+          sql: "CASE WHEN ${dbt_coverage_status} IN ('covered', 'partially_covered') THEN ${kpi_code} END"
+        dbt_coverage_rate:
+          type: number
+          label: "DBT Coverage Rate"
+          sql: "${dbt_covered_kpis} / NULLIF(${total_technical_kpis}, 0)"
+    columns:
+      - name: kpi_code
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "KPI Code"
+      - name: kpi_layer
+        meta:
+          dimension:
+            type: string
+            label: "KPI Layer"
+      - name: kpi_name
+        meta:
+          dimension:
+            type: string
+            label: "KPI Name"
+      - name: dbt_coverage_status
+        meta:
+          dimension:
+            type: string
+            label: "DBT Coverage Status"
+      - name: dbt_model_name
+        meta:
+          dimension:
+            type: string
+            label: "DBT Model Name"
+      - name: coverage_note
+        meta:
+          dimension:
+            type: string
+            label: "Coverage Note"
+
+  - name: fct_scheduler_health_daily
+    description: "Daily scheduler health facts for A3 Scheduler Success Rate."
+    meta:
+      label: "Scheduler Health Daily"
+      group_label: "Observability"
+      metrics:
+        total_scheduler_events:
+          type: sum
+          label: "Total Scheduler Events"
+          sql: "${scheduler_event_count}"
+        successful_scheduler_events:
+          type: sum
+          label: "Successful Scheduler Events"
+          sql: "${successful_scheduler_event_count}"
+        failed_scheduler_events:
+          type: sum
+          label: "Failed Scheduler Events"
+          sql: "${failed_scheduler_event_count}"
+        scheduler_success_rate:
+          type: number
+          label: "Scheduler Success Rate"
+          sql: "${successful_scheduler_events} / NULLIF(${total_scheduler_events}, 0)"
+    columns:
+      - name: event_date
+        meta:
+          dimension:
+            type: date
+            label: "Event Date"
+      - name: task
+        meta:
+          dimension:
+            type: string
+            label: "Task"
+      - name: job_group
+        meta:
+          dimension:
+            type: string
+            label: "Job Group"
+      - name: target_type
+        meta:
+          dimension:
+            type: string
+            label: "Target Type"
+      - name: scheduler_event_count
+        meta:
+          dimension:
+            type: number
+            label: "Scheduler Event Count"
+      - name: successful_scheduler_event_count
+        meta:
+          dimension:
+            type: number
+            label: "Successful Scheduler Event Count"
+      - name: failed_scheduler_event_count
+        meta:
+          dimension:
+            type: number
+            label: "Failed Scheduler Event Count"
+
+  - name: fct_ai_tool_success_daily
+    description: "Daily AI tool success proxy based on tool calls with matching tool results."
+    meta:
+      label: "AI Tool Success Daily"
+      group_label: "Observability"
+      metrics:
+        total_tool_calls:
+          type: sum
+          label: "Total Tool Calls"
+          sql: "${tool_call_count}"
+        successful_tool_calls:
+          type: sum
+          label: "Successful Tool Calls"
+          sql: "${successful_tool_call_count}"
+        error_tool_calls:
+          type: sum
+          label: "Error Tool Calls"
+          sql: "${error_tool_call_count}"
+        missing_result_tool_calls:
+          type: sum
+          label: "Missing Result Tool Calls"
+          sql: "${missing_result_tool_call_count}"
+        tool_success_rate:
+          type: number
+          label: "Tool Success Rate"
+          sql: "${successful_tool_calls} / NULLIF(${total_tool_calls}, 0)"
+    columns:
+      - name: event_date
+        meta:
+          dimension:
+            type: date
+            label: "Event Date"
+      - name: tool_name
+        meta:
+          dimension:
+            type: string
+            label: "Tool Name"
+      - name: tool_call_count
+        meta:
+          dimension:
+            type: number
+            label: "Tool Call Count"
+      - name: successful_tool_call_count
+        meta:
+          dimension:
+            type: number
+            label: "Successful Tool Call Count"
+      - name: error_tool_call_count
+        meta:
+          dimension:
+            type: number
+            label: "Error Tool Call Count"
+      - name: missing_result_tool_call_count
+        meta:
+          dimension:
+            type: number
+            label: "Missing Result Tool Call Count"
+      - name: ai_thread_count
+        meta:
+          dimension:
+            type: number
+            label: "AI Thread Count"
+
+  - name: fct_ai_feedback_daily
+    description: "Daily AI prompt feedback facts for C4 hallucination proxy."
+    meta:
+      label: "AI Feedback Daily"
+      group_label: "Observability"
+      metrics:
+        total_feedback_prompts:
+          type: sum
+          label: "Feedback Prompts"
+          sql: "${feedback_count}"
+        upvotes:
+          type: sum
+          label: "Upvotes"
+          sql: "${upvote_count}"
+        downvotes:
+          type: sum
+          label: "Downvotes"
+          sql: "${downvote_count}"
+        hallucination_proxy_rate:
+          type: number
+          label: "Hallucination Proxy Rate"
+          sql: "${downvotes} / NULLIF(${total_feedback_prompts}, 0)"
+    columns:
+      - name: event_date
+        meta:
+          dimension:
+            type: date
+            label: "Event Date"
+      - name: prompt_count
+        meta:
+          dimension:
+            type: number
+            label: "Prompt Count"
+      - name: feedback_count
+        meta:
+          dimension:
+            type: number
+            label: "Feedback Count"
+      - name: upvote_count
+        meta:
+          dimension:
+            type: number
+            label: "Upvote Count"
+      - name: downvote_count
+        meta:
+          dimension:
+            type: number
+            label: "Downvote Count"
+      - name: neutral_feedback_count
+        meta:
+          dimension:
+            type: number
+            label: "Neutral Feedback Count"
+
+  - name: fct_chart_usage_daily
+    description: "Daily chart usage facts derived from chart view events."
+    meta:
+      label: "Chart Usage Daily"
+      group_label: "Observability"
+      metrics:
+        total_chart_views:
+          type: sum
+          label: "Total Chart Views"
+          sql: "${chart_views}"
+        total_chart_unique_viewers:
+          type: sum
+          label: "Total Chart Unique Viewers"
+          sql: "${unique_viewers}"
+    columns:
+      - name: viewed_date
+        meta:
+          dimension:
+            type: date
+            label: "Viewed Date"
+      - name: chart_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Chart UUID"
+      - name: chart_name
+        meta:
+          dimension:
+            type: string
+            label: "Chart Name"
+      - name: chart_views
+        meta:
+          dimension:
+            type: number
+            label: "Chart Views"
+      - name: unique_viewers
+        meta:
+          dimension:
+            type: number
+            label: "Unique Viewers"
+
+  - name: fct_bi_artifact_reuse_30d
+    description: "Chart and dashboard reuse after 30 days."
+    meta:
+      label: "BI Artifact Reuse 30D"
+      group_label: "Observability"
+      metrics:
+        total_artifacts:
+          type: count_distinct
+          label: "Total Artifacts"
+          sql: "${artifact_uuid}"
+        reused_artifacts_after_30d:
+          type: count_distinct
+          label: "Reused Artifacts After 30D"
+          sql: "CASE WHEN ${reused_after_30d} THEN ${artifact_uuid} END"
+        artifact_reuse_rate_30d:
+          type: number
+          label: "Artifact Reuse Rate After 30D"
+          sql: "${reused_artifacts_after_30d} / NULLIF(${total_artifacts}, 0)"
+        total_views_after_30d:
+          type: sum
+          label: "Views After 30D"
+          sql: "${views_after_30d}"
+    columns:
+      - name: artifact_type
+        meta:
+          dimension:
+            type: string
+            label: "Artifact Type"
+      - name: artifact_uuid
+        tests:
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Artifact UUID"
+      - name: artifact_name
+        meta:
+          dimension:
+            type: string
+            label: "Artifact Name"
+      - name: created_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Created At"
+      - name: views_after_30d
+        meta:
+          dimension:
+            type: number
+            label: "Views After 30D"
+      - name: reused_after_30d
+        meta:
+          dimension:
+            type: boolean
+            label: "Reused After 30D"
+
+  - name: fct_ai_adoption_daily
+    description: "Daily BI and AI activity facts for adoption KPIs."
+    meta:
+      label: "AI Adoption Daily"
+      group_label: "Observability"
+      metrics:
+        total_bi_active_users:
+          type: sum
+          label: "BI Active Users"
+          sql: "${bi_active_users}"
+        total_ai_active_users:
+          type: sum
+          label: "AI Active Users"
+          sql: "${ai_active_users}"
+        total_ai_threads:
+          type: sum
+          label: "AI Threads"
+          sql: "${ai_thread_count}"
+        ai_usage_rate:
+          type: number
+          label: "AI Usage Rate"
+          sql: "${total_ai_active_users} / NULLIF(${total_bi_active_users}, 0)"
+    columns:
+      - name: event_date
+        meta:
+          dimension:
+            type: date
+            label: "Event Date"
+      - name: bi_active_users
+        meta:
+          dimension:
+            type: number
+            label: "BI Active Users"
+      - name: ai_active_users
+        meta:
+          dimension:
+            type: number
+            label: "AI Active Users"
+      - name: ai_thread_count
+        meta:
+          dimension:
+            type: number
+            label: "AI Thread Count"

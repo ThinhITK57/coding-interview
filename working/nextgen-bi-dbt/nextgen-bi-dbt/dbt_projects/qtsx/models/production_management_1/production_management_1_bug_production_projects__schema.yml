@@ -1,0 +1,26 @@
+version: 2
+models:
+- name: production_management_1_bug_production_projects
+  description: "Bảng production_management_1_bug_production_projects (nguồn Power BI: Bug Production_Projects)."
+  meta:
+    label: "Bug Production_Projects"
+    powerbi_source: "Bug Production_Projects"
+    joins:
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_bug_production_projects.project_name} = ${production_management_1_milestone_versions_projects.project_name}"
+      relationship: one-to-one
+  columns:
+  - name: id
+    description: "Cột Id trong Bug Production_Projects."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT_NAME trong Bug Production_Projects."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+        hidden: true

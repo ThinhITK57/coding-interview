@@ -1,0 +1,55 @@
+version: 2
+models:
+- name: production_management_1_content_coverage
+  description: "Bảng production_management_1_content_coverage (nguồn Power BI: Độ phủ Content)."
+  meta:
+    label: "Độ phủ Content"
+    powerbi_source: "Độ phủ Content"
+    joins:
+    - join: production_management_1_rpm_customer
+      sql_on: "${production_management_1_content_coverage.issue_summary} = ${production_management_1_rpm_customer.issue_summary}"
+      relationship: many-to-one
+    - join: production_management_1_vvip
+      sql_on: "${production_management_1_content_coverage.issue_summary} = ${production_management_1_vvip.org_name}"
+      relationship: many-to-many
+    metrics:
+      sum_content_coverage_pct:
+        type: sum
+        sql: content_coverage_pct
+        label: "% Phủ content"
+        description: "Sinh từ Power BI: sum(Độ phủ Content.% Phủ content)"
+  columns:
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Độ phủ Content."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: product
+    description: "Cột Sản phẩm trong Độ phủ Content."
+    meta:
+      dimension:
+        type: string
+        label: "Sản phẩm"
+  - name: quantity
+    description: "Cột Số lượng trong Độ phủ Content."
+    meta:
+      dimension:
+        type: string
+        label: "Số lượng"
+        hidden: true
+  - name: rate
+    description: "Cột Tỷ lệ trong Độ phủ Content."
+    meta:
+      dimension:
+        type: string
+        label: "Tỷ lệ"
+        hidden: true
+  - name: content_coverage_pct
+    description: "Cột % Phủ content trong Độ phủ Content. Cột tính toán, DAX gốc: IF('Độ phủ Content'[Số lượng]<>BLANK(),VALUE('Độ phủ Content'[Tỷ lệ]),BLANK())"
+    meta:
+      dimension:
+        type: number
+        label: "% Phủ content"
+        hidden: true

@@ -1,0 +1,404 @@
+version: 2
+
+models:
+  - name: crm_deal_allocated_products
+    description: >
+      Danh sách các sản phẩm/dịch vụ được phân bổ vào cơ hội bán hàng (Deal).
+      Mỗi record đại diện cho một sản phẩm/dịch vụ thuộc một cơ hội,
+      bao gồm giá trị phân bổ, thời gian phân bổ, dự báo, thực tế và các thuộc tính SPDV.
+      Sematic: 
+        - Khi hỏi đến doanh số theo SPDV/nhóm SPDV vụ sử dụng bảng này. Bảng crm_deals chí có doanh số theo dự án.
+        - Khi hỏi đến doanh số theo trung tâm/đơn vị kinh doanh, sử dụng bảng crm_product_service_group_mapping để lọc lấy product_category rồi filter tiếp bảng này nhé.
+        - Khi hỏi doanh số nhóm SDPV (có thể cắt lớp theo thời gian), không chỉ rõ nhóm nào thì mặc định nhóm tập đoàn product_service_group. Nếu tên nhóm có trong product_service_group thì ưu tiên, trừ trường hợp người dùng chỉ định rõ nhóm theo VCS
+
+    meta:
+      label: "Phân bổ sản phẩm dịch vụ theo cơ hội bán hàng"
+      owner: "huongnv1"
+      joins:
+        - join: crm_deals
+          sql_on: ${crm_deal_allocated_products.deal_id} = ${crm_deals.deal_id}
+          relationship: many-to-one
+      metrics:
+        product_count:
+          type: count_distinct
+          sql: ${product_id}
+          label: "Số sản phẩm"
+          description: "Số lượng sản phẩm/dịch vụ khác nhau."
+
+        deal_product_count:
+          type: count
+          sql: ${product_id}
+          label: "Số dòng sản phẩm"
+          description: "Số dòng sản phẩm/dịch vụ được phân bổ vào Deal."
+
+        deal_count:
+          type: count_distinct
+          sql: ${deal_id}
+          label: "Số Deal"
+          description: "Số lượng Deal có phát sinh sản phẩm/dịch vụ."
+
+        total_allocation_value:
+          type: sum
+          sql: ${allocation_value}
+          label: "Tổng giá trị phân bổ"
+          description: "Tổng giá trị phân bổ của sản phẩm/dịch vụ."
+          format: "#,##0.00"
+
+    columns:
+
+      # ============================================================
+      # DEAL
+      # ============================================================
+
+      - name: deal_id
+        description: "Mã cơ hội bán hàng (Deal)."
+        meta:
+          dimension:
+            type: string
+            label: "Deal ID"
+            hidden: false
+          metrics:
+            deal_count:
+              type: count_distinct
+              label: "Số cơ hội"
+              description: "Số lượng cơ hội bán hàng có sản phẩm/dịch vụ được phân bổ."
+
+      - name: item_index
+        description: "STT của sản phẩm/dịch vụ trong một Deal."
+        meta:
+          dimension:
+            type: number
+            label: "Item Index"
+
+      # ============================================================
+      # DEAL INFORMATION
+      # ============================================================
+
+      - name: expected_close_date
+        description: >
+          Ngày kỳ vọng ký thành công
+        meta:
+          dimension:
+            type: date
+            label: "Ngày kỳ vọng ký thành công"
+
+      - name: probability
+        description: >
+          Xác suất dự kiến cơ hội bán hàng thành công,
+          thể hiện khả năng cơ hội được chốt thành công.
+        meta:
+          dimension:
+            type: number
+            label: "Xác suất chốt"
+            format: "0%"
+            synonyms:
+            - cơ hội cao khi >= 70
+            - cơ hội thấp khi < 70
+
+      - name: channel
+        description: >
+          Kênh phát sinh hoặc kênh bán hàng của cơ hội.
+        meta:
+          dimension:
+            type: string
+            label: "Kênh bán hàng"
+
+      - name: presales_name
+        description: >
+          Nhân sự Presales phụ trách hỗ trợ tư vấn,
+          giải pháp hoặc kỹ thuật cho cơ hội bán hàng.
+        meta:
+          dimension:
+            type: string
+            label: "Nhân viên Presales"
+
+      - name: project_manager
+        description: >
+          Nhân sự quản lý dự án phụ trách cơ hội hoặc dự án
+          liên quan đến cơ hội bán hàng.
+        meta:
+          dimension:
+            type: string
+            label: "Quản lý dự án"
+
+      - name: partner
+        description: >
+          Mã định danh đối tác liên quan đến cơ hội bán hàng.
+        meta:
+          dimension:
+            type: number
+            label: "Mã đối tác"
+
+      - name: territory_name
+        description: >
+          Tên khu vực hoặc địa bàn kinh doanh phụ trách cơ hội.
+        meta:
+          dimension:
+            type: string
+            label: "Khu vực kinh doanh"
+
+      - name: deal_stage_name
+        description: >
+          Giai đoạn hiện tại của cơ hội trong quy trình bán hàng.
+        meta:
+          dimension:
+            type: string
+            label: "Giai đoạn cơ hội"
+
+      # ============================================================
+      # PRODUCT
+      # ============================================================
+      - name: product_service_group_vcs
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm VCS.
+        meta:
+          dimension:
+            type: string
+            label: Nhóm sản phẩm/dịch vụ theo phân nhóm VCS
+            synonyms:
+            - Nhóm SPDV vận hành nội bộ VCS
+            - Nhóm Mass
+            - Nhóm Sản phẩm mới
+            - Nhóm MSS-Hệ sinh thái SOC
+            - Nhóm SP Standalone
+            - Nhóm Telco
+            - Nhóm Professional Services
+            - Nhóm MSS-CA
+            - Nhóm MSS-MDR Service
+            - Nhóm kinh doanh SI
+            - Nhóm SP Standalone-SPDV MỚI
+
+      - name: product_service_group
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ. 
+        meta:
+          dimension:
+            type: string
+            label: hóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ
+            synonyms:
+            - Nhóm SPDV báo cáo tập đoàn
+            - SPDV MỚI
+            - SP An ninh Viễn thông
+            - Hệ sinh thái SOC
+            - KHÁC (PC, PM phát sinh)
+            - Dịch vụ ATTT chuyên sâu = Nhóm Professional Services = Dịch vụ ATTT chuyên nghiệp
+      - name: product_category_code
+        description: Mã Danh mục SPDV.
+
+      - name: product_id
+        description: "Mã sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: number
+            label: "Product ID"
+
+      - name: product_name
+        description: "Tên sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Sản phẩm/Dịch vụ"
+
+      - name: product_category
+        description: "Nhóm/ngành hàng của sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm sản phẩm"
+
+      - name: product_version
+        description: "Phiên bản sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Phiên bản SPDV"
+
+      - name: product_type
+        description: "Loại sản phẩm."
+        meta:
+          dimension:
+            type: string
+            label: "Loại sản phẩm"
+
+      - name: spdv_type
+        description: "Phân loại sản phẩm/dịch vụ (SPDV)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại SPDV"
+
+      # ============================================================
+      # ALLOCATION
+      # ============================================================
+
+      - name: allocation_value
+        description: "Giá trị doanh thu/giá trị phân bổ cho sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị phân bổ"
+            format: "#,##0.00"
+
+          metrics:
+            total_allocation_value:
+              type: sum
+              label: "Tổng giá trị phân bổ"
+              description: "Tổng giá trị phân bổ của các sản phẩm/dịch vụ."
+              format: "#,##0.00"
+
+            avg_allocation_value:
+              type: average
+              label: "Giá trị phân bổ trung bình"
+              format: "#,##0.00"
+
+            min_allocation_value:
+              type: min
+              label: "Giá trị phân bổ nhỏ nhất"
+              format: "#,##0.00"
+
+            max_allocation_value:
+              type: max
+              label: "Giá trị phân bổ lớn nhất"
+              format: "#,##0.00"
+
+      - name: allocation_duration
+        description: "Thời gian phân bổ của sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: number
+            label: "Thời gian phân bổ"
+
+          metrics:
+            total_allocation_duration:
+              type: sum
+              label: "Tổng thời gian phân bổ"
+
+            avg_allocation_duration:
+              type: average
+              label: "Thời gian phân bổ trung bình"
+
+      - name: coefficient_percent
+        description: >
+          Hệ số phân bổ theo phần trăm. Giá trị cần được chuẩn hóa thống nhất
+          trước khi sử dụng trong các phép tính semantic layer.
+        meta:
+          dimension:
+            type: number
+            label: "Hệ số phân bổ (%)"
+            format: "0.00%"
+
+          metrics:
+            avg_coefficient:
+              type: average
+              label: "Hệ số phân bổ trung bình"
+              format: "0.00%"
+
+      - name: allocation_type
+        description: "Loại phân bổ giá trị cho sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Loại phân bổ"
+
+      # ============================================================
+      # DATE
+      # ============================================================
+
+      - name: forecast_date
+        description: "Ngày dự báo doanh thu/giá trị phân bổ."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày dự báo"
+            time_interval:
+              - DAY
+              - WEEK
+              - MONTH
+              - QUARTER
+              - YEAR
+
+      - name: actual_date
+        description: "Ngày ghi nhận thực tế."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày thực tế"
+            time_interval:
+              - DAY
+              - WEEK
+              - MONTH
+              - QUARTER
+              - YEAR
+
+      # ============================================================
+      # ORGANIZATION / GEOGRAPHY
+      # ============================================================
+
+      - name: region
+        description: "Khu vực kinh doanh."
+        meta:
+          dimension:
+            type: string
+            label: "Khu vực"
+
+      # ============================================================
+      # CURRENCY
+      # ============================================================
+
+      - name: currency
+        description: "Loại tiền tệ của giá trị phân bổ."
+        meta:
+          dimension:
+            type: string
+            label: "Loại tiền tệ"
+
+      # ============================================================
+      # LIGHTDASH TABLE-LEVEL METRICS
+      # ============================================================
+
+      # - name: company_id
+      #   description: Mã định danh duy nhất của công ty
+      - name: company_alias
+        description: Tên thay thế của khách hàng hoặc công ty, bao gồm tên viết tắt, tên gọi ngắn hoặc tên thường được sử dụng để nhận diện khách hàng.
+        meta:
+          dimension:
+            type: string
+            label: Tên thay thế khách hàng
+            synonyms:
+              - tên thay thế
+              - tên viết tắt
+              - viết tắt
+              - bí danh công ty
+              - biệt danh công ty
+              - tên gọi khác
+              - tên gọi ngắn
+              - alias
+              - company alias
+              - short name
+      - name: company_name
+        description: Tên khách hàng hoặc tên công ty được sử dụng để nhận diện khách hàng trong hệ thống CRM.
+        meta:
+          dimension:
+            type: string
+            label: Tên khách hàng
+            synonyms:
+              - khách hàng
+              - tên khách hàng
+              - công ty
+              - tên công ty
+              - doanh nghiệp
+              - tên doanh nghiệp
+              - customer
+              - customer name
+              - company
+              - company name
+      - name: deal_name
+        description: Tên giao dịch/cơ hội
+      - name: contract_number
+        description: Mã Hợp Đồng
+      - name: is_soc_qualified
+        description: "Đã đạt điều kiện xác định là SOC"
+        meta:
+          dimension:
+            type: boolean
+            label: "Đã đạt điều kiện xác định là SOC"

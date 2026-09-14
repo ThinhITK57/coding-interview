@@ -1,0 +1,95 @@
+version: 2
+models:
+- name: qtsx_v2_issue_ulnl
+  description: "Bảng qtsx_v2_issue_ulnl (nguồn Power BI: Issue ULNL)."
+  meta:
+    label: "Issue ULNL"
+    powerbi_source: "Issue ULNL"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_issue_ulnl.projectname} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      sum_ulnl_mm:
+        type: sum
+        sql: ulnl_mm
+        label: "ULNL"
+        description: "Sinh từ Power BI: sum(Issue ULNL.ULNL MM)"
+  columns:
+  - name: issueid
+    description: "Cột issueid trong Issue ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "issueid"
+        hidden: true
+  - name: issuekey
+    description: "Cột issuekey trong Issue ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong Issue ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: projectname
+    description: "Cột projectname trong Issue ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+        hidden: true
+  - name: resolved
+    description: "Cột resolved trong Issue ULNL."
+    meta:
+      dimension:
+        type: timestamp
+        label: "resolved"
+        hidden: true
+  - name: status
+    description: "Cột status trong Issue ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "status"
+        hidden: true
+  - name: work_type
+    description: "Cột Loại công việc trong Issue ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "Loại công việc"
+        hidden: true
+  - name: total_effort_excl_reuse
+    description: "Cột Tổng ULNL đã trừ tái sử dụng trong Issue ULNL."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng ULNL đã trừ tái sử dụng"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong Issue ULNL. Cột tính toán, DAX gốc: FORMAT('Issue ULNL'[resolved], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: working_days_in_resolved_month
+    description: "Cột Working Days in Resolved Month trong Issue ULNL. Cột tính toán, DAX gốc: VAR ResolvedDate = 'Issue ULNL'[Resolved] VAR StartOfMonths = DATE( YEAR(ResolvedDate), MONTH(ResolvedDate), 1 ) VAR EndOfMonths = EOMONTH(ResolvedDate, 0) RETURN IF( ISBLANK(ResolvedDate), BLANK(), COUNTROWS( FILTER( CALENDAR(StartOfMonths, EndOfMonths), WEEKDAY([Date], 2) <= 5 -- Thứ 2 đến Thứ 6 ) ) )"
+    meta:
+      dimension:
+        type: number
+        label: "Working Days in Resolved Month"
+        hidden: true
+  - name: ulnl_mm
+    description: "Cột ULNL MM trong Issue ULNL. Cột tính toán, DAX gốc: 'Issue ULNL'[Tổng ULNL đã trừ tái sử dụng] / ('Issue ULNL'[Working Days in Resolved Month] *8)"
+    meta:
+      dimension:
+        type: number
+        label: "ULNL MM"
+        hidden: true

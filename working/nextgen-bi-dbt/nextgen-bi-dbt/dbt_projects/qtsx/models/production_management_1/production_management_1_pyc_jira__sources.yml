@@ -1,0 +1,86 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_pyc_jira
+    description: "Nguồn Power BI: PYC Jira"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_current_type_name
+      description: "Cột ISSUE_CURRENT_TYPE_NAME"
+    - name: issue_created
+      description: "Cột ISSUE_CREATED"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_current_status_name
+      description: "Cột ISSUE_CURRENT_STATUS_NAME"
+    - name: issue_current_assignee_name
+      description: "Cột ISSUE_CURRENT_ASSIGNEE_NAME"
+    - name: internal_due_date
+      description: "Cột Due_date_nội_bộ_10613"
+    - name: project
+      description: "Cột Dự_án_10706"
+    - name: mm_pyc
+      description: "Cột MM_PYC_10705"
+    - name: request_created_date
+      description: "Cột Ngày_tạo_PYC_10708"
+    - name: on_time_check
+      description: "Cột Check_đúng_hạn_10804"
+    - name: order_value
+      description: "Cột Đơn_hàng_10707"
+    - name: end_date_commit
+      description: "Cột EndDate_commit"
+    - name: post_acceptance_defect_count_weighted
+      description: "Cột Số Lỗi Sau Nghiệm thu (đã nhân hệ số)"
+    - name: post_acceptance_bug_count
+      description: "Cột Số Bug sau nghiệm thu"
+    - name: end_date_ttsp
+      description: "Cột End Date_TTSP"
+    - name: partner
+      description: "Cột Đối_tác_10801"
+    - name: payment_status
+      description: "Cột Trạng_thái_thanh_toán_10810"
+    - name: mm_pyc_thuc_te
+      description: "Cột MM_PYC_Thực_tế_10823"
+    - name: mm_ttsx_estimate
+      description: "Cột MM_TTSX_Estimate_10830"
+    - name: ttsx_pm_commit_date
+      description: "Cột Ngày_PM_TTSX_commit_10808"
+    - name: acceptance_completion_date
+      description: "Cột Ngày_hoàn_thành_nghiệm_thu_10805"
+    - name: expected_ttsx_handover_date
+      description: "Cột Ngày_kỳ_vọng_TTSX_bàn_giao_10151"
+    - name: expected_release_date
+      description: "Cột Ngày_kỳ_vọng_release_10817"
+    - name: end_date_acceptance
+      description: "Cột End Date_Nghiệm thu"
+    - name: ttsx_product
+      description: "Cột TTSX_PRODUCT_10803"
+    - name: mm_ttsx_du_kien
+      description: "Cột MM_TTSX_Dự_kiến_10840"
+    - name: ttsx_planned_date
+      description: "Cột Ngày_TTSX_Dự_kiến_10841"
+    - name: payment_date
+      description: "Cột Ngày_thanh_toán_10839"
+    - name: type_os
+      description: "Cột Loại_OS_10843"
+    - name: partner_by_contract
+      description: "Cột Đối_tác_theo_HĐ_10842"
+    - name: on_time_check_2
+      description: "Cột Kiểm tra đúng hạn"
+    - name: ttsx_commit_date
+      description: "Cột Ngày_TTSX_commit_10845"
+    - name: ttsx_commit_jmcf_date
+      description: "Cột Ngày_TTSX_commit_JMCF_10838"
+    - name: acceptance_success_date
+      description: "Cột Ngày_nghiệm_thu_thành_công_10847"
+    - name: release_date
+      description: "Cột Ngày_Release_10806"
+    - name: handover_date
+      description: "Cột Ngày_bàn_giao_10849"

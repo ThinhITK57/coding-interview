@@ -1,0 +1,274 @@
+version: 2
+
+models:
+- name: hr_ld_class_list
+  description: >
+    Bảng **hr_ld_class_list** lưu trữ thông tin danh sách các lớp đào tạo trong hệ thống Learning & Development,
+    bao gồm thông tin quản lý lớp học, chương trình đào tạo, hình thức tổ chức, thời gian triển khai,
+    số lượng học viên tham gia, giảng viên phụ trách và các kết quả đánh giá sau đào tạo.
+    Dữ liệu được sử dụng để theo dõi kế hoạch và tình hình triển khai đào tạo, đánh giá hiệu quả các khóa học,
+    quản lý nguồn lực đào tạo và hỗ trợ công tác báo cáo, phân tích hoạt động phát triển năng lực nhân sự.
+
+  meta:
+    label: "L&D Class List"
+    owner: "tranpth"
+    metrics:
+      class_count:
+        type: count_distinct
+        sql: ${TABLE}.class_code
+        description: "Số lượng lớp đào tạo được ghi nhận."
+        label: "Class Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số lớp học"
+          - "Số lượng lớp đào tạo"
+          - "Training Class Count"
+
+      completed_class_count:
+        type: count_distinct
+        sql: CASE WHEN ${TABLE}.class_status = 'Hoàn thành' THEN ${TABLE}.class_code END
+        description: "Số lượng lớp đào tạo có trạng thái hoàn thành."
+        label: "Completed Class Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số lớp hoàn thành"
+          - "Completed Training Classes"
+
+      class_completion_rate:
+        type: number
+        sql: ROUND(100.0 * ${completed_class_count} / NULLIF(${class_count}, 0.0), 2)
+        description: "Tỷ lệ lớp học hoàn thành trên tổng số lớp học."
+        label: "Class Completion Rate (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ hoàn thành lớp học"
+          - "Tỉ lệ hoàn thành"
+          - "Training Completion Rate"
+
+      planned_learner_count:
+        type: sum
+        sql: ${TABLE}.planned_learner_count
+        description: "Tổng số học viên dự kiến tham gia các lớp đào tạo."
+        label: "Planned Learner Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số học viên kế hoạch"
+          - "Planned Participants"
+
+      actual_learner_count:
+        type: sum
+        sql: ${TABLE}.actual_learner_count
+        description: "Tổng số học viên thực tế tham gia các lớp đào tạo."
+        label: "Actual Learner Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số học viên thực tế"
+          - "Actual Participants"
+
+      learner_attendance_rate:
+        type: number
+        sql: ROUND(100.0 * ${actual_learner_count} / NULLIF(${planned_learner_count}, 0.0), 2)
+        description: "Tỷ lệ học viên thực tế tham gia so với số lượng học viên kế hoạch."
+        label: "Learner Attendance Rate (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ tham gia thực tế"
+          - "Attendance Rate"
+
+      total_training_hours:
+        type: sum
+        sql: ${TABLE}.training_hours
+        description: "Tổng số giờ đào tạo được thực hiện."
+        label: "Total Training Hours"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng số giờ học"
+          - "Tổng giờ đào tạo"
+          - "Training Hours"
+
+      avg_training_hours_per_class:
+        type: number
+        sql: ${total_training_hours} / NULLIF(${class_count}, 0.0)
+        description: "Số giờ đào tạo trung bình trên mỗi lớp học."
+        label: "Average Training Hours per Class"
+        category: "Learning & Development"
+        synonyms:
+          - "Giờ học trung bình mỗi lớp"
+          - "Average Class Duration"
+
+      avg_training_hours_per_learner:
+        type: number
+        sql: ${total_training_hours} / NULLIF(${actual_learner_count}, 0.0)
+        description: "Số giờ đào tạo trung bình trên mỗi học viên thực tế."
+        label: "Average Training Hours per Learner"
+        category: "Learning & Development"
+        synonyms:
+          - "Giờ học trung bình/người"
+          - "Training Hours per Learner"
+
+      avg_satisfaction_score:
+        type: average
+        sql: TRY_CAST(${TABLE}.average_rating AS double)
+        description: "Điểm hài lòng trung bình của lớp đào tạo."
+        label: "Average Satisfaction Score"
+        category: "Learning & Development"
+        synonyms:
+          - "Điểm hài lòng trung bình"
+          - "Average Rating"
+          - "Training Satisfaction Score"
+
+      avg_organization_rating:
+        type: average
+        sql: TRY_CAST(${TABLE}.organization_rating AS double)
+        description: "Điểm đánh giá trung bình về công tác tổ chức lớp đào tạo."
+        label: "Average Organization Rating"
+        category: "Learning & Development"
+        synonyms:
+          - "Điểm tổ chức trung bình"
+          - "Organization Rating"
+
+      avg_pass_rate:
+        type: average
+        sql: ROUND(TRY_CAST(REPLACE(${TABLE}.pass_rate, '%', '') AS double), 2)
+        description: "Tỷ lệ học viên đạt yêu cầu hoặc hoàn thành lớp đào tạo trung bình."
+        label: "Average Pass Rate (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ đạt trung bình"
+          - "Pass Rate"
+
+  columns:
+    - name: organizing_unit
+      description: Đơn vị chịu trách nhiệm tổ chức lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Đơn vị phụ trách"
+
+    - name: pic
+      description: Nhân sự phụ trách hoặc đầu mối quản lý lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "PIC phụ trách"
+
+    - name: class_code
+      description: Mã định danh của lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Mã lớp học"
+      tests:
+        - not_null
+
+    - name: class_name
+      description: Tên lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Tên lớp đào tạo"
+
+    - name: course_name
+      description: Tên khóa học được triển khai trong lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Tên khóa học"
+
+    - name: training_program
+      description: Chương trình đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Tên chương trình đào tạo"
+
+    - name: training_method
+      description: Phương pháp hoặc nền tảng đào tạo được áp dụng cho lớp học
+      meta:
+        dimension:
+          type: string
+          label: "Loại hình đào tạo"
+
+    - name: program_group
+      description: Nhóm chương trình đào tạo được phân loại theo mục tiêu hoặc nội dung đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Nhóm chương trình"
+
+    - name: training_format
+      description: Hình thức tổ chức đào tạo như trực tiếp, trực tuyến hoặc kết hợp
+      meta:
+        dimension:
+          type: string
+          label: "Hình thức đào tạo"
+
+    - name: class_status
+      description: Trạng thái hiện tại của lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Trạng thái lớp học"
+
+    - name: training_duration
+      description: Thời lượng đào tạo của lớp học
+      meta:
+        dimension:
+          type: string
+          label: "Thời lượng lớp học"
+
+    - name: start_date
+      description: Ngày bắt đầu triển khai lớp đào tạo
+      meta:
+        dimension:
+          type: timestamp
+          label: "Start Date"
+
+    - name: end_date
+      description: Ngày kết thúc lớp đào tạo
+      meta:
+        dimension:
+          type: timestamp
+          label: "End Date"
+
+    - name: month
+      description: Tháng triển khai lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Tháng triển khai"
+
+    - name: year
+      description: Năm triển khai lớp đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Năm triển khai"
+
+    - name: training_content
+      description: Nội dung hoặc chuyên đề đào tạo được triển khai
+      meta:
+        dimension:
+          type: string
+          label: "Nội dung chuyên đề"
+
+    - name: instructor_name
+      description: Họ và tên giảng viên hoặc chuyên gia đào tạo phụ trách lớp học
+      meta:
+        dimension:
+          type: string
+          label: "Giảng viên"
+
+    - name: average_rating
+      description: Điểm đánh giá trung bình của lớp đào tạo từ học viên hoặc các bên liên quan
+      meta:
+        dimension:
+          type: string
+          label: "Average Rating"
+
+    - name: level_2_evaluation
+      description: Kết quả đánh giá cấp độ 2 về mức độ tiếp thu kiến thức hoặc kỹ năng sau đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Kết quả đánh giá cấp độ 2 sau đào tạo"

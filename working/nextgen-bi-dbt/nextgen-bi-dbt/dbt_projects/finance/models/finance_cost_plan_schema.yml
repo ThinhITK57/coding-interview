@@ -1,0 +1,121 @@
+version: 2
+
+models:
+- name: finance_cost_plan
+  description: >
+    Lưu trữ dữ liệu kế hoạch tài chính, bao gồm ngân sách dự kiến và các chỉ tiêu kế hoạch
+    về chi phí. Bảng là cơ sở để phân tích Thực tế so với Kế hoạch (Actual vs Plan),
+    theo dõi ngân sách, kiểm soát chi tiêu và đánh giá mức độ hoàn thành kế hoạch.
+    Toàn bộ giá trị tiền tệ trong bảng được lưu theo đơn vị triệu VND và không bao gồm VAT.
+
+  meta:
+    label: "Kế hoạch chi phí"
+    owner: "sonnv1"
+
+    metrics:
+      total_expected_cost_value:
+        type: sum
+        sql: ${TABLE}.expected_cost_value
+        description: Tổng chi phí kế hoạch, không bao gồm VAT.
+        label: "Tổng chi phí kế hoạch"
+        category: "Kế hoạch"
+        synonyms:
+          - "Tổng chi phí kế hoạch"
+          - "Chi phí kế hoạch"
+          - "Budget Cost"
+          - "Plan Cost"
+          - "Total Expected Cost"
+
+      avg_expected_cost_value:
+        type: average
+        sql: ${TABLE}.expected_cost_value
+        description: Giá trị chi phí kế hoạch trung bình, không bao gồm VAT.
+        label: "Chi phí kế hoạch trung bình"
+        category: "Kế hoạch"
+        synonyms:
+          - "Chi phí kế hoạch trung bình"
+          - "Average Plan Cost"
+          - "Avg Expected Cost"
+
+      max_expected_cost_value:
+        type: max
+        sql: ${TABLE}.expected_cost_value
+        description: Giá trị chi phí kế hoạch lớn nhất, không bao gồm VAT.
+        label: "Chi phí kế hoạch lớn nhất"
+        category: "Kế hoạch"
+        synonyms:
+          - "Chi phí kế hoạch lớn nhất"
+          - "Maximum Plan Cost"
+          - "Max Expected Cost"
+
+      min_expected_cost_value:
+        type: min
+        sql: ${TABLE}.expected_cost_value
+        description: Giá trị chi phí kế hoạch nhỏ nhất, không bao gồm VAT.
+        label: "Chi phí kế hoạch nhỏ nhất"
+        category: "Kế hoạch"
+        synonyms:
+          - "Chi phí kế hoạch nhỏ nhất"
+          - "Minimum Plan Cost"
+          - "Min Expected Cost"
+
+      total_cost_plan_record_count:
+        type: count
+        sql: "1.0"
+        description: Tổng số bản ghi kế hoạch chi phí.
+        label: "Số bản ghi kế hoạch"
+        category: "Kế hoạch"
+        synonyms:
+          - "Số bản ghi"
+          - "Số dòng kế hoạch"
+          - "Cost Plan Record Count"
+
+  columns:
+  - name: plan_date
+    description: Ngày kế hoạch của khoản chi phí dự kiến.
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày kế hoạch"
+
+  - name: plan_year
+    description: Năm kế hoạch, được lấy từ plan_date.
+    meta:
+      dimension:
+        type: number
+        label: "Năm kế hoạch"
+
+  - name: plan_month
+    description: Tháng kế hoạch, được lấy từ plan_date.
+    meta:
+      dimension:
+        type: number
+        label: "Tháng kế hoạch"
+
+  - name: cost_code
+    description: Mã khoản mục chi phí trong kế hoạch tài chính.
+    meta:
+      dimension:
+        type: string
+        label: "Mã khoản mục"
+
+  - name: cost_group
+    description: Nhóm chi phí trong kế hoạch tài chính.
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm chi phí"
+
+  - name: expected_cost_value
+    description: Giá trị chi phí kế hoạch, đơn vị triệu VND, không bao gồm VAT.
+    meta:
+      dimension:
+        type: number
+        label: "Chi phí kế hoạch"
+
+  - name: currency_code
+    description: Mã tiền tệ sử dụng trong kế hoạch. Hiện tại được chuẩn hóa về VND.
+    meta:
+      dimension:
+        type: string
+        label: "Mã tiền tệ"

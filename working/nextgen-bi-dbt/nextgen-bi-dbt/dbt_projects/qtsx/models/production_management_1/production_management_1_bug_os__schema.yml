@@ -1,0 +1,166 @@
+version: 2
+models:
+- name: production_management_1_bug_os
+  description: "Bảng production_management_1_bug_os (nguồn Power BI: Bug OS)."
+  meta:
+    label: "Bug OS"
+    powerbi_source: "Bug OS"
+    joins:
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_bug_os.issue_project_id} = ${production_management_1_project_name.id}"
+      relationship: many-to-many
+    metrics:
+      count_acceptance_bug_thanh_cong:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_name = 'NGHIỆM THU THÀNH CÔNG' THEN id END"
+        label: "Số Bug nghiệm thu thành công"
+        round: 0
+        description: "DAX: CALCULATE( DISTINCTCOUNT('Bug OS'[Id]), FILTER('Bug OS', 'Bug OS'[ISSUE_CURRENT_STATUS_NAME] = \"NGHIỆM THU THÀNH CÔNG\"))"
+      count_acceptance_bug_that_bai:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_name = 'NGHIỆM THU THẤT BẠI' THEN id END"
+        label: "Số Bug Nghiệm thu thất bại"
+        round: 0
+        description: "DAX: CALCULATE( DISTINCTCOUNT('Bug OS'[Id]), FILTER('Bug OS', 'Bug OS'[ISSUE_CURRENT_STATUS_NAME] = \"NGHIỆM THU THẤT BẠI\"))"
+      count_bug:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_name <> 'Cancelled' THEN id END"
+        label: "Số Bug"
+        round: 0
+        description: "DAX: CALCULATE ( DISTINCTCOUNT ( 'Bug OS'[Id] ), FILTER ( 'Bug OS', 'Bug OS'[ISSUE_CURRENT_STATUS_NAME] <> \"Cancelled\" ) )"
+      count_bug_in_progress:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_name = 'IN PROGRESS' THEN id END"
+        label: "Số Bug IN PROGRESS"
+        round: 0
+        description: "DAX: CALCULATE( DISTINCTCOUNT('Bug OS'[Id]), FILTER('Bug OS', 'Bug OS'[ISSUE_CURRENT_STATUS_NAME] = \"IN PROGRESS\"))"
+      count_bug_order:
+        type: number
+        sql: "CAST(COUNT(DISTINCT CASE WHEN issue_current_status_name <> 'Cancelled' THEN id END) AS DOUBLE) / NULLIF(COUNT(DISTINCT CASE WHEN center IS NOT NULL AND trim(center) <> ''
+                              AND issue_current_status_name <> 'Cancelled'
+                             THEN order_value END), 0)"
+        label: "Số Bug/Đơn hàng"
+        round: 2
+        description: "DAX: DIVIDE('Project vs. Department'[Số Bug],'Project vs. Department'[Số đơn hàng Bug nghiệm thu])"
+      count_bug_san_sang_acceptance:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_name = 'SẴN SÀNG NGHIỆM THU' THEN id END"
+        label: "Số Bug SẴN SÀNG NGHIỆM THU"
+        round: 0
+        description: "DAX: CALCULATE( DISTINCTCOUNT('Bug OS'[Id]), FILTER('Bug OS', 'Bug OS'[ISSUE_CURRENT_STATUS_NAME] = \"SẴN SÀNG NGHIỆM THU\"))"
+      count_bug_todo:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_name = 'TO DO' THEN id END"
+        label: "Số Bug todo"
+        round: 0
+        description: "DAX: CALCULATE( DISTINCTCOUNT('Bug OS'[Id]), FILTER('Bug OS', 'Bug OS'[ISSUE_CURRENT_STATUS_NAME] = \"TO DO\"))"
+      count_order_acceptance_bug:
+        type: count_distinct
+        sql: "CASE WHEN center IS NOT NULL AND trim(center) <> '' AND issue_current_status_name <> 'Cancelled' THEN order_value END"
+        label: "Số đơn hàng Bug nghiệm thu"
+        description: "DAX: CALCULATE(DISTINCTCOUNT('Bug OS'[Đơn_hàng_13421]), FILTER('Bug OS', NOT ISBLANK('Bug OS'[Trung tâm]) && 'Bug OS'[ISSUE_CURRENT_STATUS_NAME] <> \"Cancelled\"))"
+      rate_acceptance_bug_thanh_cong:
+        type: number
+        sql: "CAST(COUNT(DISTINCT CASE WHEN issue_current_status_name = 'NGHIỆM THU THÀNH CÔNG' THEN id END) AS DOUBLE) / NULLIF(COUNT(DISTINCT CASE WHEN issue_current_status_name <> 'Cancelled' THEN id END), 0)"
+        label: "Tỉ lệ Bug nghiệm thu thành công"
+        format: percent
+        round: 2
+        description: "DAX: DIVIDE('Project vs. Department'[Số Bug nghiệm thu thành công],[Số Bug])"
+  columns:
+  - name: id
+    description: "Cột Id trong Bug OS."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Bug OS."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong Bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+        hidden: true
+  - name: issue_project_key
+    description: "Cột ISSUE_PROJECT_KEY trong Bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PROJECT_KEY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Bug OS."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong Bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+  - name: issue_resolved
+    description: "Cột ISSUE_RESOLVED trong Bug OS."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_RESOLVED"
+        hidden: true
+  - name: order_value
+    description: "Cột Đơn_hàng_13421 trong Bug OS."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn_hàng_13421"
+        hidden: true
+  - name: project_name
+    description: "Cột Project_Name trong Bug OS. Cột tính toán, DAX gốc: LOOKUPVALUE('Bug nghiệm thu_Projects'[Project_SP],'Bug nghiệm thu_Projects'[Id],'Bug OS'[ISSUE_PROJECT_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "Project_Name"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong Bug OS. Cột tính toán, DAX gốc: IF('Bug OS'[ISSUE_CURRENT_STATUS_NAME] <> \"Cancelled\",\"TTSX\",BLANK())"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true
+  - name: sort_priority
+    description: "Cột Sort_priority trong Bug OS. Cột tính toán, DAX gốc: LOOKUPVALUE(Muc_Order_Table[Muc_Order],Muc_Order_Table[ISSUE_PRIORITY],'Bug OS'[ISSUE_PRIORITY])"
+    meta:
+      dimension:
+        type: number
+        label: "Sort_priority"
+        hidden: true
+  - name: date_value
+    description: "Cột Date trong Bug OS. Cột tính toán, DAX gốc: DATE(YEAR('Bug OS'[ISSUE_CREATED]), Month('Bug OS'[ISSUE_CREATED]), Day('Bug OS'[ISSUE_CREATED]))"
+    meta:
+      dimension:
+        type: date
+        label: "Date"
+        hidden: true

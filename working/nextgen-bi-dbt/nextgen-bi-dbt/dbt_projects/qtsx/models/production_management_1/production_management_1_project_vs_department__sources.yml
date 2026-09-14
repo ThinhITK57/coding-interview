@@ -1,0 +1,18 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_project_vs_department
+    description: "Nguồn Power BI: Project vs. Department"
+    columns:
+    - name: project_name
+      description: "Cột ProjectName"
+    - name: division
+      description: "Cột Khối"
+    - name: product
+      description: "Cột Sản phẩm"
+    - name: project_name_except_space
+      description: "Cột ProjectName_exceptSpace"

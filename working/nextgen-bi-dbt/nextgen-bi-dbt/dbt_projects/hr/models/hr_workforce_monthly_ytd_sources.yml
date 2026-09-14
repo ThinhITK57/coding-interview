@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: bi_silver__hr
+    database: hive
+    schema: bi_silver
+    description: 'Silver layer sources for domain: hr'
+
+    tables:
+      - name: hr_workforce_monthly_ytd
+        description: >
+          View **hr_workforce_monthly_ytd** lưu trữ dữ liệu Workforce lũy kế từ ngày 01/01
+          của năm báo cáo tới từng tháng báo cáo, được tính từ bảng hr_workforce_monthly.

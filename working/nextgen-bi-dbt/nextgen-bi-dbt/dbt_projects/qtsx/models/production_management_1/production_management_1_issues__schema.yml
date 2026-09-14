@@ -1,0 +1,64 @@
+version: 2
+models:
+- name: production_management_1_issues
+  description: "Bảng production_management_1_issues (nguồn Power BI: Issues)."
+  meta:
+    label: "Issues"
+    powerbi_source: "Issues"
+  columns:
+  - name: id
+    description: "Cột Id trong Issues."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Issues."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_type_id
+    description: "Cột ISSUE_TYPE_ID trong Issues."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_TYPE_ID"
+        hidden: true
+  - name: issue_resolved
+    description: "Cột ISSUE_RESOLVED trong Issues."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_RESOLVED"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Issues."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_project_key
+    description: "Cột ISSUE_PROJECT_KEY trong Issues."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PROJECT_KEY"
+        hidden: true
+  - name: issue_time_spent_with_st
+    description: "Cột ISSUE_TIME_SPENT_WITH_ST trong Issues."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_TIME_SPENT_WITH_ST"
+        hidden: true
+  - name: total_effort_excl_reuse
+    description: "Cột Tổng_ULNL_đã_trừ_tái_sử_dụng_13370 trong Issues."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_ULNL_đã_trừ_tái_sử_dụng_13370"
+        hidden: true

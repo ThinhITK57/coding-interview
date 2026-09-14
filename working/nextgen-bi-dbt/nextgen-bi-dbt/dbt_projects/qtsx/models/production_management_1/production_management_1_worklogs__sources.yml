@@ -1,0 +1,38 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_worklogs
+    description: "Nguồn Power BI: Worklogs"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: worklog_worklog_date
+      description: "Cột WORKLOG_WORKLOG_DATE"
+    - name: worklog_logged_time
+      description: "Cột WORKLOG_LOGGED_TIME"
+    - name: worklog_issue_id
+      description: "Cột WORKLOG_ISSUE_ID"
+    - name: worklog_username
+      description: "Cột WORKLOG_USERNAME"
+    - name: working_days_in_month_worklog
+      description: "Cột WorkingDaysInMonth worklog"
+    - name: worklog_mm
+      description: "Cột Worklog MM"
+    - name: year_value
+      description: "Cột Năm"
+    - name: date_value
+      description: "Cột Date"
+    - name: ttsx_product
+      description: "Cột TTSX_PRODUCT"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: worklog_fix_version
+      description: "Cột WorklogFIX_Version"
+    - name: ulnl_fix_version
+      description: "Cột ULNL FIX VERSION"
+    - name: release_date
+      description: "Cột Release Date"

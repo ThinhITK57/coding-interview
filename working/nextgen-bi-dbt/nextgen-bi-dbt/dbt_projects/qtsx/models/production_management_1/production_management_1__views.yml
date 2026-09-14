@@ -1,0 +1,72 @@
+# VIẾT TAY — khai báo các VIEW ở tầng silver làm source cho dbt.
+#
+# DDL của toàn bộ view: powerbi/Quản trị sản xuất (1)-parquet/create_views_trino.sql
+# (chạy sau create_tables_trino.sql, trước `dbt run`).
+#
+# Tên source cố ý KHÁC `pbi_silver__production_management_1` — đó là source sinh tự
+# động từ mapping.yml (94 bảng Power BI), nằm ở file production_management_1__source.yml
+# mà run.py ghi lại mỗi lần chạy. Tách ra thì phần viết tay không bị mất.
+#
+# Cùng schema `pbi_silver`, cùng env var, nên đổi schema là cả hai đi theo.
+#
+# Hai nhóm:
+#   - không hậu tố : model dbt viết tay, không phải bảng Power BI
+#   - hậu tố _calc : bảng Power BI có dữ liệu export RỖNG (DAX calculated table /
+#                    calculated column) nên phải dựng lại; tên silver đã bị bảng
+#                    rỗng chiếm. `sql_overrides/<model>.sql` trỏ model vào view.
+#
+# View nội bộ `production_management_1_kpikqi_tkcg_base_calc` KHÔNG khai ở đây vì
+# không model nào đọc trực tiếp — chỉ 3 view _kpikqi_tkcg_report* dùng nó.
+version: 2
+sources:
+- name: pbi_silver_views__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "View viết tay ở tầng silver cho domain production_management_1 (đổi grain / dựng lại bảng DAX)."
+  tables:
+
+  # ----- model viết tay: đổi grain, không phải bảng Power BI ------------------
+  - name: production_management_1_pyc_os_events
+    description: >-
+      'PYC Jira' fan-out theo 6 mốc ngày (release / acceptance / handover /
+      commit / payment / planned) để dịch các measure USERELATIONSHIP.
+      GRAIN: (PYC × mốc ngày), 536 PYC -> 2.237 dòng.
+  - name: production_management_1_pyc_snapshot_events
+    description: >-
+      'PYC-Snapshot' gộp về grain (PYC × mốc ngày commit × tháng).
+      COUNT(*) = SUMX(VALUES(MonthYear), DISTINCTCOUNT(ISSUE_KEY)) của DAX.
+  - name: production_management_1_mm_ratio_by_project_month
+    description: >-
+      10 bảng gộp về grain (tháng × khối × sản phẩm) rồi ghép ngang, cho các
+      measure "chia khối lượng cho man-month" mà join thẳng thì fan-out.
+  - name: production_management_1_defect_rate_by_month
+    description: >-
+      Điểm defect và man-month gộp về grain THÁNG (không giữ khối), cho measure
+      '% Tỉ lệ defect' vốn REMOVEFILTERS('Khối') ở cả tử lẫn mẫu.
+
+  # ----- dựng lại bảng DAX calculated table -----------------------------------
+  - name: production_management_1_dim_date_calc
+    description: "Dim_Date dựng lại từ CALENDAR(2024-12-01, 2030-12-31) + 16 calculated column (bảng silver 11/17 cột rỗng)."
+  - name: production_management_1_period_selector_calc
+    description: "PeriodSelector = UNION(DISTINCT(Dim_Date[Tuần]), DISTINCT(Dim_Date[MonthYear]))."
+  - name: production_management_1_customer_summary_calc
+    description: "Customer_Summary = SUMMARIZE('KPIKQI_New', 6 khoá, 4 cột tính toán gồm CONCATENATEX)."
+  - name: production_management_1_kpikqi_tkcg_report_calc
+    description: "KPIKQI_TKCG_Report = UNION(_Week, _Month, _Quater) trên 'KPIKQI Dịch vụ TKCG'."
+  - name: production_management_1_kpikqi_tkcg_report_month_calc
+    description: "KPIKQI_TKCG_Report_Month: 3 metric (Độ phủ / Độ trễ / Đánh giá CR) × (ngày báo cáo × sản phẩm), ngữ cảnh Tick Month = 1."
+  - name: production_management_1_kpikqi_tkcg_report_quater_calc
+    description: "KPIKQI_TKCG_Report_Quater: như _Month nhưng dùng measure '- Trung bình Quý', ngữ cảnh Tick Quý = 1."
+  - name: production_management_1_kpikqi_all_calc
+    description: >-
+      KPIKQI_ALL = UNION(KPIKQI_TKCG_Report, FILTER(KPIKQI_NEW, TickKPI=1),
+      KPI_BoLotTanCong). Bản gốc trong .pbix rỗng vì DAX trỏ sai tên cột
+      (KPIKQI_TKCG_Report[SPDV] không tồn tại) — view đã sửa, xem comment trong DDL.
+
+  # ----- bù calculated column rỗng trên bảng CÓ dữ liệu ----------------------
+  - name: production_management_1_kpikqi_service_calc
+    description: >-
+      'KPIKQI dịch vụ' (6.119 dòng thật) + 8 calculated column tính bù:
+      [So với target] -> [Đánh giá] / [Màu sắc] -> [Cảnh báo KPI] và bộ n kỳ trước.
+  - name: production_management_1_n_5_vvip_incident_cause_id_calc
+    description: "'5VVIP_Nguyên nhân sự cố ID' (185 dòng thật) + cột [Customer] = LOOKUPVALUE sang '5VVIP_PRM_Companies'[VVIP]."

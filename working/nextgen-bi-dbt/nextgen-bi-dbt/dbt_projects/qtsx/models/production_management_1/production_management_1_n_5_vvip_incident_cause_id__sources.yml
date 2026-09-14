@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_n_5_vvip_incident_cause_id
+    description: "Nguồn Power BI: 5VVIP_Nguyên nhân sự cố ID"
+    columns:
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: incident_cause
+      description: "Cột Nguyên_nhân_sự_cố_11602"
+    - name: custom_field_id
+      description: "Cột CUSTOM_FIELD_ID"
+    - name: issue_id
+      description: "Cột ISSUE_ID"
+    - name: customer
+      description: "Cột Customer"

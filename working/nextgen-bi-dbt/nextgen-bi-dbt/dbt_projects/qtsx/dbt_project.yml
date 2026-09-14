@@ -1,0 +1,26 @@
+
+name: 'qtsx'
+version: '1.0.0'
+config-version: 2
+profile: 'qtsx'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  qtsx:
+    +materialized: "view"
+    +schema: "pbi_silver"
+
+    production_management_1:
+      +tags: ['production_management_1']
+    qtsx_v2:
+      +tags: ['qtsx_v2']

@@ -1,0 +1,12 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_dim_nhom_kh
+    description: "Nguồn Power BI: dim_nhom_KH"
+    columns:
+    - name: nhom_kh
+      description: "Cột NhomKH"

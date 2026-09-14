@@ -1,0 +1,32 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_issue_ulnl
+    description: "Nguồn Power BI: Issue ULNL"
+    columns:
+    - name: issueid
+      description: "Cột issueid"
+    - name: issuekey
+      description: "Cột issuekey"
+    - name: summary
+      description: "Cột summary"
+    - name: projectname
+      description: "Cột projectname"
+    - name: resolved
+      description: "Cột resolved"
+    - name: status
+      description: "Cột status"
+    - name: work_type
+      description: "Cột Loại công việc"
+    - name: total_effort_excl_reuse
+      description: "Cột Tổng ULNL đã trừ tái sử dụng"
+    - name: year_month
+      description: "Cột YearMonth"
+    - name: working_days_in_resolved_month
+      description: "Cột Working Days in Resolved Month"
+    - name: ulnl_mm
+      description: "Cột ULNL MM"

@@ -1,0 +1,417 @@
+version: 2
+
+models:
+  - name: crm_am_activity_daily
+    description: |
+      Daily aggregated CRM activity statistics by Account Manager (AM),
+      activity category, activity type, activity action, and CRM entity.
+
+      Grain:
+        1 row = activity_date × am_user × activity_category
+                 × activity_type × activity_action × entity_type.
+
+      This model is aggregated from crm_activity_history.
+
+      IMPORTANT:
+      This model represents CRM activity statistics based on available
+      activity records. It should NOT be interpreted as a complete audit
+      log of all actions performed by an AM.
+
+      activity_count measures the number of activity records.
+      distinct_object_count measures the number of unique CRM objects
+      associated with those activities.
+
+      Use distinct_* metrics when the business question asks for the
+      number of unique customers, contacts, opportunities, quotations,
+      or contracts.
+
+      Do not manually calculate totals, ratios, percentages, or derived
+      metrics from individual rows. Use aggregated metrics returned by
+      the database.
+
+    meta:
+      semantic_type: crm_am_activity_daily
+      owner: huongnv1
+      group_label: AM Dashboard
+
+    columns:
+
+      # ============================================================
+      # TIME
+      # ============================================================
+
+      - name: activity_date
+        description: |
+          Calendar date on which the CRM activity is recorded.
+
+          This is the primary time dimension for daily CRM activity
+          analysis.
+
+          Use this field for:
+            - daily trends
+            - weekly/monthly aggregation
+            - period comparison
+            - AM activity ranking by period.
+
+        meta:
+          semantic_role: activity_date
+          dimension_type: time
+
+      # ============================================================
+      # AM
+      # ============================================================
+
+      - name: am_user_id
+        description: |
+          Unique CRM user ID of the Account Manager (AM) associated
+          with the activity.
+
+          Use this field when filtering, grouping, joining, or identifying
+          an AM programmatically.
+
+        meta:
+          semantic_role: am_id
+
+      - name: am_user_name
+        description: |
+          Display name of the Account Manager associated with the activity.
+
+          Use this field as the primary human-readable AM dimension.
+
+        meta:
+          semantic_role: am_name
+
+      - name: am_group
+        description: |
+          Business classification of the Account Manager.
+
+          Typical values include:
+            - UNNAMED
+            - VVIP
+            - CHANNEL
+            - INTERNAL
+            - INTERNATIONAL
+            - OTHER
+
+          Use this dimension to compare CRM activity across AM groups.
+
+        meta:
+          semantic_role: am_group
+
+      - name: am_status
+        description: |
+          Current CRM status of the Account Manager.
+
+          Typical values:
+            - ACTIVE
+            - INACTIVE
+            - UNKNOWN
+
+          Use this dimension when analyzing activity of active versus
+          inactive AM users.
+
+        meta:
+          semantic_role: am_status
+
+      # ============================================================
+      # ACTIVITY SEMANTICS
+      # ============================================================
+
+      - name: activity_category
+        description: |
+          High-level business category of the CRM activity.
+
+          Typical categories:
+            - CRM_COMPLIANCE
+            - SALES_ACTIVITY
+            - SALES_PROGRESS
+            - BUSINESS_OUTCOME
+
+          Definitions:
+
+          CRM_COMPLIANCE:
+            CRM record creation, update, or deletion used to maintain
+            CRM data quality.
+
+          SALES_ACTIVITY:
+            Customer-related sales activities.
+
+          SALES_PROGRESS:
+            Activities representing progression of an opportunity,
+            quotation, product, or similar sales process.
+
+          BUSINESS_OUTCOME:
+            Business results such as signed or first contracts.
+
+          Do not treat all categories as equivalent when evaluating
+          AM performance.
+
+        meta:
+          semantic_role: activity_category
+          allowed_values:
+            - CRM_COMPLIANCE
+            - SALES_ACTIVITY
+            - SALES_PROGRESS
+            - BUSINESS_OUTCOME
+
+      - name: activity_type
+        description: |
+          Normalized business type of the CRM activity.
+
+          Examples:
+            - CREATE_COMPANY
+            - UPDATE_COMPANY
+            - DELETE_COMPANY
+            - CREATE_CONTACT
+            - UPDATE_CONTACT
+            - DELETE_CONTACT
+            - CREATE_OPPORTUNITY
+            - UPDATE_OPPORTUNITY
+            - DELETE_OPPORTUNITY
+            - UPDATE_PRODUCT
+            - QUOTATION_ACTION
+            - CONTRACT_ACTION
+
+          Use activity_type when the user asks what type of CRM
+          activity an AM performed.
+
+        meta:
+          semantic_role: activity_type
+
+      - name: activity_action
+        description: |
+          Normalized action performed or represented by the activity.
+
+          Typical values:
+            - CREATE
+            - UPDATE
+            - DELETE
+            - ACTION
+
+          Use this dimension to analyze CRM CRUD activity.
+
+          IMPORTANT:
+          UPDATE represents a CRM record update and does not necessarily
+          mean a meaningful business action by the AM.
+
+        meta:
+          semantic_role: activity_action
+          allowed_values:
+            - CREATE
+            - UPDATE
+            - DELETE
+            - ACTION
+
+      - name: entity_type
+        description: |
+          CRM object type associated with the activity.
+
+          Typical values:
+            - COMPANY
+            - CONTACT
+            - OPPORTUNITY
+            - QUOTATION
+            - CONTRACT
+            - OTHER
+
+          Use this dimension when analyzing activity by CRM object type.
+
+        meta:
+          semantic_role: entity_type
+
+      # ============================================================
+      # CORE ACTIVITY METRICS
+      # ============================================================
+
+      - name: activity_count
+        description: |
+          Number of CRM activity records in the aggregation grain.
+
+          Grain of this metric:
+            activity_date × AM × activity_category × activity_type
+            × activity_action × entity_type.
+
+          Use this metric when the user asks for:
+            - number of activities
+            - CRM activity volume
+            - activity trend
+            - activity ranking.
+
+          IMPORTANT:
+          This is an activity-record count, not necessarily the number
+          of meaningful business actions performed by an AM.
+
+        meta:
+          semantic_role: activity_count
+          metric_type: count
+
+      - name: distinct_object_count
+        description: |
+          Number of unique CRM objects associated with the activities.
+
+          Use this metric when the user asks:
+            - How many opportunities did the AM work on?
+            - How many CRM objects were touched?
+            - How many unique objects had activity?
+
+          This metric is different from activity_count because one
+          CRM object may have multiple activities.
+
+        meta:
+          semantic_role: distinct_object_count
+          metric_type: distinct_count
+
+      - name: distinct_company_count
+        description: |
+          Number of unique companies associated with the activities.
+
+          Use this metric for customer/company coverage analysis.
+
+        meta:
+          semantic_role: distinct_company_count
+          metric_type: distinct_count
+
+      - name: distinct_contact_count
+        description: |
+          Number of unique contacts associated with the activities.
+
+          Use this metric for contact coverage analysis.
+
+        meta:
+          semantic_role: distinct_contact_count
+          metric_type: distinct_count
+
+      - name: distinct_deal_count
+        description: |
+          Number of unique Opportunities/Deals associated with the activities.
+
+          Use this metric for opportunity coverage and sales pipeline
+          activity analysis.
+
+        meta:
+          semantic_role: distinct_deal_count
+          metric_type: distinct_count
+
+      - name: distinct_quotation_count
+        description: |
+          Number of unique quotations associated with the activities.
+
+          Use this metric to analyze quotation-related CRM activity.
+
+        meta:
+          semantic_role: distinct_quotation_count
+          metric_type: distinct_count
+
+      - name: distinct_contract_count
+        description: |
+          Number of unique contracts associated with the activities.
+
+          Use this metric to analyze contract-related activity.
+
+        meta:
+          semantic_role: distinct_contract_count
+          metric_type: distinct_count
+
+      # ============================================================
+      # CRUD METRICS
+      # ============================================================
+
+      - name: create_activity_count
+        description: |
+          Number of CREATE activities.
+
+          Represents CRM records classified as created.
+
+          Use for CRM data creation statistics.
+
+          Do not interpret this metric as the number of new customers
+          unless entity_type is explicitly filtered to COMPANY or the
+          relevant business entity.
+
+        meta:
+          semantic_role: create_activity_count
+          metric_type: count
+
+      - name: update_activity_count
+        description: |
+          Number of UPDATE activities.
+
+          Represents CRM records classified as updated.
+
+          IMPORTANT:
+          An update indicates that a CRM record changed. It does not
+          necessarily represent a meaningful business activity by the AM.
+
+        meta:
+          semantic_role: update_activity_count
+          metric_type: count
+
+      - name: delete_activity_count
+        description: |
+          Number of DELETE activities.
+
+          Represents CRM records classified as deleted.
+
+        meta:
+          semantic_role: delete_activity_count
+          metric_type: count
+
+      # ============================================================
+      # BUSINESS CATEGORY METRICS
+      # ============================================================
+
+      - name: crm_compliance_count
+        description: |
+          Number of activities classified as CRM_COMPLIANCE.
+
+          Includes CRM record maintenance activities such as
+          CREATE, UPDATE, and DELETE.
+
+          Use this metric to evaluate CRM data maintenance and
+          CRM compliance behavior.
+
+          Do not use this metric alone as a measure of sales performance.
+
+        meta:
+          semantic_role: crm_compliance_count
+          metric_type: count
+
+      - name: sales_activity_count
+        description: |
+          Number of activities classified as SALES_ACTIVITY.
+
+          Use this metric to analyze customer-facing sales activity.
+
+          This metric should be interpreted separately from CRM
+          data-maintenance activity.
+
+        meta:
+          semantic_role: sales_activity_count
+          metric_type: count
+
+      - name: sales_progress_count
+        description: |
+          Number of activities classified as SALES_PROGRESS.
+
+          Represents CRM activities associated with progression of
+          the sales process, such as opportunity, quotation, or
+          product-related progression.
+
+          Use this metric when analyzing sales pipeline progression.
+
+        meta:
+          semantic_role: sales_progress_count
+          metric_type: count
+
+      - name: business_outcome_count
+        description: |
+          Number of activities classified as BUSINESS_OUTCOME.
+
+          Represents business results such as contract-related
+          outcomes or first contracts.
+
+          Use this metric as an outcome KPI rather than an activity-volume KPI.
+
+        meta:
+          semantic_role: business_outcome_count
+          metric_type: count

@@ -1,0 +1,51 @@
+version: 2
+models:
+- name: production_management_1_n_5_vvip_incident_cause_id
+  description: "Bảng production_management_1_n_5_vvip_incident_cause_id (nguồn Power BI: 5VVIP_Nguyên nhân sự cố ID)."
+  meta:
+    label: "5VVIP_Nguyên nhân sự cố ID"
+    powerbi_source: "5VVIP_Nguyên nhân sự cố ID"
+    joins:
+    - join: production_management_1_vvip
+      sql_on: "${production_management_1_n_5_vvip_incident_cause_id.customer} = ${production_management_1_vvip.org_name}"
+      relationship: many-to-many
+    metrics:
+      count_issue_id:
+        type: count
+        sql: issue_id
+        label: "Số lượng"
+        description: "Sinh từ Power BI: count(5VVIP_Nguyên nhân sự cố ID.ISSUE_ID)"
+  columns:
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong 5VVIP_Nguyên nhân sự cố ID."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: incident_cause
+    description: "Cột Nguyên_nhân_sự_cố_11602 trong 5VVIP_Nguyên nhân sự cố ID."
+    meta:
+      dimension:
+        type: string
+        label: "Nguyên nhân"
+  - name: custom_field_id
+    description: "Cột CUSTOM_FIELD_ID trong 5VVIP_Nguyên nhân sự cố ID."
+    meta:
+      dimension:
+        type: number
+        label: "CUSTOM_FIELD_ID"
+        hidden: true
+  - name: issue_id
+    description: "Cột ISSUE_ID trong 5VVIP_Nguyên nhân sự cố ID."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_ID"
+        hidden: true
+  - name: customer
+    description: "Cột Customer trong 5VVIP_Nguyên nhân sự cố ID. Cột tính toán, DAX gốc: LOOKUPVALUE('5VVIP_PRM_Companies'[VVIP],'5VVIP_PRM_Companies'[ISSUE_ID],'5VVIP_Nguyên nhân sự cố ID'[ISSUE_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "Customer"

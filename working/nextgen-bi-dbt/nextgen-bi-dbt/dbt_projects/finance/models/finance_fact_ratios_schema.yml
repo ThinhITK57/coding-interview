@@ -1,0 +1,120 @@
+version: 2
+
+models:
+- name: finance_fact_ratios
+  description: >
+    Lưu trữ các chỉ số tài chính đã được tính sẵn theo từng kỳ báo cáo.
+    Đây là bảng snapshot chỉ số tài chính, mỗi bản ghi đại diện cho giá trị của một chỉ số
+    tại một kỳ báo cáo cụ thể. Khi phân tích theo nhiều tháng, quý, năm hoặc YTD, giá trị
+    của chỉ số được hiểu là giá trị tại kỳ báo cáo cuối cùng trong phạm vi được chọn,
+    không cộng dồn, không lấy trung bình và không tính lại từ các kỳ trước.
+
+  meta:
+    label: "Chỉ số tài chính"
+    owner: "sonnv1"
+
+    metrics:
+      metric_snapshot_value:
+        type: max
+        sql: ${TABLE}.metric_value
+        description: >
+          Giá trị chỉ số tài chính tại kỳ báo cáo cuối cùng trong phạm vi được chọn.
+          Đây là chỉ số snapshot đã được tính sẵn, không cộng dồn và không lấy trung bình.
+        label: "Giá trị chỉ số"
+        category: "Chỉ số tài chính"
+        synonyms:
+          - "Giá trị chỉ số"
+          - "Metric Value"
+          - "Snapshot Value"
+
+      debt_to_equity_value:
+        type: max
+        sql: >
+          CASE
+            WHEN ${TABLE}.metric_code = 'DEBT_TO_EQUITY'
+            THEN ${TABLE}.metric_value
+          END
+        description: >
+          Tỷ lệ nợ trên vốn chủ sở hữu tại kỳ báo cáo cuối cùng trong phạm vi được chọn.
+          Đây là chỉ số snapshot đã được tính sẵn, không cộng dồn và không lấy trung bình.
+        label: "Tỷ lệ nợ trên vốn chủ sở hữu"
+        category: "Cấu trúc vốn"
+        synonyms:
+          - "D/E"
+          - "Debt to Equity"
+          - "Debt To Equity Value"
+          - "Tỷ lệ nợ"
+          - "Nợ trên vốn chủ sở hữu"
+
+      current_ratio_value:
+        type: max
+        sql: >
+          CASE
+            WHEN ${TABLE}.metric_code = 'CURRENT_RATIO'
+            THEN ${TABLE}.metric_value
+          END
+        description: >
+          Hệ số thanh toán hiện hành tại kỳ báo cáo cuối cùng trong phạm vi được chọn.
+          Đây là chỉ số snapshot đã được tính sẵn, không cộng dồn và không lấy trung bình.
+        label: "Hệ số thanh toán hiện hành"
+        category: "Khả năng thanh toán"
+        synonyms:
+          - "Current Ratio"
+          - "Current Ratio Value"
+          - "Hệ số thanh toán"
+          - "Khả năng thanh toán ngắn hạn"
+
+      roe_value:
+        type: max
+        sql: >
+          CASE
+            WHEN ${TABLE}.metric_code = 'ROE'
+            THEN ${TABLE}.metric_value
+          END
+        description: >
+          Tỷ suất sinh lời trên vốn chủ sở hữu tại kỳ báo cáo cuối cùng trong phạm vi được chọn.
+          Đây là chỉ số snapshot đã được tính sẵn, không cộng dồn và không lấy trung bình.
+        label: "Tỷ suất sinh lời trên vốn chủ sở hữu (ROE)"
+        category: "Khả năng sinh lời"
+        synonyms:
+          - "ROE"
+          - "Return on Equity"
+          - "Roe Value"
+          - "Tỷ suất sinh lời trên vốn chủ sở hữu"
+
+  columns:
+  - name: report_date
+    description: >
+      Ngày chốt dữ liệu của chỉ số tài chính. Đây là ngày đại diện cho kỳ báo cáo
+      của snapshot, thường là ngày cuối tháng, cuối quý hoặc cuối năm.
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày báo cáo"
+
+  - name: metric_code
+    description: >
+      Mã định danh rút gọn của chỉ số tài chính, ví dụ ROE, ROS, CURRENT_RATIO,
+      DEBT_TO_EQUITY.
+    meta:
+      dimension:
+        type: string
+        label: "Mã chỉ số"
+
+  - name: metric_name
+    description: >
+      Tên đầy đủ của chỉ số tài chính theo quy định của Phòng Tài chính.
+    meta:
+      dimension:
+        type: string
+        label: "Tên chỉ số"
+
+  - name: metric_value
+    description: >
+      Giá trị của chỉ số tài chính tại thời điểm báo cáo. Đây là giá trị đã được tính sẵn
+      theo snapshot kỳ báo cáo. Khi phân tích nhiều tháng, quý, năm hoặc YTD, lấy giá trị
+      tại kỳ cuối cùng trong phạm vi được chọn, không cộng dồn và không lấy trung bình.
+    meta:
+      dimension:
+        type: number
+        label: "Giá trị chỉ số"

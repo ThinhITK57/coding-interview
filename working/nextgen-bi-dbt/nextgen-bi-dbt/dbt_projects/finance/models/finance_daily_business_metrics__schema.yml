@@ -1,0 +1,233 @@
+version: 2
+
+models:
+  - name: finance_daily_business_metrics
+    description: >
+      Bảng tổng hợp các chỉ số tài chính theo ngày, nhóm sản phẩm/dịch vụ,
+      Trung tâm kinh doanh (Business Unit Level 1) và vùng (Territory).
+      Bảng phục vụ phân tích doanh thu, chi phí, lợi nhuận gộp và so sánh
+      doanh thu thực tế với kế hoạch.
+
+    meta:
+      label: "Chỉ số tài chính kinh doanh theo ngày"
+      owner: "sonnv1"
+
+      metrics:
+
+        total_sales_revenue_amount:
+          type: sum
+          sql: ${TABLE}.sales_revenue_amount
+          label: "Doanh thu thực tế"
+          category: "Doanh thu"
+          description: >
+            Tổng doanh thu thực tế đã ghi nhận theo ngày.
+          synonyms:
+            - "Doanh thu thực tế theo ngày"
+            - "Doanh thu thực tế"
+            - "Sales Revenue"
+
+        total_actual_cost_amount:
+          type: sum
+          sql: ${TABLE}.actual_cost_amount
+          label: "Chi phí thực tế"
+          category: "Chi phí"
+          description: >
+            Tổng chi phí thực tế phát sinh theo ngày.
+          synonyms:
+            - "Chi phí thực tế theo ngày"
+            - "Chi phí thực tế"
+            - "Actual Cost"
+
+        total_gross_profit_amount:
+          type: sum
+          sql: ${TABLE}.gross_profit_amount
+          label: "Lợi nhuận gộp"
+          category: "Lợi nhuận"
+          description: >
+            Lợi nhuận gộp = Doanh thu thực tế - Chi phí thực tế.
+          synonyms:
+            - "Gross Profit"
+            - "Lợi nhuận"
+
+        total_planned_revenue_must_amount:
+          type: sum
+          sql: ${TABLE}.planned_revenue_must_amount
+          label: "Kế hoạch doanh thu Must"
+          category: "Kế hoạch"
+          description: >
+            Mức doanh thu kế hoạch tối thiểu (Must).
+          synonyms:
+            - "Must Plan"
+            - "Kế hoạch Must"
+
+        total_planned_revenue_should_amount:
+          type: sum
+          sql: ${TABLE}.planned_revenue_should_amount
+          label: "Kế hoạch doanh thu Should"
+          category: "Kế hoạch"
+          description: >
+            Mức doanh thu kế hoạch kỳ vọng (Should).
+          synonyms:
+            - "Should Plan"
+            - "Kế hoạch Should"
+
+        total_planned_revenue_nice_amount:
+          type: sum
+          sql: ${TABLE}.planned_revenue_nice_amount
+          label: "Kế hoạch doanh thu Nice"
+          category: "Kế hoạch"
+          description: >
+            Mức doanh thu kế hoạch mục tiêu cao (Nice).
+          synonyms:
+            - "Nice Plan"
+            - "Kế hoạch Nice"
+
+        total_revenue_vs_plan_gap_amount:
+          type: sum
+          sql: ${TABLE}.revenue_vs_plan_gap_amount
+          label: "Chênh lệch doanh thu so với kế hoạch"
+          category: "Phân tích"
+          description: >
+            Chênh lệch giữa doanh thu thực tế và doanh thu kế hoạch Must.
+          synonyms:
+            - "Revenue Gap"
+            - "Chênh lệch kế hoạch"
+            - "Doanh thu so với kế hoạch"
+
+        sales_vs_must_plan_ratio:
+          type: number
+          sql: ${total_sales_revenue_amount} / NULLIF(${total_planned_revenue_must_amount}, 0.0)
+          label: "Tỷ lệ đạt kế hoạch Must"
+          category: "Phân tích"
+          format: "percent"
+          description: >
+            Tỷ lệ doanh thu thực tế trên kế hoạch Must.
+          synonyms:
+            - "Must attainment"
+            - "Sales vs Must"
+
+        sales_vs_should_plan_ratio:
+          type: number
+          sql: ${total_sales_revenue_amount} / NULLIF(${total_planned_revenue_should_amount}, 0.0)
+          label: "Tỷ lệ đạt kế hoạch Should"
+          category: "Phân tích"
+          format: "percent"
+          description: >
+            Tỷ lệ doanh thu thực tế trên kế hoạch Should.
+          synonyms:
+            - "Should attainment"
+            - "Sales vs Should"
+
+        sales_vs_nice_plan_ratio:
+          type: number
+          sql: ${total_sales_revenue_amount} / NULLIF(${total_planned_revenue_nice_amount}, 0.0)
+          label: "Tỷ lệ đạt kế hoạch Nice"
+          category: "Phân tích"
+          format: "percent"
+          description: >
+            Tỷ lệ doanh thu thực tế trên kế hoạch Nice.
+          synonyms:
+            - "Nice attainment"
+            - "Sales vs Nice"
+
+        gross_margin:
+          type: number
+          sql: ${total_gross_profit_amount} / NULLIF(${total_sales_revenue_amount}, 0.0)
+          label: "Biên lợi nhuận gộp"
+          category: "Lợi nhuận"
+          format: "percent"
+          description: >
+            Tỷ lệ lợi nhuận gộp trên doanh thu thực tế.
+          synonyms:
+            - "Gross Margin"
+            - "Biên gộp"
+
+        total_record_count:
+          type: count
+          sql: "1.0"
+          label: "Số bản ghi chỉ số ngày"
+          category: "Phân tích"
+          description: >
+            Tổng số bản ghi trong bảng chỉ số tài chính theo ngày.
+          synonyms:
+            - "Record Count"
+            - "Số dòng dữ liệu"
+
+    columns:
+
+      - name: report_date
+        description: "Ngày báo cáo."
+        meta:
+          dimension:
+            type: timestamp
+            label: "Ngày báo cáo"
+
+      - name: product_category
+        description: "Nhóm sản phẩm hoặc dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm sản phẩm dịch vụ"
+
+      - name: business_unit_level_1
+        description: "Trung tâm kinh doanh cấp 1."
+        meta:
+          dimension:
+            type: string
+            label: "Trung tâm N-1"
+
+      - name: territory_name
+        description: "Khu vực hoặc vùng kinh doanh."
+        meta:
+          dimension:
+            type: string
+            label: "Khu vực"
+
+      - name: sales_revenue_amount
+        description: "Doanh thu thực tế."
+        meta:
+          dimension:
+            type: number
+            label: "Doanh thu thực tế"
+
+      - name: actual_cost_amount
+        description: "Chi phí thực tế."
+        meta:
+          dimension:
+            type: number
+            label: "Chi phí thực tế"
+
+      - name: gross_profit_amount
+        description: "Lợi nhuận gộp."
+        meta:
+          dimension:
+            type: number
+            label: "Lợi nhuận gộp"
+
+      - name: planned_revenue_must_amount
+        description: "Doanh thu kế hoạch mức Must."
+        meta:
+          dimension:
+            type: number
+            label: "Kế hoạch Must"
+
+      - name: planned_revenue_should_amount
+        description: "Doanh thu kế hoạch mức Should."
+        meta:
+          dimension:
+            type: number
+            label: "Kế hoạch Should"
+
+      - name: planned_revenue_nice_amount
+        description: "Doanh thu kế hoạch mức Nice."
+        meta:
+          dimension:
+            type: number
+            label: "Kế hoạch Nice"
+
+      - name: revenue_vs_plan_gap_amount
+        description: "Chênh lệch giữa doanh thu thực tế và doanh thu kế hoạch Must."
+        meta:
+          dimension:
+            type: number
+            label: "Chênh lệch doanh thu so kế hoạch"

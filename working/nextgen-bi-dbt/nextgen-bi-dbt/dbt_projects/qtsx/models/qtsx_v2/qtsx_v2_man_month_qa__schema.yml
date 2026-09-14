@@ -1,0 +1,39 @@
+version: 2
+models:
+- name: qtsx_v2_man_month_qa
+  description: "Bảng qtsx_v2_man_month_qa (nguồn Power BI: Man_month_QA)."
+  meta:
+    label: "Man_month_QA"
+    powerbi_source: "Man_month_QA"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_man_month_qa.product_service} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      sum_man_month:
+        type: sum
+        sql: man_month
+        label: "MM"
+        description: "Sinh từ Power BI: sum(Man_month_QA.man month) | DAX measure: Total MM | DAX measure: Total MM bug"
+  columns:
+  - name: product_service
+    description: "Cột Sản phẩm/dịch vụ trong Man_month_QA."
+    meta:
+      dimension:
+        type: string
+        label: "Sản phẩm/dịch vụ"
+        hidden: true
+  - name: man_month
+    description: "Cột man month trong Man_month_QA."
+    meta:
+      dimension:
+        type: number
+        label: "man month"
+        hidden: true
+  - name: date_value
+    description: "Cột ngày tháng trong Man_month_QA."
+    meta:
+      dimension:
+        type: date
+        label: "ngày tháng"
+        hidden: true

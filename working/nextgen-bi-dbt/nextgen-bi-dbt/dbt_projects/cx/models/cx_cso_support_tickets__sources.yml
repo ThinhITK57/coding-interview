@@ -1,0 +1,193 @@
+version: 2
+sources:
+- name: bi_silver__cx
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: cx'
+  tables:
+  - name: cx_cso_support_tickets
+    description: >
+      Lưu trữ vòng đời của một yêu cầu hỗ trợ (ticket) từ lúc tiếp nhận đến khi đóng,
+      phục vụ phân tích hiệu suất vận hành (SLA) và trải nghiệm khách hàng (CX).
+
+      Keywords: 'ticket; support ticket; customer support; helpdesk; incident; issue;
+      request; SLA; overdue; violation; response time; resolution time; TTR; backlog;
+      open ticket; closed ticket; resolved ticket; ticket status; priority; severity;
+      urgency; agent; L1; L2; L3; L4; assigned; unassigned; customer group; segment;
+      channel; email; chat; hotline; issue category; issue type; root cause; CSAT;
+      satisfaction; sentiment; positive; negative; duplicate; reopened'
+      
+      QUAN TRỌNG:
+      - Luôn sử dụng created_at làm mốc thời gian chính.
+      - Nếu câu hỏi đề cập đến tháng, quý hoặc năm thì hãy tính từ created_at để lọc và phân tích dữ liệu.
+
+    columns:
+    - name: ticket_id
+      description: Mã định danh duy nhất của phiếu hỗ trợ khách hàng.
+      tests:
+      - not_null
+      - unique
+    - name: subject
+      description: Tiêu đề mô tả ngắn gọn vấn đề hoặc yêu cầu của ticket.
+    - name: customer_group
+      description: 'Phân hạng khách hàng theo cấp độ: VVIP, VIP, Growth, Standard'
+    - name: status_name
+      description: Trạng thái hiện tại của phiếu hỗ trợ khách hàng.
+    - name: priority_level
+      description: Mức độ ưu tiên của ticket hỗ trợ, thể hiện mức quan trọng cần xử lý.
+    - name: created_at
+      description: Thời điểm mà ticket được tạo trong hệ thống.
+    - name: updated_at
+      description: Thời gian cập nhật cuối cùng của ticket trong hệ thống.
+    - name: first_responded_at
+      description: Thời gian phản hồi đầu tiên của ticket từ nhân viên hỗ trợ.
+    - name: resolved_at
+      description: Thời điểm mà ticket được giải quyết và đóng lại.
+    - name: closed_at
+      description: Ngày mà ticket được đóng trong hệ thống hỗ trợ khách hàng.
+    - name: call_reminder
+      description: Trạng thái hoặc nội dung nhắc nhở thực hiện cuộc gọi với khách hàng.
+    - name: issue_category
+      description: Loại vấn đề hoặc chủ đề của ticket hỗ trợ khách hàng.
+    - name: is_vcs
+      description: Cho biết ticket có được tạo từ kênh VCS (Voice Call Service) hay không.
+    - name: l1
+      description: True xác định ticket đã trải qua xử lý tại cấp độ 1
+    - name: l2
+      description: True xác định ticket đã trải qua xử lý tại cấp độ 2
+    - name: l3
+      description: True xác định ticket đã trải qua xử lý tại cấp độ 3
+    - name: l4
+      description: True xác định ticket đã trải qua xử lý tại cấp độ 4
+    - name: is_duplicated_ticket
+      description: Cho biết ticket có phải là bản sao của ticket đã tồn tại hay không.
+    - name: is_reopened_by_cx
+      description: Cho biết ticket có được đưa vào báo cáo trải nghiệm khách hàng (CX) hay không.
+    - name: assigned_to
+      description: Tên hoặc mã nhân viên hỗ trợ cấp 1 chịu trách nhiệm xử lý ticket.
+    - name: action_program
+      description: Tên chương trình hoặc biện pháp hành động được áp dụng cho ticket.
+    - name: company_alias
+      description: Tên công ty được viết tắt liên quan tới yêu cầu hỗ trợ trong ticket.
+    - name: customer_satisfaction_rating
+      description: Mức độ hài lòng của khách hàng được ghi lại sau khi giải quyết ticket.
+    - name: customer_entry_channel
+      description: Kênh mà khách hàng sử dụng để tạo yêu cầu hỗ trợ.
+    - name: customer_respond_date
+      description: Ngày mà khách hàng trả lời hoặc phản hồi lại yêu cầu hỗ trợ.
+    - name: communication_effectiveness
+      description: Mức độ hiệu quả của giao tiếp trong quá trình xử lý ticket.
+    - name: imported_ticket_date
+      description: Ngày mà vé hỗ trợ được nhập vào hệ thống.
+    - name: imported_ticket_due_date
+      description: Ngày dự kiến hoàn thành (hạn chót) của ticket được nhập vào hệ thống.
+    - name: incident_root_cause
+      description: Nguyên nhân gốc gây ra sự cố được ghi nhận trong ticket hỗ trợ.
+    - name: issues_type
+      description: Loại vấn đề được ghi nhận trong ticket hỗ trợ khách hàng.
+    - name: note
+      description: Nội dung ghi chú do nhân viên hỗ trợ nhập vào mỗi ticket.
+    - name: number_of_due_date_changes
+      description: Số lần ngày đáo hạn của ticket được thay đổi.
+    - name: old_due_date
+      description: Ngày đáo hạn ban đầu của ticket trước khi được thay đổi.
+    - name: is_one_day_before_due
+      description: Cho biết ticket còn lại một ngày trước ngày đáo hạn.
+    - name: is_one_hour_before_due
+      description: Cho biết ticket có đang trong khoảng thời gian một giờ trước hạn chót hay không.
+    - name: reason
+      description: Lý do khách hàng tạo hoặc yêu cầu hỗ trợ trong ticket.
+    - name: related_ticket
+      description: Mã vé hoặc mã yêu cầu hỗ trợ được liên kết với vé hiện tại.
+    - name: is_reminder_update
+      description: Cho biết ticket đã được cập nhật nhắc nhở hay chưa.
+    - name: is_notification
+      description: Cho biết ticket có được gửi thông báo cho khách hàng hoặc nhân viên hỗ trợ hay không.
+    - name: is_overdue
+      description: Cho biết ticket đã vượt quá thời hạn xử lý hay chưa.
+    - name: response_time_minutes
+      description: Thời gian để nhân viên hỗ trợ trả lời yêu cầu của khách hàng, tính bằng phút.
+    - name: sentiment
+      description: Mức độ cảm xúc của khách hàng thể hiện qua ticket, như tích cực, tiêu cực hoặc trung tính.
+    - name: severity_level
+      description: Mức độ nghiêm trọng của ticket phản ánh mức độ ưu tiên xử lý và tác động kinh doanh.
+    - name: spam_type
+      description: Loại spam được gán cho mỗi ticket, cho biết nội dung hoặc tính chất spam của yêu cầu.
+    - name: support_category
+      description: Loại danh mục hỗ trợ mà khách hàng yêu cầu trong phiếu dịch vụ.
+    - name: is_third_four_time
+      description: Cho biết ticket đã được xử lý ở lần trả lời thứ ba hoặc thứ tư hay chưa.
+    - name: ttr_overdue
+      description: Cho biết ticket có vượt quá thời gian giải quyết mục tiêu (TTR) so với SLA hay không.
+    - name: urgency_level
+      description: Column urgency_level in cx_cso_support_tickets
+    - name: resolution_time_minutes
+      description: Thời gian (tính bằng giờ) mà yêu cầu hỗ trợ được giải quyết hoàn toàn.
+    - name: first_response_time_minutes
+      description: Thời gian tính bằng phút từ khi ticket được tạo đến khi nhận được phản hồi đầu tiên của nhân viên hỗ trợ.
+    - name: l1_time_actual_minutes
+      description: Thời gian thực tế mà nhóm hỗ trợ cấp 1 (L1) đã dành để xử lý ticket, tính bằng phút.
+    - name: l1_time_allowed_minutes
+      description: Thời gian tối đa (phút) mà cấp độ hỗ trợ L1 được phép xử lý một ticket.
+    - name: l1_violated
+      description: Cho biết ticket có vi phạm tiêu chuẩn thời gian phản hồi cấp độ 1 hay không.
+    - name: l2_time_actual_minutes
+      description: Thời gian thực tế (phút) mà nhóm hỗ trợ cấp 2 (L2) dành để xử lý ticket.
+    - name: l2_time_allowed_minutes
+      description: Thời gian tối đa (phút) được phép để xử lý ticket ở cấp độ L2 theo quy định SLA.
+    - name: l2_violated
+      description: Cho biết ticket có vi phạm thời gian đáp ứng mức độ 2 (L2) hay không.
+    - name: l3_time_actual_minutes
+      description: Thời gian thực tế (tính bằng phút) mà mức hỗ trợ L3 đã xử lý ticket.
+    - name: l3_time_allowed_minutes
+      description: Thời gian tối đa được phép xử lý ticket ở mức độ L3, tính bằng phút.
+    - name: l3_violated
+      description: Cho biết ticket có vi phạm tiêu chuẩn thời gian phản hồi mức độ 3 (L3) hay không.
+    - name: l4_time_actual_minutes
+      description: Thời gian thực tế (phút) mà ticket được xử lý ở cấp độ L4.
+    - name: l4_time_allowed_minutes
+      description: Thời gian tối đa (phút) được phép để xử lý ticket ở cấp độ L4.
+    - name: l4_violated
+      description: Cho biết ticket có vi phạm ngưỡng thời gian mức độ 4 (L4) hay không.
+    - name: time_to_response_minutes
+      description: Thời gian tính bằng phút từ khi ticket được tạo đến khi nhận được phản hồi đầu tiên.
+    - name: assigned_agent_stage
+      description: Giai đoạn hiện tại của ticket mà nhân viên hỗ trợ được giao.
+    - name: violated_level
+      description: Mức độ vi phạm SLA của ticket hỗ trợ, thể hiện mức độ nghiêm trọng của việc không đáp ứng thời gian quy định.
+    - name: requester_name
+      description: Tên của người tạo hoặc yêu cầu hỗ trợ trong phiếu.
+    - name: company_name
+      description: Tên công ty đầy đủ liên quan tới yêu cầu hỗ trợ trong ticket.
+    - name: agent_name
+      description: Tên của nhân viên hỗ trợ xử lý ticket.
+    - name: resolution_time_in_business_hours
+      description: Thời gian giải quyết ticket tính theo giờ làm việc.
+    - name: agent_reply_count
+      description: Số lần nhân viên hỗ trợ phản hồi trong ticket, nếu nhỏ hơn hoặc bằng 3 có nghĩa ticket này được hoàn thành ngay lần đầu
+    - name: first_response_date
+      description: Ngày và giờ phản hồi đầu tiên của nhân viên cho khách hàng.
+    - name: due_date_change_count
+      description: Số lần thay đổi hạn chót (due date) của ticket.
+    - name: tickets_first_responded_within_sla
+      description: Đánh dấu ticket có phản hồi đầu tiên nằm trong hạn SLA hay không.
+    - name: tickets_resolved_within_sla
+      description: Đánh dấu ticket được giải quyết xong trong thời hạn SLA hay không.
+    - name: ttr_time_minutes
+      description: Thời gian giải quyết ticket (Time to Resolve) tính bằng phút.
+    - name: customer_segment_l1
+      description: Phân khúc  khách hàng  cấp 1 của giao dịch, thể hiện nhóm thị trường hoặc loại khách hàng chính.
+    - name: customer_segment_l2
+      description: Mức phân khúc khách hàng cấp 2 của giao dịch, cho biết nhóm khách hàng hoặc ngành nghề chi tiết hơn.
+    - name: customer_segment_l3
+      description: Phân khúc khách hàng cấp 3 của giao dịch, mô tả chi tiết nhóm khách hàng hoặc thị trường mà cơ hội kinh doanh thuộc về.
+    - name: day_of_week
+      description: Column day_of_week in cx_cso_support_tickets
+    - name: day_type
+      description: Column day_type in cx_cso_support_tickets
+    - name: product_category_code
+      description: Column product_category_code in cx_cso_support_tickets
+    - name: product_category
+      description: Phân loại sản phẩm/dịch vụ liên quan đến ticket.
+    - name: product_item_type
+      description: Loại mặt hàng (Product/Service) trong bảng giá.

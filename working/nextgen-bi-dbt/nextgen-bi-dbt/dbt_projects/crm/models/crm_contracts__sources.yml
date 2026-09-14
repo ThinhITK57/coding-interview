@@ -1,0 +1,93 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_contracts
+    description: Bảng **crm_contracts** lưu trữ thông tin chi tiết về các hợp đồng khách hàng, bao gồm dữ liệu về đối tác, loại hợp đồng, thời gian ký kết, giá trị và trạng thái thực hiện. Bảng này được sử dụng để phân tích tình hình hợp đồng đã ký, đánh giá hiệu suất bán hàng theo phân khúc, khu vực và thời gian, giá trị hợp đồng.
+    columns:
+    - name: id
+      description: Mã định danh duy nhất của hợp đồng trong hệ thống CRM.
+      tests:
+      - not_null
+      - unique
+    - name: name
+      description: Tên hợp đồng, mô tả ngắn gọn để nhận diện hợp đồng trong hệ thống CRM.
+    - name: user_am_id
+      description: Mã định danh của nhân viên quản lý tài khoản chịu trách nhiệm hợp đồng.
+    - name: deal_id
+      description: Mã định danh duy nhất của giao dịch trong hệ thống CRM.
+    - name: contract_number
+      description: Mã số hợp đồng duy nhất dùng để nhận diện một hợp đồng trong hệ thống CRM.
+    - name: contract_type
+      description: Loại hợp đồng mô tả hình thức hoặc nhóm của hợp đồng ký kết với khách hàng.
+    - name: signing_method
+      description: Phương thức mà hợp đồng được ký ký kết.
+    - name: signing_method_code
+      description: Column signing_method_code in crm_contracts
+    - name: sale_account_id
+      description: Mã định danh tài khoản bán hàng chịu trách nhiệm ký hợp đồng.
+    - name: company_alias
+      description: Tên viết tắt hoặc biệt danh của công ty trong hợp đồng.
+    - name: customer_name
+      description: Tên khách hàng ký hợp đồng trong hệ thống CRM.
+    - name: tax_code
+      description: Mã số thuế của khách hàng hoặc công ty ký hợp đồng.
+    - name: segment_l1
+      description: Column segment_l1 in crm_contracts
+    - name: customer_segment_l1
+      description: Mức phân khúc cấp 1. Phân loại theo người dùng cuối (KH cuối)
+    - name: segment_l2
+      description: Column segment_l2 in crm_contracts
+    - name: customer_segment_l2
+      description: Mức phân khúc cấp 2 mô tả nhóm con của khách hàng hoặc hợp đồng trong CRM.
+    - name: segment_l3
+      description: Column segment_l3 in crm_contracts
+    - name: customer_segment_l3
+      description: Mức phân khúc cấp 3 của hợp đồng, thể hiện nhóm chi tiết trong phân khúc khách hàng.
+    - name: status
+      description: Trạng thái hiện tại của hợp đồng trong hệ thống CRM.
+    - name: status_code
+      description: Column status_code in crm_contracts
+    - name: status_vi
+      description: Column status_vi in crm_contracts
+    - name: vvip_segment
+      description: Nhóm VIP/VVIP
+    - name: is_vip_customer
+      description: Column is_vip_customer in crm_contracts
+    - name: is_enterprise_customer
+      description: Column is_enterprise_customer in crm_contracts
+    - name: is_state_owned
+      description: Column is_state_owned in crm_contracts
+    - name: is_private_enterprise
+      description: Column is_private_enterprise in crm_contracts
+    - name: is_banking_group
+      description: Column is_banking_group in crm_contracts
+    - name: is_international_client
+      description: Column is_international_client in crm_contracts
+    - name: is_internal_client
+      description: Column is_internal_client in crm_contracts
+    - name: sign_date
+      description: Ngày mà hợp đồng được ký kết bởi khách hàng và công ty.
+    - name: fac_date
+      description: Ngày Review lập hoá đơn của hợp đồng.
+    - name: duration
+      description: Thời gian thực hiện hợp đồng, tính bằng số tháng hoặc năm.
+    - name: expire_date
+      description: Ngày mà hợp đồng sẽ hết hiệu lực.
+    - name: usd_exchange_rate
+      description: Tỷ giá chuyển đổi sang USD của hợp đồng.
+    - name: currency_code
+      description: Mã tiền tệ được sử dụng trong hợp đồng.
+    - name: contract_amount
+      description: Giá trị của hợp đồng thực tế, thể hiện giá trị tiền thu được từ hợp đồng.
+    - name: vat
+      description: Số tiền thuế VAT được tính trên hợp đồng.
+    - name: vcs_contract_amount
+      description: Giá trị hợp đồng thực tế mà công ty (VCS) sẽ được hưởng.
+    - name: viettel_contract_amount
+      description: Số tiền thu được từ các hợp đồng thông qua Viettel.
+    - name: partner_id
+      description: Mã định danh duy nhất của đối tác ký hợp đồng.

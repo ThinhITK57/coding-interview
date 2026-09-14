@@ -1,0 +1,66 @@
+version: 2
+models:
+- name: production_management_1_cause
+  description: "Bảng production_management_1_cause (nguồn Power BI: NGUYÊN NHÂN)."
+  meta:
+    label: "NGUYÊN NHÂN"
+    powerbi_source: "NGUYÊN NHÂN"
+    metrics:
+      count_distinct_id:
+        type: count_distinct
+        sql: id
+        label: "SỐ LỖI"
+        description: "Sinh từ Power BI: count_distinct(NGUYÊN NHÂN.Id)"
+  columns:
+  - name: id
+    description: "Cột Id trong NGUYÊN NHÂN."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong NGUYÊN NHÂN."
+    meta:
+      dimension:
+        type: string
+        label: "Metric Name"
+  - name: issue_description
+    description: "Cột ISSUE_DESCRIPTION trong NGUYÊN NHÂN."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_DESCRIPTION"
+        hidden: true
+  - name: customer
+    description: "Cột Khách_hàng_12413 trong NGUYÊN NHÂN."
+    meta:
+      dimension:
+        type: string
+        label: "Khách hàng"
+  - name: spdv
+    description: "Cột SPDV_19000 trong NGUYÊN NHÂN."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: customer_group
+    description: "Cột Nhóm_khách_hàng_22107 trong NGUYÊN NHÂN."
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm_khách_hàng_22107"
+        hidden: true
+  - name: date_value
+    description: "Cột Ngày_21701 trong NGUYÊN NHÂN."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_21701 Day"
+  - name: cause
+    description: "Cột Nguyên nhân trong NGUYÊN NHÂN. Cột tính toán, DAX gốc: LOOKUPVALUE('Nguyên nhân_Project'[Nguyên_nhân_Checkbox_22106],)"
+    meta:
+      dimension:
+        type: string
+        label: "Nguyên nhân"
+        hidden: true

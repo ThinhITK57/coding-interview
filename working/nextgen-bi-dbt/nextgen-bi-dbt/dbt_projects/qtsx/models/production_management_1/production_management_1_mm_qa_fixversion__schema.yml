@@ -1,0 +1,43 @@
+version: 2
+models:
+- name: production_management_1_mm_qa_fixversion
+  description: "Bảng production_management_1_mm_qa_fixversion (nguồn Power BI: mm_QA_fixversion)."
+  meta:
+    label: "mm_QA_fixversion"
+    powerbi_source: "mm_QA_fixversion"
+  columns:
+  - name: product_service
+    description: "Cột Sản phẩm/dịch vụ trong mm_QA_fixversion."
+    meta:
+      dimension:
+        type: string
+        label: "Sản phẩm/dịch vụ"
+        hidden: true
+  - name: man_month
+    description: "Cột man month trong mm_QA_fixversion."
+    meta:
+      dimension:
+        type: number
+        label: "man month"
+        hidden: true
+  - name: date_value
+    description: "Cột ngày tháng trong mm_QA_fixversion."
+    meta:
+      dimension:
+        type: date
+        label: "ngày tháng"
+        hidden: true
+  - name: working_days
+    description: "Cột Số ngày làm việc trong mm_QA_fixversion."
+    meta:
+      dimension:
+        type: string
+        label: "Số ngày làm việc"
+        hidden: true
+  - name: md_qa
+    description: "Cột md_QA trong mm_QA_fixversion. Cột tính toán, DAX gốc: mm_QA_fixversion[man month]*'mm_QA_fixversion'[Số ngày làm việc]"
+    meta:
+      dimension:
+        type: number
+        label: "md_QA"
+        hidden: true

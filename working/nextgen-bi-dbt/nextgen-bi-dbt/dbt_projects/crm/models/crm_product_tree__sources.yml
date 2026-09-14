@@ -1,0 +1,37 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_product_tree
+    description: Source table crm_product_tree in hive.bi_silver
+    columns:
+    - name: product_group
+      description: Column product_group in crm_product_tree
+    - name: product_sub_group
+      description: Column product_sub_group in crm_product_tree
+    - name: category_code
+      description: Column category_code in crm_product_tree
+    - name: product_category
+      description: Column product_category in crm_product_tree
+    - name: sku
+      description: Column sku in crm_product_tree
+    - name: version
+      description: Column version in crm_product_tree
+    - name: item_type
+      description: Column item_type in crm_product_tree
+    - name: license
+      description: Column license in crm_product_tree
+    - name: price_type
+      description: Column price_type in crm_product_tree
+    - name: unit
+      description: Column unit in crm_product_tree
+    - name: item_code
+      description: Column item_code in crm_product_tree
+    - name: idd
+      description: Column idd in crm_product_tree
+      tests:
+      - not_null
+      - unique

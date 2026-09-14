@@ -1,0 +1,21 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_deal_reasons
+    description: Bảng crm_deal_reasons lưu trữ các lý do liên quan đến giao dịch trong hệ thống CRM, bao gồm nguyên nhân dẫn đến thành công hoặc thất bại của các giao dịch. Bảng này được sử dụng để phân tích hiệu suất bán hàng, đánh giá chiến lược kinh doanh và xác định các yếu tố ảnh hưởng đến kết quả giao dịch.
+    columns:
+    - name: id
+      description: Mã định danh duy nhất cho mỗi lý do giao dịch trong CRM.
+      tests:
+      - not_null
+      - unique
+    - name: reason_name
+      description: Tên lý do mà khách hàng hoặc nhân viên ghi nhận khi giao dịch không thành công.
+    - name: position
+      description: Column position in crm_deal_reasons
+    - name: is_partial
+      description: Column is_partial in crm_deal_reasons

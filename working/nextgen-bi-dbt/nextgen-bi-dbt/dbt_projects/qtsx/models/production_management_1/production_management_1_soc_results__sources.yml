@@ -1,0 +1,60 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_soc_results
+    description: "Nguồn Power BI: SOC_Results"
+    columns:
+    - name: source_sheet
+      description: "Cột Source sheet"
+    - name: issue_type
+      description: "Cột Issue type"
+    - name: quarter
+      description: "Cột Quý"
+    - name: month_value
+      description: "Cột Tháng"
+    - name: week
+      description: "Cột Tuần"
+    - name: year_value
+      description: "Cột Năm"
+    - name: start_date
+      description: "Cột Start date"
+    - name: report_date
+      description: "Cột Ngày báo cáo"
+    - name: summary
+      description: "Cột Summary"
+    - name: customers
+      description: "Cột Customers"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: result_input
+      description: "Cột Kết quả_input"
+    - name: key_target
+      description: "Cột Key_target"
+    - name: target
+      description: "Cột Target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: unit_of_measure
+      description: "Cột Đơn vị tính"
+    - name: customer
+      description: "Cột Khách hàng"
+    - name: evaluation_passed
+      description: "Cột Đánh giá đạt"
+    - name: alert
+      description: "Cột Cảnh báo"
+    - name: vs_target
+      description: "Cột So với target"
+    - name: result
+      description: "Cột Kết quả"
+    - name: evaluation_target
+      description: "Cột ĐÁNH GIÁ_target"
+    - name: evaluation
+      description: "Cột ĐÁNH GIÁ"
+    - name: report_period
+      description: "Cột Kỳ báo cáo"
+    - name: tick_kpi
+      description: "Cột TickKPI"

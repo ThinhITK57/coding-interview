@@ -1,0 +1,33 @@
+version: 2
+models:
+- name: production_management_1_projects_2
+  description: "Bảng production_management_1_projects_2 (nguồn Power BI: Projects (2))."
+  meta:
+    label: "Projects (2)"
+    powerbi_source: "Projects (2)"
+    joins:
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_projects_2.project_name} = ${production_management_1_milestone_versions_projects.project_name}"
+      relationship: one-to-one
+  columns:
+  - name: id
+    description: "Cột Id trong Projects (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT_NAME trong Projects (2)."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+        hidden: true
+  - name: project_key
+    description: "Cột PROJECT_KEY trong Projects (2)."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_KEY"
+        hidden: true

@@ -1,0 +1,71 @@
+version: 2
+models:
+- name: cx_cso_ticket_tags
+  description: Bảng cx_cso_ticket_tags lưu trữ các nhãn được gắn cho ticket hỗ trợ khách hàng, giúp phân loại và theo dõi nội dung yêu cầu. Dữ liệu phục vụ báo cáo phân tích xu hướng vấn đề, hiệu suất xử lý ticket và đánh giá mức độ phổ biến của các chủ đề.
+  meta:
+    label: "CSO Ticket Tags"
+    owner: "lyttt3"
+    metrics:
+      tag_record_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số bản ghi tag trên ticket.
+        label: "Tag Record Count"
+        category: "Support Operations"
+        synonyms:
+          - "Tag Record Count"
+          - "Số lượng bản ghi thẻ"
+      tagged_ticket_count:
+        type: count_distinct
+        sql: ${TABLE}.ticket_id
+        description: Tổng số ticket duy nhất có tag.
+        label: "Tagged Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Tagged Ticket Count"
+          - "Số lượng Tagged ticket"
+      distinct_tag_count:
+        type: count_distinct
+        sql: ${TABLE}.tag
+        description: Tổng số tag duy nhất.
+        label: "Distinct Tag Count"
+        category: "Volume & Coverage"
+        synonyms:
+          - "Distinct Tag Count"
+          - "Số lượng thẻ duy nhất"
+      avg_tags_per_ticket_proxy:
+        type: number
+        sql: "CASE\n  WHEN COUNT(DISTINCT ticket_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(*) / COUNT(DISTINCT ticket_id)\nEND"
+        description: Số tag trung bình trên mỗi ticket, tính từ tổng số bản ghi tag chia cho số ticket duy nhất.
+        label: "Avg Tags Per Ticket Proxy"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Tags Per Ticket Proxy"
+          - "Trung bình thẻ ticket xấp xỉ"
+  columns:
+  - name: ticket_id
+    description: Mã định danh duy nhất của ticket hỗ trợ khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: mã ticket
+    tests:
+    - not_null
+  - name: tag
+    description: Nhãn phân loại nội dung hoặc chủ đề của ticket hỗ trợ khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: nhãn
+  - name: created_at
+    description: Ngày/giờ tạo thẻ ticket trong hệ thống.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày tạo
+  - name: updated_at
+    description: Ngày/giờ cập nhật cuối cùng của thẻ ticket.
+    meta:
+      dimension:
+        type: timestamp
+        label: thời gian cập nhật

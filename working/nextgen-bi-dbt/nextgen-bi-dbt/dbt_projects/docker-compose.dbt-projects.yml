@@ -1,0 +1,17 @@
+services:
+  dbt-projects:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vcs-lightdash-dbt-projects:latest
+    container_name: vcs-lightdash-dbt-projects
+    working_dir: /workspace
+    env_file:
+      - ./.env
+    environment:
+      LIGHTDASH_URL: ${LIGHTDASH_URL:-http://localhost:8080}
+    volumes:
+      - ./:/workspace
+    network_mode: host
+    restart: "no"
+    command: ["/workspace/scripts/setup-lightdash-projects.sh"]

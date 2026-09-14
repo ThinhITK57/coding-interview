@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  - name: vw_crm_contact_activity
+    description: |
+      Contact-level CRM statistics.
+
+      Grain:
+        1 row = 1 Contact × activity date.
+
+      Used to analyze contact creation, updates, customer-contact coverage,
+      AM ownership, and contact status.
+
+      This model is based on the current CRM contact records and is not
+      a complete audit log.
+    
+    meta:
+      group_label: AM Dashboard
+      owner: huongnv1
+
+    columns:
+
+      - name: object_id
+        description: Unique CRM Contact ID.
+
+      - name: object_type
+        description: CRM object type. Always CONTACT.
+
+      - name: am_user_id
+        description: Account Manager ID associated with the Contact.
+
+      - name: am_user_name
+        description: Account Manager name associated with the Contact.
+
+      - name: activity_date
+        description: Date used for daily Contact statistics.
+
+      - name: created_at
+        description: Contact creation timestamp.
+
+      - name: updated_at
+        description: Last Contact update timestamp.
+
+      - name: last_contacted_at
+        description: Last recorded Contact timestamp.
+
+      - name: last_assigned_at
+        description: last assigned at
+
+      - name: last_contacted_via_sales_activity
+        description: Last Contact timestamp associated with a sales activity.
+
+      - name: is_created
+        description: Indicates whether the Contact was created.
+
+      - name: is_updated
+        description: Indicates whether the Contact record was updated.
+
+      - name: is_contacted
+        description: Indicates whether the Contact has recorded contact information.
+
+      - name: contact_status_id
+        description: CRM Contact status ID.
+
+      - name: contact_status_name
+        description: CRM Contact status name.
+
+      - name: contact_forecast_type
+        description: Contact forecast classification.
+
+      - name: company_name
+        description: Company associated with the Contact.
+
+      - name: sales_account_id
+        description: Sales Account ID associated with the Contact.
+
+      - name: sales_account_name
+        description: Sales Account name associated with the Contact.
+
+      - name: center_name
+        description: Organizational center associated with the Contact.

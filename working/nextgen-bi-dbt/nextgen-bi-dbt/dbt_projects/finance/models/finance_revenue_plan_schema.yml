@@ -1,0 +1,211 @@
+version: 2
+
+models:
+- name: finance_revenue_plan
+  description: >
+    Bảng chứa dữ liệu kế hoạch doanh thu của công ty theo từng kỳ kế hoạch.
+    Kế hoạch doanh thu gồm ba mức: Kế hoạch Tập đoàn, MUST và NICE.
+    Trong đó, Kế hoạch Tập đoàn là chỉ tiêu doanh thu do Tập đoàn Viettel giao
+    và được xem là chỉ tiêu kế hoạch mặc định. Khi người dùng hỏi về kế hoạch doanh thu,
+    chỉ tiêu doanh thu hoặc target doanh thu mà không nêu rõ MUST hoặc NICE,
+    hệ thống ưu tiên sử dụng Kế hoạch Tập đoàn. MUST và NICE chỉ được sử dụng khi
+    người dùng chỉ định rõ hoặc cần so sánh các mức mục tiêu.
+
+  meta:
+    label: "Kế hoạch doanh thu"
+    owner: "sonnv1"
+
+    metrics:
+      total_plan_viettel_group_amount:
+        type: sum
+        sql: ${TABLE}.plan_viettel_group_amount
+        description: >
+          Tổng chỉ tiêu doanh thu do Tập đoàn Viettel giao. Đây là chỉ tiêu kế hoạch mặc định
+          và được ưu tiên sử dụng khi người dùng hỏi về kế hoạch doanh thu, chỉ tiêu doanh thu
+          hoặc target doanh thu mà không đề cập rõ MUST hoặc NICE.
+        label: "Tổng kế hoạch Tập đoàn"
+        category: "Kế hoạch"
+        synonyms:
+          - "Kế hoạch doanh thu"
+          - "Kế hoạch công ty"
+          - "Chỉ tiêu doanh thu"
+          - "Kế hoạch Tập đoàn"
+          - "Target doanh thu"
+          - "Target"
+          - "Revenue Plan"
+          - "Revenue Target"
+          - "Plan Target"
+          - "Viettel Group Target"
+
+      total_plan_must_amount:
+        type: sum
+        sql: ${TABLE}.plan_must_amount
+        description: Tổng mục tiêu doanh thu MUST.
+        label: "Tổng kế hoạch MUST"
+        category: "Kế hoạch"
+        synonyms:
+          - "Kế hoạch MUST"
+          - "Doanh thu MUST"
+          - "Mục tiêu MUST"
+          - "Total Plan Must Amount"
+
+      total_plan_nice_amount:
+        type: sum
+        sql: ${TABLE}.plan_nice_amount
+        description: Tổng mục tiêu doanh thu NICE.
+        label: "Tổng kế hoạch NICE"
+        category: "Kế hoạch"
+        synonyms:
+          - "Kế hoạch NICE"
+          - "Doanh thu NICE"
+          - "Mục tiêu NICE"
+          - "Stretch Goal"
+          - "Total Plan Nice Amount"
+
+      avg_plan_must_amount:
+        type: average
+        sql: ${TABLE}.plan_must_amount
+        description: Giá trị kế hoạch doanh thu MUST trung bình.
+        label: "Kế hoạch MUST trung bình"
+        category: "Kế hoạch"
+        synonyms:
+          - "Trung bình kế hoạch MUST"
+          - "Average Plan Must"
+          - "Avg Plan Must Amount"
+
+      avg_plan_nice_amount:
+        type: average
+        sql: ${TABLE}.plan_nice_amount
+        description: Giá trị kế hoạch doanh thu NICE trung bình.
+        label: "Kế hoạch NICE trung bình"
+        category: "Kế hoạch"
+        synonyms:
+          - "Trung bình kế hoạch NICE"
+          - "Average Plan Nice"
+          - "Avg Plan Nice Amount"
+
+      max_plan_must_amount:
+        type: max
+        sql: ${TABLE}.plan_must_amount
+        description: Giá trị kế hoạch doanh thu MUST cao nhất.
+        label: "Kế hoạch MUST cao nhất"
+        category: "Kế hoạch"
+        synonyms:
+          - "MUST cao nhất"
+          - "Max Plan Must Amount"
+
+      max_plan_nice_amount:
+        type: max
+        sql: ${TABLE}.plan_nice_amount
+        description: Giá trị kế hoạch doanh thu NICE cao nhất.
+        label: "Kế hoạch NICE cao nhất"
+        category: "Kế hoạch"
+        synonyms:
+          - "NICE cao nhất"
+          - "Max Plan Nice Amount"
+
+      number_of_plan_record_count:
+        type: count
+        sql: "1.0"
+        description: Số lượng bản ghi kế hoạch doanh thu.
+        label: "Số bản ghi kế hoạch"
+        category: "Kế hoạch"
+        synonyms:
+          - "Số lượng bản ghi kế hoạch"
+          - "Số dòng kế hoạch"
+          - "Plan Record Count"
+
+      plan_nice_amount_ratio:
+        type: number
+        sql: ${total_plan_nice_amount} / NULLIF(${total_plan_viettel_group_amount}, 0.0)
+        description: Tỷ lệ giữa mục tiêu doanh thu NICE và Kế hoạch Tập đoàn.
+        label: "Tỷ lệ NICE / Kế hoạch Tập đoàn"
+        category: "Kế hoạch"
+        format: "percent"
+        synonyms:
+          - "Tỷ lệ NICE"
+          - "NICE trên kế hoạch tập đoàn"
+          - "Plan Nice Amount Ratio"
+
+      plan_must_amount_ratio:
+        type: number
+        sql: ${total_plan_must_amount} / NULLIF(${total_plan_viettel_group_amount}, 0.0)
+        description: Tỷ lệ giữa mục tiêu doanh thu MUST và Kế hoạch Tập đoàn.
+        label: "Tỷ lệ MUST / Kế hoạch Tập đoàn"
+        category: "Kế hoạch"
+        format: "percent"
+        synonyms:
+          - "Tỷ lệ MUST"
+          - "MUST trên kế hoạch tập đoàn"
+          - "Plan Must Amount Ratio"
+
+  columns:
+  - name: plan_date
+    description: Kỳ kế hoạch áp dụng các chỉ tiêu doanh thu.
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày kế hoạch"
+
+  - name: plan_year
+    description: Năm kế hoạch.
+    meta:
+      dimension:
+        type: number
+        label: "Năm kế hoạch"
+
+  - name: plan_month
+    description: Tháng kế hoạch.
+    meta:
+      dimension:
+        type: number
+        label: "Tháng kế hoạch"
+
+  - name: plan_viettel_group_amount
+    description: >
+      Chỉ tiêu doanh thu do Tập đoàn Viettel giao cho công ty.
+      Đây là chỉ tiêu kế hoạch mặc định và được ưu tiên sử dụng khi người dùng hỏi
+      về kế hoạch doanh thu, chỉ tiêu doanh thu hoặc target doanh thu mà không đề cập rõ MUST hoặc NICE.
+    meta:
+      dimension:
+        type: number
+        label: "Kế hoạch Tập đoàn"
+
+  - name: plan_must_amount
+    description: Mục tiêu doanh thu MUST, là mức Cần đạt được.
+    meta:
+      dimension:
+        type: number
+        label: "Kế hoạch MUST"
+
+  - name: plan_nice_amount
+    description: Mục tiêu doanh thu NICE, là mức kỳ vọng cao hơn hoặc mục tiêu thử thách.
+    meta:
+      dimension:
+        type: number
+        label: "Kế hoạch NICE"
+
+  - name: currency_code
+    description: Mã tiền tệ sử dụng trong kế hoạch. Hiện tại được chuẩn hóa về VND.
+    meta:
+      dimension:
+        type: string
+        label: "Mã tiền tệ"
+
+  - name: customer_segment_l1
+    description: >
+      Phân khúc khách hàng cấp 1. Đây là cấp phân khúc mặc định được ưu tiên sử dụng
+      trong phân tích và trả lời khi người dùng chỉ hỏi theo phân khúc khách hàng mà
+      không chỉ định cấp phân khúc.
+    meta:
+      dimension:
+        type: string
+        label: "Phân khúc khách hàng cấp 1"
+
+  - name: customer_segment_l2
+    description: >
+      Phân khúc khách hàng cấp 2, được sử dụng khi cần phân tích chi tiết hơn theo phân khúc.
+    meta:
+      dimension:
+        type: string
+        label: "Phân khúc khách hàng cấp 2"

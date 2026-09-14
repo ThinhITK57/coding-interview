@@ -1,0 +1,424 @@
+version: 2
+
+models:
+  - name: cx_sur_mart_customer_experience
+    description: >
+      Bảng fact ở mức 1 phản hồi khảo sát (1 row = 1 response).
+      Chứa điểm NPS, CSAT, CES đã được tổng hợp và phân loại Customer Experience.
+      Đây là bảng chuẩn để phân tích CX
+
+    meta:
+      label: Customer Experience Response
+      group_label: Customer Experience
+
+      # metrics:
+      #   - name: no_of_responses
+      #     label: "Số phản hồi"
+      #     type: count_distinct
+      #     sql: ${response_id}
+
+      #   - name: no_of_customers
+      #     label: "Số khách hàng"
+      #     type: count_distinct
+      #     sql: ${respondent_uuid}
+
+    columns:
+
+      #######################################################################
+      ## Keys
+      #######################################################################
+
+      - name: response_id
+        description: >
+          Khóa của phản hồi khảo sát.
+        meta:
+          dimension:
+            type: string
+
+      - name: respondent_uuid
+        description: >
+          Mã khách hàng.
+        meta:
+          dimension:
+            type: string
+
+      - name: survey_id
+        description: >
+          Mã khảo sát.
+        meta:
+          dimension:
+            type: string
+
+      #######################################################################
+      ## Dimensions
+      #######################################################################
+
+      - name: collected_date
+        description: >
+          Ngày ghi nhận phản hồi.
+        meta:
+          dimension:
+            type: date
+
+      - name: journey
+        description: >
+          Hành trình khách hàng.
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_touchpoint
+        description: >
+          Điểm chạm khách hàng.
+        meta:
+          dimension:
+            type: string
+
+      - name: product_category
+        description: >
+          Nhóm sản phẩm hoặc dịch vụ.
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_name
+        description: >
+          Tên đầy đủ khách hàng/doanh nghiệp.
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_group
+        description: >
+          Phân hạng khách hàng theo cấp độ: VVIP, VIP, Growth, Standard.
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_segement_level1
+        description: >
+          Phân khúc khách hàng  cấp 1 của giao dịch, thể hiện nhóm thị trường hoặc loại khách hàng chính.
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_segement_level2
+        description: >
+          Mức phân khúc khách hàng cấp 2 của giao dịch, cho biết nhóm khách hàng hoặc ngành nghề chi tiết hơn.
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_segement_level3
+        description: >
+          Phân khúc khách hàng cấp 3 của giao dịch, mô tả chi tiết nhóm khách hàng hoặc thị trường mà cơ hội kinh doanh thuộc về.
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_contact_level
+        description: >
+          Cấp bậc khách hàng, mô tả level của chức danh đầu mối liên hệ phía KH
+        meta:
+          dimension:
+            type: string
+
+      #######################################################################
+      ## KPI Scores
+      #######################################################################
+
+      - name: customer_nps_score
+        description: >
+          Điểm NPS của phản hồi.
+          Giá trị từ 0-10.
+        meta:
+          dimension:
+            type: number
+          metrics:
+
+            avg_nps:
+              label: Average NPS Score
+              type: average
+
+            max_nps:
+              type: max
+
+            min_nps:
+              type: min
+
+            respondent_nps:
+              type: sum
+          synonyms:
+            - NPS
+            - Recommend Score
+            - Net Promoter Score
+
+      - name: customer_csat_score
+        description: >
+          Điểm CSAT của phản hồi.
+          Giá trị từ 1-5.
+        meta:
+          dimension:
+            type: number
+          metrics:
+
+            avg_csat:
+              type: average
+
+            max_csat:
+              type: max
+
+            min_csat:
+              type: min
+
+      - name: customer_ces_score
+        description: >
+          Điểm CES của phản hồi.
+          Giá trị từ 1-7.
+        meta:
+          dimension:
+            type: number
+          metrics:
+
+            avg_ces:
+              type: average
+
+            max_ces:
+              type: max
+
+            min_ces:
+              type: min
+
+      #######################################################################
+      ## CX Classification
+      #######################################################################
+
+      - name: customer_experience_segment
+        description: >
+          Nhóm phân loại khách hàng dựa trên kết quả tổng hợp của các chỉ số trải nghiệm theo quy tắc của doanh nghiệp,
+          được tính từ NPS, CSAT và CES.
+
+        meta:
+          dimension:
+            type: string
+          synonyms:
+            - Customer Experience Segment
+            - Phân nhóm trải nghiệm khách hàng
+            - Experience Segment
+
+      - name: customer_experience_rank
+        description: >
+          Xếp hạng trải nghiệm khách hàng. 1 là tốt nhất, 7 là kém nhất.
+
+        meta:
+          dimension:
+            type: number
+
+      - name: customer_experience_label
+        description: >
+          Tên hiển thị của nhóm Customer Experience.
+
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_experience_sentiment
+        description: >
+          Cảm xúc tổng hợp của khách hàng.
+
+        meta:
+          dimension:
+            type: string
+
+      - name: customer_experience_score
+        description: >
+          Điểm CX tổng hợp. Giá trị càng cao trải nghiệm càng tốt.
+
+        meta:
+          dimension:
+            type: number
+
+          metrics:
+
+            avg_customer_experience_score:
+              type: average
+            
+            max_customer_experience_score:
+              type: max
+
+            min_customer_experience_score:
+              type: min
+          synonyms:
+            - CX Score
+            - Experience Score
+            - Customer Health Score
+
+      #######################################################################
+      ## Flags
+      #######################################################################
+
+      - name: has_complete_cx_score
+        description: >
+          =1 nếu phản hồi có đủ NPS, CSAT và CES.
+
+        meta:
+          dimension:
+            type: boolean
+
+          metrics:
+
+            complete_response:
+              label: Complete CX Responses
+              type: sum
+
+      #######################################################################
+      ## Metrics - Response
+      #######################################################################
+
+      - name: response_id
+
+        meta:
+
+          metrics:
+
+            total_response:
+              label: Total Responses
+              type: count_distinct
+
+            excellent_response:
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment}='EXCELLENT'
+                  THEN ${response_id}
+                END
+
+            engaged_response:
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment}='ENGAGED'
+                  THEN ${response_id}
+                END
+
+            stable_response:
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment}='STABLE'
+                  THEN ${response_id}
+                END
+
+            barrier_response:
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment}='BARRIER'
+                  THEN ${response_id}
+                END
+
+            at_risk_response:
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment}='AT_RISK'
+                  THEN ${response_id}
+                END
+
+            critical_response:
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment}='CRITICAL'
+                  THEN ${response_id}
+                END
+      #######################################################################
+      ## Metrics - Customer
+      #######################################################################
+
+      - name: respondent_uuid
+
+        meta:
+
+          metrics:
+
+            total_customer:
+              label: Total Customers
+              type: count_distinct
+
+            excellent_customer:
+              label: Excellent Customers
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment} = 'EXCELLENT'
+                  THEN ${respondent_uuid}
+                END
+              synonyms: 
+                - nhóm khách hàng ưu việt
+
+            engaged_customer:
+              label: Engaged Customers
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment} = 'ENGAGED'
+                  THEN ${respondent_uuid}
+                END
+              synonyms: 
+                - nhóm khách hàng gắn kết
+
+            stable_customer:
+              label: Stable Customers
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment} = 'STABLE'
+                  THEN ${respondent_uuid}
+                END
+              synonyms: 
+                - nhóm khách hàng ổn định
+            
+            barrier_customer:
+              label: Barrier Customers
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment} = 'BARRIER'
+                  THEN ${respondent_uuid}
+                END
+              synonyms: 
+                - nhóm khách hàng rào cản
+            
+            at_risk_customer:
+              label: At-risk Customers
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment} = 'AT_RISK'
+                  THEN ${respondent_uuid}
+                END
+              synonyms: 
+                - nhóm khách hàng rủi ro
+
+            critical_customer:
+              label: Critical Customers
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment} = 'CRITICAL'
+                  THEN ${respondent_uuid}
+                END
+              synonyms: 
+                - nhóm khách hàng khủng hoảng
+            
+            neutral_customer:
+              label: Neutral Customers
+              type: count_distinct
+              sql: |
+                CASE
+                  WHEN ${customer_experience_segment} = 'NEUTRAL'
+                  THEN ${respondent_uuid}
+                END
+              synonyms: 
+                - nhóm khách hàng trung lập

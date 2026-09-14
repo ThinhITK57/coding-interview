@@ -1,0 +1,44 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_kpikqi_tkcg_report
+    description: "Nguồn Power BI: KPIKQI_TKCG_Report"
+    columns:
+    - name: sp
+      description: "Cột SP"
+    - name: kpi_type
+      description: "Cột Loại KPI"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: result
+      description: "Cột Kết quả"
+    - name: evaluation
+      description: "Cột Đánh giá"
+    - name: target
+      description: "Cột Target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: unit_of_measure
+      description: "Cột Đơn vị tính"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: report_month_date
+      description: "Cột Ngày báo cáo tháng"
+    - name: result_prev_1_period
+      description: "Cột Kết quả 1 kỳ trước"
+    - name: result_prev_2_periods
+      description: "Cột Kết quả 2 kỳ trước"
+    - name: kpi_trend
+      description: "Cột Xu hướng KPI"
+    - name: cai_thien
+      description: "Cột Cải thiện"
+    - name: suy_giam
+      description: "Cột Suy giảm"
+    - name: duy_tri
+      description: "Cột Duy trì"
+    - name: report_date
+      description: "Cột Ngày báo cáo"

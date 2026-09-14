@@ -1,0 +1,113 @@
+version: 2
+models:
+- name: production_management_1_post_acceptance_bug
+  description: "Bảng production_management_1_post_acceptance_bug (nguồn Power BI: Bug sau nghiệm thu)."
+  meta:
+    label: "Bug sau nghiệm thu"
+    powerbi_source: "Bug sau nghiệm thu"
+    joins:
+    - join: production_management_1_os_logwork
+      sql_on: "${production_management_1_post_acceptance_bug.issue_key} = ${production_management_1_os_logwork.issue_key}"
+      relationship: one-to-one
+    metrics:
+      post_acceptance_bug:
+        type: count_distinct
+        sql: id
+        label: "Bug sau nghiệm thu"
+        description: "DAX: CALCULATE(DISTINCTCOUNT('Bug sau nghiệm thu'[Id]), USERELATIONSHIP('OS - MM PLan'[TTSX_PRODUCT_10803],'Bug sau nghiệm thu'[TTSX_PRODUCT_16800])). USERELATIONSHIP chỉ đổi đường lan bộ lọc, không đổi phép đếm; trên Lightdash lọc theo `ttsx_product` của chính bảng này là tương đương."
+      post_acceptance_bug_count_weighted:
+        type: sum
+        sql: defect_weight
+        label: "Số Bug sau nghiệm thu(đã nhân hệ số)"
+        description: "DAX: CALCULATE( SUM('Bug sau nghiệm thu'[Hệ số lỗi]))"
+  columns:
+  - name: id
+    description: "Cột Id trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: order_value
+    description: "Cột Đơn_hàng_13421 trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn_hàng_13421"
+        hidden: true
+  - name: defect_weight
+    description: "Cột Hệ số lỗi trong Bug sau nghiệm thu. Cột tính toán, DAX gốc: SWITCH( 'Bug sau nghiệm thu'[Severity_11301], \"Minor\", 1, \"Major\", 3, \"Critical\", 5, 1 )"
+    meta:
+      dimension:
+        type: number
+        label: "Hệ số lỗi"
+        hidden: true
+  - name: end_date_by_order
+    description: "Cột EndDate theo đơn hàng trong Bug sau nghiệm thu. Cột tính toán, DAX gốc: CALCULATE( SELECTEDVALUE('PYC Jira'[EndDate_commit]), TREATAS( VALUES('Bug sau nghiệm thu'[Đơn_hàng_13421]), 'PYC Jira'[Đơn_hàng_10707] ), TREATAS( VALUES('Bug sau nghiệm thu'[TTSX_PRODUCT_16800]), 'PYC Jira'[Dự_án_10706] ) )"
+    meta:
+      dimension:
+        type: timestamp
+        label: "EndDate theo đơn hàng"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_16800 trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT_16800"
+        hidden: true
+  - name: date_created
+    description: "Cột Date_created trong Bug sau nghiệm thu. Cột tính toán, DAX gốc: DATE( YEAR('Bug sau nghiệm thu'[ISSUE_CREATED]), MONTH('Bug sau nghiệm thu'[ISSUE_CREATED]), DAY('Bug sau nghiệm thu'[ISSUE_CREATED]) )"
+    meta:
+      dimension:
+        type: date
+        label: "Date_created"
+        hidden: true
+  - name: severity
+    description: "Cột Severity_11301 trong Bug sau nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "Severity"

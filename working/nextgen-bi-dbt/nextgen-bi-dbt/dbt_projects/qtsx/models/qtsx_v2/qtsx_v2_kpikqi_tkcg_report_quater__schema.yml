@@ -1,0 +1,141 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_tkcg_report_quater
+  description: "Bảng qtsx_v2_kpikqi_tkcg_report_quater (nguồn Power BI: KPIKQI_TKCG_Report_Quater)."
+  meta:
+    label: "KPIKQI_TKCG_Report_Quater"
+    powerbi_source: "KPIKQI_TKCG_Report_Quater"
+  columns:
+  - name: sp
+    description: "Cột SP trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "SP"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+        hidden: true
+  - name: n_1_passed
+    description: "Cột 1. Đạt trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "1. Đạt"
+        hidden: true
+  - name: n_2_fail_vuot_target_0_30
+    description: "Cột 2. Fail vượt Target 0-30% trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "2. Fail vượt Target 0-30%"
+        hidden: true
+  - name: n_3_fail_vuot_target_30_60
+    description: "Cột 3. Fail vượt Target >=30% & <60% trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "3. Fail vượt Target >=30% & <60%"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+        hidden: true
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: report_month_date
+    description: "DAX trả BLANK cho kỳ Quarter -> luôn NULL."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo tháng"
+        hidden: true
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 1 kỳ trước"
+        hidden: true
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 2 kỳ trước"
+        hidden: true
+  - name: kpi_trend
+    description: "Cột Xu hướng KPI trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng KPI"
+        hidden: true
+  - name: cai_thien
+    description: "Cột Cải thiện trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Cải thiện"
+        hidden: true
+  - name: suy_giam
+    description: "Cột Suy giảm trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Suy giảm"
+        hidden: true
+  - name: duy_tri
+    description: "Cột Duy trì trong KPIKQI_TKCG_Report_Quater."
+    meta:
+      dimension:
+        type: string
+        label: "Duy trì"
+        hidden: true

@@ -1,0 +1,48 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.dev
+.env.vm
+.env.prod
+.env.lightdash
+.env.lightdash.*
+.env.s3.local
+.env.local
+.env.openmetadata.local
+
+# Logs
+logs/
+*.log
+
+# dbt artifacts
+nextgen_bi/target/
+nextgen_bi/dbt_packages/
+nextgen_bi/logs/
+nextgen_bi/.user.yml
+
+# Optional local profile with secrets
+nextgen_bi/profiles.local.yml
+
+.user.yml
+target/
+target/*

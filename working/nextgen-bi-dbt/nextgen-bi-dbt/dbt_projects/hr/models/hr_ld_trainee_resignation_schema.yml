@@ -1,0 +1,193 @@
+version: 2
+
+models:
+- name: hr_ld_trainee_resignation
+  description: >
+    Bảng **hr_ld_trainee_resignation** lưu trữ thông tin sinh viên thực tập hoặc
+    sinh viên tham gia chương trình đào tạo nhưng nghỉ việc trước khi hoàn thành
+    chương trình hoặc trước khi được chuyển đổi sang vị trí chính thức. Dữ liệu
+    bao gồm thông tin sinh viên, chương trình đào tạo, thời điểm nghỉ việc, lý do
+    nghỉ việc, giai đoạn đào tạo, đơn vị tiếp nhận và thông tin người hướng dẫn.
+    Dữ liệu được sử dụng để phân tích tỷ lệ nghỉ việc, nguyên nhân nghỉ việc và
+    đánh giá hiệu quả chương trình đào tạo nguồn nhân lực trẻ.
+
+  meta:
+    label: "Trainee Resignation"
+    owner: "tranpth"
+
+    metrics:
+      trainee_resignation_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng sinh viên nghỉ việc hoặc rời chương trình đào tạo."
+        label: "Trainee Resignation Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số sinh viên nghỉ việc"
+          - "Số sinh viên nghỉ"
+          - "Trainee Resignation Count"
+
+      resignation_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi nghỉ việc của sinh viên."
+        label: "Resignation Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi nghỉ việc"
+          - "Resignation Record Count"
+
+      resigned_during_ojt_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN UPPER(${TABLE}.training_phase) LIKE '%OJT%'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng sinh viên nghỉ việc trong giai đoạn OJT."
+        label: "Resigned During OJT Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số sinh viên nghỉ trong OJT"
+          - "Resigned During OJT Count"
+
+      resigned_during_theory_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN UPPER(${TABLE}.training_phase) LIKE '%LÝ THUYẾT%'
+              OR UPPER(${TABLE}.training_phase) LIKE '%THEORY%'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng sinh viên nghỉ việc trong giai đoạn đào tạo lý thuyết."
+        label: "Resigned During Theory Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số sinh viên nghỉ giai đoạn lý thuyết"
+          - "Resigned During Theory Count"
+
+      expected_conversion_drop_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.expected_full_time_date IS NOT NULL
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng sinh viên nghỉ việc mặc dù đã có ngày dự kiến chuyển đổi chính thức."
+        label: "Expected Conversion Drop Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số sinh viên nghỉ trước chuyển đổi"
+          - "Expected Conversion Drop Count"
+
+      avg_days_before_resignation:
+        type: average
+        sql: date_diff('day', CAST(${TABLE}.expected_full_time_date AS date), CAST(${TABLE}.resigned_date AS date))
+        description: "Khoảng thời gian trung bình giữa ngày dự kiến chuyển đổi và ngày nghỉ việc."
+        label: "Average Days Before Resignation"
+        category: "Learning & Development"
+        synonyms:
+          - "Số ngày trước nghỉ việc"
+          - "Average Days Before Resignation"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi nghỉ việc của sinh viên
+      meta:
+        dimension:
+          type: number
+          label: "Resignation Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: employee_code
+      description: Mã định danh của sinh viên hoặc mã nhân sự được cấp trong chương trình đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: training_program
+      description: Tên chương trình đào tạo hoặc thực tập mà sinh viên tham gia
+      meta:
+        dimension:
+          type: string
+          label: "Training Program"
+
+    - name: resigned_date
+      description: Ngày sinh viên nghỉ việc hoặc rời khỏi chương trình đào tạo
+      meta:
+        dimension:
+          type: timestamp
+          label: "Resigned Date"
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Training Major"
+
+    - name: resignation_reason
+      description: Lý do sinh viên nghỉ việc hoặc rời khỏi chương trình đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Resignation Reason"
+
+    - name: training_phase
+      description: Giai đoạn đào tạo mà sinh viên đang tham gia tại thời điểm nghỉ việc
+      meta:
+        dimension:
+          type: string
+          label: "Training Phase"
+
+    - name: employment_type
+      description: Loại hình tham gia chương trình của sinh viên, ví dụ thực tập sinh hoặc trainee
+      meta:
+        dimension:
+          type: string
+          label: "Employment Type"
+
+    - name: expected_full_time_date
+      description: Ngày dự kiến chuyển sang trạng thái nhân viên chính thức
+      meta:
+        dimension:
+          type: timestamp
+          label: "Expected Full Time Date"
+
+    - name: mentor_email
+      description: Địa chỉ email của mentor hoặc người hướng dẫn sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Mentor Email"
+
+    - name: team
+      description: Nhóm hoặc đội ngũ công tác tiếp nhận sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Team"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 quản lý hoặc tiếp nhận sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: training_result_link
+      description: Đường dẫn đến tài liệu hoặc hệ thống lưu trữ kết quả đào tạo của sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Training Result Link"

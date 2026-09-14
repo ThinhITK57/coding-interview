@@ -1,0 +1,30 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_os_mm_plan
+    description: "Nguồn Power BI: OS - MM PLan"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_created
+      description: "Cột ISSUE_CREATED"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: ttsx_product
+      description: "Cột TTSX_PRODUCT_10803"
+    - name: start_date
+      description: "Cột Start_date_10142"
+    - name: mm_os_plan
+      description: "Cột MM_OS_plan"
+    - name: plan_date
+      description: "Cột plan date"
+    - name: project
+      description: "Cột Dự_án_10706"
+    - name: payment_date
+      description: "Cột Ngày_thanh_toán_10839"

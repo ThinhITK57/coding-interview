@@ -1,0 +1,36 @@
+version: 2
+models:
+- name: production_management_1_rpm_customer
+  description: "Bảng production_management_1_rpm_customer (nguồn Power BI: RPM_Customer)."
+  meta:
+    label: "RPM_Customer"
+    powerbi_source: "RPM_Customer"
+  columns:
+  - name: id
+    description: "Cột Id trong RPM_Customer."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong RPM_Customer."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong RPM_Customer."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong RPM_Customer."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true

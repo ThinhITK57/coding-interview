@@ -1,0 +1,146 @@
+version: 2
+
+models:
+  - name: crm_users
+    description: >
+      CRM users and account manager information.
+      Grain: one record per CRM user.
+
+    meta:
+      label: "CRM Users"
+      owner: "huongnv1"
+
+      # ================================================================
+      # METRICS
+      # ================================================================
+
+      metrics:
+        - name: logged_in_user_count
+          label: "Số user đã đăng nhập"
+          description: "Số user có lịch sử đăng nhập CRM"
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${last_login_at} IS NOT NULL
+              THEN ${user_id}
+            END
+
+        - name: never_logged_in_user_count
+          label: "Số user chưa đăng nhập"
+          description: "Số user chưa từng có thông tin đăng nhập CRM"
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${last_login_at} IS NULL
+              THEN ${user_id}
+            END
+
+        - name: user_count
+          label: "Số người dùng"
+          description: "Tổng số CRM user"
+          type: count
+          sql: ${user_id}
+
+        - name: active_user_count
+          label: "Số user đang hoạt động"
+          description: "Số CRM user đang ở trạng thái active"
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${is_active} = true
+              THEN ${user_id}
+            END
+
+        - name: inactive_user_count
+          label: "Số user không hoạt động"
+          description: "Số CRM user đang ở trạng thái inactive"
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${is_active} = false
+              THEN ${user_id}
+            END
+
+        - name: active_am_count
+          label: "Số AM đang hoạt động"
+          description: >
+            Số user đang hoạt động có chức danh AM.
+          type: count_distinct
+          sql: |
+            CASE
+              WHEN ${is_active} = true
+                AND LOWER(TRIM(${job_title})) LIKE '%am%'
+              THEN ${user_id}
+            END
+
+    # ================================================================
+    # COLUMNS / DIMENSIONS
+    # ================================================================
+
+    columns:
+
+      - name: user_id
+        description: "ID của CRM user"
+        meta:
+          dimension:
+            type: number
+            label: "User ID"
+
+      - name: email
+        description: "Email của CRM user"
+        meta:
+          dimension:
+            type: string
+            label: "Email"
+
+      - name: display_name
+        description: "Tên hiển thị của CRM user"
+        meta:
+          dimension:
+            type: string
+            label: "Tên người dùng"
+
+      - name: is_active
+        description: "Trạng thái hoạt động của user"
+        meta:
+          dimension:
+            type: boolean
+            label: "Đang hoạt động"
+
+      - name: job_title
+        description: "Chức danh của CRM user"
+        meta:
+          dimension:
+            type: string
+            label: "Chức danh"
+
+      - name: role_name
+        description: "Vai trò của CRM user trong hệ thống"
+        meta:
+          dimension:
+            type: string
+            label: "Vai trò"
+
+      - name: territory_name
+        description: "Khu vực của AM"
+
+      - name: team_name
+        description: "Tên nhóm/team của CRM user"
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm"
+
+      - name: last_login_at
+        description: "Thời điểm đăng nhập CRM gần nhất"
+        meta:
+          dimension:
+            type: timestamp
+            label: "Đăng nhập gần nhất"
+            time_intervals:
+              - HOUR
+              - DAY
+              - WEEK
+              - MONTH
+              - QUARTER
+              - YEAR

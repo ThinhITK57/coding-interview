@@ -1,0 +1,283 @@
+version: 2
+
+models:
+  - name: finance_sales_revenue
+    description: >
+      Bảng chi tiết doanh thu bán hàng theo từng hóa đơn hoặc lần ghi nhận doanh thu.
+      Bảng phục vụ phân tích doanh thu theo khách hàng, dịch vụ, ngành, vùng,
+      đơn vị kinh doanh, Account Manager, Presale và các chiều kinh doanh khác.
+
+    meta:
+      label: "Doanh thu bán hàng"
+      owner: "sonnv1"
+
+      metrics:
+
+        total_revenue_amount:
+          type: sum
+          sql: ${TABLE}.revenue_amount
+          label: "Doanh thu gốc"
+          category: "Doanh thu"
+          description: >
+            Tổng doanh thu gốc trước khi phân chia doanh thu.
+          synonyms:
+            - "Doanh thu bán hàng"
+            - "Doanh thu gốc"
+            - "Sales Revenue"
+
+        total_revenue_share_amount:
+          type: sum
+          sql: ${TABLE}.revenue_share_amount
+          label: "Doanh thu chia sẻ"
+          category: "Doanh thu"
+          description: >
+            Tổng doanh thu được chia sẻ giữa các đơn vị.
+          synonyms:
+            - "Revenue Share"
+            - "Doanh thu phân chia"
+
+        total_final_revenue_amount:
+          type: sum
+          sql: ${TABLE}.final_revenue_amount
+          label: "Doanh thu thực hiện"
+          category: "Doanh thu"
+          description: >
+            Doanh thu cuối cùng được ghi nhận sau khi tính toán phân bổ.
+          synonyms:
+            - "Doanh thu thực hiện"
+            - "Final Revenue"
+            - "Doanh thu ghi nhận"
+
+        total_vat_amount:
+          type: sum
+          sql: ${TABLE}.vat_amount
+          label: "Thuế VAT"
+          category: "Thuế"
+          description: >
+            Tổng thuế giá trị gia tăng của doanh thu.
+          synonyms:
+            - "VAT"
+            - "Thuế GTGT"
+
+        total_gross_amount:
+          type: sum
+          sql: ${TABLE}.gross_amount
+          label: "Tổng giá trị hóa đơn"
+          category: "Doanh thu"
+          description: >
+            Tổng giá trị hóa đơn bao gồm VAT.
+          synonyms:
+            - "Gross Amount"
+            - "Tổng tiền hóa đơn"
+            - "Doanh thu gồm VAT"
+
+        total_invoice_count:
+          type: count
+          sql: "1.0"
+          label: "Số hóa đơn"
+          category: "Doanh thu"
+          description: >
+            Tổng số bản ghi hóa đơn/ghi nhận doanh thu.
+          synonyms:
+            - "Invoice Count"
+            - "Số bản ghi doanh thu"
+
+        avg_final_revenue_amount:
+          type: average
+          sql: ${TABLE}.final_revenue_amount
+          label: "Doanh thu thực hiện trung bình"
+          category: "Doanh thu"
+          description: >
+            Giá trị doanh thu thực hiện trung bình trên một bản ghi.
+          synonyms:
+            - "Average Final Revenue"
+            - "Doanh thu ghi nhận trung bình"
+
+        vat_to_final_revenue_ratio:
+          type: number
+          sql: ${total_vat_amount} / NULLIF(${total_final_revenue_amount}, 0.0)
+          label: "Tỷ lệ VAT trên doanh thu thực hiện"
+          category: "Thuế"
+          format: "percent"
+          description: >
+            Tỷ lệ thuế VAT trên doanh thu thực hiện.
+          synonyms:
+            - "VAT Ratio"
+            - "VAT / Final Revenue"
+
+    columns:
+
+      - name: invoice_date
+        description: "Ngày ghi nhận doanh thu."
+        meta:
+          dimension:
+            type: timestamp
+            label: "Ngày hóa đơn"
+
+      - name: invoice_type
+        description: "Loại hóa đơn."
+        meta:
+          dimension:
+            type: string
+            label: "Loại hóa đơn"
+
+      - name: revenue_amount
+        description: "Doanh thu gốc."
+        meta:
+          dimension:
+            type: number
+            label: "Doanh thu gốc"
+
+      - name: revenue_share_amount
+        description: "Doanh thu chia sẻ."
+        meta:
+          dimension:
+            type: number
+            label: "Doanh thu chia sẻ"
+
+      - name: final_revenue_amount
+        description: "Doanh thu thực hiện sau phân bổ."
+        meta:
+          dimension:
+            type: number
+            label: "Doanh thu thực hiện"
+
+      - name: vat_amount
+        description: "Thuế giá trị gia tăng."
+        meta:
+          dimension:
+            type: number
+            label: "VAT"
+
+      - name: gross_amount
+        description: "Tổng giá trị hóa đơn bao gồm VAT."
+        meta:
+          dimension:
+            type: number
+            label: "Tổng giá trị hóa đơn"
+
+      - name: revenue_source_name
+        description: "Nguồn doanh thu."
+        meta:
+          dimension:
+            type: string
+            label: "Nguồn doanh thu"
+
+      - name: customer_channel
+        description: "Kênh khách hàng."
+        meta:
+          dimension:
+            type: string
+            label: "Kênh khách hàng"
+
+      - name: customer_segment_l3
+        description: "Phân khúc khách hàng cấp 3."
+        meta:
+          dimension:
+            type: string
+            label: "Phân khúc khách hàng L3"
+
+      - name: department_alias
+        description: "Đơn vị kinh doanh."
+        meta:
+          dimension:
+            type: string
+            label: "Đơn vị kinh doanh"
+
+      - name: company_alias
+        description: "Tên khách hàng hoặc doanh nghiệp."
+        meta:
+          dimension:
+            type: string
+            label: "Khách hàng"
+
+      - name: customer_industry
+        description: "Ngành nghề khách hàng."
+        meta:
+          dimension:
+            type: string
+            label: "Ngành khách hàng"
+
+      - name: account_manager
+        description: "Nhân viên quản lý khách hàng (Account Manager)."
+        meta:
+          dimension:
+            type: string
+            label: "Account Manager"
+
+      - name: presale
+        description: "Nhân viên Presale."
+        meta:
+          dimension:
+            type: string
+            label: "Presale"
+
+      - name: service_category
+        description: "Nhóm dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm dịch vụ"
+
+      - name: revenue_recognition_type
+        description: "Loại ghi nhận doanh thu."
+        meta:
+          dimension:
+            type: string
+            label: "Loại ghi nhận doanh thu"
+
+      - name: customer_segment_l1
+        description: "Phân khúc khách hàng cấp 1."
+        meta:
+          dimension:
+            type: string
+            label: "Phân khúc khách hàng L1"
+
+      - name: service_name
+        description: "Tên dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Tên dịch vụ"
+
+      - name: revenue_type
+        description: "Loại doanh thu."
+        meta:
+          dimension:
+            type: string
+            label: "Loại doanh thu"
+
+      - name: mss_shared_revenue_mode
+        description: "Cờ xác định doanh thu chia sẻ MSS."
+        meta:
+          dimension:
+            type: string
+            label: "Cờ chia sẻ doanh thu MSS"
+
+      - name: soc_type
+        description: "Loại dịch vụ SOC."
+        meta:
+          dimension:
+            type: string
+            label: "Loại SOC"
+
+      - name: region
+        description: "Khu vực kinh doanh."
+        meta:
+          dimension:
+            type: string
+            label: "Khu vực"
+
+      - name: product_category_code
+        description: "Mã nhóm sản phẩm hoặc dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Mã nhóm sản phẩm dịch vụ"
+
+      - name: currency_code
+        description: "Mã tiền tệ."
+        meta:
+          dimension:
+            type: string
+            label: "Mã tiền tệ"

@@ -1,0 +1,91 @@
+version: 2
+models:
+- name: production_management_1_dgcl_ttk
+  description: "Bảng production_management_1_dgcl_ttk (nguồn Power BI: ĐGCL TTK)."
+  meta:
+    label: "ĐGCL TTK"
+    powerbi_source: "ĐGCL TTK"
+    joins:
+    - join: production_management_1_division
+      sql_on: "${production_management_1_dgcl_ttk.division} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_dgcl_ttk.project} = ${production_management_1_milestone_versions_projects.project_name}"
+      relationship: many-to-one
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_dgcl_ttk.project} = ${production_management_1_project_name.project_name_last}"
+      relationship: many-to-many
+    metrics:
+      average_release_frequency:
+        type: average
+        sql: release_frequency
+        label: "TS release"
+        description: "Sinh từ Power BI: average(ĐGCL TTK.tần suất release)"
+      count_distinct_issue_key:
+        type: count_distinct
+        sql: issue_key
+        label: "Số update"
+        description: "Sinh từ Power BI: count_distinct(ĐGCL TTK.ISSUE_KEY)"
+      release_frequency_dgcl_ttk:
+        type: number
+        sql: "SUM(release_frequency) / NULLIF(COUNT(DISTINCT issue_key), 0)"
+        label: "Tần suất Release ĐGCL TTK"
+        round: 2
+        description: "DAX: AVERAGEX(VALUES('ĐGCL TTK'[Khối]), DIVIDE(CALCULATE(SUM('ĐGCL TTK'[tần suất release]), 'ĐGCL TTK'[Khối]=CurrentCenter), CALCULATE(DISTINCTCOUNT('ĐGCL TTK'[ISSUE_KEY]), 'ĐGCL TTK'[Khối]=CurrentCenter))). KHÁC BẢN GỐC: DAX lấy trung bình CỦA CÁC TỈ SỐ theo từng khối; ở đây là tỉ số của hai tổng. Hai cách chỉ trùng nhau khi mỗi khối có cùng số issue. Muốn khớp tuyệt đối thì group by `division` trên chart rồi lấy trung bình."
+  columns:
+  - name: id
+    description: "Cột Id trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: evaluation_completion_date
+    description: "Cột Ngày_hoàn_thành_đánh_giá_12133 trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_hoàn_thành_đánh_giá_12133"
+        hidden: true
+  - name: project
+    description: "Cột Project_12130 trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: string
+        label: "Project_12130"
+        hidden: true
+  - name: completion_date_old
+    description: "Cột ngày hoàn thành old trong ĐGCL TTK. Cột tính toán, DAX gốc: CALCULATE( MAX('ĐGCL TTK'[Ngày_hoàn_thành_đánh_giá_12133]), FILTER( 'ĐGCL TTK', 'ĐGCL TTK'[Project_12130] = EARLIER('ĐGCL TTK'[Project_12130]) && 'ĐGCL TTK'[Ngày_hoàn_thành_đánh_giá_12133] < EARLIER('ĐGCL TTK'[Ngày_hoàn_thành_đánh_giá_12133]) ) )"
+    meta:
+      dimension:
+        type: date
+        label: "ngày hoàn thành old"
+        hidden: true
+  - name: release_frequency
+    description: "Cột tần suất release trong ĐGCL TTK. Cột tính toán, DAX gốc: DATEDIFF( [ngày hoàn thành old], [Ngày_hoàn_thành_đánh_giá_12133], DAY )"
+    meta:
+      dimension:
+        type: number
+        label: "tần suất release"
+        hidden: true
+  - name: division
+    description: "Cột Khối trong ĐGCL TTK. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[Khối],'milestone Versions_Projects'[PROJECT_NAME],'ĐGCL TTK'[Project_12130])"
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+        hidden: true

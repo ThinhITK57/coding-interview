@@ -1,0 +1,125 @@
+version: 2
+models:
+- name: cx_sur_question_answer_choices
+  description: Lưu trữ danh sách chuẩn hóa các câu hỏi khảo sát và các phương án trả lời tương ứng. Bảng này dùng để tham chiếu (Lookup) các thông tin định tính như nội dung câu hỏi, loại hình khảo sát, vị trí trong hành trình khách hàng và các nhóm KPI liên quan.
+  columns:
+  - name: survey_id
+    description: Mã định danh duy nhất của khảo sát thu thập phản hồi khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: survey_id
+    tests:
+    - not_null
+  - name: question_id
+    description: Mã định danh duy nhất của câu hỏi trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: mã câu hỏi
+  - name: question_type
+    description: Loại câu hỏi được sử dụng trong khảo sát khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: loại câu hỏi
+  - name: question_clean
+    description: Tiêu đề câu hỏi
+    meta:
+      dimension:
+        type: string
+        label: câu hỏi đã làm sạch
+  - name: answer_choice_id
+    description: Mã định danh duy nhất cho mỗi lựa chọn trả lời trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: mã lựa chọn trả lời
+  - name: answer_choice_content
+    description: Nội dung văn bản của lựa chọn trả lời trong câu hỏi khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: nội dung lựa chọn trả lời
+  - name: kpi_type
+    description: Chỉ số đo lường
+    meta:
+      dimension:
+        type: string
+        label: loại KPI
+  - name: journey
+    description: Giai đoạn trải nghiệm
+    meta:
+      dimension:
+        type: string
+        label: hành trình khách hàng
+  - name: customer_touchpoint
+    description: Điểm tiếp xúc mà khách hàng tương tác với doanh nghiệp trong hành trình mua hàng.
+    meta:
+      dimension:
+        type: string
+        label: điểm tiếp xúc khách hàng
+  - name: product_category
+    description: Danh mục sản phẩm dịch vụ khảo sát
+    meta:
+      dimension:
+        type: string
+        label: danh mục sản phẩm
+  meta:
+    label: "Survey Answer Choices"
+    owner: "lyttt3"
+    metrics:
+      answer_choice_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số lựa chọn trả lời.
+        label: "Answer Choice Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Answer Choice Count"
+          - "Số lượng trả lời lựa chọn"
+      distinct_question_count:
+        type: count_distinct
+        sql: ${TABLE}.question_id
+        description: Tổng số câu hỏi khảo sát duy nhất.
+        label: "Distinct Question Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Distinct Question Count"
+          - "Số lượng Question duy nhất"
+      distinct_survey_count:
+        type: count_distinct
+        sql: ${TABLE}.survey_id
+        description: Tổng số khảo sát duy nhất.
+        label: "Distinct Survey Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Distinct Survey Count"
+          - "Số lượng khảo sát duy nhất"
+      distinct_kpi_type_count:
+        type: count_distinct
+        sql: ${TABLE}.kpi_type
+        description: Số loại KPI CX trong hệ thống khảo sát.
+        label: "Distinct KPI Type Count"
+        category: "Volume & Coverage"
+        synonyms:
+          - "Distinct KPI Type Count"
+          - "Số lượng KPI loại duy nhất"
+      distinct_product_category_count:
+        type: count_distinct
+        sql: ${TABLE}.product_category
+        description: Số nhóm sản phẩm xuất hiện trong khảo sát.
+        label: "Distinct Product Category Count"
+        category: "Product & Market Analytics"
+        synonyms:
+          - "Distinct Product Category Count"
+          - "Số lượng sản phẩm danh mục duy nhất"
+      distinct_journey_count:
+        type: count_distinct
+        sql: ${TABLE}.journey
+        description: Số giai đoạn hành trình khách hàng.
+        label: "Distinct Journey Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Distinct Journey Count"
+          - "Số lượng hành trình duy nhất"

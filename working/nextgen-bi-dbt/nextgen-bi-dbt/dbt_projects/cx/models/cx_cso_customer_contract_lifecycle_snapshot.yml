@@ -1,0 +1,130 @@
+version: 2
+
+models:
+  - name: cx_cso_customer_contract_lifecycle_snapshot
+    description: >
+      Bảng snapshot hợp đồng khách hàng theo từng ngày.
+
+      Mỗi dòng tương ứng 1 hợp đồng tại 1 ngày snapshot (period_end).
+
+      Dùng để phân tích vòng đời hợp đồng như: active, renewal, upsell, new, churn signal.
+
+      QUAN TRỌNG:
+      - Luôn dùng period_end làm trục thời gian chính, bên cạnh đó hãy kết hợp với year, quarter, month để filter nếu câu hỏi có đề cập đến
+      - Không dùng sign_date hoặc expire_date để filter báo cáo chính
+
+    meta:
+      label: "Snapshot hợp đồng khách hàng theo thời gian"
+      owner: "lyttt3"
+
+      metrics:
+        - name: active_contracts
+          label: Hợp đồng đang hoạt động
+          description: Số hợp đồng đang có hiệu lực tại thời điểm snapshot
+          type: count_distinct
+          sql: |
+            CASE WHEN is_active = 1.0 THEN contract_id END
+
+        - name: renewal_contracts
+          label: Hợp đồng gia hạn
+          description: Số hợp đồng phát sinh gia hạn
+          type: count_distinct
+          sql: |
+            CASE WHEN is_renewal = 1.0 THEN contract_id END
+
+        - name: upsell_contracts
+          label: Hợp đồng upsell
+          description: Số hợp đồng phát sinh upsell (bán thêm hoặc nâng cấp)
+          type: count_distinct
+          sql: |
+            CASE WHEN is_upsell = 1.0 THEN contract_id END
+
+        - name: expiring_contracts_90d
+          label: Hợp đồng sắp hết hạn (trong 90 ngày)
+          description: Số hợp đồng sẽ hết hạn trong vòng 90 ngày
+          type: count_distinct
+          sql: |
+            CASE WHEN is_expiring_90d = 1.0 THEN contract_id END
+
+        - name: grace_period_contracts
+          label: Hợp đồng trong grace period
+          description: Số hợp đồng đã hết hạn nhưng còn trong thời gian gia hạn (90 ngày)
+          type: count_distinct
+          sql: |
+            CASE WHEN is_grace_period = 1.0 THEN contract_id END
+
+    columns:
+      - name: tax_code
+        description: Mã số thuế khách hàng
+
+      - name: customer_name
+        description: Tên khách hàng.
+
+      - name: product_category
+        description: Nhóm sản phẩm của hợp đồng
+
+      - name: contract_type
+        description: Loại hợp đồng
+
+      - name: sign_date
+        description: Ngày ký hợp đồng
+
+      - name: expire_date
+        description: Ngày hết hạn hợp đồng
+
+      - name: first_customer_sign_date
+        description: Ngày ký hợp đồng đầu tiên của khách hàng, không phân biệt nhóm sản phẩm.
+
+      - name: first_customer_product_sign_date
+        description: Ngày ký hợp đồng đầu tiên của khách hàng theo từng nhóm sản phẩm.
+
+      - name: year
+        description: Năm của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến năm.
+
+      - name: quarter
+        description: Quý của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến quý.
+
+      - name: month
+        description: Tháng của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến Tháng.
+
+      - name: period_start
+        description: Ngày đầu tiên của kỳ snapshot.
+
+      - name: period_end
+        description: Ngày cuối cùng của kỳ snapshot. Các chỉ số trạng thái (active, grace period, expiring,...) được xác định tại thời điểm này.
+
+      - name: is_active_at_period_start
+        description: Hợp đồng còn hiệu lực tại ngày đầu tiên của kỳ snapshot (period_start).
+
+      - name: is_active_at_period_end
+        description: Hợp đồng còn hiệu lực tại ngày cuối cùng của kỳ snapshot (period_end).
+
+      - name: is_expiring_customer
+        description: Khách hàng có ít nhất một hợp đồng sẽ hết hạn trong vòng 90 ngày kể từ ngày cuối kỳ snapshot.
+
+      - name: is_renewal
+        description: Hợp đồng gia hạn
+
+      - name: is_upsell
+        description: Hợp đồng phát sinh upsell
+
+      - name: is_next_signed_within_90_days
+        description: Hợp đồng được ký tiếp theo trong vòng 90 ngày kể từ ngày hết hạn của hợp đồng hiện tại đối với cùng khách hàng và nhóm sản phẩm.
+
+      - name: is_returning_customer
+        description: Khách hàng quay lại sau thời gian gián đoạn
+
+      - name: is_new_customer_vcs
+        description: Hợp đồng đầu tiên của khách hàng theo định nghĩa VCS
+
+      - name: is_new_customer_product
+        description: Hợp đồng đầu tiên theo từng sản phẩm của khách hàng
+
+      - name: is_expiring_90d
+        description: Hợp đồng sắp hết hạn trong 90 ngày
+
+      - name: is_grace_period
+        description: Hợp đồng đã hết hạn nhưng còn trong thời gian gia hạn 90 ngày
+
+      - name: is_active
+        description: Hợp đồng đang còn hiệu lực tại period_end

@@ -1,0 +1,159 @@
+version: 2
+
+models:
+  - name: br03_task_report
+    description: >
+      Báo cáo chi tiết công việc (Tasks - BR-03).
+      Phục vụ quản lý điều hành WBS, phân bổ công việc, theo dõi trạng thái tích hợp Jira
+      và tiến độ thực thi thực tế của từng nhân sự.
+      Bảng vật lý chỉ chứa đúng 15 cột nghiệp vụ theo quy chuẩn.
+      Các phép tính năng suất, tồn đọng giờ công (work backlog) thuộc về dbt Semantic Layer.
+
+      Grain: Một dòng tương ứng với một Task/Công việc.
+
+    meta:
+      label: "Báo Cáo Chi Tiết Task (BR-03)"
+      group_label: "Operational EPM Reports"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Task Execution"
+        grain: "One row per task"
+        primary_department_dimension: "department"
+        primary_assignee_dimension: "assignee"
+        primary_project_dimension: "parent_project"
+
+        restrictions:
+          - "Bảng vật lý không chứa cột suy diễn như remaining_work hay is_delayed."
+          - "Số giờ công work và duration được chuẩn hóa đơn vị giờ."
+
+        derived_measures:
+          - name: "is_delayed"
+            label: "Trễ Hạn (Delayed)"
+            formula: "CASE WHEN due_date < CURRENT_DATE AND percent_completed < 100.0 THEN 1 ELSE 0 END"
+            description: "Cờ xác định công việc đã quá hạn giao mà chưa hoàn tất."
+            format: "boolean"
+
+          - name: "remaining_work"
+            label: "Giờ Công Còn Lại"
+            formula: "work * (1.0 - (COALESCE(percent_completed, 0.0) / 100.0))"
+            description: "Số giờ công ước lượng còn phải bỏ ra để hoàn thành 100% task."
+            format: "decimal"
+
+          - name: "planned_daily_effort"
+            label: "Định Mức Giờ/Ngày"
+            formula: "CASE WHEN duration > 0 THEN work / duration ELSE work END"
+            description: "Cường độ giờ công cần bỏ ra mỗi ngày theo kế hoạch."
+            format: "decimal"
+
+          - name: "is_active"
+            label: "Đang Thực Hiện"
+            formula: "CASE WHEN percent_completed > 0.0 AND percent_completed < 100.0 THEN 1 ELSE 0 END"
+            description: "Cờ xác định task đang trong quá trình thực hiện."
+            format: "boolean"
+
+    columns:
+      - name: task_type
+        description: "Phân loại công việc (Milestone, Task chuẩn, Deliverable, Bug fix)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại Task"
+
+      - name: assignee
+        description: "Cán bộ nhân viên chịu trách nhiệm thực thi task."
+        meta:
+          dimension:
+            type: string
+            label: "Người Thực Hiện"
+
+      - name: department
+        description: "Phòng ban / Đơn vị tiếp nhận và xử lý task."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng Ban"
+
+      - name: resources
+        description: "Tổng số nhân sự được phân bổ tham gia thực hiện."
+        meta:
+          dimension:
+            type: string
+            label: "Số Lượng Nhân Lực"
+
+      - name: parent_project
+        description: "Mã dự án cha quản lý task này."
+        meta:
+          dimension:
+            type: string
+            label: "Dự Án Trực Thuộc"
+
+      - name: jira_status
+        description: "Trạng thái công việc đồng bộ từ Jira (To Do, In Progress, Review, Done)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng Thái Jira"
+
+      - name: name
+        description: "Tiêu đề công việc."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Task"
+
+      - name: description
+        description: "Thuyết minh chi tiết yêu cầu công việc."
+        meta:
+          dimension:
+            type: string
+            label: "Mô Tả"
+
+      - name: work
+        description: "Tổng số giờ công kế hoạch được phê duyệt."
+        meta:
+          measure:
+            type: sum
+            label: "Giờ Công Kế Hoạch"
+
+      - name: duration
+        description: "Tổng thời lượng tính theo ngày làm việc."
+        meta:
+          measure:
+            type: sum
+            label: "Thời Lượng (Ngày)"
+
+      - name: epm_default
+        description: "Đường dẫn tích hợp mặc định hoặc mã quy chuẩn hệ thống EPM."
+        meta:
+          dimension:
+            type: string
+            label: "EPM Mặc Định"
+
+      - name: start_date
+        description: "Ngày bắt đầu thực hiện theo kế hoạch."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày Bắt Đầu"
+
+      - name: due_date
+        description: "Hạn chót kết thúc công việc."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Kết Thúc"
+
+      - name: percent_completed
+        description: "Tỷ lệ % hoàn thành hiện tại."
+        meta:
+          measure:
+            type: average
+            label: "Tiến Độ (%)"
+
+      - name: update_description
+        description: "Giải trình, cập nhật tiến độ mới nhất từ nhân sự."
+        meta:
+          dimension:
+            type: string
+            label: "Nội Dung Cập Nhật"

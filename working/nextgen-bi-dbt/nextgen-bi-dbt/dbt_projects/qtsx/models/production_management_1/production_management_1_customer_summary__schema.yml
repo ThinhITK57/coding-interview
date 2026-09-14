@@ -1,0 +1,43 @@
+version: 2
+models:
+- name: production_management_1_customer_summary
+  description: "Bảng production_management_1_customer_summary (nguồn Power BI: Customer_Summary)."
+  meta:
+    label: "Customer_Summary"
+    powerbi_source: "Customer_Summary"
+  columns:
+  - name: total_services
+    description: "Cột Tổng số dịch vụ trong Customer_Summary."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng số dịch vụ"
+        hidden: true
+  - name: total_fail
+    description: "Cột Tổng số FAIL trong Customer_Summary."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng số FAIL"
+        hidden: true
+  - name: failed_metric_and_result
+    description: "Cột Chỉ số không đạt & Kết quả trong Customer_Summary."
+    meta:
+      dimension:
+        type: string
+        label: "Chỉ số không đạt & Kết quả"
+        hidden: true
+  - name: customer_evaluation
+    description: "Cột Đánh giá Khách hàng trong Customer_Summary."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá Khách hàng"
+        hidden: true
+  - name: khong_passed
+    description: "Cột Không đạt trong Customer_Summary."
+    meta:
+      dimension:
+        type: string
+        label: "Không đạt"
+        hidden: true

@@ -1,0 +1,113 @@
+version: 2
+models:
+- name: qtsx_v2_ulnl_worklog_by_version_release
+  description: "Bảng qtsx_v2_ulnl_worklog_by_version_release (nguồn Power BI: ULNL_worklog_by_version_release)."
+  meta:
+    label: "ULNL_worklog_by_version_release"
+    powerbi_source: "ULNL_worklog_by_version_release"
+    joins:
+    - join: qtsx_v2_version
+      sql_on: "${qtsx_v2_ulnl_worklog_by_version_release.id_version} = ${qtsx_v2_version.id}"
+      relationship: many-to-one
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_ulnl_worklog_by_version_release.issue_project_key} = ${qtsx_v2_project.project_key}"
+      relationship: many-to-one
+    metrics:
+      pct_rework_version:
+        type: number
+        sql: "${sum_mm_worklog_filtered} / NULLIF(${sum_mm_worklog}, 0)"
+        label: "% Rework version"
+        description: "DAX: VAR MMrework = CALCULATE( SUM(ULNL_worklog_by_version_release[MM Worklog]), ULNL_worklog_by_version_release[ISSUE_CURRENT_TYPE_NAME] = \"Bug\" ) RETURN DIVIDE( MMrework, SUM(ULNL_worklog_by_version_release[MM Worklog]), 0 )"
+      sum_mm_worklog:
+        type: sum
+        sql: mm_worklog
+        label: "Worklog"
+        description: "Sinh từ Power BI: sum(ULNL_worklog_by_version_release.MM Worklog)"
+      sum_mm_worklog_filtered:
+        type: sum
+        sql: "CASE WHEN issue_current_type_name = 'Bug' THEN mm_worklog END"
+        label: "sum mm_worklog (có điều kiện)"
+        description: "Metric phụ sinh từ DAX: SUM(mm_worklog) kèm điều kiện của CALCULATE"
+      sum_ulnl_mm:
+        type: sum
+        sql: ulnl_mm
+        label: "MM ULNL release"
+        description: "Sinh từ Power BI: sum(ULNL_worklog_by_version_release.ULNL MM)"
+  columns:
+  - name: id
+    description: "Cột Id trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_time_spent_with_st
+    description: "Cột ISSUE_TIME_SPENT_WITH_ST trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_TIME_SPENT_WITH_ST"
+        hidden: true
+  - name: total_effort_excl_reuse
+    description: "Cột Tổng_ULNL_đã_trừ_tái_sử_dụng_13370 trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_ULNL_đã_trừ_tái_sử_dụng_13370"
+        hidden: true
+  - name: version_date_jmcf
+    description: "Cột VersionDate_JMCF_23634 trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: date
+        label: "VersionDate_JMCF_23634"
+        hidden: true
+  - name: id_version
+    description: "Cột ID_version_23800 trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: string
+        label: "ID_version_23800"
+        hidden: true
+  - name: issue_project_key
+    description: "Cột ISSUE_PROJECT_KEY trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PROJECT_KEY"
+        hidden: true
+  - name: working_days_in_resolved_month
+    description: "Cột Working Days in Resolved Month trong ULNL_worklog_by_version_release. Cột tính toán, DAX gốc: VAR ResolvedDate = ULNL_worklog_by_version_release[VersionDate_JMCF_23634] VAR StartOfMonths = DATE( YEAR(ResolvedDate), MONTH(ResolvedDate), 1 ) VAR EndOfMonths = EOMONTH(ResolvedDate, 0) RETURN IF( ISBLANK(ResolvedDate), BLANK(), COUNTROWS( FILTER( CALENDAR(StartOfMonths, EndOfMonths), WEEKDAY([Date], 2) <= 5 -- Thứ 2 đến Thứ 6 ) ) )"
+    meta:
+      dimension:
+        type: number
+        label: "Working Days in Resolved Month"
+        hidden: true
+  - name: ulnl_mm
+    description: "Cột ULNL MM trong ULNL_worklog_by_version_release. Cột tính toán, DAX gốc: 'ULNL_worklog_by_version_release'[Tổng_ULNL_đã_trừ_tái_sử_dụng_13370] / ('ULNL_worklog_by_version_release'[Working Days in Resolved Month] *8)"
+    meta:
+      dimension:
+        type: number
+        label: "ULNL MM"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: mm_worklog
+    description: "Cột MM Worklog trong ULNL_worklog_by_version_release. Cột tính toán, DAX gốc: ULNL_worklog_by_version_release[ISSUE_TIME_SPENT_WITH_ST] / (8*ULNL_worklog_by_version_release[Working Days in Resolved Month])"
+    meta:
+      dimension:
+        type: number
+        label: "MM Worklog"
+        hidden: true
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong ULNL_worklog_by_version_release."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+        hidden: true

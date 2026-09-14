@@ -1,0 +1,28 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_bug
+    description: "Nguồn Power BI: Bug"
+    columns:
+    - name: issuekey
+      description: "Cột issuekey"
+    - name: summary
+      description: "Cột summary"
+    - name: projectname
+      description: "Cột projectname"
+    - name: resolutiondate
+      description: "Cột resolutiondate"
+    - name: priority
+      description: "Cột priority"
+    - name: status
+      description: "Cột status"
+    - name: created
+      description: "Cột created"
+    - name: bug_score
+      description: "Cột Điểm bug"
+    - name: year_month
+      description: "Cột YearMonth"

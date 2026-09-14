@@ -1,0 +1,92 @@
+version: 2
+models:
+- name: crm_deal_reason_stats
+  description: '[CRM] Bảng thống kê lý do theo deals và số lượng'
+  meta:
+    label: "Deal Reason Statistics"
+    owner: "huongnv1"
+    dimensions:
+      failure_reason_name:
+        type: string
+        sql: UPPER(${TABLE}.reason_name)
+        label: Deal Failure Reason
+        description: Lý do thất bại của deal trong CRM. Dùng để phân tích top lý do thất bại và cơ cấu deal thất bại theo nguyên nhân.
+        synonyms:
+          - "Failure Reason Name"
+          - "Tên lý do thất bại"
+      failed_deal_volume_bucket:
+        type: string
+        sql: "CASE\n  WHEN ${TABLE}.number_of_deals IS NULL THEN 'unknown'\n  WHEN ${TABLE}.number_of_deals < 10.0 THEN 'lt_10'\n  WHEN ${TABLE}.number_of_deals < 50.0 THEN '10_to_49'\n  WHEN ${TABLE}.number_of_deals < 100.0 THEN '50_to_99'\n  WHEN ${TABLE}.number_of_deals < 500.0 THEN '100_to_499'\n  ELSE 'gte_500'\nEND"
+        label: Failed Deal Volume Bucket
+        description: Nhóm số lượng deal thất bại theo mức độ phổ biến của lý do.
+        synonyms:
+          - "Failed Deal Volume Bucket"
+          - "Nhóm khối lượng deal thất bại"
+    metrics:
+      failure_reason_row_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số dòng thống kê lý do thất bại của deal.
+        label: "Failure Reason Row Count"
+        category: "Sales Performance"
+        synonyms:
+          - "Failure Reason Row Count"
+          - "Số lượng dòng lý do thất bại"
+      total_failed_deals:
+        type: sum
+        sql: ${TABLE}.number_of_deals
+        description: Tổng số deal thất bại theo các lý do.
+        label: "Total Failed Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Total Failed Deals"
+          - "Tổng số deal thất bại"
+      avg_failed_deals:
+        type: average
+        sql: ${TABLE}.number_of_deals
+        description: Số deal thất bại trung bình trên mỗi lý do.
+        label: "Avg Failed Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg Failed Deals"
+          - "Số lượng deal thất bại trung bình"
+      max_failed_deals:
+        type: max
+        sql: ${TABLE}.number_of_deals
+        description: Số deal thất bại lớn nhất trong một lý do.
+        label: "Max Failed Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Max Failed Deals"
+          - "Giá trị lớn nhất của deal thất bại"
+      min_failed_deals:
+        type: min
+        sql: ${TABLE}.number_of_deals
+        description: Số deal thất bại nhỏ nhất trong một lý do.
+        label: "Min Failed Deals"
+        category: "Sales Performance"
+        synonyms:
+          - "Min Failed Deals"
+          - "Giá trị nhỏ nhất của deal thất bại"
+      top_failure_reason_share:
+        type: number
+        sql: "CASE\n  WHEN SUM(number_of_deals) = 0.0 THEN 0.0\n  ELSE 1.0 * MAX(number_of_deals) / SUM(number_of_deals)\nEND"
+        description: Tỷ trọng số deal thất bại của lý do phổ biến nhất trên tổng số deal thất bại.
+        label: "Top Failure Reason Share"
+        category: "Sales Performance"
+        synonyms:
+          - "Top Failure Reason Share"
+          - "Tỷ trọng lý do thất bại cao nhất"
+  columns:
+  - name: reason_name
+    description: Lý do thất bại của deal trong CRM. Dùng để phân tích top lý do thất bại và cơ cấu deal thất bại theo nguyên nhân.
+    meta:
+      dimension:
+        type: string
+        label: Lý do Deal thất bại
+  - name: number_of_deals
+    description: Số lượng deal thất bại theo từng lý do.
+    meta:
+      dimension:
+        type: number
+        label: Số deal thất bại

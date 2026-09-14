@@ -1,0 +1,75 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_pricebook
+    description: Bảng crm_pricebook lưu trữ thông tin bảng giá sản phẩm, gồm giá bán, chiết khấu, đơn vị tiền tệ, trạng thái và loại sản phẩm. Dữ liệu hỗ trợ quản lý chính sách giá, phân tích lợi nhuận, báo cáo định giá và quyết định chiến lược giá.
+    columns:
+    - name: product_id
+      description: Mã định danh duy nhất của sản phẩm.
+      tests:
+      - not_null
+      - unique
+    - name: product_name
+      description: Tên sản phẩm.
+    - name: product_description
+      description: Mô tả chi tiết sản phẩm.
+    - name: product_group
+      description: Column product_group in crm_pricebook
+    - name: product_sub_group
+      description: Column product_sub_group in crm_pricebook
+    - name: category_code
+      description: Column category_code in crm_pricebook
+    - name: product_category
+      description: 'Danh mục sản phẩm mà sản phẩm thuộc (ví dụ: VCS-aJiant, MSS, SI, ...).'
+    - name: sku
+      description: Mã SKU duy nhất của sản phẩm.
+    - name: product_version
+      description: Phiên bản sản phẩm.
+    - name: item_type
+      description: Loại mặt hàng (Product/Service) trong bảng giá.
+    - name: is_active
+      description: True nếu bản ghi bảng giá đang được kích hoạt.
+    - name: product_type
+      description: Loại sản phẩm (nhóm/dạng sản phẩm).
+    - name: sub_type
+      description: 'Phân loại phụ của sản phẩm hoặc gói dịch vụ (ví dụ: Diamond, Gold, Silver, ...).'
+    - name: product_license
+      description: Loại giấy phép (Subscription, Perpetual, Time).
+    - name: price_type
+      description: 'Loại giá (ví dụ: danh sách, khuyến mại).'
+    - name: package
+      description: Gói sản phẩm/dịch vụ áp dụng trong bảng giá.
+    - name: price
+      description: Giá bán của sản phẩm.
+    - name: currency_code
+      description: Mã tiền tệ dùng cho mức giá sản phẩm.
+    - name: price_min
+      description: Giá tối thiểu sản phẩm có thể áp dụng.
+    - name: price_max
+      description: Giá tối đa sản phẩm có thể áp dụng.
+    - name: price_unit
+      description: 'Đơn vị tính của mức giá (ví dụ: mỗi người dùng, mỗi tháng).'
+    - name: is_quantity_based
+      description: True nếu mức giá dựa trên số lượng mua.
+    - name: is_related_csmp
+      description: True nếu bảng giá liên quan chương trình CSMP.
+    - name: csmp_discount
+      description: Mức chiết khấu CSMP áp dụng cho sản phẩm.
+    - name: csmp_discount_silver
+      description: Chiết khấu dành cho khách hàng hạng Silver.
+    - name: csmp_discount_gold
+      description: Chiết khấu dành cho khách hàng hạng Vàng.
+    - name: csmp_discount_diamond
+      description: Chiết khấu dành cho khách hàng hạng Kim Cương.
+    - name: created_at
+      description: Ngày và giờ bản ghi pricebook được tạo.
+    - name: updated_at
+      description: Thời điểm bản ghi được cập nhật lần cuối.
+    - name: item_code
+      description: Column item_code in crm_pricebook
+    - name: idd
+      description: Column idd in crm_pricebook

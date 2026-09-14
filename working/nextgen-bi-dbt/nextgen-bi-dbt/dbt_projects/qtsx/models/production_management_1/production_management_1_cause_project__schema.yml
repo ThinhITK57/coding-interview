@@ -1,0 +1,39 @@
+version: 2
+models:
+- name: production_management_1_cause_project
+  description: "Bảng production_management_1_cause_project (nguồn Power BI: Nguyên nhân_Project)."
+  meta:
+    label: "Nguyên nhân_Project"
+    powerbi_source: "Nguyên nhân_Project"
+    joins:
+    - join: production_management_1_cause
+      sql_on: "${production_management_1_cause_project.issue_id} = ${production_management_1_cause.id}"
+      relationship: many-to-one
+  columns:
+  - name: custom_field_id
+    description: "Cột CUSTOM_FIELD_ID trong Nguyên nhân_Project."
+    meta:
+      dimension:
+        type: number
+        label: "CUSTOM_FIELD_ID"
+        hidden: true
+  - name: issue_id
+    description: "Cột ISSUE_ID trong Nguyên nhân_Project."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_ID"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Nguyên nhân_Project."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: cause_checkbox
+    description: "Cột Nguyên_nhân_Checkbox_22106 trong Nguyên nhân_Project."
+    meta:
+      dimension:
+        type: string
+        label: "Nguyên nhân"

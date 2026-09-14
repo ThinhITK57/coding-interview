@@ -1,0 +1,15 @@
+version: 2
+models:
+- name: production_management_1_mode
+  description: "Bảng production_management_1_mode (nguồn Power BI: Mode)."
+  meta:
+    label: "Mode"
+    powerbi_source: "Mode"
+  columns:
+  - name: granularity
+    description: "Cột Granularity trong Mode."
+    meta:
+      dimension:
+        type: string
+        label: "Granularity"
+        hidden: true

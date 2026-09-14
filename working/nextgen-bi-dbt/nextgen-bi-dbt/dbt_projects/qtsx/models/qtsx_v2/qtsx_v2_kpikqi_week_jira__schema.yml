@@ -1,0 +1,148 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_week_jira
+  description: "Bảng qtsx_v2_kpikqi_week_jira (nguồn Power BI: KPIKQI tuần Jira)."
+  meta:
+    label: "KPIKQI tuần Jira"
+    powerbi_source: "KPIKQI tuần Jira"
+  columns:
+  - name: id
+    description: "Cột Id trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: result
+    description: "Cột kết quả trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: number
+        label: "kết quả"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày báo cáo trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+        hidden: true
+  - name: vs_target
+    description: "Cột So với target trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI tuần Jira'[Target] VAR _Result = 'KPIKQI tuần Jira'[Kết quả] VAR _Condition= UPPER(TRIM('KPIKQI tuần Jira'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: SWITCH( TRUE(), NOT ISBLANK('KPIKQI tuần Jira'[So với target]) && 'KPIKQI tuần Jira'[So với target] <= 0, \"Pass\", NOT ISBLANK('KPIKQI tuần Jira'[Kết quả]) && 'KPIKQI tuần Jira'[Target] = 'KPIKQI tuần Jira'[Kết quả], \"Pass\", ISBLANK('KPIKQI tuần Jira'[So với target]) , BLANK(), \"Fail\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+        hidden: true
+  - name: year_week
+    description: "Cột YearWeek trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: YEAR('KPIKQI tuần Jira'[Ngày báo cáo]) & \"-W\" & FORMAT('KPIKQI tuần Jira'[Week], \"00\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearWeek"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI tuần Jira'[SPDV] = \"EDR\" || 'KPIKQI tuần Jira'[SPDV] = \"SE\" || 'KPIKQI tuần Jira'[SPDV] = \"SOAR\" || 'KPIKQI tuần Jira'[SPDV] = \"NSM\" || 'KPIKQI tuần Jira'[SPDV] = \"SOC PLATFORM\", \"TT.Enterprise\", 'KPIKQI tuần Jira'[SPDV] = \"SOC\" || 'KPIKQI tuần Jira'[SPDV] = \"Threat hunting\" || 'KPIKQI tuần Jira'[SPDV] = \"Hunting-SOC\", \"TT.SOC\", 'KPIKQI tuần Jira'[SPDV] = \"M-Suite\" || 'KPIKQI tuần Jira'[SPDV] = \"OpenStack-Lab\" || 'KPIKQI tuần Jira'[SPDV] = \"OpenStack-Production\" || 'KPIKQI tuần Jira'[SPDV] = \"VCS-KIAN\", \"TT.SX\", 'KPIKQI tuần Jira'[SPDV] = \"Cloudrity Self Service\" || 'KPIKQI tuần Jira'[SPDV] = \"V-AntiDDoS\", \"TT.Telco\", 'KPIKQI tuần Jira'[SPDV] = \"Audit ANHT\" || 'KPIKQI tuần Jira'[SPDV] = \"Pentest-TTDVATTT\" || 'KPIKQI tuần Jira'[SPDV] = \"Pentest-VPMN\" || 'KPIKQI tuần Jira'[SPDV] = \"Redteam\", \"TTDVATTT\", 'KPIKQI tuần Jira'[SPDV] = \"Threat Intelligence\" || 'KPIKQI tuần Jira'[SPDV] = \"TI Sản phẩm\", \"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true
+  - name: week
+    description: "Cột Week trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: WEEKNUM('KPIKQI tuần Jira'[Ngày báo cáo], 2)"
+    meta:
+      dimension:
+        type: number
+        label: "Week"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQI tuần Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: vs_target_value
+    description: "Cột So với target value trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI tuần Jira'[Target] VAR _Result = ROUND('KPIKQI tuần Jira'[Kết quả],2) VAR _Condition= UPPER(TRIM('KPIKQI tuần Jira'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, _Condition = \">=\", IF(_Condition = \">=\"&&(_Result - _Target=0) , -1, DIVIDE(_Target - _Result, 100 - _Target, 0)), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target value"
+        hidden: true
+  - name: evaluation_value
+    description: "Cột Đánh giá value trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: IF( 'KPIKQI tuần Jira'[Kết quả]='KPIKQI tuần Jira'[Target],\"1. Đạt\", IF( 'KPIKQI tuần Jira'[So với target value]<> BLANK(), SWITCH( TRUE(), 'KPIKQI tuần Jira'[So với target value] = 0, \"1. Đạt\", 'KPIKQI tuần Jira'[So với target value] >= 0.6, \"4. Fail vượt Target >=60%\", 'KPIKQI tuần Jira'[So với target value] >= 0.3 && 'KPIKQI tuần Jira'[So với target value] < 0.6,\"3. Fail vượt Target >=30% & <60%\", 'KPIKQI tuần Jira'[So với target value] > 0 && 'KPIKQI tuần Jira'[So với target value] < 0.3, \"2. Fail vượt Target 0-30%\", 'KPIKQI tuần Jira'[So với target value] < 0, \"1. Đạt\", \"CHƯA CÓ KẾT QUẢ\")))"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá value"
+        hidden: true
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: VAR NgayHienTai = 'KPIKQI tuần Jira'[Ngày Báo cáo] VAR KPIHienTai = 'KPIKQI tuần Jira'[ISSUE_SUMMARY] -- Ngày báo cáo gần nhất trước ngày hiện tại của KPI này VAR NgayTruoc = CALCULATE( MAX('KPIKQI tuần Jira'[Ngày Báo cáo]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] < NgayHienTai ) ) VAR ThangTruoc = CALCULATE( MAX('KPIKQI tuần Jira'[Ngày Báo cáo]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] < NgayHienTai && MONTH('KPIKQI tuần Jira'[Ngày Báo cáo]) = MONTH(NgayHienTai) - 1 && YEAR('KPIKQI tuần Jira'[Ngày Báo cáo]) = YEAR(NgayHienTai) ) ) -- Kết quả lần trước VAR KetQuaTuanTruoc = CALCULATE( MAX('KPIKQI tuần Jira'[Kết quả]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] = NgayTruoc ) ) VAR KetQuaThangTruoc= CALCULATE( MAX('KPIKQI tuần Jira'[Kết quả]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] = ThangTruoc ) ) RETURN IF('KPIKQI tuần Jira'[Loại KPI] = \"Week\", KetQuaTuanTruoc,KetQuaThangTruoc)"
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 1 kỳ trước"
+        hidden: true
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: VAR NgayHienTai = 'KPIKQI tuần Jira'[Ngày Báo cáo] VAR KPIHienTai = 'KPIKQI tuần Jira'[ISSUE_SUMMARY] -- Ngày báo cáo gần nhất trước ngày hiện tại của KPI này VAR NgayTruoc = CALCULATE( MAX('KPIKQI tuần Jira'[Ngày Báo cáo]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] < NgayHienTai ) ) VAR ThangTruoc = CALCULATE( MAX('KPIKQI tuần Jira'[Ngày Báo cáo]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] < NgayHienTai && MONTH('KPIKQI tuần Jira'[Ngày Báo cáo]) = MONTH(NgayHienTai) - 1 && YEAR('KPIKQI tuần Jira'[Ngày Báo cáo]) = YEAR(NgayHienTai) ) ) -- Kết quả lần trước VAR KetQuaTuanTruoc = CALCULATE( MAX('KPIKQI tuần Jira'[Kết quả 1 kỳ trước]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] = NgayTruoc ) ) VAR KetQuaThangTruoc= CALCULATE( MAX('KPIKQI tuần Jira'[Kết quả 1 kỳ trước]), FILTER( 'KPIKQI tuần Jira', 'KPIKQI tuần Jira'[ISSUE_SUMMARY] = KPIHienTai && 'KPIKQI tuần Jira'[Ngày Báo cáo] = ThangTruoc ) ) RETURN IF('KPIKQI tuần Jira'[Loại KPI] = \"Week\", KetQuaTuanTruoc,KetQuaThangTruoc)"
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 2 kỳ trước"
+        hidden: true
+  - name: kpi_trend
+    description: "Cột Xu hướng KPI trong KPIKQI tuần Jira. Cột tính toán, DAX gốc: VAR CurrentResult = 'KPIKQI tuần Jira'[Kết quả] VAR PrevResult = 'KPIKQI tuần Jira'[Kết quả 1 kỳ trước] VAR Diff = CurrentResult - PrevResult VAR Conditioncheck = 'KPIKQI tuần Jira'[Điều kiện] RETURN IF( OR( ISBLANK(CurrentResult), ISBLANK(PrevResult) ), BLANK(), SWITCH( TRUE(), Conditioncheck = \">=\" && Diff > 0, \"Cải thiện\", Conditioncheck= \">=\" && Diff < 0, \"Suy giảm\", Conditioncheck = \">=\" && Diff = 0, \"Duy trì\", Conditioncheck = \"<=\" && Diff > 0, \"Suy giảm\", Conditioncheck = \"<=\" && Diff < 0, \"Cải thiện\", Conditioncheck = \"<=\" && Diff = 0, \"Duy trì\", BLANK() ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng KPI"
+        hidden: true

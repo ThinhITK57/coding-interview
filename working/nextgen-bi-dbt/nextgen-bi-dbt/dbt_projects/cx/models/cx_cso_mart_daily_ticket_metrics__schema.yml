@@ -1,0 +1,302 @@
+version: 2
+models:
+- name: cx_cso_mart_daily_ticket_metrics
+  description: >
+    Tổng hợp các chỉ số ticket theo ngày phục vụ phân tích hiệu suất vận hành (SLA)
+    và trải nghiệm khách hàng (CX). Bảng lưu các số liệu tổng hợp và thành phần
+    dùng để tính các chỉ số PAKH trong quá khứ (dữ liệu các tháng trước theo kỳ báo cáo tháng).
+    
+    Semantic:
+      Data scope:
+        - Chứa dữ liệu của các tháng đã chốt (N-1 trở về trước).
+        - Dữ liệu được lưu theo kỳ báo cáo tháng và được xem là nguồn dữ liệu chính thức cho phân tích lịch sử.
+        - Không chứa dữ liệu của tháng hiện tại (tháng N).
+
+      Routing:
+        - Các truy vấn về dữ liệu lịch sử, các tháng đã kết thúc hoặc các kỳ báo cáo tháng → sử dụng bảng này.
+        - Không sử dụng bảng này cho các truy vấn về tháng hiện tại.
+  meta:
+    label: "CSO Daily Ticket Metric"
+    owner: "lyttt3"
+    data_scope: historical
+    refresh: monthly_snapshot
+    routing_priority: history
+    metrics:
+
+      # ============================================================
+      # 1. SLA RT - First Response
+      # ============================================================
+      count_sla_first_response_success:
+        type: number
+        label: "Số ticket phản hồi đúng tiến độ"
+        description: "Số ticket được cập nhật hoặc phản hồi lần đầu đúng tiến độ."
+        sql: |
+          SUM(${sla_first_resp_success_cnt})
+
+      count_sla_first_response_total:
+        type: number
+        label: "Tổng ticket đánh giá First Response SLA"
+        description: "Tổng số ticket có kết quả đánh giá First Response SLA trong kỳ báo cáo."
+        sql: |
+          SUM(${sla_first_resp_total_cnt})
+
+      metric_sla_first_response_ratio:
+        type: number
+        label: "Tỷ lệ ticket được cập nhật đúng tiến độ"
+        format: percent
+        description: "Tỷ lệ ticket được cập nhật hoặc phản hồi lần đầu đúng tiến độ theo First Response SLA."
+        sql: |
+          1.0 * SUM(${sla_first_resp_success_cnt})
+          / NULLIF(
+              SUM(${sla_first_resp_total_cnt}),
+              0.0
+            )
+        synonyms:
+            - "Tỷ lệ SLA RT"
+            - "First Response SLA rate"
+            - "Tỷ lệ phản hồi lần đầu đúng hạn"
+            - "Service Level Agreement Response Time"
+      # ============================================================
+      # 2. CSAT sau xử lý
+      # ============================================================
+      count_post_resolution_csat_positive:
+        type: number
+        label: "Số khách hàng hài lòng sau xử lý"
+        description: "Số trường hợp khách hàng đánh giá hài lòng sau khi PAKH được giải quyết."
+        sql: |
+          SUM(${csat_positive_cnt})
+
+      count_post_resolution_csat_response:
+        type: number
+        label: "Tổng phản hồi CSAT sau xử lý"
+        description: "Tổng số trường hợp khách hàng tham gia đánh giá sau khi PAKH được giải quyết."
+        sql: |
+          SUM(${csat_response_cnt})
+
+      metric_post_resolution_csat_ratio:
+        type: number
+        label: "Tỷ lệ hài lòng sau khi được giải quyết"
+        format: percent
+        description: "Tỷ lệ khách hàng hài lòng trên tổng số trường hợp tham gia đánh giá sau xử lý."
+        sql: |
+          1.0 * SUM(${csat_positive_cnt})
+          / NULLIF(
+              SUM(${csat_response_cnt}),
+              0.0
+            )
+        synonyms:
+            - "Chỉ số CSAT sau xử lý khiếu nại/ sự cố"
+            - "Post Resolution CSAT"
+            - "Post-Ticket CSAT"
+
+      # ============================================================
+      # 3. SLA TTR
+      # ============================================================
+      count_sla_ttr_success:
+        type: number
+        label: "Số PAKH được xử lý đúng hạn"
+        description: "Số PAKH được xử lý thành công trong thời hạn quy định của TTR SLA."
+        sql: |
+          SUM(${resolved_within_sla_cnt})
+
+      count_sla_ttr_total:
+        type: number
+        label: "Tổng PAKH đánh giá TTR SLA"
+        description: "Tổng số PAKH có kết quả đánh giá TTR SLA trong kỳ báo cáo."
+        sql: |
+          SUM(${resolution_sla_total_cnt})
+
+      metric_sla_ttr_ratio:
+        type: number
+        label: "Tỷ lệ xử lý thành công PAKH trong hạn"
+        format: percent
+        description: "Tỷ lệ PAKH được xử lý thành công trong thời hạn trên tổng số PAKH có kết quả đánh giá TTR SLA."
+        sql: |
+          1.0 * SUM(${resolved_within_sla_cnt})
+          / NULLIF(
+              SUM(${resolution_sla_total_cnt}),
+              0.0
+            )
+        synonyms:
+            - "Tỷ lệ SLA TTR"
+            - "Time to Resolution SLA rate"
+            - "Tỷ lệ xử lý thành công yêu cầu trong hạn"
+            - "Service Level Agreement Time to Resolution"
+      # ============================================================
+      # 4. Thời gian xử lý PAKH
+      # ============================================================
+      sum_ticket_resolution_time_days:
+        type: number
+        label: "Tổng thời gian xử lý PAKH"
+        description: "Tổng thời gian xử lý của các PAKH đã được giải quyết, tính bằng ngày."
+        sql: |
+          SUM(${ttr_total_days})
+
+      count_resolved_ticket:
+        type: number
+        label: "Tổng số PAKH đã xử lý"
+        description: "Tổng số PAKH đã được giải quyết hoặc đóng, dùng để tính thời gian xử lý trung bình."
+        sql: |
+          SUM(${resolved_ticket_cnt})
+
+      metric_ttr_avg_days:
+        type: number
+        label: "Thời gian xử lý PAKH trung bình"
+        # format: percent
+        description: "Thời gian trung bình để xử lý một PAKH, tính bằng ngày."
+        sql: |
+          1.0 * SUM(${ttr_total_days})
+          / NULLIF(
+              SUM(${resolved_ticket_cnt}),
+              0.0
+            )
+        synonyms: 
+            - "TTR time"
+            - "Thời gian trung bình giải quyết một yêu cầu"
+            - "Time to Resolution"
+      # ============================================================
+      # 5. Hiệu quả xử lý PAKH
+      # ============================================================
+      count_efficient_resolution_success:
+        type: number
+        label: "Số PAKH được xử lý hiệu quả"
+        description: "Số PAKH được xử lý hiệu quả cao."
+        sql: |
+          SUM(${efficient_resolve_success_cnt})
+
+      count_efficient_resolution_total:
+        type: number
+        label: "Tổng PAKH đánh giá hiệu quả xử lý"
+        description: "Tổng số PAKH được sử dụng để đánh giá hiệu quả xử lý trong kỳ báo cáo."
+        sql: |
+          SUM(${efficient_resolve_total_cnt})
+
+      metric_efficient_resolution_ratio:
+        type: number
+        label: "Tỷ lệ xử lý PAKH hiệu quả"
+        format: percent
+        description: "Tỷ lệ PAKH được xử lý hiệu quả trên tổng số PAKH được đánh giá."
+        sql: |
+          1.0 * SUM(${efficient_resolve_success_cnt})
+          / NULLIF(
+              SUM(${efficient_resolve_total_cnt}),
+              0.0
+            )
+        synonyms: 
+            - "Efficient Resolution Rate"
+
+  columns:
+    - name: report_date
+      description: Ngày tổng hợp dữ liệu ticket.
+      meta:
+        dimension:
+          type: date
+          label: ngày báo cáo
+      tests:
+      - not_null
+      - unique
+
+    - name: sla_first_resp_success_cnt
+      description: Số ticket được phản hồi lần đầu hoặc cập nhật trong thời gian quy định theo SLA/KPI nội bộ.
+      meta:
+        dimension:
+          type: number
+          label: Số ticket được cập nhật/phản hồi đúng tiến độ
+
+    - name: sla_first_resp_total_cnt
+      description: Tổng số yêu cầu/phản ánh/phản hồi của khách hàng phát sinh hoặc thuộc phạm vi theo dõi trong kỳ.
+      meta:
+        dimension:
+          type: number
+          label: Tổng số ticket trong kỳ báo cáo
+
+    - name: sla_first_resp_ratio
+      description: Ticket được cập nhật đúng tiến độ là các yêu cầu/phản ánh/phản hồi của khách hàng được hoàn thành trong thời gian quy định theo SLA/KPI nội bộ.
+      meta:
+        dimension:
+          type: number
+          label: Tỷ lệ ticket được cập nhật đúng tiến độ
+
+    - name: csat_positive_cnt
+      description: Số ticket có điểm đánh giá hài lòng từ 4 đến 5.
+      meta:
+        dimension:
+          type: number
+          label: Số khách hàng hài lòng sau khi được giải quyết
+
+    - name: csat_response_cnt
+      description: Tổng số ticket có phản hồi đánh giá từ khách hàng.
+      meta:
+        dimension:
+          type: number
+          label: Số ticket khách hàng tham gia đánh giá sau xử lý
+
+    - name: csat_positive_ratio
+      description: Tỷ lệ thể hiện mức độ khách hàng cảm thấy hài lòng với cách nhân viên/tổng đài xử lý yêu cầu, phản ánh hoặc thắc mắc của họ.
+      meta:
+        dimension:
+          type: number
+          label: Tỷ lệ hài lòng sau khi được giải quyết
+
+    - name: efficient_resolve_success_cnt
+      description: Số ticket được giải quyết với tối đa 5 lần phản hồi của nhân viên hỗ trợ.
+      meta:
+        dimension:
+          type: number
+          label: Số ticket xử lý hiệu quả
+
+    - name: efficient_resolve_total_cnt
+      description: Tổng số ticket đã được giải quyết hoặc đóng.
+      meta:
+        dimension:
+          type: number
+          label: Tổng ticket đã xử lý
+
+    - name: efficient_resolve_ratio
+      description: Tỷ lệ ticket được giải quyết với tối đa 5 lần phản hồi.
+      meta:
+        dimension:
+          type: number
+          label: Tỷ lệ xử lý PAKH hiệu quả
+
+    - name: resolved_within_sla_cnt
+      description: Số phản ánh/yêu cầu của khách hàng đã được xử lý xong và không vi phạm SLA xử lý.
+      meta:
+        dimension:
+          type: number
+          label: Số PAKH được xử lý thành công trong hạn
+
+    - name: resolution_sla_total_cnt
+      description: Tổng số phản ánh/yêu cầu của khách hàng thuộc phạm vi cần xử lý trong kỳ báo cáo.
+      meta:
+        dimension:
+          type: number
+          label: Tổng số PAKH đến hạn xử lý trong kỳ báo cáo
+
+    - name: sla_ttr_ratio
+      description: Tỷ lệ ticket được giải quyết trong thời hạn TTR SLA.
+      meta:
+        dimension:
+          type: number
+          label: Tỷ lệ xử lý thành công PAKH trong hạn
+
+    - name: ttr_total_days
+      description: Tổng thời gian thực tế để xử lý PAKH qua các level xử lý L1-L4, tính bằng ngày.
+      meta:
+        dimension:
+          type: number
+          label: Tổng thời gian xử lý PAKH (ngày)
+
+    - name: resolved_ticket_cnt
+      description: Tổng số phản ánh/yêu cầu của khách hàng thuộc phạm vi cần xử lý trong kỳ báo cáo.
+      meta:
+        dimension:
+          type: number
+          label: Tổng số PAKH đã xử lý trong kỳ báo cáo
+
+    - name: ttr_avg_days
+      description: Thời gian xử lý 1 PAKH trung bình, tính theo ngày.
+      meta:
+        dimension:
+          type: number
+          label: Thời gian xử lý trung bình (ngày)

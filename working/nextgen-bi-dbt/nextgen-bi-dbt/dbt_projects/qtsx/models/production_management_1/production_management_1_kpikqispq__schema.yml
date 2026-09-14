@@ -1,0 +1,92 @@
+version: 2
+models:
+- name: production_management_1_kpikqispq
+  description: "Bảng production_management_1_kpikqispq (nguồn Power BI: KPIKQISPQ)."
+  meta:
+    label: "KPIKQISPQ"
+    powerbi_source: "KPIKQISPQ"
+  columns:
+  - name: report_date
+    description: "Cột Ngày_báo_cáo_18900 trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_báo_cáo_18900"
+        hidden: true
+  - name: customer_name
+    description: "Cột CustomerName trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerName"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit
+    description: "Cột Đơn vị trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+        hidden: true
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: customer_type
+    description: "Cột CustomerType trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: column12
+    description: "Cột Column12 trong KPIKQISPQ."
+    meta:
+      dimension:
+        type: string
+        label: "Column12"
+        hidden: true

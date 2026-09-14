@@ -1,0 +1,104 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_kpikqi_customer
+    description: "Nguồn Power BI: KPIKQI KHÁCH HÀNG"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: start_time
+      description: "Cột StartTime"
+    - name: end_time
+      description: "Cột EndTime"
+    - name: result
+      description: "Cột Kết quả"
+    - name: result_prev_1_period
+      description: "Cột Kết quả 1 kỳ trước'"
+    - name: result_prev_2_periods
+      description: "Cột Kết quả 2 kỳ trước'"
+    - name: target_difference
+      description: "Cột TargetDifference"
+    - name: before2_periods_difference
+      description: "Cột Before2PeriodsDifference"
+    - name: before1_period_difference
+      description: "Cột Before1PeriodDifference"
+    - name: result_2
+      description: "Cột Result"
+    - name: trend
+      description: "Cột Trend"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: dws_kpi_systems_id
+      description: "Cột dws_kpi_systems_id"
+    - name: dws_kpi_criterias_id
+      description: "Cột dws_kpi_criterias_id"
+    - name: calculate_time
+      description: "Cột CalculateTime"
+    - name: is_empty
+      description: "Cột IsEmpty"
+    - name: customer_name
+      description: "Cột CustomerName"
+    - name: customer_type
+      description: "Cột CustomerType"
+    - name: dws_kpi_criterias_name
+      description: "Cột dws_kpi_criterias.Name"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: report_date
+      description: "Cột Ngày Báo cáo"
+    - name: customer_group
+      description: "Cột CustomerGroup"
+    - name: period_result
+      description: "Cột PeriodResult"
+    - name: color
+      description: "Cột Màu sắc"
+    - name: vs_target
+      description: "Cột So với target"
+    - name: vs_target_one_period
+      description: "Cột So với target 1 kỳ"
+    - name: vs_target_two_periods
+      description: "Cột So với target 2 kỳ"
+    - name: evaluation_two_periods
+      description: "Cột Đánh giá 2 kỳ"
+    - name: trend_2
+      description: "Cột Xu hướng"
+    - name: product_unit
+      description: "Cột SẢN PHẨM - ĐƠN VỊ"
+    - name: center
+      description: "Cột Trung tâm"
+    - name: sp_dv
+      description: "Cột SP-DV"
+    - name: created_at
+      description: "Cột CreatedAt"
+    - name: updated_at
+      description: "Cột UpdatedAt"
+    - name: is_latest
+      description: "Cột IsLatest"
+    - name: evaluation
+      description: "Cột Đánh giá"
+    - name: title
+      description: "Cột Title"
+    - name: target
+      description: "Cột Target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: unit
+      description: "Cột Đơn vị"
+    - name: criteria_code
+      description: "Cột CriteriaCode"
+    - name: influx_db_query
+      description: "Cột InfluxDbQuery"
+    - name: influx_db_result
+      description: "Cột InfluxDbResult"
+    - name: error
+      description: "Cột Error"
+    - name: dws_kpi_systems_name
+      description: "Cột dws_kpi_systems.Name"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: customer_type_2026
+      description: "Cột CustomerType_2026 (from dws_kpi_systems)"

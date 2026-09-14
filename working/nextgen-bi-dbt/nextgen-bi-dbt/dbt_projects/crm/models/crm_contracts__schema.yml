@@ -1,0 +1,563 @@
+version: 2
+models:
+- name: crm_contracts
+  description: >
+    Bảng **crm_contracts** lưu trữ thông tin chi tiết về các hợp đồng khách hàng, bao gồm dữ liệu về đối tác, loại hợp đồng, 
+    thời gian ký kết, giá trị và trạng thái thực hiện. Bảng này được sử dụng để phân tích tình hình hợp đồng đã ký,
+    đánh giá hiệu suất bán hàng theo phân khúc, khu vực và thời gian, giá trị hợp đồng, giá trị ký hợp đồng
+    Semantic:
+      - Hỏi doanh số ký hợp đồng theo đơn vị thực hiện bán hàng trực tiếp/trung tâm kinh doanh hiện tại chưa có, chỉ có khu vực/territory_name
+  meta:
+    label: "CRM Contracts"
+    owner: "huongnv1"
+    dimensions:
+      contract_amount_bucket:
+        sql: |
+          CASE
+            WHEN ${TABLE}.contract_amount IS NULL THEN 'unknown'
+            WHEN ${TABLE}.contract_amount < 1000000.0 THEN 'lt_1m'
+            WHEN ${TABLE}.contract_amount < 10000000.0 THEN 'from_1m_to_10m'
+            WHEN ${TABLE}.contract_amount < 100000000.0 THEN 'from_10m_to_100m'
+            WHEN ${TABLE}.contract_amount < 1000000000.0 THEN 'from_100m_to_1b'
+            ELSE 'gte_1b'
+          END
+        type: string
+        label: "Contract Amount Bucket"
+        description: "Nhóm giá trị hợp đồng dùng để phân tích phân bố quy mô hợp đồng."
+      vcs_contract_amount_bucket:
+        sql: |
+          CASE
+            WHEN ${TABLE}.vcs_contract_amount IS NULL THEN 'unknown'
+            WHEN ${TABLE}.vcs_contract_amount < 1000000.0 THEN 'lt_1m'
+            WHEN ${TABLE}.vcs_contract_amount < 10000000.0 THEN 'from_1m_to_10m'
+            WHEN ${TABLE}.vcs_contract_amount < 100000000.0 THEN 'from_10m_to_100m'
+            WHEN ${TABLE}.vcs_contract_amount < 1000000000.0 THEN 'from_100m_to_1b'
+            ELSE 'gte_1b'
+          END
+        type: string
+        label: "VCS Contract Amount Bucket"
+        description: "Nhóm giá trị hợp đồng theo phần giá trị VCS dùng để phân tích phân bố quy mô hợp đồng."
+    metrics:
+      expiring_customer_count:
+        type: number
+        label: Tổng KH hết hạn trong kỳ
+        description: >
+          Số lượng khách hàng có hợp đồng đã hết hạn đến thời điểm báo cáo.
+        sql: >
+          COUNT(
+            DISTINCT CASE
+              WHEN ${expire_date} <= CURRENT_DATE
+              THEN ${tax_code}
+            END
+          )
+        synonyms:
+          - "Tổng số lượng khách hàng hết hạn"
+          - "Số khách hàng hết hạn"
+
+      renewed_customer_count:
+        type: number
+        label: Số KH gia hạn
+        description: >
+          Số lượng khách hàng có hợp đồng gia hạn (Renew/Renewal)
+          đã hết hạn đến thời điểm báo cáo.
+        sql: >
+          COUNT(
+            DISTINCT CASE
+              WHEN ${contract_type} IN ('Renew', 'Renewal')
+              AND ${expire_date} <= CURRENT_DATE
+              THEN ${tax_code}
+            END
+          )
+        synonyms:
+          - "Tổng số KH gia hạn"
+          - "Số khách hàng gia hạn"
+
+      customer_renewal_rate:
+        type: number
+        label: Tỷ lệ gia hạn theo khách hàng
+        description: >
+          Tỷ lệ khách hàng gia hạn trên tổng số khách hàng hết hạn trong kỳ.
+        format: percent
+        sql: >
+          CASE
+            WHEN ${expiring_customer_count} = 0.0 THEN NULL
+            ELSE ${renewed_customer_count} / ${expiring_customer_count}  * 100.0
+          END
+        synonyms:
+          - "Tỷ lệ gia hạn theo khách hàng"
+          - "Customer renewal rate"
+
+      total_active_customer_count:
+        type: number
+        sql: >
+          COUNT(DISTINCT CASE
+            WHEN contract_type IS NOT NULL
+            AND contract_type <> ''
+            THEN tax_code
+          END)
+        description: Là số lượng khách hàng phát sinh doanh thu trong năm.= Số KH có HĐ phát sinh doanh thu trong năm (Vắt sang, Mới, Gia hạn, Upsale)
+        label: "Số lượng khách hàng Active"
+        category: "Contract Performance"
+        synonyms:
+          - "Active Customer Count"
+
+      active_customer_count:
+        type: number
+        sql: >
+          COUNT(DISTINCT CASE
+            WHEN contract_type IS NOT NULL
+            AND contract_type <> ''
+            THEN tax_code
+          END)
+        description: Số lượng khách hàng active theo định nghĩa hợp đồng phát sinh.
+        label: "Tổng số khách hàng Active"
+        category: "Contract Performance"
+        synonyms:
+          - "Số lượng khách hàng Active"
+          - "Active Customer Count"
+          - "Khách hàng active"
+      first_time_customer_count:
+        type: number
+        label: "Số khách hàng mới"
+        description: >
+          Số lượng khách hàng có ngày ký hợp đồng đầu tiên nằm trong kỳ được hỏi.
+          Khách hàng được định danh theo tax_code.
+          Khi hỏi theo năm, quý hoặc tháng, phải lọc theo first_contract_sign_date,
+          không lọc trực tiếp theo sign_date.
+        sql: >
+          COUNT(
+            DISTINCT CASE
+              WHEN ${is_first_contract} = 1
+              THEN ${tax_code}
+            END
+          )
+        category: "Contract Performance"
+        synonyms:
+          - "Số khách hàng lần đầu ký hợp đồng"
+          - "Khách hàng lần đầu ký hợp đồng"
+          - "Khách hàng ký hợp đồng lần đầu"
+          - "Khách hàng mới ký hợp đồng"
+          - "Khách hàng mới theo hợp đồng"
+          - "Số khách hàng mới"
+          - "First-time customer count"
+          - "New contract customer count"
+          - "Khách hàng xâm nhập"
+
+      revenue_renewal_rate:
+        type: number
+        label: "Tỷ lệ gia hạn theo doanh thu"
+        description: Alias chuẩn hóa theo tài liệu; hiện sử dụng cùng công thức với tỷ lệ gia hạn theo khách hàng trên bảng hợp đồng.
+        format: percent
+        sql: ROUND(${customer_renewal_rate}, 2)
+        synonyms:
+          - "Tỷ lệ gia hạn theo doanh thu"
+          - "Revenue renewal rate"
+
+      contract_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số hợp đồng. Mỗi dòng dữ liệu là một hợp đồng.
+        label: "Số lượng hợp đồng"
+        category: "Contract Performance"
+        synonyms:
+          - "Contract Count"
+          - "Số lượng hợp đồng"
+
+      # total_contract_amount:
+      #   type: sum
+      #   sql: ${TABLE}.contract_amount
+      #   description: Tổng giá trị hợp đồng. Đây là KPI mặc định phù hợp nhất cho các câu hỏi kinh doanh, hỏi về giá trị hợp đồng ký
+      #   label: "Tổng giá trị hợp đồng"
+      #   category: "Contract Performance"
+      #   synonyms:
+      #     - "Total Contract Amount"
+      #     - "Tổng giá trị hợp đồng"
+      #     - "Giá trị hợp đồng ký"
+      #     - Giá trị đã ký hợp đồng
+
+      total_vcs_contract_amount:
+        type: sum
+        sql: ${TABLE}.vcs_contract_amount
+        description: Tổng giá trị hợp đồng. Đây là KPI mặc định phù hợp nhất cho các câu hỏi kinh doanh, hỏi về giá trị hợp đồng ký
+        label: "Tổng giá trị hợp đồng VCS"
+        category: "Contract Performance"
+        synonyms:
+          - "Total Vcs Contract Amount"
+          - "Tổng Vcs giá trị hợp đồng"
+          - "Giá trị hợp đồng VCS"
+          
+      avg_contract_amount:
+        type: average
+        sql: ${TABLE}.contract_amount
+        description: Giá trị hợp đồng trung bình trên mỗi hợp đồng.
+        label: "Giá trị hợp đồng trung bình"
+        category: "Contract Performance"
+        synonyms:
+          - "Avg Contract Amount"
+          - "Trung bình giá trị hợp đồng"
+
+      avg_contract_duration_month:
+        type: average
+        sql: ${TABLE}.duration
+        description: Thời hạn hợp đồng trung bình theo tháng.
+        label: "Thời hạn hợp đồng trung bình (tháng)"
+        category: "Contract Performance"
+        synonyms:
+          - "Avg Contract Duration Month"
+          - "Trung bình hợp đồng Duration tháng"
+      vip_contract_count:
+        type: sum
+        sql: CASE WHEN ${TABLE}.is_vip_customer THEN 1.0 ELSE 0.0 END
+        description: Số hợp đồng thuộc nhóm khách hàng VIP.
+        label: "Số hợp đồng VIP"
+        category: "Contract Performance"
+        synonyms:
+          - "Vip Contract Count"
+          - "Số lượng VIP hợp đồng"
+      international_contract_count:
+        type: sum
+        sql: CASE WHEN ${TABLE}.is_international_client THEN 1.0 ELSE 0.0 END
+        description: Số hợp đồng của khách hàng quốc tế.
+        label: "Số hợp đồng khách hàng quốc tế"
+        category: "Contract Performance"
+        synonyms:
+          - "International Contract Count"
+          - "Số lượng quốc tế hợp đồng"
+      max_contract_amount:
+        type: max
+        sql: ${TABLE}.contract_amount
+        description: Giá trị hợp đồng lớn nhất trên mỗi hợp đồng.
+        label: "Giá trị hợp đồng lớn nhất"
+        category: "Contract Performance"
+        synonyms:
+          - "Max Contract Amount"
+          - "Giá trị giá lớn nhất trị hợp đồng"
+      min_contract_amount:
+        type: min
+        sql: ${TABLE}.contract_amount
+        description: Giá trị hợp đồng nhỏ nhất trên mỗi hợp đồng.
+        label: "Giá trị hợp đồng nhỏ nhất"
+        category: "Contract Performance"
+        synonyms:
+          - "Min Contract Amount"
+          - "Giá trị giá nhỏ nhất trị hợp đồng"
+      avg_vcs_contract_amount:
+        type: average
+        sql: ${TABLE}.vcs_contract_amount
+        description: Giá trị hợp đồng VCS trung bình trên mỗi hợp đồng.
+        label: "Giá trị hợp đồng VCS trung bình"
+        category: "Contract Performance"
+        synonyms:
+          - "Avg Vcs Contract Amount"
+          - "Trung bình Vcs giá trị hợp đồng"
+      fac_contract_count:
+        type: sum
+        sql: CASE WHEN fac_date IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số hợp đồng đã FAC.
+        label: "Số hợp đồng đã FAC"
+        category: "Contract Performance"
+        synonyms:
+          - "Fac Contract Count"
+          - "Số lượng FAC hợp đồng"
+      expired_contract_count:
+        type: sum
+        sql: CASE WHEN expire_date IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số hợp đồng có ngày hết hạn.
+        label: "Số hợp đồng hết hạn"
+        category: "Contract Performance"
+        synonyms:
+          - "Expired Contract Count"
+          - "Số lượng hết hạn hợp đồng"
+      signed_contract_count:
+        type: sum
+        sql: "CASE\n  WHEN UPPER(status_code) = 'SIGNED' THEN 1.0\n  ELSE 0.0\nEND"
+        description: Số hợp đồng ở trạng thái SIGNED.
+        label: "Số hợp đồng trạng thái SIGNED"
+        category: "Contract Performance"
+        synonyms:
+          - "Signed Contract Count"
+          - "Số lượng đã ký hợp đồng"
+      deployment_contract_count:
+        type: sum
+        sql: "CASE\n  WHEN UPPER(status_code) = 'DEPLOYMENT' THEN 1.0\n  ELSE 0.0\nEND"
+        description: Số hợp đồng ở trạng thái DEPLOYMENT.
+        label: "Số hợp đồng trạng thái DEPLOYMENT"
+        category: "Contract Performance"
+        synonyms:
+          - "Deployment Contract Count"
+          - "Số lượng Deployment hợp đồng"
+      deployment_completed_contract_count:
+        type: sum
+        sql: "CASE\n  WHEN UPPER(status_code) = 'DEPLOYMENT_COMPLETED' THEN 1.0\n  ELSE 0.0\nEND"
+        description: Số hợp đồng ở trạng thái DEPLOYMENT_COMPLETED.
+        label: "Số hợp đồng trạng thái DEPLOYMENT_COMPLETED"
+        category: "Contract Performance"
+        synonyms:
+          - "Deployment Completed Contract Count"
+          - "Số lượng Deployment hoàn tất hợp đồng"
+          - "Số hợp đồng triển khai hoàn tất"
+      avg_amount_per_contract_amount:
+        type: average
+        sql: ${TABLE}.contract_amount
+        description: Giá trị hợp đồng trung bình trên mỗi hợp đồng, hữu ích cho câu hỏi tóm tắt tình hình kinh doanh và tính ARPU Giá trị hợp đồng
+        label: "Giá trị hợp đồng trung bình (ARPU)"
+        category: "Contract Performance"
+        synonyms:
+          - "Avg Amount Per Contract Amount"
+          - "Trung bình giá trị hợp đồng"
+          - "ARPU hợp đồng"
+
+  columns:
+  - name: id
+    description: Mã định danh duy nhất của hợp đồng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Contract id
+    data_tests:
+    - not_null
+    - unique
+  - name: name
+    description: Tên hợp đồng, mô tả ngắn gọn để nhận diện hợp đồng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Tên hợp đồng
+  - name: user_am_id
+    description: Mã định danh của nhân viên quản lý tài khoản chịu trách nhiệm hợp đồng.
+    meta:
+      dimension:
+        type: string
+        label: ID quản lý tài khoản
+        synonyms:
+        - account manager id
+
+  - name: user_am_name
+    description: Tên nhân viên AM
+    meta:
+      dimension:
+        type: string
+        label: Tên nhân viên AM
+        synonyms:
+        - account manager display name
+
+  - name: updater_id
+    description: Người cập nhật bản ghi
+    meta:
+      dimension:
+        type: string
+        label: Người cập nhật bản ghi
+        synonyms:
+
+  - name: updater_name
+    description: Tên người cập nhật bản ghi
+    meta:
+      dimension:
+        type: string
+        label: Tên người cập nhật bản ghi
+        synonyms:
+
+  - name: deal_id
+    description: Mã định danh duy nhất của giao dịch/cơ hội trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã giao dịch/cơ hội
+  - name: contract_number
+    description: Mã số hợp đồng duy nhất dùng để nhận diện một hợp đồng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã số hợp đồng
+  - name: contract_type
+    description: Loại hợp đồng mô tả hình thức hoặc nhóm của hợp đồng ký kết với khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Loại hợp đồng
+  - name: signing_method
+    description: Phương thức mà hợp đồng được ký ký kết.
+    meta:
+      dimension:
+        type: string
+        label: Phương thức ký HĐ
+  - name: signing_method_code
+    description: Mã lệnh ký HĐ
+  - name: sale_account_id
+    description: Mã định danh tài khoản bán hàng chịu trách nhiệm ký hợp đồng.
+    meta:
+      dimension:
+        type: number
+        label: Định danh tài khoản bán hàng
+  - name: customer_name
+    description: Tên khách hàng hoặc tên công ty được sử dụng để nhận diện khách hàng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Tên khách hàng
+        synonyms:
+          - khách hàng
+          - tên khách hàng
+          - công ty
+          - tên công ty
+          - doanh nghiệp
+          - tên doanh nghiệp
+          - customer
+          - customer name
+          - company
+          - company name
+
+  - name: company_alias
+    description: Tên thay thế của khách hàng hoặc công ty, bao gồm tên viết tắt, tên gọi ngắn hoặc tên thường được sử dụng để nhận diện khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Tên thay thế khách hàng
+        synonyms:
+          - tên thay thế
+          - tên viết tắt
+          - viết tắt
+          - bí danh công ty
+          - biệt danh công ty
+          - tên gọi khác
+          - tên gọi ngắn
+          - alias
+          - company alias
+          - short name
+  - name: tax_code
+    description: Mã số thuế của khách hàng hoặc công ty ký hợp đồng.
+    meta:
+      dimension:
+        type: string
+        label: Mã số thuế
+  - name: customer_segment_l1
+    description: Mức phân khúc cấp 1. Phân loại theo người dùng cuối (KH cuối)
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 1
+  - name: segment_l2
+    description: Column segment_l2 from bi_silver.crm_contracts
+  - name: customer_segment_l2
+    description: Mức phân khúc cấp 2 mô tả nhóm con của khách hàng hoặc hợp đồng trong CRM.
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 2
+  - name: segment_l3
+    description: Column segment_l3 from bi_silver.crm_contracts
+  - name: customer_segment_l3
+    description: Mức phân khúc cấp 3 của hợp đồng, thể hiện nhóm chi tiết trong phân khúc khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 3
+  - name: status
+    description: Trạng thái hiện tại của hợp đồng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái hợp đồng
+  - name: vvip_segment
+    description: Nhóm VIP/VVIP
+    meta:
+      dimension:
+        type: string
+        label: Nhóm VIP/VVIP
+  - name: sign_date
+    description: Ngày mà hợp đồng được ký kết bởi khách hàng và công ty.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày ký HĐ
+  - name: fac_date
+    description: Ngày nghiệm thu của hợp đồng.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày nghiệm thu
+  - name: duration
+    description: Thời gian thực hiện hợp đồng, tính bằng số tháng hoặc năm.
+    meta:
+      dimension:
+        type: number
+        label: Thời gian hợp đồng
+  - name: expire_date
+    description: Ngày mà hợp đồng sẽ hết hiệu lực.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày hết hạn
+  - name: usd_exchange_rate
+    description: Tỷ giá chuyển đổi sang USD của hợp đồng.
+    meta:
+      dimension:
+        type: number
+        label: Tỷ giá USD
+  - name: currency_code
+    description: Mã tiền tệ được sử dụng trong hợp đồng.
+    meta:
+      dimension:
+        type: string
+        label: Mã tiền tệ
+  - name: contract_amount
+    description: Giá trị của hợp đồng thực tế, thể hiện giá trị tiền thu được từ hợp đồng.
+    meta:
+      dimension:
+        type: number
+        label: Giá trị hợp đồng
+  - name: vat
+    description: Số tiền thuế VAT được tính trên hợp đồng.
+    meta:
+      dimension:
+        type: number
+        label: VAT
+  - name: vcs_contract_amount
+    description: Giá trị hợp đồng thực tế mà công ty (VCS) sẽ được hưởng.
+    meta:
+      dimension:
+        type: number
+        label: Giá trị VCS nhận
+  # - name: viettel_contract_amount
+  #   description: Số tiền thu được từ các hợp đồng thông qua Viettel.
+  #   meta:
+  #     dimension:
+  #       type: number
+  #       label: Giá trị tính theo cách của Viettel
+  - name: partner_id
+    description: Mã định danh duy nhất của đối tác ký hợp đồng.
+    meta:
+      dimension:
+        type: string
+        label: Partner_Id
+  - name: first_contract_sign_date
+    description: >
+      Ngày ký hợp đồng đầu tiên của khách hàng trên toàn bộ lịch sử hợp đồng,
+      được xác định theo mã số thuế tax_code.
+      Cột này dùng để lọc khách hàng lần đầu ký hợp đồng theo năm, quý hoặc tháng.
+      Không sử dụng sign_date để lọc kỳ khi tính khách hàng lần đầu ký.
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày ký hợp đồng đầu tiên"
+        synonyms:
+          - "Ngày ký đầu tiên"
+          - "Ngày ký hợp đồng đầu tiên"
+          - "Ngày khách hàng ký lần đầu"
+          - "Lần đầu ký hợp đồng"
+          - "First contract sign date"
+  - name: is_first_contract
+    description: >
+      Cờ xác định hợp đồng có ngày ký trùng với ngày ký hợp đồng đầu tiên
+      của khách hàng. Giá trị 1 là hợp đồng thuộc lần ký đầu tiên,
+      giá trị 0 là hợp đồng ký ở các thời điểm tiếp theo.
+      Một khách hàng có thể có nhiều hợp đồng cùng ngày ký đầu tiên.
+    meta:
+      dimension:
+        type: number
+        label: "Cờ hợp đồng đầu tiên"
+        synonyms:
+          - "Hợp đồng đầu tiên"
+          - "Lần ký đầu tiên"
+          - "Cờ khách hàng mới"
+          - "First contract flag"

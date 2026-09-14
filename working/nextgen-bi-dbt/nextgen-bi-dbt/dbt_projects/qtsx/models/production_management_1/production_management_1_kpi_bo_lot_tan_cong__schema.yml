@@ -1,0 +1,138 @@
+version: 2
+models:
+- name: production_management_1_kpi_bo_lot_tan_cong
+  description: "Bảng production_management_1_kpi_bo_lot_tan_cong (nguồn Power BI: KPI_BoLotTanCong)."
+  meta:
+    label: "KPI_BoLotTanCong"
+    powerbi_source: "KPI_BoLotTanCong"
+    joins:
+    - join: production_management_1_n_5_vvipkpicx
+      sql_on: "${production_management_1_kpi_bo_lot_tan_cong.spdv} = ${production_management_1_n_5_vvipkpicx.spdv}"
+      relationship: many-to-one
+  columns:
+  - name: report_date
+    description: "Cột Ngày báo cáo trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+        hidden: true
+  - name: period
+    description: "Cột period trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "period"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: target
+    description: "Cột target trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: number
+        label: "target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: spdv
+    description: "Cột spdv trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "spdv"
+        hidden: true
+  - name: subtype
+    description: "Cột subtype trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "subtype"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+        hidden: true
+  - name: ticket_detail
+    description: "Cột ticket_detail trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "ticket_detail"
+        hidden: true
+  - name: so_target
+    description: "Cột so_target trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: number
+        label: "so_target"
+        hidden: true
+  - name: evaluation
+    description: "Cột ĐÁNH GIÁ trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "ĐÁNH GIÁ"
+        hidden: true
+  - name: report_month
+    description: "Cột _report_month trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: date
+        label: "_report_month"
+        hidden: true
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+        hidden: true
+  - name: loai_kpi
+    description: "Cột loai_kpi trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "loai_kpi"
+        hidden: true
+  - name: nhom
+    description: "Cột nhom trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "nhom"
+        hidden: true
+  - name: results_1_pre_period
+    description: "Cột results_1_pre_period trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: number
+        label: "results_1_pre_period"
+        hidden: true
+  - name: results_2_pre_period
+    description: "Cột results_2_pre_period trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: number
+        label: "results_2_pre_period"
+        hidden: true
+  - name: trend
+    description: "Cột Xu hướng trong KPI_BoLotTanCong."
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng"
+        hidden: true

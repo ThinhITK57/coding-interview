@@ -1,0 +1,235 @@
+version: 2
+models:
+- name: finance_contract_collected_invoices
+  description: 'Bảng công nợ phải thu (AR) ở mức invoice × contract × customer. Dùng để theo dõi số tiền phải thu, đã thu và dư nợ còn lại của từng hóa đơn. Hỗ trợ phân tích trạng thái thanh toán, overdue và aging theo khách hàng / AM / kênh bán. Các metric chính gồm: tổng công nợ (total_initial_receivable_amount), đã thu (total_received_amount), dư nợ (total_remaining_balance_amount). Phù hợp cho các bài toán: tổng công nợ, hiệu quả thu hồi, overdue, top khách hàng nợ lớn. Keywords: ["công nợ", "receivable", "AR", "đã thu", "collected", "dư nợ", "outstanding", "overdue", "aging"]'
+  meta:
+    label: "Finance Contract Collected Invoices"
+    owner: "sonnv1"
+    metrics:
+      total_original_amount:
+        type: sum
+        sql: ${TABLE}.original_amount
+        description: Tổng giá trị gốc của hóa đơn.
+        label: "Total Original Amount"
+        category: "Business Value"
+        synonyms:
+          - "Total Original Amount"
+          - "Tổng Original giá trị"
+      total_initial_receivable_amount:
+        type: sum
+        sql: ${TABLE}.initial_receivable_amount
+        description: Tổng công nợ phải thu ban đầu đã ghi nhận.
+        label: "Total Initial Receivable Amount"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Total Initial Receivable Amount"
+          - "Tổng ban đầu Receivable giá trị"
+      total_received_amount_sum:
+        type: sum
+        sql: ${TABLE}.total_received_amount
+        description: Tổng số tiền khách hàng đã thanh toán.
+        label: "Total Received Amount Sum"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Total Received Amount Sum"
+          - "Tổng đã thu giá trị"
+      total_remaining_balance_amount:
+        type: sum
+        sql: ${TABLE}.remaining_balance_amount
+        description: Tổng dư nợ còn lại chưa thu.
+        label: "Total Remaining Balance Amount"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Total Remaining Balance Amount"
+          - "Tổng số dư còn lại giá trị"
+      overdue_invoice_count:
+        type: sum
+        sql: CASE WHEN overdue_months_numeric > 0.0 THEN 1.0 ELSE 0.0 END
+        description: Số lượng hóa đơn đang quá hạn thanh toán.
+        label: "Overdue Invoice Count"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Overdue Invoice Count"
+          - "Số lượng quá hạn hóa đơn"
+      collection_ratio:
+        type: number
+        sql: "CASE\n  WHEN SUM(initial_receivable_amount) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(total_received_amount) / SUM(initial_receivable_amount)\nEND"
+        description: Tỷ lệ đã thu trên tổng công nợ phải thu ban đầu.
+        label: "Collection Ratio"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Collection Ratio"
+          - "Tỷ lệ thu hồi"
+      outstanding_ratio:
+        type: number
+        sql: "CASE\n  WHEN SUM(initial_receivable_amount) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(remaining_balance_amount) / SUM(initial_receivable_amount)\nEND"
+        description: Tỷ lệ dư nợ còn lại trên tổng công nợ phải thu ban đầu.
+        label: "Outstanding Ratio"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Outstanding Ratio"
+          - "Tỷ lệ dư nợ"
+      overdue_ratio:
+        type: number
+        sql: "CASE\n  WHEN SUM(remaining_balance_amount) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(CASE WHEN overdue_months_numeric > 0.0 THEN remaining_balance_amount ELSE 0.0 END)\n       / SUM(remaining_balance_amount)\nEND"
+        description: Tỷ lệ công nợ quá hạn trên tổng dư nợ còn lại.
+        label: "Overdue Ratio"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Overdue Ratio"
+          - "Tỷ lệ quá hạn"
+      avg_initial_receivable_amount:
+        type: average
+        sql: ${TABLE}.initial_receivable_amount
+        description: Công nợ phải thu ban đầu trung bình trên mỗi bản ghi.
+        label: "Avg Initial Receivable Amount"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Avg Initial Receivable Amount"
+          - "Trung bình ban đầu Receivable giá trị"
+      avg_received_amount:
+        type: average
+        sql: ${TABLE}.total_received_amount
+        description: Số tiền đã thu trung bình trên mỗi bản ghi.
+        label: "Avg Received Amount"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Avg Received Amount"
+          - "Trung bình đã thu giá trị"
+      avg_remaining_balance_amount:
+        type: average
+        sql: ${TABLE}.remaining_balance_amount
+        description: Dư nợ còn lại trung bình trên mỗi bản ghi.
+        label: "Avg Remaining Balance Amount"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Avg Remaining Balance Amount"
+          - "Trung bình số dư còn lại giá trị"
+      max_remaining_balance_amount:
+        type: max
+        sql: ${TABLE}.remaining_balance_amount
+        description: Giá trị dư nợ còn lại lớn nhất.
+        label: "Max Remaining Balance Amount"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Max Remaining Balance Amount"
+          - "Giá trị lớn nhất của số dư còn lại"
+      total_overdue_remaining_balance_amount:
+        type: sum
+        sql: CASE WHEN overdue_months_numeric > 0.0 THEN remaining_balance_amount ELSE 0.0 END
+        description: Tổng giá trị dư nợ của các khoản công nợ quá hạn.
+        label: "Total Overdue Remaining Balance Amount"
+        category: "Collections & Cashflow"
+        synonyms:
+          - "Total Overdue Remaining Balance Amount"
+          - "Tổng quá hạn số dư còn lại giá trị"
+  columns:
+  - name: idd
+    description: ID bản ghi công nợ.
+    meta:
+      dimension:
+        type: string
+        label: "Idd"
+    tests: []
+  - name: sales_channel
+    description: Kênh bán hàng.
+    meta:
+      dimension:
+        type: string
+        label: "Bán hàng kênh"
+  - name: transaction_code
+    description: Mã giao dịch liên quan hóa đơn.
+    meta:
+      dimension:
+        type: string
+        label: "Transaction mã"
+  - name: invoice_number
+    description: Mã hóa đơn.
+    meta:
+      dimension:
+        type: string
+        label: "Hóa đơn số"
+  - name: contract_num
+    description: Mã hợp đồng.
+    meta:
+      dimension:
+        type: string
+        label: "Hợp đồng num"
+  - name: customer_code
+    description: Mã khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: "Khách hàng mã"
+  - name: contract_description
+    description: Mô tả hợp đồng.
+    meta:
+      dimension:
+        type: string
+        label: contract description
+  - name: company_name
+    description: Tên khách hàng / doanh nghiệp.
+    meta:
+      dimension:
+        type: string
+        label: customer name
+  - name: original_amount
+    description: Giá trị gốc hóa đơn.
+    meta:
+      dimension:
+        type: number
+        label: invoice amount
+  - name: initial_receivable_amount
+    description: Công nợ phải thu ban đầu.
+    meta:
+      dimension:
+        type: number
+        label: "Initial receivable giá trị"
+  - name: total_received_amount
+    description: Số tiền đã thu.
+    meta:
+      dimension:
+        type: number
+        label: collected amount
+  - name: remaining_balance_amount
+    description: Dư nợ còn lại chưa thu.
+    meta:
+      dimension:
+        type: number
+        label: "Remaining balance giá trị"
+  - name: invoice_date
+    description: Ngày xuất hóa đơn.
+    meta:
+      dimension:
+        type: timestamp
+        label: invoice date
+  - name: payment_deadline
+    description: Hạn thanh toán.
+    meta:
+      dimension:
+        type: timestamp
+        label: due date
+  - name: payment_date
+    description: Ngày thanh toán thực tế.
+    meta:
+      dimension:
+        type: timestamp
+        label: payment date
+  - name: overdue_months_numeric
+    description: Số tháng quá hạn.
+    meta:
+      dimension:
+        type: number
+        label: overdue months
+  - name: overdue_status_enum
+    description: Trạng thái quá hạn.
+    meta:
+      dimension:
+        type: string
+        label: overdue status
+  - name: am_username
+    description: Account Manager phụ trách.
+    meta:
+      dimension:
+        type: string
+        label: am_username

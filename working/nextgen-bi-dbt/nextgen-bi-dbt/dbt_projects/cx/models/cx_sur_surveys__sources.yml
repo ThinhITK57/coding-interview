@@ -1,0 +1,31 @@
+version: 2
+sources:
+- name: bi_silver__cx
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: cx'
+  tables:
+  - name: cx_sur_surveys
+    description: Lưu trữ thông tin định danh và cấu hình của các cuộc khảo sát khách hàng. Đây là bảng master cấp cao nhất, dùng để phân loại khảo sát theo chiến dịch, thời gian, sản phẩm và vị trí trong hành trình trải nghiệm của khách hàng.
+    columns:
+    - name: survey_id
+      description: Mã định danh duy nhất của mỗi cuộc khảo sát.
+      tests:
+      - not_null
+      - unique
+    - name: survey_type
+      description: Hình thức triển khai khảo sát (Mobile, Web Page, Widget nhúng).
+    - name: survey_name
+      description: Tên hiển thị của phiếu khảo sát
+    - name: folder_name
+      description: Tên thư mục quản lý (Dùng để nhóm theo quý hoặc theo đơn vị CSKH, SOC...).
+    - name: created_at
+      description: Ngày giờ khởi tạo bản khảo sát trên hệ thống.
+    - name: enabled
+      description: 'Trạng thái hoạt động (True: Đang thu thập dữ liệu / False: Đã đóng).'
+    - name: journey
+      description: Giai đoạn hành trình khách hàng (Cân nhắc, Triển khai, Sử dụng, CSKH).
+    - name: customer_touchpoint
+      description: Điểm tiếp xúc cụ thể kích hoạt khảo sát (Ticket, App, Báo cáo định kỳ).
+    - name: product_category
+      description: Danh mục sản phẩm được khảo sát trong cuộc thăm dò.

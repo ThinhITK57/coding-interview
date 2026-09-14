@@ -1,0 +1,50 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_kpikqi_cloudrity
+    description: "Nguồn Power BI: KPIKQI_cloudrity"
+    columns:
+    - name: created_at
+      description: "Cột CreatedAt"
+    - name: updated_at
+      description: "Cột UpdatedAt"
+    - name: end_time
+      description: "Cột EndTime"
+    - name: result
+      description: "Cột Kết quả"
+    - name: result_prev_1_period
+      description: "Cột Kết quả 1 kỳ trước'"
+    - name: result_prev_2_periods
+      description: "Cột Kết quả 2 kỳ trước'"
+    - name: trend
+      description: "Cột Trend"
+    - name: target
+      description: "Cột Target"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: unit
+      description: "Cột Đơn vị"
+    - name: customer_name
+      description: "Cột CustomerName"
+    - name: customer_type
+      description: "Cột CustomerType"
+    - name: customer_type_2026
+      description: "Cột CustomerType_2026 (from dws_kpi_systems)"
+    - name: kpiname
+      description: "Cột KPIName"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: vs_target
+      description: "Cột So với target"
+    - name: evaluation
+      description: "Cột Đánh giá"
+    - name: customer_group
+      description: "Cột Nhóm khách hàng"

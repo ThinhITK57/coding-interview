@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_n_5_vvip_prm_companies
+    description: "Nguồn Power BI: 5VVIP_PRM_Companies"
+    columns:
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_id
+      description: "Cột ISSUE_ID"
+    - name: custom_field_id
+      description: "Cột CUSTOM_FIELD_ID"
+    - name: company
+      description: "Cột Company_10557"
+    - name: vvip
+      description: "Cột VVIP"

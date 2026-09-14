@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_n_5_vvipkpicx
+    description: "Nguồn Power BI: 5VVIPKPICX"
+    columns:
+    - name: spdv
+      description: "Cột SPDV"
+    - name: quarter
+      description: "Cột Quý"
+    - name: csat
+      description: "Cột CSAT"
+    - name: ces
+      description: "Cột CES"
+    - name: nps
+      description: "Cột NPS"

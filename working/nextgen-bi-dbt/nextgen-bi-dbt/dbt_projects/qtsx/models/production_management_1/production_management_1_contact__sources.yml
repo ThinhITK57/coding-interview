@@ -1,0 +1,34 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_contact
+    description: "Nguồn Power BI: contact"
+    columns:
+    - name: index_value
+      description: "Cột index"
+    - name: job_level
+      description: "Cột Cấp bậc"
+    - name: email
+      description: "Cột Email"
+    - name: is_current
+      description: "Cột IsCurrent"
+    - name: start_date
+      description: "Cột Ngày bắt đầu"
+    - name: so_luong_spsu_dung
+      description: "Cột SoLuongSPSuDung"
+    - name: end_date
+      description: "Cột Ngày kết thúc"
+    - name: adjusted_name_old
+      description: "Cột Tên đã hiệu chỉnh cũ"
+    - name: adjusted_name_new
+      description: "Cột Tên đã hiệu chỉnh mới"
+    - name: organization_kh_tu_dien
+      description: "Cột Tổ chức_KH tự điền"
+    - name: organization_check_by_hd
+      description: "Cột Tổ chức_check theo HĐ"
+    - name: job_position
+      description: "Cột Vị trí công tác"

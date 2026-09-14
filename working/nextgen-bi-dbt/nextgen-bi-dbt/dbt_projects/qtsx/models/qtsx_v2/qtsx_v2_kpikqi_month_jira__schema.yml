@@ -1,0 +1,85 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_month_jira
+  description: "Bảng qtsx_v2_kpikqi_month_jira (nguồn Power BI: KPIKQI Tháng Jira)."
+  meta:
+    label: "KPIKQI Tháng Jira"
+    powerbi_source: "KPIKQI Tháng Jira"
+  columns:
+  - name: id
+    description: "Cột Id trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: result
+    description: "Cột kết quả trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: number
+        label: "kết quả"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày báo cáo trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+        hidden: true
+  - name: vs_target
+    description: "Cột So với target trong KPIKQI Tháng Jira. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI Tháng Jira'[Target] VAR _Result = 'KPIKQI Tháng Jira'[Kết quả] VAR _Condition= UPPER(TRIM('KPIKQI Tháng Jira'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQI Tháng Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true

@@ -1,0 +1,12 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_period_type
+    description: "Nguồn Power BI: Period Type"
+    columns:
+    - name: period
+      description: "Cột Period"

@@ -1,0 +1,743 @@
+version: 2
+models:
+- name: production_management_1_kpikqi_new
+  description: "Bảng production_management_1_kpikqi_new (nguồn Power BI: KPIKQI_New)."
+  meta:
+    label: "KPIKQI_New"
+    powerbi_source: "KPIKQI_New"
+    joins:
+    - join: production_management_1_target_kpikqi_tap_doan
+      sql_on: "${production_management_1_kpikqi_new.spdv_fixed} = ${production_management_1_target_kpikqi_tap_doan.product_service_name}"
+      relationship: many-to-many
+    - join: production_management_1_sheet1
+      sql_on: "${production_management_1_kpikqi_new.customer_2} = ${production_management_1_sheet1.column1}"
+      relationship: many-to-one
+    metrics:
+      average_result_quy:
+        type: average
+        sql: "CASE WHEN criteria_period_type = 'Month' THEN result END"
+        label: "AverageResult_Quy"
+        description: "DAX: CALCULATE( AVERAGE('KPIKQI_New'[Kết quả]), 'KPIKQI_New'[CriteriaPeriodType] = \"Month\" )"
+      count_distinct_sp_metric_filtered:
+        type: count_distinct
+        sql: "CASE WHEN (kpitype = 'Sản phẩm' AND tick_kpi = 1) THEN sp_metric END"
+        label: "count_distinct sp_metric (có điều kiện)"
+        description: "Metric phụ sinh từ DAX: COUNT_DISTINCT(sp_metric) kèm điều kiện của CALCULATE"
+      count_distinct_sp_metric_filtered_2:
+        type: count_distinct
+        sql: "CASE WHEN (tag_td = 'Tập đoàn' AND tick_kpi = 1) THEN sp_metric END"
+        label: "count_distinct sp_metric (có điều kiện)"
+        description: "Metric phụ sinh từ DAX: COUNT_DISTINCT(sp_metric) kèm điều kiện của CALCULATE"
+      max_alert_icon:
+        type: max
+        sql: alert_icon
+        label: "Cảnh báo FAIL 2 kỳ"
+        description: "Sinh từ Power BI: max(KPIKQI_New.Cảnh báo_icon)"
+      max_condition:
+        type: max
+        sql: condition
+        label: "Điều kiện"
+        description: "Sinh từ Power BI: max(KPIKQI_New.Điều kiện)"
+      max_kpi_trend:
+        type: max
+        sql: kpi_trend
+        label: "Trendline"
+        description: "Sinh từ Power BI: max(KPIKQI_New.Xu hướng KPI)"
+      max_metric_name:
+        type: max
+        sql: metric_name
+        label: "Metric name"
+        description: "Sinh từ Power BI: max(KPIKQI_New.Metric name)"
+      max_report_date:
+        type: max
+        sql: report_date_2
+        label: "Ngày báo cáo mới nhất"
+        description: "Thay cho measure text '[Báo cáo tuần_new]' (DAX ghép chuỗi \"Báo cáo tuần: Tuần N (dd/MM/yyyy - dd/MM/yyyy)\"). Lightdash không nên có metric kiểu chuỗi; dựng dòng tiêu đề bằng Markdown tile trên dashboard, hoặc Big value trên metric này."
+      min_alert_icon:
+        type: min
+        sql: alert_icon
+        label: "Cảnh báo"
+        description: "Sinh từ Power BI: min(KPIKQI_New.Cảnh báo_icon)"
+      quantity_kh_cai_thien:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN tick_kpi = 1 THEN customer_2 END) - COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND (kpi_trend IS NULL OR kpi_trend <> 'Cải thiện') THEN customer_2 END)"
+        label: "Số lượng KH Cải thiện"
+        description: "DAX: đếm khách có ImproveRate = 1, tức MỌI dòng TickKPI=1 đều có [Xu hướng KPI] = \"Cải thiện\". Viết bằng \"tập khách có TickKPI=1\" trừ đi \"tập khách có ít nhất một dòng KHÔNG phải Cải thiện\"."
+      quantity_kh_suy_giam:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN tick_kpi = 1 THEN customer_2 END) - COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND (kpi_trend IS NULL OR kpi_trend <> 'Suy giảm') THEN customer_2 END)"
+        label: "Số lượng KH Suy giảm"
+        description: "DAX: đếm khách có FailRate = 1, tức MỌI dòng TickKPI=1 đều có [Xu hướng KPI] = \"Suy giảm\"."
+      result_fact:
+        type: max
+        sql: result
+        label: "Kết quả fact"
+        description: "DAX: SELECTEDVALUE('KPIKQI_New'[Kết quả]). SELECTEDVALUE trả giá trị khi nhóm chỉ còn 1 dòng, ngược lại BLANK; ở đây dùng MAX — trùng kết quả khi bảng đã chi tiết tới mức 1 dòng/chỉ tiêu (đúng với các bảng đang dùng nó)."
+      result_prev_1_period_fact:
+        type: max
+        sql: result_prev_1_period
+        label: "Kết quả 1 kỳ trước fact"
+        description: "DAX: SELECTEDVALUE('KPIKQI_New'[Kết quả 1 kỳ trước])"
+      result_prev_2_periods_fact:
+        type: max
+        sql: result_prev_2_periods
+        label: "Kết quả 2 kỳ trước fact"
+        description: "DAX: SELECTEDVALUE('KPIKQI_New'[Kết quả 2 kỳ trước])"
+      target_dim:
+        type: max
+        sql: target_fin
+        label: "Target_dim"
+        description: "DAX: SELECTEDVALUE('KPIKQI_New'[Target_fin])"
+      tong_count_dv:
+        type: count_distinct
+        sql: "CASE WHEN kpitype <> 'Sản phẩm' THEN metric_name END"
+        label: "Tổng số DV"
+        description: "DAX: CALCULATE( DISTINCTCOUNT('KPIKQI_New'[Metric name]), FILTER( KPIKQI_New, 'KPIKQI_New'[KPITYPE]<> \"Sản phẩm\"))"
+      tong_count_dv_kh:
+        type: count_distinct
+        sql: dv_customer
+        label: "Tổng số DV-KH"
+        round: 0
+        description: "DAX: CALCULATE( DISTINCTCOUNT('KPIKQI_New'[DV-KHÁCH HÀNG]))"
+      tong_count_dv_khong_passed:
+        type: count_distinct
+        sql: "CASE WHEN (evaluation <> '1. Đạt' AND kpitype <> 'Sản phẩm') THEN metric_name END"
+        label: "Tổng số DV Không Đạt"
+        description: "DAX: CALCULATE( DISTINCTCOUNT('KPIKQI_New'[Metric name]), FILTER( KPIKQI_New, 'KPIKQI_New'[ĐÁNH GIÁ]<>\"1. Đạt\" && 'KPIKQI_New'[KPITYPE]<> \"Sản phẩm\"))"
+      tong_count_sp:
+        type: count_distinct
+        sql: "CASE WHEN kpitype = 'Sản phẩm' THEN sp_metric END"
+        label: "Tổng số SP"
+        description: "DAX: CALCULATE( DISTINCTCOUNT('KPIKQI_New'[SP-Metric]), 'KPIKQI_New'[KPITYPE] = \"Sản phẩm\" )"
+      tong_count_sp_fixed:
+        type: number
+        sql: "COALESCE(${count_distinct_sp_metric_filtered}, 0)"
+        label: "Tổng số SP_Fixed"
+        description: "DAX: COALESCE( CALCULATE( DISTINCTCOUNT('KPIKQI_New'[SP-Metric]), 'KPIKQI_New'[KPITYPE] = \"Sản phẩm\" && 'KPIKQI_New'[TickKPI]=1 ), 0 )"
+      tong_count_sp_khong_passed:
+        type: count_distinct
+        sql: "CASE WHEN evaluation_passed = 'Không đạt' THEN customer_spdv END"
+        label: "Tổng số SP Không Đạt"
+        description: "DAX: đếm cặp [KHách hàng - SPDV] có FailRate <> 0, tức có ít nhất một dòng \"Không đạt\"."
+      tong_count_sp_passed:
+        type: number
+        sql: "COUNT(DISTINCT customer_spdv) - COUNT(DISTINCT CASE WHEN evaluation_passed = 'Không đạt' THEN customer_spdv END)"
+        label: "Tổng số SP Đạt"
+        description: "DAX: đếm cặp [KHách hàng - SPDV] có FailRate = 0 (không có dòng \"Không đạt\" nào)."
+      tong_count_spdv_td:
+        type: number
+        sql: "COALESCE(${count_distinct_sp_metric_filtered_2}, 0)"
+        label: "Tổng số SPDV_TĐ"
+        round: 0
+        description: "DAX: COALESCE( CALCULATE( DISTINCTCOUNT('KPIKQI_New'[SP-Metric]), 'KPIKQI_New'[Tag_TĐ] = \"Tập đoàn\" && 'KPIKQI_New'[TickKPI]=1 ), 0 )"
+      tong_customer:
+        type: count_distinct
+        sql: "CASE WHEN customer_2 IS NOT NULL AND customer_2 <> '' THEN customer_2 END"
+        label: "Tổng khách hàng"
+        description: "DAX: CALCULATE(DISTINCTCOUNT('KPIKQI_New'[Khách hàng]), 'KPIKQI_New'[Khách hàng]<>BLANK())"
+      tong_kh_passed_month_n:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN tick_kpi = 1 THEN customer_2 END) - COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND evaluation_passed = 'Không đạt' THEN customer_2 END)"
+        label: "Tổng KH Đạt Tháng N"
+        description: "DAX: cùng công thức với [Tổng khách Đạt] (đếm khách có FailRate = 0). Power BI khai hai measure trùng nhau; giữ cả hai tên vì chart gốc dùng cả hai."
+      tong_khach_khong_passed:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN customer_2 IS NOT NULL AND customer_2 <> '' THEN customer_2 END) - (COUNT(DISTINCT CASE WHEN tick_kpi = 1 THEN customer_2 END)
+   - COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND evaluation_passed = 'Không đạt' THEN customer_2 END))"
+        label: "Tổng khách Không Đạt"
+        description: "DAX: 'KPIKQI_New'[Tổng khách hàng] - 'KPIKQI_New'[Tổng khách Đạt]"
+      tong_khach_passed:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN tick_kpi = 1 THEN customer_2 END) - COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND evaluation_passed = 'Không đạt' THEN customer_2 END)"
+        label: "Tổng khách Đạt"
+        description: "DAX: đếm khách có FailRate = 0, với FailRate = DIVIDE(số dòng \"Không đạt\" & TickKPI=1, số dòng TickKPI=1, 1). Tham số thứ 3 = 1 nghĩa là khách KHÔNG có dòng TickKPI=1 nào thì coi như trượt -> ở đây thể hiện bằng cách lấy tập khách có TickKPI=1 rồi trừ đi tập khách có ít nhất một dòng \"Không đạt\"."
+      tong_khach_passed_period_n_1:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN customer_2 IS NOT NULL AND customer_2 <> '' THEN customer_2 END) - COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND evaluation_passed_prev_1_period = 'Không đạt' THEN customer_2 END)"
+        label: "Tổng khách Đạt KỲ N-1"
+        description: "DAX: như [Tổng khách Đạt] nhưng dùng [Đánh giá đạt 1 kỳ trước] và DIVIDE(..., 0) — tham số thứ 3 = 0 nên khách không có dòng TickKPI=1 vẫn tính là Đạt, vì vậy mẫu số là TOÀN BỘ khách chứ không chỉ khách có TickKPI=1."
+      tong_khach_passed_period_n_2:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN customer_2 IS NOT NULL AND customer_2 <> '' THEN customer_2 END) - COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND evaluation_passed_prev_2_periods = 'Không đạt' THEN customer_2 END)"
+        label: "Tổng khách Đạt KỲ N-2"
+        description: "DAX: như [Tổng khách Đạt KỲ N-1] nhưng dùng [Đánh giá đạt 2 kỳ trước]."
+      tong_sp:
+        type: count_distinct
+        sql: customer_spdv
+        label: "Tổng SP"
+        description: "DAX: CALCULATE ( DISTINCTCOUNT ( 'KPIKQI_New'[KHách hàng - SPDV]) )"
+  columns:
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+  - name: result
+    description: "Cột Kết quả trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+  - name: target
+    description: "Cột Target trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: unit
+    description: "Cột Đơn vị trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+  - name: report_date
+    description: "Cột Ngày_báo_cáo_18900 trong KPIKQI_New."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày_báo_cáo_18900"
+        hidden: true
+  - name: end_time
+    description: "Cột EndTime trong KPIKQI_New."
+    meta:
+      dimension:
+        type: date
+        label: "EndTime"
+        hidden: true
+  - name: customer_type
+    description: "Cột CustomerType trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType"
+  - name: report_date_2
+    description: "Cột Ngày báo cáo trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[EndTime] = DATE(2025, 9, 30), DATE(2025, 9, 28), IF( NOT ISBLANK('KPIKQI_New'[EndTime]), 'KPIKQI_New'[EndTime], 'KPIKQI_New'[Ngày_báo_cáo_18900] ) )"
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+  - name: customer_group
+    description: "Cột Nhóm Khách hàng trong KPIKQI_New. Cột tính toán, DAX gốc: IF((('KPIKQI_New'[Khách hàng] = \"Viettel\") || ('KPIKQI_New'[SPDV]= \"TI Sản phẩm\")|| CONTAINSSTRING('KPIKQI_New'[SPDV],\"SE\")||('KPIKQI_New'[Metric name]=\"Tỷ lệ người dùng không gặp lỗi Crash (Crash-free users)\")||('KPIKQI_New'[Metric name]=\"Tỷ lệ người dùng không gặp lỗi Crash (Crash-free users) - Android\")||('KPIKQI_New'[Metric name]=\"Tỷ lệ người dùng không gặp lỗi Crash (Crash-free users) - iOS\")), IF(('KPIKQI_New'[SPDV]= \"SOAR\"&&'KPIKQI_New'[Ngày_báo_cáo_18900]=BLANK()&&'KPIKQI_New'[EndTime]<=DATE(2026,03,02)),\"\",\"Viettel\"), IF('KPIKQI_New'[Khách hàng]=\"SOC Platform\",IF(('KPIKQI_New'[SPDV]=\"SOC Platform\"||'KPIKQI_New'[SPDV]=\"EDR\"),\"SOCP\",\"\"),\"KHÁCH HÀNG NGOÀI\")) --KPIKQI sau ngày 10/11/2025: --SOCP: EDR + SOCP --EDR: Kết quả từ Tool --SOCP: kết quả từ Jira 100% --Viettel: --SOAR lấy kết quả từ Jira 100% theo 4 chỉ số mới --Các SP khác: Giữ nguyên. --Khách hàng ngoài giữ nguyên cách đo như cũ -- Cập nhật 31/12/2025: Bổ sung SOC Platform cho VIP/VVIP --Update 13/3/2026: --SOAR: Lấy 4 chỉ số từ Auto tool bắt đầu từ tuần 02/03/2026: 4 metric bao gồm: --Độ khả dụng của dịch vụ --Tốc độ đồng bộ cảnh báo từ hệ thống thành phần về SOAR --Tỷ lệ giao dịch thành công của hệ thống --Tỷ lệ cảnh báo được xử lý tự động"
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm Khách hàng"
+  - name: period_result
+    description: "Cột PeriodResult trong KPIKQI_New. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI_New'[CriteriaPeriodType] = \"Week\", CALCULATE( MAX('Dim_Date'[Tuần]), FILTER('Dim_Date', 'Dim_Date'[Date] = 'KPIKQI_New'[Ngày báo cáo]) ), 'KPIKQI_New'[CriteriaPeriodType] = \"Month\", CALCULATE( MAX('Dim_Date'[MonthYear]), FILTER('Dim_Date', 'Dim_Date'[Date] = 'KPIKQI_New'[Ngày báo cáo]) ), 'KPIKQI_New'[CriteriaPeriodType] = \"Quarter\", CALCULATE( MAX('Dim_Date'[QuarterYear]), FILTER('Dim_Date', 'Dim_Date'[Date] = 'KPIKQI_New'[Ngày báo cáo]) ) )"
+    meta:
+      dimension:
+        type: string
+        label: "PeriodResult"
+  - name: vs_target
+    description: "Cột So với target trong KPIKQI_New. Cột tính toán, DAX gốc: IF('KPIKQI_New'[Metric name] = \"MTTD VCS (giờ)\",-1, VAR _Target = 'KPIKQI_New'[Target_fin] VAR _Result = ROUND('KPIKQI_New'[Kết quả],2) VAR _Condition= UPPER(TRIM('KPIKQI_New'[Điều kiện_Target])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, _Condition = \">=\", IF(_Condition = \">=\"&&(_Result - _Target=0) , -1, DIVIDE(_Target - _Result, 100 - _Target, 0)), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+        hidden: true
+  - name: evaluation
+    description: "Cột ĐÁNH GIÁ trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[Kết quả]='KPIKQI_New'[Target_fin],\"1. Đạt\", IF( 'KPIKQI_New'[So với Target]<> BLANK(), SWITCH( TRUE(), 'KPIKQI_New'[So với Target] = 0, \"1. Đạt\", 'KPIKQI_New'[So với Target] >= 0.6, \"4. Fail vượt Target >=60%\", 'KPIKQI_New'[So với Target] >= 0.3 && 'KPIKQI_New'[So với Target] < 0.6,\"3. Fail vượt Target >=30% & <60%\", 'KPIKQI_New'[So với Target] > 0 && 'KPIKQI_New'[So với Target] < 0.3, \"2. Fail vượt Target 0-30%\", 'KPIKQI_New'[So với Target] < 0, \"1. Đạt\", \"CHƯA CÓ KẾT QUẢ\")))"
+    meta:
+      dimension:
+        type: string
+        label: "ĐÁNH GIÁ"
+  - name: updated_at
+    description: "Cột UpdatedAt trong KPIKQI_New."
+    meta:
+      dimension:
+        type: timestamp
+        label: "UpdatedAt"
+        hidden: true
+  - name: flag
+    description: "Cột Flag trong KPIKQI_New. Cột tính toán, DAX gốc: IF('KPIKQI_New'[Metric name]=BLANK(),0, IF('KPIKQI_New'[Metric name]=\"Mức độ ảnh hưởng đến hoạt động của khách hàng\",1, IF(('KPIKQI_New'[SPDV]=\"SOAR\"&&'KPIKQI_New'[Ngày báo cáo]>=DATE(2025,10,11)&&'KPIKQI_New'[Ngày báo cáo]<>BLANK()&&'KPIKQI_New'[Kết quả]<>0),1, IF(('KPIKQI_New'[SPDV]=\"SOAR\"&&'KPIKQI_New'[Ngày báo cáo]>=DATE(2026,03,02)&&('KPIKQI_New'[Metric name]<>\"Độ khả dụng của dịch vụ\"||'KPIKQI_New'[Metric name]<>\"Tốc độ đồng bộ cảnh báo từ hệ thống thành phần về SOAR\"||'KPIKQI_New'[Metric name]<>\"Tỷ lệ giao dịch thành công của hệ thống\"||'KPIKQI_New'[Metric name] <>\"Tỷ lệ cảnh báo được xử lý tự động\")),0, IF((('KPIKQI_New'[Metric name] = \"Độ khả dụng thành phần forwarder\")||('KPIKQI_New'[Metric name] = \"MTTD VCS (giờ)\")),1, IF(('KPIKQI_New'[Đơn vị]=\"%\"&&'KPIKQI_New'[Kết quả]=0 && 'KPIKQI_New'[Target_fin]>0),0, VAR CurrentDate = 'KPIKQI_New'[Ngày báo cáo] VAR CurrentSP = 'KPIKQI_New'[DV-KHÁCH HÀNG] VAR PeriodType = 'KPIKQI_New'[CriteriaPeriodType] VAR CurrentId = 'KPIKQI_New'[Id] -- Lọc nhóm theo SP-Metric, Ngày báo cáo và Điều kiện VAR GroupedData = FILTER( 'KPIKQI_New', 'KPIKQI_New'[DV-KHÁCH HÀNG] = CurrentSP && 'KPIKQI_New'[Ngày báo cáo] = CurrentDate && 'KPIKQI_New'[CriteriaPeriodType] = PeriodType ) -- Kiểm tra số lượng bản ghi trong nhóm VAR GroupCount = COUNTROWS(GroupedData) -- Nếu nhóm chỉ có 1 bản ghi, đánh dấu 1 VAR Result = IF( GroupCount = 1, 1, -- Nếu chỉ có 1 bản ghi trong nhóm, trả về 1 IF( CurrentId = MAXX(GroupedData, 'KPIKQI_New'[Id]), -- Nếu là dòng có Id lớn nhất trong nhóm 1, -- Dòng có Id lớn nhất đánh dấu 1 0 -- Các dòng còn lại đánh dấu 0 ) ) RETURN Result )))))) --KPIKQI sau ngày 10/11/2025: --SOCP: EDR + SOCP --EDR: Kết quả từ Tool --SOCP: kết quả từ Jira 100% --Viettel: --SOAR lấy kết quả từ Jira 100% theo 4 chỉ số mới --Các SP khác: Giữ nguyên. --Khách hàng ngoài giữ nguyên cách đo như cũ --Update 13/3/2026: --SOAR: Lấy 4 chỉ số từ Auto tool bắt đầu từ tuần 02/03/2026: 4 metric bao gồm: --Độ khả dụng của dịch vụ --Tốc độ đồng bộ cảnh báo từ hệ thống thành phần về SOAR --Tỷ lệ giao dịch thành công của hệ thống --Tỷ lệ cảnh báo được xử lý tự động --Update 03/06/2026: -- Bổ sung 2 chỉ số KIAN cho 3 KH VVIP -- Bố sung chỉ số \"Mức độ ảnh hưởng đến hoạt động của khách hàng\" cho Redteam"
+    meta:
+      dimension:
+        type: number
+        label: "Flag"
+        hidden: true
+  - name: target_difference
+    description: "Cột TargetDifference trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "TargetDifference"
+        hidden: true
+  - name: before2_periods_difference
+    description: "Cột Before2PeriodsDifference trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "Before2PeriodsDifference"
+        hidden: true
+  - name: before1_period_difference
+    description: "Cột Before1PeriodDifference trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "Before1PeriodDifference"
+        hidden: true
+  - name: result_2
+    description: "Cột Result trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Result"
+        hidden: true
+  - name: evaluation_passed
+    description: "Cột Đánh giá đạt trong KPIKQI_New. Cột tính toán, DAX gốc: SWITCH ( TRUE(), NOT ISBLANK ( 'KPIKQI_New'[Kết quả] ) && 'KPIKQI_New'[So với target] <= 0, \"Đạt\", NOT ISBLANK ( 'KPIKQI_New'[Kết quả] ) && 'KPIKQI_New'[So với target] = 'KPIKQI_New'[Kết quả], \"Đạt\", ISBLANK ( 'KPIKQI_New'[So với target] ), BLANK(), \"Không đạt\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá đạt"
+        hidden: true
+  - name: kpi_trend
+    description: "Cột Xu hướng KPI trong KPIKQI_New. Cột tính toán, DAX gốc: VAR CurrentResult = KPIKQI_New[Kết quả] VAR PrevResult = KPIKQI_New[Kết quả 1 kỳ trước'] VAR Diff = CurrentResult - PrevResult VAR Conditioncheck = KPIKQI_New[Điều kiện] RETURN IF( OR( ISBLANK(CurrentResult), ISBLANK(PrevResult) ), BLANK(), SWITCH( TRUE(), Conditioncheck = \">=\" && Diff > 0, \"Cải thiện\", Conditioncheck= \">=\" && Diff < 0, \"Suy giảm\", Conditioncheck = \">=\" && Diff = 0, \"Duy trì\", Conditioncheck = \"<=\" && Diff > 0, \"Suy giảm\", Conditioncheck = \"<=\" && Diff < 0, \"Cải thiện\", Conditioncheck = \"<=\" && Diff = 0, \"Duy trì\", BLANK() ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Trendline"
+  - name: dv_customer
+    description: "Cột DV-KHÁCH HÀNG trong KPIKQI_New. Cột tính toán, DAX gốc: 'KPIKQI_New'[SPDV]&'KPIKQI_New'[Khách hàng]&\"-\"&'KPIKQI_New'[Metric name]"
+    meta:
+      dimension:
+        type: string
+        label: "DV-KHÁCH HÀNG"
+        hidden: true
+  - name: sp_metric
+    description: "Cột SP-Metric trong KPIKQI_New. Cột tính toán, DAX gốc: 'KPIKQI_New'[SPDV_Fixed]&'KPIKQI_New'[Metric name]"
+    meta:
+      dimension:
+        type: string
+        label: "SP-Metric"
+        hidden: true
+  - name: target_fin
+    description: "Cột Target_fin trong KPIKQI_New. Cột tính toán, DAX gốc: IF(LOOKUPVALUE('Dim_TargetKPIKQI'[Target],'Dim_TargetKPIKQI'[SP-MEtric],'KPIKQI_New'[SP-Metric])<>BLANK(),LOOKUPVALUE('Dim_TargetKPIKQI'[Target],'Dim_TargetKPIKQI'[SP-MEtric],'KPIKQI_New'[SP-Metric]),'KPIKQI_New'[Target])"
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+  - name: kpitype
+    description: "Cột KPITYPE trong KPIKQI_New. Cột tính toán, DAX gốc: IF(('KPIKQI_New'[SPDV]=\"SOC Platform\"||'KPIKQI_New'[SPDV]=\"SE\"),\"Sản phẩm\", IF( 'KPIKQI_New'[Error] = BLANK(), LOOKUPVALUE('Dim_TargetKPIKQI'[Loại KPI],'Dim_TargetKPIKQI'[SPDV],'KPIKQI_New'[SPDV]), \"Dịch vụ\")) --Cập nhật ngày 12/01/2026: ---SIEM giữ lại 2 KPI Agent ---SOAR:"
+    meta:
+      dimension:
+        type: string
+        label: "KPITYPE"
+        hidden: true
+  - name: id
+    description: "Cột Id trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: created_at
+    description: "Cột CreatedAt trong KPIKQI_New."
+    meta:
+      dimension:
+        type: timestamp
+        label: "CreatedAt"
+        hidden: true
+  - name: start_time
+    description: "Cột StartTime trong KPIKQI_New."
+    meta:
+      dimension:
+        type: date
+        label: "StartTime"
+        hidden: true
+  - name: trend
+    description: "Cột Trend trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Trend"
+        hidden: true
+  - name: dws_kpi_systems_id
+    description: "Cột dws_kpi_systems_id trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "dws_kpi_systems_id"
+        hidden: true
+  - name: dws_kpi_criterias_id
+    description: "Cột dws_kpi_criterias_id trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "dws_kpi_criterias_id"
+        hidden: true
+  - name: calculate_time
+    description: "Cột CalculateTime trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "CalculateTime"
+        hidden: true
+  - name: is_empty
+    description: "Cột IsEmpty trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "IsEmpty"
+        hidden: true
+  - name: vs_target_two_periods
+    description: "Cột So với target 2 kỳ trong KPIKQI_New. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI_New'[Target_fin] VAR _Result = 'KPIKQI_New'[Kết quả 2 kỳ trước] VAR _Condition= UPPER(TRIM('KPIKQI_New'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target 2 kỳ"
+        hidden: true
+  - name: evaluation_two_periods
+    description: "Cột ĐÁNH GIÁ 2 KỲ trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[Kết quả]='KPIKQI_New'[Target_fin],\"1. Đạt\", IF( 'KPIKQI_New'[Average_Fail_2Kỳ]<> BLANK(), SWITCH( TRUE(), 'KPIKQI_New'[Average_Fail_2Kỳ] >= 0.6, \"4. Fail vượt Target >=60%\", 'KPIKQI_New'[Average_Fail_2Kỳ] >= 0.3 && 'KPIKQI_New'[Average_Fail_2Kỳ] < 0.6,\"3. Fail vượt Target >=30% & <60%\", 'KPIKQI_New'[Average_Fail_2Kỳ] > 0 && 'KPIKQI_New'[Average_Fail_2Kỳ] < 0.3, \"2. Fail vượt Target 0-30%\", 'KPIKQI_New'[Average_Fail_2Kỳ] < 0, \"1. Đạt\", 'KPIKQI_New'[Average_Fail_2Kỳ] = 0, \"1. Đạt\", \"CHƯA CÓ KẾT QUẢ\")))"
+    meta:
+      dimension:
+        type: string
+        label: "ĐÁNH GIÁ 2 KỲ"
+        hidden: true
+  - name: key_week
+    description: "Cột Key_Week trong KPIKQI_New. Cột tính toán, DAX gốc: 'KPIKQI_New'[SPDV]& \"||\"& 'KPIKQI_New'[Metric name] & \"||W\" & WEEKNUM('KPIKQI_New'[Ngày báo cáo], 2) & \"||\" & YEAR('KPIKQI_New'[Ngày báo cáo])"
+    meta:
+      dimension:
+        type: string
+        label: "Key_Week"
+        hidden: true
+  - name: key_month
+    description: "Cột Key_Month trong KPIKQI_New. Cột tính toán, DAX gốc: 'KPIKQI_New'[SPDV]& \"||\"& 'KPIKQI_New'[Metric name] & \"||M\" & MONTH('KPIKQI_New'[Ngày báo cáo]) & \"||\" & YEAR('KPIKQI_New'[Ngày báo cáo])"
+    meta:
+      dimension:
+        type: string
+        label: "Key_Month"
+        hidden: true
+  - name: has_log_metrics
+    description: "Cột HasLogMetrics trong KPIKQI_New. Cột tính toán, DAX gốc: IF(SEARCH(\"có log\", 'KPIKQI_New'[Metric name], 1, 0) > 0, TRUE(), FALSE())"
+    meta:
+      dimension:
+        type: boolean
+        label: "HasLogMetrics"
+        hidden: true
+  - name: customer
+    description: "Cột Customer trong KPIKQI_New. Cột tính toán, DAX gốc: LOOKUPVALUE(VVIP[MÃ],'VVIP'[Tên tổ chức],'KPIKQI_New'[Khách hàng])"
+    meta:
+      dimension:
+        type: string
+        label: "Customer"
+        hidden: true
+  - name: vs_target_one_period
+    description: "Cột So với target 1 kỳ trong KPIKQI_New. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI_New'[Target_fin] VAR _Result = 'KPIKQI_New'[Kết quả 1 kỳ trước] VAR _Condition= UPPER(TRIM('KPIKQI_New'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target 1 kỳ"
+        hidden: true
+  - name: evaluation_passed_prev_1_period
+    description: "Cột Đánh giá đạt 1 kỳ trước trong KPIKQI_New. Cột tính toán, DAX gốc: SWITCH ( TRUE(), NOT ISBLANK ( 'KPIKQI_New'[Kết quả 1 kỳ trước] ) && 'KPIKQI_New'[So với target 1 kỳ] <= 0, \"Đạt\", NOT ISBLANK ( 'KPIKQI_New'[Kết quả 1 kỳ trước] ) && 'KPIKQI_New'[So với target 1 kỳ] = 'KPIKQI_New'[Kết quả 1 kỳ trước], \"Đạt\", ISBLANK ( 'KPIKQI_New'[So với target 1 kỳ] ), BLANK(), \"Không đạt\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá đạt 1 kỳ trước"
+        hidden: true
+  - name: evaluation_passed_prev_2_periods
+    description: "Cột Đánh giá đạt 2 kỳ trước trong KPIKQI_New. Cột tính toán, DAX gốc: SWITCH ( TRUE(), NOT ISBLANK ( 'KPIKQI_New'[Kết quả 2 kỳ trước] ) && 'KPIKQI_New'[So với target 2 kỳ] <= 0, \"Đạt\", NOT ISBLANK ( 'KPIKQI_New'[Kết quả 2 kỳ trước] ) && 'KPIKQI_New'[So với target 2 kỳ] = 'KPIKQI_New'[Kết quả 2 kỳ trước], \"Đạt\", ISBLANK ( 'KPIKQI_New'[So với target 2 kỳ] ), BLANK(), \"Không đạt\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá đạt 2 kỳ trước"
+        hidden: true
+  - name: flag_two_periods_fail
+    description: "Cột Flag_2KỳFail trong KPIKQI_New. Cột tính toán, DAX gốc: IF(KPIKQI_New[Flag]=1, VAR PeriodType = 'KPIKQI_New'[CriteriaPeriodType] VAR Fail_Current = 'KPIKQI_New'[Đánh giá đạt] = \"Không đạt\" VAR Fail_1Prev = 'KPIKQI_New'[Đánh giá đạt 1 kỳ trước] = \"Không đạt\" VAR Fail_2Prev = 'KPIKQI_New'[Đánh giá đạt 2 kỳ trước] = \"Không đạt\" RETURN SWITCH( TRUE(), -- Week: bất kỳ 2 kỳ nào fail PeriodType = \"Week\" && ( (Fail_Current && Fail_1Prev) || (Fail_Current && Fail_2Prev) || (Fail_1Prev && Fail_2Prev) ), 1, -- Month: 2 tháng liên tiếp fail PeriodType = \"Month\" && (Fail_Current && Fail_1Prev), 1, 0 ),0)"
+    meta:
+      dimension:
+        type: number
+        label: "Flag_2KỳFail"
+        hidden: true
+  - name: alert_icon
+    description: "Cột Cảnh báo_icon trong KPIKQI_New. Cột tính toán, DAX gốc: VAR MauSac = 'KPIKQI_New'[ĐÁNH GIÁ 2 KỲ] VAR FlagFail = 'KPIKQI_New'[Flag_2KỳFail] RETURN IF( FlagFail = 1 && MauSac <> \"1. Đạt\", SWITCH( TRUE(), MauSac = \"2. Fail vượt Target 0-30%\", \"📒 0-30%\", MauSac = \"3. Fail vượt Target >=30% & <60%\", \"⚠️ >=30% & <60%\", MauSac = \"4. Fail vượt Target >=60%\", \"🔴 >=60%\", BLANK() ), \"1. Đạt\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Cảnh báo_icon"
+        hidden: true
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước trong KPIKQI_New. Cột tính toán, DAX gốc: IF('KPIKQI_New'[Flag]=0,BLANK(), IF('KPIKQI_New'[Ngày_báo_cáo_18900]=BLANK(),'KPIKQI_New'[Kết quả 1 kỳ trước'], VAR NgayHienTai = 'KPIKQI_New'[Ngày Báo cáo] VAR KPIHienTai = 'KPIKQI_New'[Metric name] -- Ngày báo cáo gần nhất trước ngày hiện tại của KPI này VAR NgayTruoc = CALCULATE( MAX('KPIKQI_New'[Ngày Báo cáo]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] < NgayHienTai ) ) VAR ThangTruoc = CALCULATE( MAX('KPIKQI_New'[Ngày Báo cáo]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] < NgayHienTai && MONTH('KPIKQI_New'[Ngày Báo cáo]) = MONTH(NgayHienTai) - 1 && YEAR('KPIKQI_New'[Ngày Báo cáo]) = YEAR(NgayHienTai) ) ) -- Kết quả lần trước VAR KetQuaTuanTruoc = CALCULATE( MAX('KPIKQI_New'[Kết quả]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] = NgayTruoc ) ) VAR KetQuaThangTruoc= CALCULATE( MAX('KPIKQI_New'[Kết quả]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] = ThangTruoc ) ) RETURN IF('KPIKQI_New'[CriteriaPeriodType] = \"Week\", KetQuaTuanTruoc,KetQuaThangTruoc) ))"
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 1 kỳ trước"
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước trong KPIKQI_New. Cột tính toán, DAX gốc: IF('KPIKQI_New'[Flag]=0,BLANK(), IF('KPIKQI_New'[Ngày_báo_cáo_18900]=BLANK(),'KPIKQI_New'[Kết quả 2 kỳ trước'], VAR NgayHienTai = 'KPIKQI_New'[Ngày Báo cáo] VAR KPIHienTai = 'KPIKQI_New'[Metric name] -- Ngày báo cáo gần nhất trước ngày hiện tại của KPI này VAR NgayTruoc = CALCULATE( MAX('KPIKQI_New'[Ngày Báo cáo]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] < NgayHienTai ) ) VAR ThangTruoc = CALCULATE( MAX('KPIKQI_New'[Ngày Báo cáo]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] < NgayHienTai && MONTH('KPIKQI_New'[Ngày Báo cáo]) = MONTH(NgayHienTai) - 1 && YEAR('KPIKQI_New'[Ngày Báo cáo]) = YEAR(NgayHienTai) ) ) -- Kết quả lần trước VAR KetQuaTuanTruoc = CALCULATE( MAX('KPIKQI_New'[Kết quả 1 kỳ trước]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] = NgayTruoc ) ) VAR KetQuaThangTruoc= CALCULATE( MAX('KPIKQI_New'[Kết quả 1 kỳ trước]), FILTER( 'KPIKQI_New', 'KPIKQI_New'[Metric name] = KPIHienTai && 'KPIKQI_New'[Ngày Báo cáo] = ThangTruoc ) ) RETURN IF('KPIKQI_New'[CriteriaPeriodType] = \"Week\", KetQuaTuanTruoc,KetQuaThangTruoc) ))"
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 2 kỳ trước"
+  - name: average_fail_two_periods
+    description: "Cột Average_Fail_2Kỳ trong KPIKQI_New. Cột tính toán, DAX gốc: IF( [Flag_2KỳFail] = 1, VAR Fail_Current = 'KPIKQI_New'[Đánh giá đạt] = \"Không đạt\" VAR Fail_1Prev = 'KPIKQI_New'[Đánh giá đạt 1 kỳ trước] = \"Không đạt\" VAR Fail_2Prev = 'KPIKQI_New'[Đánh giá đạt 2 kỳ trước] = \"Không đạt\" VAR Fail_Values = { IF(Fail_Current, 1, BLANK()), IF(Fail_1Prev, 1, BLANK()), IF(Fail_2Prev, 1, BLANK()) } VAR Fail_Count = COUNTROWS(Fail_Values) VAR Fail_Sum = SUMX(Fail_Values, [Value]) RETURN IF(Fail_Count > 0, Fail_Sum / Fail_Count, BLANK()), BLANK() )"
+    meta:
+      dimension:
+        type: number
+        label: "Average_Fail_2Kỳ"
+        hidden: true
+  - name: numbering_by_sort_col
+    description: "Cột Đánh số by Sort Col trong KPIKQI_New. Cột tính toán, DAX gốc: IF('KPIKQI_New'[CriteriaPeriodType]=\"Week\", WEEKNUM('KPIKQI_New'[Ngày báo cáo],2),MONTH('KPIKQI_New'[Ngày báo cáo]))"
+    meta:
+      dimension:
+        type: number
+        label: "Đánh số by Sort Col"
+        hidden: true
+  - name: spdv_dim
+    description: "Cột SPDV_Dim trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "SPDV_Dim"
+        hidden: true
+  - name: customer_spdv
+    description: "Cột KHách hàng - SPDV trong KPIKQI_New. Cột tính toán, DAX gốc: 'KPIKQI_New'[Nhóm Khách hàng]&'KPIKQI_New'[SPDV]"
+    meta:
+      dimension:
+        type: string
+        label: "KHách hàng - SPDV"
+        hidden: true
+  - name: title
+    description: "Cột Title trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Title"
+        hidden: true
+  - name: result_prev_1_period_2
+    description: "Cột Kết quả 1 kỳ trước' trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 1 kỳ trước'"
+        hidden: true
+  - name: result_prev_2_periods_2
+    description: "Cột Kết quả 2 kỳ trước' trong KPIKQI_New."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 2 kỳ trước'"
+        hidden: true
+  - name: customer_jira
+    description: "Cột Khách hàng_jira trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Khách hàng"
+  - name: tick_external_customer
+    description: "Cột Tick KH Ngoài trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[KHách hàng - SPDV] = \"KHÁCH HÀNG NGOÀIKIAN\",\"x\", IF( ('KPIKQI_New'[Khách hàng]=\"Văn phòng Quốc Hội\")||('KPIKQI_New'[Flag]=1&&'KPIKQI_New'[SPDV]=\"EDR\"&&(NOT (CONTAINSSTRINGEXACT('KPIKQI_New'[Nhóm Khách hàng],\"SOCP\"))||NOT CONTAINSSTRINGEXACT('KPIKQI_New'[Nhóm Khách hàng],\"Viettel\"))),\"x\", IF(('KPIKQI_New'[Flag]=1&&'KPIKQI_New'[SPDV]=\"SOC Platform\"&&(NOT (CONTAINSSTRINGEXACT('KPIKQI_New'[Nhóm Khách hàng],\"SOCP\"))||NOT CONTAINSSTRINGEXACT('KPIKQI_New'[Nhóm Khách hàng],\"Viettel\"))),\"x\", CALCULATE ( MAX ( 'Dim_TargetKPIKQI'[KH ngoài] ), FILTER ( 'Dim_TargetKPIKQI', 'Dim_TargetKPIKQI'[SP-Metric] = 'KPIKQI_New'[SP-Metric] ) ) ))) -- update 07-Jan-2026: Cập nhật tick KH NGOÀI VIP/VVIP cho EDR --update 02-June-2026: Cập nhật tick KH ngoài VVIP Cho KIAN)"
+    meta:
+      dimension:
+        type: string
+        label: "Tick KH Ngoài"
+        hidden: true
+  - name: month_key
+    description: "Cột MonthKey trong KPIKQI_New. Cột tính toán, DAX gốc: YEAR('KPIKQI_New'[Ngày báo cáo])*100 + MONTH('KPIKQI_New'[Ngày báo cáo])"
+    meta:
+      dimension:
+        type: number
+        label: "MonthKey"
+        hidden: true
+  - name: tick_kpi
+    description: "Cột TickKPI trong KPIKQI_New. Cột tính toán, DAX gốc: IF('KPIKQI_New'[Metric name] = \"MTTD VCS (giờ)\",1, IF(KPIKQI_New[CriteriaPeriodType]=\"Quarter\",1, (IF(KPIKQI_New[Flag]=0,0,IF( 'KPIKQI_New'[CriteriaPeriodType]= \"Week\", 'KPIKQI_New'[Flag],'KPIKQI_New'[TickMonth])))))"
+    meta:
+      dimension:
+        type: number
+        label: "TickKPI"
+        hidden: true
+  - name: tick_month
+    description: "Cột TickMonth trong KPIKQI_New. Cột tính toán, DAX gốc: VAR MaxDateInMonth = CALCULATE ( MAX ( 'KPIKQI_New'[Ngày báo cáo] ), ALLEXCEPT ( 'KPIKQI_New', 'KPIKQI_New'[SPDV], 'KPIKQI_New'[MonthKey] ) ) RETURN IF ( 'KPIKQI_New'[Ngày báo cáo] = MaxDateInMonth, 1, 0 )"
+    meta:
+      dimension:
+        type: number
+        label: "TickMonth"
+        hidden: true
+  - name: dws_kpi_criterias_name
+    description: "Cột dws_kpi_criterias.Name trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "dws_kpi_criterias.Name"
+        hidden: true
+  - name: error
+    description: "Cột Error trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Error"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: viettel
+    description: "Cột Viettel trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "Viettel"
+        hidden: true
+  - name: socp
+    description: "Cột SOCP trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "SOCP"
+        hidden: true
+  - name: external_customer
+    description: "Cột KH ngoài trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "KH ngoài"
+        hidden: true
+  - name: spdv_fixed
+    description: "Cột SPDV_Fixed trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[SPDV] = \"Cloudrity Self Service\", \"Cloudrity\", IF(KPIKQI_New[SPDV]=\"AntiDDOS\", \"V-AntiDDoS\", 'KPIKQI_New'[SPDV]))"
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: target_condition
+    description: "Cột Điều kiện_Target trong KPIKQI_New. Cột tính toán, DAX gốc: Var Dim_Citeria = LOOKUPVALUE(Dim_TargetKPIKQI[Điều kiện],Dim_TargetKPIKQI[Metric name],'KPIKQI_New'[Metric name]) Var Fact_Citeria = 'KPIKQI_New'[Điều kiện] RETURN IF( Dim_Citeria <> BLANK(), Dim_Citeria, Fact_Citeria)"
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+  - name: customer_2
+    description: "Cột Khách hàng trong KPIKQI_New. Cột tính toán, DAX gốc: IF(NOT ISBLANK('KPIKQI_New'[Khách hàng_jira]),'KPIKQI_New'[Khách hàng_jira], IF('KPIKQI_New'[SPDV]=\"SOC Platform\",\"SOC Platform\", IF('KPIKQI_New'[Khách hàng_jira]=\"SE\",\"Viettel\", IF('KPIKQI_New'[SPDV]=\"SOAR\"&&'KPIKQI_New'[Khách hàng_jira]=BLANK(),\"Viettel\", IF('KPIKQI_New'[SPDV]=\"EDR\"&&'KPIKQI_New'[Khách hàng_jira]=BLANK()&&'KPIKQI_New'[Metric name]=\"Tỷ lệ crash-free user của agent\",\"EDR Cash-free All Customers\", 'KPIKQI_New'[Khách hàng_jira]))))) -- Update 31/12/2025: Bổ sung chỉ số có SOC Platform --Update 14-Jan-2026: Bổ sung chỉ số Cash-free đo thủ công nhập từ Jira - DỰ kiến Q1 2026 làm xong tool tự động. Tên khách hàng: EDR-ALL CUSTOMERS)))"
+    meta:
+      dimension:
+        type: string
+        label: "Khách hàng"
+  - name: kpi_trend_period_n_1
+    description: "Cột Xu hướng KPI Kỳ N-1 trong KPIKQI_New. Cột tính toán, DAX gốc: VAR CurrentResult = KPIKQI_New[Kết quả 1 kỳ trước'] VAR PrevResult = KPIKQI_New[Kết quả 2 kỳ trước'] VAR Diff = CurrentResult - PrevResult VAR Conditioncheck = KPIKQI_New[Điều kiện] RETURN IF( OR( ISBLANK(CurrentResult), ISBLANK(PrevResult) ), BLANK(), SWITCH( TRUE(), Conditioncheck = \">=\" && Diff > 0, \"Cải thiện\", Conditioncheck= \">=\" && Diff < 0, \"Suy giảm\", Conditioncheck = \">=\" && Diff = 0, \"Duy trì\", Conditioncheck = \"<=\" && Diff > 0, \"Suy giảm\", Conditioncheck = \"<=\" && Diff < 0, \"Cải thiện\", Conditioncheck = \"<=\" && Diff = 0, \"Duy trì\", BLANK() ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng KPI Kỳ N-1"
+        hidden: true
+  - name: month_year
+    description: "Cột MonthYear trong KPIKQI_New. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI_New'[CriteriaPeriodType] = \"Week\", CALCULATE( MAX('Dim_Date'[MonthYear]), FILTER('Dim_Date', 'Dim_Date'[Date] = 'KPIKQI_New'[Ngày báo cáo]) ), 'KPIKQI_New'[CriteriaPeriodType] = \"Month\", CALCULATE( MAX('Dim_Date'[MonthYear]), FILTER('Dim_Date', 'Dim_Date'[Date] = 'KPIKQI_New'[Ngày báo cáo]) ), 'KPIKQI_New'[CriteriaPeriodType] = \"Quarter\", CALCULATE( MAX('Dim_Date'[MonthYear]), FILTER('Dim_Date', 'Dim_Date'[Date] = 'KPIKQI_New'[Ngày báo cáo]) ) )"
+    meta:
+      dimension:
+        type: string
+        label: "MonthYear"
+        hidden: true
+  - name: tick_end_q4
+    description: "Cột Tick_end_Q4 trong KPIKQI_New. Cột tính toán, DAX gốc: IF(('KPIKQI_New'[Ngày báo cáo]=DATE(2025,12,28)&&'KPIKQI_New'[CriteriaPeriodType]=\"Week\"), true,false)"
+    meta:
+      dimension:
+        type: boolean
+        label: "Tick_end_Q4"
+        hidden: true
+  - name: report_month_date
+    description: "Cột Ngày báo cáo tháng trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[CriteriaPeriodType]=\"Month\", 'KPIKQI_New'[Ngày báo cáo], BLANK() )"
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày báo cáo tháng"
+  - name: target_td
+    description: "Cột Target_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: LOOKUPVALUE('Target KPIKQI Tập đoàn'[Target_TĐ],'Target KPIKQI Tập đoàn'[SP-Metric],'KPIKQI_New'[SP-Metric])"
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+  - name: unit_of_measure_td
+    description: "Cột Đơn vị tính_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: LOOKUPVALUE('Target KPIKQI Tập đoàn'[Đơn vị tính_TĐ],'Target KPIKQI Tập đoàn'[SP-Metric],'KPIKQI_New'[SP-Metric])"
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+  - name: condition_td
+    description: "Cột Điều kiện_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: LOOKUPVALUE('Target KPIKQI Tập đoàn'[Điều kiện_TĐ],'Target KPIKQI Tập đoàn'[SP-Metric],'KPIKQI_New'[SP-Metric])"
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+  - name: kpi_classification_td
+    description: "Cột Phân loạiKPI_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: LOOKUPVALUE('Target KPIKQI Tập đoàn'[Loại KPI_TĐ],'Target KPIKQI Tập đoàn'[SP-Metric],'KPIKQI_New'[SP-Metric])"
+    meta:
+      dimension:
+        type: string
+        label: "Phân loạiKPI_TĐ"
+        hidden: true
+  - name: tag_td
+    description: "Cột Tag_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[Metric name] = \"Tỷ lệ người dùng không gặp lỗi Crash (Crash-free users) - iOS\" || 'KPIKQI_New'[Metric name] = \"Tỷ lệ người dùng không gặp lỗi Crash (Crash-free users) - Android\", \"Tập đoàn\", IF( 'KPIKQI_New'[Phân loạiKPI_TĐ] = \"Sản phẩm\" && 'KPIKQI_New'[Nhóm Khách hàng] <> \"Viettel\", \"\", LOOKUPVALUE( 'Target KPIKQI Tập đoàn'[Tag], 'Target KPIKQI Tập đoàn'[SP-Metric], 'KPIKQI_New'[SP-Metric] ) ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Loại báo cáo"
+  - name: vs_target_td
+    description: "Cột So với target_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: IF('KPIKQI_New'[Metric name] = \"MTTD VCS (giờ)\",-1, VAR _Target = 'KPIKQI_New'[Target_TĐ] VAR _Result = ROUND('KPIKQI_New'[Kết quả],2) VAR _Condition= UPPER(TRIM('KPIKQI_New'[Điều kiện_TĐ])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, _Condition = \">=\", IF(_Condition = \">=\"&&(_Result - _Target=0) , -1, DIVIDE(_Target - _Result, 100 - _Target, 0)), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+  - name: evaluation_td
+    description: "Cột ĐÁNH GIÁ_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: IF( 'KPIKQI_New'[Kết quả]='KPIKQI_New'[Target_TĐ],\"1. Đạt\", IF( 'KPIKQI_New'[So với target_TĐ]<> BLANK(), SWITCH( TRUE(), 'KPIKQI_New'[So với target_TĐ] = 0, \"1. Đạt\", 'KPIKQI_New'[So với target_TĐ] >= 0.6, \"4. Fail vượt Target >=60%\", 'KPIKQI_New'[So với target_TĐ] >= 0.3 && 'KPIKQI_New'[So với target_TĐ] < 0.6,\"3. Fail vượt Target >=30% & <60%\", 'KPIKQI_New'[So với target_TĐ] > 0 && 'KPIKQI_New'[So với target_TĐ] < 0.3, \"2. Fail vượt Target 0-30%\", 'KPIKQI_New'[So với target_TĐ] < 0, \"1. Đạt\", \"CHƯA CÓ KẾT QUẢ\")))"
+    meta:
+      dimension:
+        type: string
+        label: "ĐÁNH GIÁ_TĐ"
+  - name: vs_target_one_period_td
+    description: "Cột So với target 1 kỳ_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI_New'[Target_TĐ] VAR _Result = 'KPIKQI_New'[Kết quả 1 kỳ trước] VAR _Condition= UPPER(TRIM('KPIKQI_New'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target 1 kỳ_TĐ"
+        hidden: true
+  - name: kpi_trend_td
+    description: "Cột Xu hướng KPI_TĐ trong KPIKQI_New. Cột tính toán, DAX gốc: VAR CurrentResult = KPIKQI_New[Kết quả] VAR PrevResult = KPIKQI_New[Kết quả 1 kỳ trước'] VAR Diff = CurrentResult - PrevResult VAR Conditioncheck = KPIKQI_New[Điều kiện_TĐ] RETURN IF( OR( ISBLANK(CurrentResult), ISBLANK(PrevResult) ), BLANK(), SWITCH( TRUE(), Conditioncheck = \">=\" && Diff > 0, \"Cải thiện\", Conditioncheck= \">=\" && Diff < 0, \"Suy giảm\", Conditioncheck = \">=\" && Diff = 0, \"Duy trì\", Conditioncheck = \"<=\" && Diff > 0, \"Suy giảm\", Conditioncheck = \"<=\" && Diff < 0, \"Cải thiện\", Conditioncheck = \"<=\" && Diff = 0, \"Duy trì\", BLANK() ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng KPI"
+  - name: so_with_period_n_1_td
+    description: "Cột So với kỳ N-1 (TĐ) trong KPIKQI_New. Cột tính toán, DAX gốc: VAR CurrentResult = KPIKQI_New[Kết quả] -- Tháng N VAR PrevResult = KPIKQI_New[Kết quả 1 kỳ trước'] -- Tháng N-1 VAR Conditioncheck = KPIKQI_New[Điều kiện_TĐ] RETURN IF( OR( ISBLANK(CurrentResult), ISBLANK(PrevResult) ), BLANK(), SWITCH( TRUE(), -- Trường hợp >= : (Tháng N-1 - Tháng N) / (100 - Tháng N-1) Conditioncheck = \">=\", DIVIDE(PrevResult - CurrentResult, 100 - PrevResult), -- Trường hợp <= : (Tháng N - Tháng N-1) / Tháng N-1 Conditioncheck = \"<=\", DIVIDE(CurrentResult - PrevResult, PrevResult), -- Trường hợp = : Đúng bằng thì trả về 0 (Không chênh lệch), khác thì BLANK() Conditioncheck = \"=\", IF(CurrentResult = PrevResult, 0, BLANK()), BLANK() ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với kỳ N-1"
+  - name: tick_vvip_2026
+    description: "Cột Tick VVIP 2026 trong KPIKQI_New. Cột tính toán, DAX gốc: LOOKUPVALUE(Sheet1[Column2],'Sheet1'[Column1],KPIKQI_New[Khách hàng])"
+    meta:
+      dimension:
+        type: string
+        label: "Tick VVIP 2026"
+        hidden: true
+  - name: customer_type_2026
+    description: "Cột CustomerType_2026 (from dws_kpi_systems) trong KPIKQI_New."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType_2026 (from dws_kpi_systems)"
+        hidden: true

@@ -1,0 +1,453 @@
+version: 2
+models:
+- name: production_management_1_pyc_os_events
+  description: >-
+    PYC Jira fan-out theo 6 mốc ngày (release / nghiệm thu / bàn giao / commit /
+    thanh toán / dự kiến). Chỗ đặt toàn bộ measure USERELATIONSHIP của bảng
+    'PYC Jira' — Lightdash chỉ có 1 join active tới dim_date nên không phục vụ
+    được 6 mốc ngày trong cùng một query.
+    Dùng cho các chart của trang PYC OS, TTSX&CNTT - NGUỒN LỰC OS và
+    TTSX&CNTT - ĐƠN VỊ OS.
+    GRAIN: (PYC × mốc ngày) — mọi metric đều phải lọc theo date_role.
+  meta:
+    label: "PYC OS - theo mốc ngày"
+    metrics:
+
+      # === Đếm số phiếu ====================================================
+      pyc_release:
+        type: count
+        sql: "CASE WHEN date_role = 'release' AND issue_current_status_name = 'Released' THEN issue_key END"
+        label: "PYC RELEASE"
+        description: >-
+          DAX: CALCULATE(COUNT('PYC Jira'[ISSUE_KEY]),
+          'PYC Jira'[ISSUE_CURRENT_STATUS_NAME]="Released",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_Release_10806]))
+
+      pyc_release_on_time:
+        type: count
+        sql: "CASE WHEN date_role = 'release' AND issue_current_status_name = 'Released' AND on_time_check_2 = 'Pass' THEN issue_key END"
+        label: "PYC RELEASE ĐÚNG HẠN"
+        description: >-
+          DAX: CALCULATE(COUNT('PYC Jira'[ISSUE_KEY]),
+          'PYC Jira'[ISSUE_CURRENT_STATUS_NAME]="Released",
+          'PYC Jira'[Kiểm tra đúng hạn]="Pass",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_Release_10806]))
+
+      pyc_done_acceptance_thanh_cong:
+        type: count_distinct
+        sql: "CASE WHEN date_role = 'acceptance' AND issue_current_status_name <> 'Rejected' THEN issue_key END"
+        label: "PYC DONE NGHIỆM THU THÀNH CÔNG"
+        description: >-
+          DAX: CALCULATE(DISTINCTCOUNT('PYC Jira'[ISSUE_KEY]),
+          'PYC Jira'[ISSUE_CURRENT_STATUS_NAME]<>"Rejected",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_nghiệm_thu_thành_công_10847]))
+
+      count_pyc:
+        type: count_distinct
+        sql: "CASE WHEN date_role = 'commit' THEN issue_key END"
+        label: "Số PYC"
+        description: >-
+          DAX: CALCULATE(DISTINCTCOUNTNOBLANK('PYC Jira'[ISSUE_KEY]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[EndDate_commit]))
+
+      pyc_end:
+        type: count_distinct
+        sql: "CASE WHEN date_role = 'commit' AND issue_current_status_name <> 'Rejected' THEN issue_key END"
+        label: "PYC END"
+        description: >-
+          DAX: CALCULATE(DISTINCTCOUNT('PYC Jira'[ISSUE_KEY]),
+          'PYC Jira'[ISSUE_CURRENT_STATUS_NAME]<>"Rejected",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[EndDate_commit]))
+
+      pyc_on_time:
+        type: count
+        sql: >-
+          CASE WHEN date_role = 'commit'
+                AND issue_current_status_name IN ('Bàn giao TT Sản phẩm', 'Nghiệm thu thành công', 'Released')
+                AND on_time_check_2 = 'Pass'
+               THEN issue_key END
+        label: "PYC ĐÚNG HẠN"
+        description: >-
+          DAX: CALCULATE(COUNT('PYC Jira'[ISSUE_KEY]),
+          'PYC Jira'[ISSUE_CURRENT_STATUS_NAME]="Bàn giao TT Sản phẩm" ||
+          ..."Nghiệm thu thành công" || ..."Released",
+          'PYC Jira'[Kiểm tra đúng hạn]="Pass",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[EndDate_commit]))
+
+      # === Man-month thực tế (MM_PYC_Thực_tế_10823) ========================
+      mm_pyc_released:
+        type: sum
+        sql: "CASE WHEN date_role = 'release' THEN mm_pyc_thuc_te END"
+        label: "MM PYC (Released)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_Thực_tế_10823]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_Release_10806]))
+
+      mm_pyc_acceptance_thanh_cong:
+        type: sum
+        sql: "CASE WHEN date_role = 'acceptance' THEN mm_pyc_thuc_te END"
+        label: "MM PYC (Nghiệm thu thành công)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_Thực_tế_10823]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_nghiệm_thu_thành_công_10847]))
+
+      mm_burned_ttsx_acceptance:
+        type: sum
+        sql: "CASE WHEN date_role = 'acceptance' THEN mm_pyc_thuc_te END"
+        label: "MM Burned TTSX (Nghiệm thu)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_Thực_tế_10823]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[End Date_Nghiệm thu])).
+          TRÙNG GIÁ TRỊ với mm_pyc_acceptance_thanh_cong vì cột tính toán
+          'End Date_Nghiệm thu' chỉ là DATE(YEAR/MONTH/DAY) của
+          Ngày_nghiệm_thu_thành_công_10847. Giữ cả hai tên vì chart gốc dùng cả hai.
+
+      mm_pyc_thuc_te_handover_date_ttsp:
+        type: sum
+        sql: "CASE WHEN date_role = 'handover' THEN mm_pyc_thuc_te END"
+        label: "MM PYC thực tế (Ngày bàn giao TTSP)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_Thực_tế_10823]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_bàn_giao_10849]))
+
+      mm_pyc_thuc_te_ban_giao_acceptance:
+        type: sum
+        sql: "CASE WHEN date_role IN ('handover', 'acceptance') THEN mm_pyc_thuc_te END"
+        label: "MM PYC Thực tế Bàn Giao + Nghiệm thu"
+        description: "DAX: [MM PYC thực tế (Ngày bàn giao TTSP)] + [MM PYC (Nghiệm thu thành công)]"
+
+      mm_burned_ttsx_commit_date:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit' THEN mm_pyc_thuc_te END"
+        label: "MM Burned TTSX (Commit Date)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_Thực_tế_10823]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[EndDate_commit]))
+
+      mm_ttsx_released_commit_date:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit' AND issue_current_status_name = 'Released' THEN mm_pyc_thuc_te END"
+        label: "MM TTSX Released (Commit Date)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_Thực_tế_10823]),
+          'PYC Jira'[ISSUE_CURRENT_STATUS_NAME]="Released",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[EndDate_commit]))
+
+      mm_thanh_toan_ttsx:
+        type: sum
+        sql: "CASE WHEN date_role = 'payment' THEN mm_pyc_thuc_te END"
+        label: "MM Thanh toán TTSX"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_Thực_tế_10823]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_thanh_toán_10839]))
+
+      # === Man-month estimate / dự kiến ====================================
+      mm_ttsx_commit_commit_date_last:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit' THEN mm_ttsx_estimate END"
+        label: "MM TTSX Commit (Commit Date)_last"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_TTSX_Estimate_10830]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[EndDate_commit])).
+          Power BI có thêm measure 'MM TTSX Commit (Commit Date)' cùng định nghĩa;
+          dùng chung metric này cho cả hai.
+
+      mm_commit_ttsx_acceptance:
+        type: sum
+        sql: "CASE WHEN date_role = 'acceptance' THEN mm_ttsx_estimate END"
+        label: "MM Commit TTSX (Nghiệm thu)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_TTSX_Estimate_10830]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[End Date_Nghiệm thu]))
+
+      mm_ttsx_du_kien_date_du_kien:
+        type: sum
+        sql: "CASE WHEN date_role = 'planned' THEN mm_ttsx_du_kien END"
+        label: "MM TTSX Dự kiến (Ngày Dự kiến)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_TTSX_Dự_kiến_10840]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_TTSX_Dự_kiến_10841]))
+
+      # MM_PYC_10705 là ước tính của TTSP (khác MM_TTSX_* là ước tính của TTSX)
+      mm_ttsp_du_kien_commit_date:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit' THEN mm_pyc END"
+        label: "MM TTSP Dự kiến (Commit Date)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_10705]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[EndDate_commit]))
+
+      mm_ttsp_du_kien_date_du_kien:
+        type: sum
+        sql: "CASE WHEN date_role = 'planned' THEN mm_pyc END"
+        label: "MM TTSP Dự kiến (Ngày Dự kiến)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC Jira'[MM_PYC_10705]),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC Jira'[Ngày_TTSX_Dự_kiến_10841]))
+
+      # === Tỷ lệ (%) =======================================================
+      # Tên Power BI là "%PYC RELEASE" / "%PYC RELEASE ĐÚNG HẠN" / "%MM PYC RELEASE".
+      # Bộ sinh tự động slug hoá về pyc_release / pyc_release_on_time / mm_pyc_release
+      # -> ĐỤNG TÊN với 3 measure đếm ở trên. Ở đây đổi tiền tố thành pct_.
+      pct_pyc_release:
+        type: number
+        sql: >-
+          CAST(COUNT(CASE WHEN date_role = 'release' AND issue_current_status_name = 'Released' THEN issue_key END) AS DOUBLE)
+          / NULLIF(COUNT(DISTINCT CASE WHEN date_role = 'acceptance' AND issue_current_status_name <> 'Rejected' THEN issue_key END), 0)
+        label: "%PYC RELEASE"
+        description: "DAX: DIVIDE([PYC RELEASE], [PYC DONE NGHIỆM THU THÀNH CÔNG], 0)"
+        format: percent
+        round: 2
+
+      pct_pyc_release_on_time:
+        type: number
+        sql: >-
+          CAST(COUNT(CASE WHEN date_role = 'release' AND issue_current_status_name = 'Released' AND on_time_check_2 = 'Pass' THEN issue_key END) AS DOUBLE)
+          / NULLIF(COUNT(DISTINCT CASE WHEN date_role = 'acceptance' AND issue_current_status_name <> 'Rejected' THEN issue_key END), 0)
+        label: "%PYC RELEASE ĐÚNG HẠN"
+        description: "DAX: DIVIDE([PYC RELEASE ĐÚNG HẠN], [PYC DONE NGHIỆM THU THÀNH CÔNG], 0)"
+        format: percent
+        round: 2
+
+      pct_mm_pyc_release:
+        type: number
+        sql: >-
+          SUM(CASE WHEN date_role = 'release' THEN mm_pyc_thuc_te END)
+          / NULLIF(SUM(CASE WHEN date_role = 'acceptance' THEN mm_pyc_thuc_te END), 0)
+        label: "%MM PYC RELEASE"
+        description: "DAX: DIVIDE([MM PYC (Released)], [MM PYC (Nghiệm thu thành công)], 0)"
+        format: percent
+        round: 2
+
+      pct_cr:
+        type: number
+        sql: >-
+          (SUM(CASE WHEN date_role = 'acceptance' THEN mm_pyc_thuc_te END)
+           - SUM(CASE WHEN date_role = 'acceptance' THEN mm_ttsx_estimate END))
+          / NULLIF(SUM(CASE WHEN date_role = 'acceptance' THEN mm_ttsx_estimate END), 0)
+        label: "%CR"
+        description: >-
+          DAX: DIVIDE([MM Burned TTSX (Nghiệm thu)]-[MM Commit TTSX (Nghiệm thu)],
+          [MM Commit TTSX (Nghiệm thu)], 0)
+        format: percent
+        round: 2
+
+      delta_thuc_passed_commit:
+        type: number
+        sql: >-
+          SUM(CASE WHEN date_role = 'commit' THEN mm_pyc_thuc_te END)
+          / NULLIF(SUM(CASE WHEN date_role = 'commit' THEN mm_ttsx_estimate END), 0)
+        label: "DELTA (Thực đạt - Commit)"
+        description: >-
+          DAX: DIVIDE([MM Burned TTSX (Commit Date)], [MM TTSX Commit (Commit Date)], 0).
+          Tên measure là "DELTA" nhưng công thức gốc là phép CHIA, không phải hiệu — giữ nguyên.
+        format: percent
+        round: 1
+
+      hieu_released:
+        type: number
+        sql: >-
+          SUM(CASE WHEN date_role = 'commit' AND issue_current_status_name = 'Released' THEN mm_pyc_thuc_te END)
+          / NULLIF(SUM(CASE WHEN date_role = 'acceptance' THEN mm_pyc_thuc_te END), 0)
+        label: "HIỆU QUẢ RELEASED"
+        description: "DAX: DIVIDE([MM TTSX Released (Commit Date)], [MM Burned TTSX (Nghiệm thu)], 0)"
+        format: percent
+        round: 2
+
+      pct_pyc_done_on_time:
+        type: number
+        sql: >-
+          CAST(COUNT(CASE WHEN date_role = 'commit'
+                           AND issue_current_status_name IN ('Bàn giao TT Sản phẩm', 'Nghiệm thu thành công', 'Released')
+                           AND on_time_check_2 = 'Pass'
+                          THEN issue_key END) AS DOUBLE)
+          / NULLIF(COUNT(DISTINCT CASE WHEN date_role = 'commit' AND issue_current_status_name <> 'Rejected' THEN issue_key END), 0)
+        label: "%PYC DONE ĐÚNG HẠN"
+        description: "DAX: DIVIDE([PYC ĐÚNG HẠN], [PYC END], 0)"
+        format: percent
+        round: 1
+
+      delta_ttsx_ttsp:
+        type: number
+        sql: >-
+          (SUM(CASE WHEN date_role = 'commit' THEN mm_pyc_thuc_te END)
+           - SUM(CASE WHEN date_role = 'commit' THEN mm_pyc END))
+          / NULLIF(SUM(CASE WHEN date_role = 'commit' THEN mm_pyc END), 0)
+        label: "DELTA (TTSX - TTSP)"
+        description: >-
+          DAX: DIVIDE([MM Burned TTSX (Commit Date)]-[MM TTSP Dự kiến (Commit Date)],
+          [MM TTSP Dự kiến (Commit Date)], 0)
+        format: percent
+        round: 1
+
+      bug_rate:
+        type: number
+        sql: >-
+          SUM(CASE WHEN date_role = 'acceptance' THEN post_acceptance_defect_count_weighted END)
+          / NULLIF(SUM(CASE WHEN date_role = 'acceptance' THEN mm_pyc_thuc_te END), 0)
+        label: "Bug Rate"
+        description: >-
+          DAX: CALCULATE(DIVIDE('Bug sau nghiệm thu'[Số Bug sau nghiệm thu(đã nhân hệ số)],
+          'PYC Jira'[MM Burned TTSX (Nghiệm thu)])).
+          KHÁC BẢN GỐC: tử số lấy từ cột tính toán sẵn 'PYC Jira'[Số Lỗi Sau Nghiệm thu
+          (đã nhân hệ số)] (chính là SUM('Bug sau nghiệm thu'[Hệ số lỗi]) khớp theo
+          tháng+sản phẩm) thay vì aggregate chéo bảng, để cùng nằm trên một mốc ngày.
+        round: 2
+
+  columns:
+  - name: date_role
+    description: "Mốc ngày của dòng: release / acceptance / handover / commit / payment / planned. Chỉ dùng để lọc trong metric, không nên đưa lên chart."
+    meta:
+      dimension:
+        type: string
+        label: "Mốc ngày"
+        hidden: true
+  - name: event_date
+    description: "Ngày ứng với date_role."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày"
+        hidden: true
+  - name: event_month
+    description: "Đầu tháng của event_date. Dùng làm trục/cột thời gian khi cần sắp xếp đúng."
+    meta:
+      dimension:
+        type: date
+        label: "Tháng"
+  - name: year_value
+    description: "Năm của event_date. Thay cho Dim_Date[Year]."
+    meta:
+      dimension:
+        type: string
+        label: "Year"
+  - name: month_year
+    description: "Định dạng MMM YYYY, khớp Dim_Date[MonthYear] của Power BI."
+    meta:
+      dimension:
+        type: string
+        label: "MonthYear"
+  - name: month_name
+    description: "Tên tháng viết tắt (MMM)."
+    meta:
+      dimension:
+        type: string
+        label: "MonthName"
+  - name: quarter_year
+    description: "Định dạng Qn YYYY, khớp Dim_Date[QuarterYear] của báo cáo này."
+    meta:
+      dimension:
+        type: string
+        label: "QuarterYear"
+  - name: month_sort_key
+    description: "yyyymm dùng để sắp xếp month_year cho đúng thứ tự thời gian."
+    meta:
+      dimension:
+        type: number
+        label: "Month sort key"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Status"
+  - name: issue_current_assignee_name
+    description: "Cột ISSUE_CURRENT_ASSIGNEE_NAME trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "PM"
+  - name: on_time_check_2
+    description: "Cột Kiểm tra đúng hạn (Pass/Fail) trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Kiểm tra đúng hạn"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_10803 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX Product"
+  - name: project
+    description: "Cột Dự_án_10706 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT"
+  - name: partner
+    description: "Cột Đối_tác_10801 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ĐỐI TÁC"
+  - name: partner_by_contract
+    description: "Cột Đối_tác_theo_HĐ_10842 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Đối tác theo HĐ"
+  - name: type_os
+    description: "Cột Loại_OS_10843 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "DIỆN ĐỐI TƯỢNG"
+  - name: payment_status
+    description: "Cột Trạng_thái_thanh_toán_10810 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Trạng thái thanh toán"
+        hidden: true
+  - name: mm_pyc_thuc_te
+    description: "Cột MM_PYC_Thực_tế_10823 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_Thực_tế_10823"
+        hidden: true
+  - name: mm_pyc
+    description: "Cột MM_PYC_10705 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_10705"
+        hidden: true
+  - name: mm_ttsx_estimate
+    description: "Cột MM_TTSX_Estimate_10830 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Estimate_10830"
+        hidden: true
+  - name: mm_ttsx_du_kien
+    description: "Cột MM_TTSX_Dự_kiến_10840 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Dự_kiến_10840"
+        hidden: true
+  - name: post_acceptance_defect_count_weighted
+    description: "Cột Số Lỗi Sau Nghiệm thu (đã nhân hệ số) trong PYC Jira. Dùng cho metric bug_rate."
+    meta:
+      dimension:
+        type: number
+        label: "Số Lỗi Sau Nghiệm thu (đã nhân hệ số)"
+        hidden: true

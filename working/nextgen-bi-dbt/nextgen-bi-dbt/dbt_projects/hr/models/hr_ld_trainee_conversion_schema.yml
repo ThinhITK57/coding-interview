@@ -1,0 +1,217 @@
+version: 2
+
+models:
+- name: hr_ld_trainee_conversion
+  description: >
+    Bảng **hr_ld_trainee_conversion** lưu trữ thông tin chuyển đổi của sinh viên
+    sau khi hoàn thành chương trình đào tạo hoặc thực tập sang vị trí làm việc chính thức.
+    Dữ liệu bao gồm thông tin sinh viên, chương trình đào tạo, kết quả đánh giá,
+    thời điểm chuyển đổi, vị trí công việc, đơn vị tiếp nhận và kết quả phỏng vấn.
+    Dữ liệu được sử dụng để theo dõi số lượng sinh viên chuyển đổi thành nhân viên,
+    đánh giá hiệu quả chương trình đào tạo và hỗ trợ công tác phát triển nguồn nhân lực.
+
+  meta:
+    label: "Trainee Conversion"
+    owner: "tranpth"
+    metrics:
+      trainee_conversion_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi chuyển đổi sinh viên."
+        label: "Trainee Conversion Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi chuyển đổi sinh viên"
+          - "Trainee Conversion Record Count"
+
+      trainee_converted_count:
+        type: count_distinct
+        sql: ${TABLE}.trainee_id
+        description: "Số lượng sinh viên được chuyển đổi sang vị trí hoặc trạng thái làm việc chính thức."
+        label: "Trainee Converted Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số sinh viên chuyển diện"
+          - "Số sinh viên chuyển đổi"
+          - "Trainee Converted Count"
+
+      converted_employee_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.employee_code IS NOT NULL
+              AND TRIM(${TABLE}.employee_code) <> ''
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng nhân viên có mã nhân viên được cấp sau khi chuyển đổi."
+        label: "Converted Employee Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số nhân viên sau chuyển đổi"
+          - "Converted Employee Count"
+
+      avg_training_score:
+        type: average
+        sql: ${TABLE}.training_score
+        description: "Điểm đánh giá kết quả đào tạo trung bình của sinh viên sau chương trình đào tạo."
+        label: "Average Training Score"
+        category: "Learning & Development"
+        synonyms:
+          - "Điểm PR trung bình"
+          - "Điểm đào tạo trung bình"
+          - "Average Training Score"
+
+      conversion_with_interview_result_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.interview_round_2_result IS NOT NULL
+              AND TRIM(${TABLE}.interview_round_2_result) <> ''
+            THEN ${TABLE}.trainee_id
+          END
+        description: "Số lượng sinh viên chuyển đổi có ghi nhận kết quả phỏng vấn vòng 2."
+        label: "Conversion with Interview Result Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số sinh viên có kết quả phỏng vấn vòng 2"
+          - "Conversion with Interview Result Count"
+
+      avg_days_to_conversion:
+        type: average
+        sql: date_diff('day', CAST(${TABLE}.expected_full_time_date AS date), CAST(${TABLE}.conversion_date AS date))
+        description: "Số ngày chênh lệch trung bình giữa ngày dự kiến full-time và ngày chuyển đổi thực tế (dương: chuyển đổi muộn, âm: chuyển đổi sớm)."
+        label: "Average Days to Conversion"
+        category: "Learning & Development"
+        synonyms:
+          - "Thời gian chuyển đổi trung bình"
+          - "Average Days to Conversion"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi chuyển đổi sinh viên
+      meta:
+        dimension:
+          type: number
+          label: "Trainee Conversion Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: trainee_id
+      description: Mã định danh của sinh viên trong chương trình đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Trainee ID"
+
+    - name: employee_code
+      description: Mã định danh nhân viên được cấp sau khi chuyển đổi, nếu có
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: training_program
+      description: Tên chương trình đào tạo hoặc chương trình thực tập mà sinh viên tham gia
+      meta:
+        dimension:
+          type: string
+          label: "Training Program"
+
+    - name: conversion_date
+      description: Ngày sinh viên được chuyển đổi sang vị trí hoặc trạng thái làm việc chính thức
+      meta:
+        dimension:
+          type: timestamp
+          label: "Conversion Date"
+
+    - name: role_base
+      description: Nhóm vai trò hoặc chức danh cơ sở của sinh viên sau khi chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Role Base"
+
+    - name: level_region
+      description: Cấp bậc hoặc nhóm level được áp dụng cho sinh viên sau khi chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Level Region"
+
+    - name: training_phase
+      description: Giai đoạn đào tạo của sinh viên tại thời điểm đánh giá chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Training Phase"
+
+    - name: employment_type
+      description: Loại hình tuyển dụng hoặc hình thức làm việc sau khi chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Employment Type"
+
+    - name: expected_full_time_date
+      description: Ngày dự kiến trở thành nhân viên chính thức
+      meta:
+        dimension:
+          type: timestamp
+          label: "Expected Full-Time Date"
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Training Major"
+
+    - name: mentor_email
+      description: Địa chỉ email của mentor hoặc người hướng dẫn sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Mentor Email"
+
+    - name: team
+      description: Nhóm hoặc đội ngũ công tác tiếp nhận sinh viên sau chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Team"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 tiếp nhận sinh viên sau chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: interview_round_2_result
+      description: Kết quả đánh giá hoặc phỏng vấn vòng 2 trong quá trình chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Interview Round 2 Result"
+
+    - name: training_result_link
+      description: Đường dẫn đến tài liệu hoặc hệ thống lưu trữ kết quả đào tạo của sinh viên
+      meta:
+        dimension:
+          type: string
+          label: "Training Result Link"
+
+    - name: training_score
+      description: Điểm đánh giá kết quả đào tạo của sinh viên
+      meta:
+        dimension:
+          type: number
+          label: "Training Score"

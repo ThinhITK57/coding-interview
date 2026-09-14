@@ -1,0 +1,250 @@
+version: 2
+models:
+- name: production_management_1_mmrelease
+  description: "Bảng production_management_1_mmrelease (nguồn Power BI: MMRelease)."
+  meta:
+    label: "MMRelease"
+    powerbi_source: "MMRelease"
+    joins:
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_mmrelease.project_name} = ${production_management_1_milestone_versions_projects.project_name}"
+      relationship: many-to-one
+    - join: production_management_1_worklogs_projects
+      sql_on: "${production_management_1_mmrelease.project_name} = ${production_management_1_worklogs_projects.project_name}"
+      relationship: many-to-one
+    - join: production_management_1_ulnl_projects
+      sql_on: "${production_management_1_mmrelease.project_key} = ${production_management_1_ulnl_projects.project_key}"
+      relationship: many-to-one
+    - join: production_management_1_mm_qa_fixversion
+      sql_on: "${production_management_1_mmrelease.project_name} = ${production_management_1_mm_qa_fixversion.product_service}"
+      relationship: many-to-many
+    - join: production_management_1_mm_release_issue2
+      sql_on: "${production_management_1_mmrelease.issue_id} = ${production_management_1_mm_release_issue2.id}"
+      relationship: many-to-one
+    metrics:
+      mm_fix_bug_cho_kh:
+        type: sum
+        sql: "CASE WHEN issue_type_final = 'Bug' AND cso_ticket_link IS NOT NULL AND cso_ticket_link <> '' THEN mm_release END"
+        label: "MM FIX BUG CHO KH"
+        description: "DAX: CALCULATE(SUM('MMRelease'[MM RELEASE]), 'MMRelease'[issue_type_final]=\"Bug\" && 'MMRelease'[CSO Ticket Link]<>BLANK(), ...)"
+      mm_fix_bug_release:
+        type: sum
+        sql: "CASE WHEN issue_type_final = 'Bug' THEN mm_release END"
+        label: "MM Fix Bug RELEASE"
+        description: "DAX: CALCULATE(SUM('MMRelease'[MM RELEASE]), 'MMRelease'[issue_type_final]=\"Bug\", USERELATIONSHIP('MMRelease'[project_name],'Project Name'[PROJECT_NAME_Last]))"
+      mm_release_tinh_nang:
+        type: sum
+        sql: "CASE WHEN issue_type_final <> 'Bug' THEN mm_release END"
+        label: "MM RELEASE TÍNH NĂNG"
+        description: "DAX: CALCULATE(SUM('MMRelease'[MM RELEASE]), 'MMRelease'[issue_type_final]<>\"Bug\", USERELATIONSHIP('MMRelease'[project_name],'Project Name'[PROJECT_NAME_Last]))"
+      mm_release_tinh_nang_cho_kh:
+        type: sum
+        sql: "CASE WHEN issue_type_final <> 'Bug' AND cso_ticket_link IS NOT NULL AND cso_ticket_link <> '' THEN mm_release END"
+        label: "MM RELEASE TÍNH NĂNG CHO KH"
+        description: "DAX: CALCULATE(SUM('MMRelease'[MM RELEASE]), 'MMRelease'[issue_type_final]<>\"Bug\" && 'MMRelease'[CSO Ticket Link]<>BLANK(), ...)"
+      mm_release_value:
+        type: sum
+        sql: mm_release
+        label: "MM Release value"
+        description: "DAX: CALCULATE(SUM(MMRelease[MM RELEASE]), USERELATIONSHIP('MMRelease'[project_name],'Project Name'[PROJECT_NAME_Last]))"
+      pct_mm_fix_bug_release:
+        type: number
+        sql: "SUM(CASE WHEN issue_type_final = 'Bug' THEN mm_release END) / NULLIF(SUM(mm_release), 0)"
+        label: "%mm fix bug release"
+        format: percent
+        round: 2
+        description: "DAX: DIVIDE('MMRelease'[MM Fix Bug RELEASE],'MMRelease'[MM Release value])"
+      pct_mm_release_fix_bug_cho_kh:
+        type: number
+        sql: "SUM(CASE WHEN issue_type_final = 'Bug' AND cso_ticket_link IS NOT NULL AND cso_ticket_link <> '' THEN mm_release END) / NULLIF(SUM(mm_release), 0)"
+        label: "%mm release fix bug cho KH"
+        format: percent
+        round: 2
+        description: "DAX: DIVIDE('MMRelease'[MM FIX BUG CHO KH],'MMRelease'[MM Release value])"
+      pct_mm_release_tinh_nang:
+        type: number
+        sql: "SUM(CASE WHEN issue_type_final <> 'Bug' THEN mm_release END) / NULLIF(SUM(mm_release), 0)"
+        label: "%mm release tính năng"
+        format: percent
+        round: 2
+        description: "DAX: DIVIDE('MMRelease'[MM RELEASE TÍNH NĂNG],'MMRelease'[MM Release value])"
+      pct_mm_release_tinh_nang_cho_kh:
+        type: number
+        sql: "SUM(CASE WHEN issue_type_final <> 'Bug' AND cso_ticket_link IS NOT NULL AND cso_ticket_link <> '' THEN mm_release END) / NULLIF(SUM(mm_release), 0)"
+        label: "%mm release tính năng cho KH"
+        format: percent
+        round: 2
+        description: "DAX: DIVIDE('MMRelease'[MM RELEASE TÍNH NĂNG CHO KH],'MMRelease'[MM Release value])"
+      sum_mm_release:
+        type: sum
+        sql: mm_release
+        label: "MM RELEASE"
+        description: "Sinh từ Power BI: sum(MMRelease.MM RELEASE)"
+  columns:
+  - name: project_key
+    description: "Cột project_key trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "project_key"
+        hidden: true
+  - name: project_name
+    description: "Cột project_name trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "project_name"
+  - name: issue_id
+    description: "Cột issue_id trong MMRelease."
+    meta:
+      dimension:
+        type: number
+        label: "issue_id"
+        hidden: true
+  - name: issue_num
+    description: "Cột issue_num trong MMRelease."
+    meta:
+      dimension:
+        type: number
+        label: "issue_num"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: issue_type
+    description: "Cột issue_type trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "issue_type"
+        hidden: true
+  - name: parent_project_key
+    description: "Cột parent_project_key trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "parent_project_key"
+        hidden: true
+  - name: parent_issue_num
+    description: "Cột parent_issue_num trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "parent_issue_num"
+        hidden: true
+  - name: worklog_id
+    description: "Cột worklog_id trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "worklog_id"
+        hidden: true
+  - name: author
+    description: "Cột author trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "author"
+        hidden: true
+  - name: timeworked
+    description: "Cột timeworked trong MMRelease."
+    meta:
+      dimension:
+        type: number
+        label: "timeworked"
+        hidden: true
+  - name: startdate
+    description: "Cột startdate trong MMRelease."
+    meta:
+      dimension:
+        type: timestamp
+        label: "startdate"
+        hidden: true
+  - name: version_name
+    description: "Cột version_name trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "version_name"
+        hidden: true
+  - name: released
+    description: "Cột released trong MMRelease."
+    meta:
+      dimension:
+        type: boolean
+        label: "released"
+        hidden: true
+  - name: archived
+    description: "Cột archived trong MMRelease."
+    meta:
+      dimension:
+        type: boolean
+        label: "archived"
+        hidden: true
+  - name: release_date
+    description: "Cột release_date trong MMRelease."
+    meta:
+      dimension:
+        type: date
+        label: "release_date"
+        hidden: true
+  - name: category_name
+    description: "Cột category_name trong MMRelease."
+    meta:
+      dimension:
+        type: string
+        label: "category_name"
+        hidden: true
+  - name: hours
+    description: "Cột hours trong MMRelease."
+    meta:
+      dimension:
+        type: number
+        label: "hours"
+        hidden: true
+  - name: end_of_month
+    description: "Cột EndOfMonth trong MMRelease. Cột tính toán, DAX gốc: EOMONTH('MMRelease'[release_date],0)"
+    meta:
+      dimension:
+        type: date
+        label: "EndOfMonth"
+        hidden: true
+  - name: working_days
+    description: "Cột Số ngày làm việc trong MMRelease. Cột tính toán, DAX gốc: VAR SelectedDate = MMRelease[EndOfMonth] RETURN IF( ISBLANK(SelectedDate), BLANK(), -- hoặc 0 nếu bạn muốn trả về số 0 khi ngày trống VAR StartDate = DATE(YEAR(SelectedDate), MONTH(SelectedDate), 1) VAR EndDate = EOMONTH(SelectedDate, 0) VAR WorkingDays = COUNTX( FILTER( ADDCOLUMNS( CALENDAR(StartDate, EndDate), \"WeekDay\", WEEKDAY([Date], 2) ), [WeekDay] <= 5 ), [Date] ) VAR holidays = COUNTROWS( FILTER('ngày nghỉ', 'ngày nghỉ'[Holiday] >= StartDate && 'ngày nghỉ'[Holiday] <= EndDate ) ) RETURN WorkingDays - holidays )"
+    meta:
+      dimension:
+        type: number
+        label: "Số ngày làm việc"
+        hidden: true
+  - name: mm_release
+    description: "Cột MM RELEASE trong MMRelease. Cột tính toán, DAX gốc: DIVIDE('MMRelease'[hours]/8,'MMRelease'[Số ngày làm việc])"
+    meta:
+      dimension:
+        type: number
+        label: "MM RELEASE"
+        hidden: true
+  - name: issue_parent_type
+    description: "Cột ISSUE_PARENT_TYPE trong MMRelease. Cột tính toán, DAX gốc: CALCULATE( MAX('MM Release_issue2'[ISSUE_CURRENT_PARENT]), FILTER( 'MM Release_issue2', 'MM Release_issue2'[parent_issue_num] = 'MMRelease'[parent_issue_num] ) )"
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PARENT_TYPE"
+        hidden: true
+  - name: issue_type_final
+    description: "Cột issue_type_final trong MMRelease. Cột tính toán, DAX gốc: IF( CONTAINSSTRING('MMRelease'[project_name],\"F2DR\"),\"Bug\", IF( 'MMRelease'[ISSUE_PARENT_TYPE]<> BLANK(),'MMRelease'[ISSUE_PARENT_TYPE],'MMRelease'[issue_type]))"
+    meta:
+      dimension:
+        type: string
+        label: "issue_type_final"
+        hidden: true
+  - name: cso_ticket_link
+    description: "Cột CSO Ticket Link trong MMRelease. Cột tính toán, DAX gốc: CALCULATE( MAX('MM Release_issue2'[CSO Ticket Link]), FILTER( 'MM Release_issue2', 'MM Release_issue2'[parent_issue_num] = 'MMRelease'[parent_issue_num] ) )"
+    meta:
+      dimension:
+        type: string
+        label: "CSO Ticket Link"
+        hidden: true

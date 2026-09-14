@@ -1,0 +1,41 @@
+version: 2
+models:
+- name: production_management_1_project_vs_department
+  description: "Bảng production_management_1_project_vs_department (nguồn Power BI: Project vs. Department)."
+  meta:
+    label: "Project vs. Department"
+    powerbi_source: "Project vs. Department"
+    joins:
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_project_vs_department.project_name} = ${production_management_1_milestone_versions_projects.project_name}"
+      relationship: many-to-one
+    - join: production_management_1_division
+      sql_on: "${production_management_1_project_vs_department.division} = ${production_management_1_division.division}"
+      relationship: many-to-one
+  columns:
+  - name: project_name
+    description: "Cột ProjectName trong Project vs. Department."
+    meta:
+      dimension:
+        type: string
+        label: "ProjectName"
+  - name: division
+    description: "Cột Khối trong Project vs. Department."
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+  - name: product
+    description: "Cột Sản phẩm trong Project vs. Department."
+    meta:
+      dimension:
+        type: string
+        label: "Sản phẩm"
+        hidden: true
+  - name: project_name_except_space
+    description: "Cột ProjectName_exceptSpace trong Project vs. Department. Cột tính toán, DAX gốc: SUBSTITUTE(SUBSTITUTE([ProjectName], \" \", \"\"), \"VCS-\", \"\")"
+    meta:
+      dimension:
+        type: string
+        label: "ProjectName_exceptSpace"
+        hidden: true

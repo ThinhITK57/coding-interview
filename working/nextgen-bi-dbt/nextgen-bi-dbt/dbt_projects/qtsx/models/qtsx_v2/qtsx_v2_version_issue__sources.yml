@@ -1,0 +1,18 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_version_issue
+    description: "Nguồn Power BI: version issue"
+    columns:
+    - name: issue_id
+      description: "Cột issueId"
+    - name: issue_key
+      description: "Cột issueKey"
+    - name: version_id
+      description: "Cột versionId"
+    - name: version_name
+      description: "Cột versionName"

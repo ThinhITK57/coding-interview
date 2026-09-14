@@ -1,0 +1,379 @@
+version: 2
+
+models:
+  - name: crm_mart_revenue_performance_month
+    description: >
+      [CRM] Tổng hợp doanh thu theo tháng và theo segment,
+      gồm DTCC, DT dự báo, DT ước và hiệu quả hoàn thành của hoạt động kinh doanh.
+      Bảng này gom các chỉ số, các dimension từ các bảng con khác. 
+      Semantic:
+      - Không dùng model này để trả chi tiết số/giá trị kế hoạch doanh thu.
+      - Khi hỏi % hoặc tỷ lệ hoàn thành kế hoạch → dùng các metric completion_ratio.
+      - Bảng này được tổng hợp từ các bảng crm_mart_estimated_revenue, customer_group_revenue_plan, crm_revenue_reconciliation
+      - revenue_segment_l1:  Dù người dùng có hỏi "KH" hay không, thì khi hỏi doanh thu , phân bổ doanh thu , kế hoạch doanh thu , tỷ lệ hoàn thành, mà có hỏi đến "phân khúc/cắt lớp" , thì cần sử dụng  revenue_segment_l1. Trừ khi người dùng chỉ định rõ sang cắt lớp khác
+      - doanh thu ước đã ký hợp đồng: là Doanh thu chắc chắn theo kỳ ước (các tháng tương lai, tính cả tháng hiện tại)
+      - doanh thu ước chưa ký hợp đồng, doanh thu ước cơ hội: là Doanh thu pipeline value theo kỳ ước (các tháng tương lai, tính cả tháng hiện tại)
+
+    meta:
+      label: "Phân tích doanh thu theo tháng và kế hoạch DT tập đoàn giao"
+      group_label: CRM Revenue
+      owner: huongnv1
+      metrics:
+        total_actual_revenue_amount:
+          type: sum
+          sql: actual_revenue_amount
+          label: Doanh thu thực tế (Tháng)
+          description: Doanh thu thực tế theo tháng (DTCC). Ánh xạ từ bảng đối soát crm_revenue_reconciliation.actual_revenue_amount
+          synonyms:
+          - Doanh thu đã thực hiện
+
+        committed_revenue_amount:
+          type: sum
+          sql: committed_revenue_amount
+          label: Doanh thu chắc chắn (Tháng)
+          description: Doanh thu chắc chắn theo tháng (DTCC).
+
+        forecast_revenue_amount:
+          type: sum
+          sql: forecast_revenue_amount
+          label: Doanh thu dự báo (Tháng)
+          description: Doanh thu dự báo cho tháng đang mở/tương lai, bao gồm phần pipeline theo xác suất.
+
+        pipeline_revenue_amount:
+          type: sum
+          sql: pipeline_revenue_amount
+          label: Giá trị Pipeline (Tháng)
+          description: Pipeline weighted theo xác suất theo tháng.
+
+        estimated_revenue_amount:
+          type: sum
+          sql: estimated_revenue_amount
+          label: Doanh thu ước tính (Tháng)
+          description: Tổng doanh thu ước của tháng đang mở = DTCC + Pipeline weighted.
+
+        arr_revenue_amount:
+          type: sum
+          sql: arr_revenue_amount
+          label: Doanh thu ARR (Tháng)
+          description: Doanh thu ARR tổng hợp theo tháng.
+
+        allocation_revenue_amount:
+          type: sum
+          sql: allocation_revenue_amount
+          label: Doanh thu phân bổ (Tháng)
+          description: Doanh thu phân bổ theo kỳ tháng phục vụ quản trị.
+
+        high_pipeline_revenue_amount:
+          type: sum
+          sql: high_pipeline_revenue_amount
+          label: Doanh thu dự ước cơ hội cao
+          description: Tổng giá trị doanh thu cơ hội Cao, không nhân xác suất thành công (Probability).
+
+        low_pipeline_revenue_amount:
+          type: sum
+          sql: low_pipeline_revenue_amount
+          label: Doanh thu dự ước cơ hội thấp
+          description: Tổng giá trị doanh thu cơ hội thấp, không nhân xác suất thành công (Probability).
+
+        # -----------------------
+        # PLAN METRICS (FINANCE)
+        # -----------------------
+
+        must_plan_amount:
+          type: sum
+          sql: must_plan_amount
+          label: Kế hoạch doanh thu Must
+          description: Chỉ tiêu Must theo kế hoạch doanh thu ban đầu
+          synonyms:
+            
+
+        nice_plan_amount:
+          type: sum
+          sql: nice_plan_amount
+          label: Kế hoạch doanh thu Nice
+          description: Chỉ tiêu Nice theo kế hoạch doanh thu ban đầu.
+          synonyms:
+            
+
+        viettel_group_plan_amount:
+          type: sum
+          sql: viettel_group_plan_amount
+          label: Kế hoạch doanh thu Tập đoàn giao
+          description: Chỉ tiêu kế hoạch doanh thu do Tập đoàn giao ban đầu.
+          synonyms:
+            
+
+        adjusted_must_plan_amount:
+          type: sum
+          sql: adjusted_must_plan_amount
+          label: Kế hoạch doanh thu Must điều chỉnh
+          description: Chỉ tiêu Must theo kế hoạch doanh thu đã điều chỉnh.
+          synonyms:
+            
+        adjusted_nice_plan_amount:
+          type: sum
+          sql: adjusted_nice_plan_amount
+          label: Kế hoạch doanh thu Nice điều chỉnh
+          description: Chỉ tiêu Nice theo kế hoạch doanh thu đã điều chỉnh.
+          synonyms:
+            
+
+        adjusted_viettel_group_plan_amount:
+          type: sum
+          sql: adjusted_viettel_group_plan_amount
+          label: Kế hoạch doanh thu Tập đoàn giao điều chỉnh
+          description: Chỉ tiêu kế hoạch doanh thu do Tập đoàn giao đã điều chỉnh.
+          synonyms:
+            
+        # -----------------------
+        # RATIOS
+        # -----------------------
+
+        must_plan_completion_ratio_vs_dtcc:
+          type: number
+          label: Tỷ lệ hoàn thành DTCC/Must
+          description: DTCC / Must Plan
+          format: percent
+          sql: >
+            CASE
+              WHEN ${must_plan_amount} = 0.0 THEN NULL
+              ELSE ${committed_revenue_amount} / ${must_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu chắc chắn so với kế hoạch MUST
+
+        nice_plan_completion_ratio_vs_dtcc:
+          type: number
+          label: Tỷ lệ hoàn thành DTCC/Nice
+          description: DTCC / Nice Plan
+          format: percent
+          sql: >
+            CASE
+              WHEN ${nice_plan_amount} = 0.0 THEN NULL
+              ELSE ${committed_revenue_amount} / ${nice_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu chắc chắn so với kế hoạch NICE
+
+        viettel_group_plan_completion_ratio_vs_dtcc:
+          type: number
+          label: Tỷ lệ hoàn thành DTCC/Tập đoàn
+          description: DTCC / Plan Tập đoàn giao
+          format: percent
+          sql: >
+            CASE
+              WHEN ${viettel_group_plan_amount} = 0.0 THEN NULL
+              ELSE ${committed_revenue_amount} / ${viettel_group_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu chắc chắn so với kế hoạch Tập đoàn
+
+        # -----------------------
+        # RATIOS 2
+        # -----------------------
+
+        must_plan_completion_ratio_vs_actual:
+          type: number
+          label: Tỷ lệ hoàn thành Actual/Must
+          description: Actual / Must Plan
+          format: percent
+          sql: >
+            CASE
+              WHEN ${must_plan_amount} = 0.0 THEN NULL
+              ELSE ${total_actual_revenue_amount} / ${must_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu thực tế so với kế hoạch MUST
+
+        nice_plan_completion_ratio_vs_actual:
+          type: number
+          label: Tỷ lệ hoàn thành Actual/Nice
+          description: Actual / Nice Plan
+          format: percent
+          sql: >
+            CASE
+              WHEN ${nice_plan_amount} = 0.0 THEN NULL
+              ELSE ${total_actual_revenue_amount} / ${nice_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu thực tế so với kế hoạch NICE
+
+        viettel_group_plan_completion_ratio_vs_actual:
+          type: number
+          label: Tỷ lệ hoàn thành Actual/Tập đoàn
+          description: Actual / Plan Tập đoàn giao
+          format: percent
+          sql: >
+            CASE
+              WHEN ${viettel_group_plan_amount} = 0.0 THEN NULL
+              ELSE ${total_actual_revenue_amount} / ${viettel_group_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu thực tế so với kế hoạch Tập đoàn
+        
+        # -----------------------
+        # RATIOS 3
+        # -----------------------
+
+        must_plan_completion_ratio_vs_estimated:
+          type: number
+          label: Tỷ lệ hoàn thành Dự ước/Must
+          description: Dự ước / Must Plan
+          format: percent
+          sql: >
+            CASE
+              WHEN ${must_plan_amount} = 0.0 THEN NULL
+              ELSE ${estimated_revenue_amount} / ${must_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu Dự ước so với kế hoạch MUST
+
+        nice_plan_completion_ratio_vs_estimated:
+          type: number
+          label: Tỷ lệ hoàn thành Dự ước/Nice
+          description: Dự ước / Nice Plan
+          format: percent
+          sql: >
+            CASE
+              WHEN ${nice_plan_amount} = 0.0 THEN NULL
+              ELSE ${estimated_revenue_amount} / ${nice_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu Dự ước so với kế hoạch NICE
+
+        viettel_group_plan_completion_ratio_vs_estimated:
+          type: number
+          label: Tỷ lệ hoàn thành Dự ước/Tập đoàn
+          description: Dự ước / Plan Tập đoàn giao
+          format: percent
+          sql: >
+            CASE
+              WHEN ${viettel_group_plan_amount} = 0.0 THEN NULL
+              ELSE ${estimated_revenue_amount} / ${viettel_group_plan_amount}
+            END
+          synonyms:
+            - Tỷ lệ hoàn thành kế hoạch doanh thu Dự ước so với kế hoạch Tập đoàn
+
+    columns:
+      - name: report_date
+        description: Tháng báo cáo.
+        meta:
+          dimension:
+            type: date
+            label: Tháng báo cáo
+            synonyms:
+            - Ngày báo cáo
+            - Kỳ báo cáo
+            - Thời gian báo cáo
+            - Thời điểm báo cáo
+            
+      - name: revenue_segment_l1
+        description: Phân khúc khách hàng Bóc tách phân loại theo góc nhìn từ báo cáo doanh thu tập đoàn
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc doanh thu
+            synonyms:
+            - Ngoài
+            - Nội Bộ
+            - Quốc Tế
+            - Thị Trường
+            - Khác
+            - Khách hàng ngoài
+            - International
+            - Nội bộ
+            - Khác
+            - Bộ Quốc phòng
+            - Nhóm Khách hàng
+            - Nhóm KH
+
+      - name: customer_segment_l1
+        description: Segment khách hàng cấp 1. Phân loại theo người dùng cuối (KH cuối)
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc khách hàng cấp 1
+            synonyms:
+              - Khách hàng ngoài
+              - Nội bộ
+              - Bộ Quốc phòng
+              - International
+      - name: customer_segment_l2
+        description: Segment khách hàng cấp 2. Phân loại theo người dùng cuối (KH cuối)
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc khách hàng cấp 2
+            synonyms:
+              - Khách hàng ngoài
+              - Khách hàng nội bộ
+              - Quốc tế ngoài
+              - Khách hàng SI ngoài
+              - Khách hàng SI ngoài
+              - Khách hàng ngoài
+              - Khách hàng SI nội bộ
+              - Khách hàng nội bộ
+              - Khách hàng SI nội bộ
+              - Thị trường
+      # - name: report_customer_segment
+      #   description: Segment báo cáo tổng hợp.
+      #   meta:
+      #     dimension:
+      #       type: string
+      #       label: Nhóm khách hàng báo cáo
+      # - name: carryover_renew_committed_revenue_amount
+      #   description: DT Renew đã ký vắt năm.
+      # - name: in_year_renew_committed_revenue_amount
+      #   description: DT Renew đã ký trong năm.
+      # - name: carryover_new_revenue_amount
+      #   description: DT New đã ký vắt năm.
+      # - name: in_year_new_revenue_amount
+      #   description: DT New đã ký trong năm.
+      # - name: committed_non_si_revenue_amount
+      #   description: DTCC ngoài SI.
+      # - name: committed_si_revenue_amount
+      #   description: DTCC SI.
+      # - name: committed_arr_amount
+      #   description: DT ARR chắc chắn.
+      # - name: committed_none_arr_amount
+      #   description: DT non-ARR chắc chắn.
+      # - name: renewal_revenue_amount
+      #   description: DT gia hạn tổng hợp.
+      # - name: new_revenue_amount
+      #   description: DT mới tổng hợp.
+      # - name: other_type_committed_revenue_amount
+      #   description: DTCC loại product_type khác theo tháng.
+      # - name: committed_revenue_amount
+      #   description: DTCC tổng hợp.
+      # - name: forecast_revenue_amount
+      #   description: DT dự báo tổng hợp.
+      # - name: pipeline_revenue_amount
+      #   description: Giá trị pipeline weighted.
+      # - name: forecast_non_si_revenue_amount
+      #   description: DT dự báo ngoài SI.
+      # - name: forecast_si_revenue_amount
+      #   description: DT dự báo SI.
+      # - name: forecast_arr_amount
+      #   description: DT ARR dự báo.
+      # - name: forecast_non_arr_amount
+      #   description: DT non-ARR dự báo.
+      # - name: carryover_renew_forecast_revenue_amount
+      #   description: DT dự kiến Renew vắt năm.
+      # - name: in_year_renew_forecast_revenue_amount
+      #   description: DT dự kiến Renew trong năm.
+      # - name: estimated_non_si_revenue_amount
+      #   description: DT ước ngoài SI.
+      # - name: estimated_si_revenue_amount
+      #   description: DT ước SI.
+      # - name: estimated_revenue_amount
+      #   description: Tổng DT ước.
+      # - name: arr_revenue_amount
+      #   description: Tổng DT ARR.
+      # - name: allocation_revenue_amount
+      #   description: Tổng doanh thu phân bổ tháng.
+      # - name: must_plan_amount
+      #   description: Kế hoạch Must.
+      # - name: nice_plan_amount
+      #   description: Kế hoạch Nice.
+      # - name: viettel_group_plan_amount
+      #   description: Kế hoạch Tập đoàn giao.

@@ -1,0 +1,279 @@
+version: 2
+models:
+- name: production_management_1_pyc_snapshot_events
+  description: >-
+    PYC-Snapshot gộp về grain (PYC × mốc ngày commit × THÁNG). Chỗ đặt toàn bộ
+    measure của 'PYC-Snapshot': USERELATIONSHIP hai cột ngày, SUMX theo MonthYear,
+    và SUMX(VALUES(ISSUE_KEY), MAX(...)) đều đã được nướng sẵn vào grain.
+    Dùng cho trang "TTSX&CNTT OS - ĐỘ ỔN ĐỊNH KẾ HOẠCH" và bản snapshot của
+    "Nội bộ TTSX&CNTT - NGUỒN LỰC OS".
+    GRAIN: (PYC × date_role × tháng) — mỗi dòng là "một PYC trong một tháng",
+    nên COUNT(*) chính là SUMX(VALUES(MonthYear), DISTINCTCOUNT(ISSUE_KEY)) của DAX.
+  meta:
+    label: "PYC Snapshot - theo mốc commit / tháng"
+    metrics:
+
+      # === Man-month cam kết ===============================================
+      mm_commit_hien_tai:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit_current' THEN mm_ttsx_estimate_max END"
+        label: "MM COMMIT HIỆN TẠI"
+        description: >-
+          DAX: CALCULATE(SUMX(VALUES('PYC-Snapshot'[ISSUE_KEY]),
+          CALCULATE(MAX('PYC-Snapshot'[MM_TTSX_Estimate_10830]))),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC-Snapshot'[Ngày_TTSX_commit_10845]))
+
+      mm_snapshot_commit:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit_history' THEN mm_ttsx_estimate_max END"
+        label: "MM SNAPSHOT COMMIT"
+        description: >-
+          DAX: CALCULATE(SUMX(VALUES('PYC-Snapshot'[ISSUE_KEY]),
+          CALCULATE(MAX('PYC-Snapshot'[MM_TTSX_Estimate_10830]))),
+          USERELATIONSHIP('Dim_Date'[Date],'PYC-Snapshot'[Ngày Commit Lịch sử]),
+          NOT ISBLANK('PYC-Snapshot'[Ngày Commit Lịch sử]))
+
+      mm_ttsx_commit_commit_date:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit_history' THEN mm_ttsx_estimate_monthly_commit END"
+        label: "MM TTSX Commit (Commit Date)"
+        description: >-
+          DAX: CALCULATE(SUM('PYC-Snapshot'[MM_TTSX_Estimate_10830]),
+          'PYC-Snapshot'[Check Commit Tháng] = 1,
+          USERELATIONSHIP('Dim_Date'[Date],'PYC-Snapshot'[Ngày Commit Lịch sử]))
+
+      # === Đếm PYC theo tháng =============================================
+      count_pyc_snap:
+        type: count
+        sql: "CASE WHEN date_role = 'commit_history' THEN issue_key END"
+        label: "Số PYC_snap"
+        description: >-
+          DAX: SUMX(VALUES('Dim_Date'[MonthYear]), COUNTROWS(SUMMARIZE(
+          CALCULATETABLE('PYC-Snapshot', USERELATIONSHIP('Dim_Date'[Date],
+          'PYC-Snapshot'[Ngày Commit Lịch sử])), 'PYC-Snapshot'[ISSUE_KEY], ...)))
+          — grain của model đã là (PYC × tháng) nên chỉ còn COUNT.
+
+      pyc_end_snap:
+        type: count
+        sql: "CASE WHEN date_role = 'commit_history' AND issue_current_status_name <> 'Rejected' THEN issue_key END"
+        label: "PYC END_snap"
+        description: >-
+          DAX: SUMX(VALUES('Dim_Date'[MonthYear]), CALCULATE(DISTINCTCOUNT(
+          'PYC-Snapshot'[ISSUE_KEY]), 'PYC-Snapshot'[ISSUE_CURRENT_STATUS_NAME] <> "Rejected",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC-Snapshot'[Ngày Commit Lịch sử])))
+
+      pyc_on_time_snap:
+        type: count
+        sql: >-
+          CASE WHEN date_role = 'commit_history'
+                AND issue_current_status_name IN ('Bàn giao TT Sản phẩm', 'Nghiệm thu thành công', 'Released')
+                AND on_time_check_snapshot = 'Pass'
+               THEN issue_key END
+        label: "PYC ĐÚNG HẠN_snap"
+        description: >-
+          DAX: SUMX(VALUES('Dim_Date'[MonthYear]), COUNTROWS(SUMMARIZE(CALCULATETABLE(
+          'PYC-Snapshot', [ISSUE_CURRENT_STATUS_NAME] IN {"Bàn giao TT Sản phẩm",
+          "Nghiệm thu thành công","Released"}, [Kiểm tra đúng hạn_snapshot] = "Pass",
+          USERELATIONSHIP('Dim_Date'[Date],'PYC-Snapshot'[Ngày Commit Lịch sử])), [ISSUE_KEY], ...)))
+
+      pct_pyc_done_on_time_snap:
+        type: number
+        sql: >-
+          CAST(COUNT(CASE WHEN date_role = 'commit_history'
+                           AND issue_current_status_name IN ('Bàn giao TT Sản phẩm', 'Nghiệm thu thành công', 'Released')
+                           AND on_time_check_snapshot = 'Pass'
+                          THEN issue_key END) AS DOUBLE)
+          / NULLIF(COUNT(CASE WHEN date_role = 'commit_history' AND issue_current_status_name <> 'Rejected' THEN issue_key END), 0)
+        label: "%PYC DONE ĐÚNG HẠN_snap"
+        description: "DAX: DIVIDE([PYC ĐÚNG HẠN_snap], [PYC END_snap], 0)"
+        format: percent
+        round: 2
+
+      # === Số lần điều chỉnh commit =======================================
+      count_lan_dieu_chinh_hien_tai:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit_history' THEN snapshot_row_count END"
+        label: "SỐ LẦN ĐIỀU CHỈNH HIỆN TẠI"
+        description: "DAX: COUNTROWS('PYC-Snapshot') — đếm theo mốc ngày commit lịch sử."
+
+      max_count_lan_dieu_chinh:
+        type: max
+        sql: history_edit_count_max
+        label: "Max số lần điều chỉnh"
+        description: "DAX: MAX('PYC-Snapshot'[Lần chỉnh sửa lịch sử])"
+
+      slcs_phat_sinh_1_month:
+        type: sum
+        sql: "CASE WHEN date_role = 'commit_history' THEN revisions_in_month END"
+        label: "SLCS Phát Sinh 1 Tháng"
+        description: >-
+          DAX: MAX(Lần chỉnh sửa lịch sử) tới cuối kỳ trừ MAX(...) trước đầu kỳ,
+          tính riêng từng PYC (REMOVEFILTERS('Dim_date') + FILTER(ALL('PYC-Snapshot'))).
+          Ở đây đã nướng sẵn thành cột `revisions_in_month` bằng LAG() theo tháng.
+
+      count_pyc_co_dieu_chinh_commit:
+        type: count_distinct
+        sql: "CASE WHEN date_role = 'commit_history' THEN issue_key END"
+        label: "Số PYC có điều chỉnh Commit"
+        description: >-
+          DAX: CALCULATE(DISTINCTCOUNT('PYC-Snapshot'[ISSUE_KEY]),
+          NOT ISBLANK('PYC-Snapshot'[Ngày Commit Lịch sử]))
+
+      pyc_dieu_chinh_nhieu_lan:
+        type: count_distinct
+        sql: "CASE WHEN date_role = 'commit_history' AND snapshot_row_count > 1 THEN issue_key END"
+        label: "PYC điều chỉnh > 1 lần"
+        description: >-
+          DAX: COUNTROWS(FILTER(VALUES('PYC-Snapshot'[ISSUE_KEY]),
+          CALCULATE(COUNTROWS('PYC-Snapshot')) > 1))
+
+      avg_count_lan_dieu_chinh_pyc:
+        type: number
+        sql: >-
+          SUM(CASE WHEN date_role = 'commit_history' THEN revisions_in_month END)
+          / NULLIF(CAST(COUNT(DISTINCT CASE WHEN date_role = 'commit_history' THEN issue_key END) AS DOUBLE), 0)
+        label: "Avg số lần điều chỉnh / PYC"
+        description: "DAX: DIVIDE([SLCS Phát Sinh 1 Tháng], [Số PYC có điều chỉnh Commit])"
+        round: 2
+
+      pct_pyc_dieu_chinh_commit:
+        type: number
+        sql: >-
+          CAST(COUNT(DISTINCT CASE WHEN date_role = 'commit_history' THEN issue_key END) AS DOUBLE)
+          / NULLIF(COUNT(DISTINCT issue_key), 0)
+        label: "% PYC điều chỉnh Commit"
+        description: >-
+          DAX: DIVIDE([Số PYC có điều chỉnh Commit], [Tổng số PYC]).
+          KHÁC BẢN GỐC: [Tổng số PYC] = DISTINCTCOUNT('PYC Jira'[ISSUE_KEY]) tức toàn bộ
+          PYC; ở đây mẫu số là số PYC có mặt trong bảng snapshot.
+        format: percent
+        round: 2
+
+      pct_pyc_dieu_chinh_nhieu_lan:
+        type: number
+        sql: >-
+          CAST(COUNT(DISTINCT CASE WHEN date_role = 'commit_history' AND snapshot_row_count > 1 THEN issue_key END) AS DOUBLE)
+          / NULLIF(COUNT(DISTINCT issue_key), 0)
+        label: "% PYC điều chỉnh nhiều lần"
+        description: >-
+          DAX: DIVIDE([PYC điều chỉnh > 1 lần], DISTINCTCOUNT('PYC Jira'[ISSUE_KEY])).
+          Mẫu số cùng lưu ý như pct_pyc_dieu_chinh_commit.
+        format: percent
+        round: 2
+
+      # === Ngày commit ====================================================
+      commit_lan_dau:
+        type: date
+        sql: >-
+          COALESCE(MIN(CASE WHEN date_role = 'commit_history' THEN first_event_date END),
+                   MAX(CASE WHEN date_role = 'commit_current' THEN last_event_date END))
+        label: "Commit lần đầu"
+        description: >-
+          DAX: COALESCE(CALCULATE(MIN('PYC-Snapshot'[Ngày Commit Lịch sử]),
+          NOT ISBLANK(...)), CALCULATE(MAX('PYC-Snapshot'[Ngày_TTSX_commit_10845])))
+
+      date_commit_hien_tai:
+        type: date
+        sql: "MAX(CASE WHEN date_role = 'commit_current' THEN last_event_date END)"
+        label: "NGÀY COMMIT HIỆN TẠI"
+        description: "DAX: MAX('PYC-Snapshot'[Ngày_TTSX_commit_10845])"
+
+      count_date_dich_chuyen_commit:
+        type: number
+        sql: >-
+          DATE_DIFF('day',
+            COALESCE(MIN(CASE WHEN date_role = 'commit_history' THEN first_event_date END),
+                     MAX(CASE WHEN date_role = 'commit_current' THEN last_event_date END)),
+            MAX(CASE WHEN date_role = 'commit_current' THEN last_event_date END))
+        label: "SỐ NGÀY DỊCH CHUYỂN COMMIT"
+        description: "DAX: DATEDIFF([Commit lần đầu], [NGÀY COMMIT HIỆN TẠI], DAY)"
+
+  columns:
+  - name: date_role
+    description: "Mốc ngày của dòng: commit_current / commit_history. Chỉ dùng để lọc trong metric."
+    meta:
+      dimension: {type: string, label: "Mốc ngày", hidden: true}
+  - name: event_month
+    description: "Đầu tháng của mốc ngày. Grain thời gian của model."
+    meta:
+      dimension: {type: date, label: "Tháng"}
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "ISSUE_KEY"}
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "Status"}
+  - name: pm
+    description: "Cột PM trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "PM"}
+  - name: project
+    description: "Cột Dự_án_10706 trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "PROJECT"}
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_10803 trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "TTSX Product"}
+  - name: partner
+    description: "Cột Đối_tác_10801 trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "ĐỐI TÁC"}
+  - name: type_os
+    description: "Cột Loại_OS_10843 trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "DIỆN ĐỐI TƯỢNG"}
+  - name: on_time_check_snapshot
+    description: "Cột Kiểm tra đúng hạn_snapshot (Pass/Fail) trong PYC-Snapshot."
+    meta:
+      dimension: {type: string, label: "Kiểm tra đúng hạn (snapshot)", hidden: true}
+  - name: first_event_date
+    description: "Ngày sớm nhất của PYC trong tháng, theo date_role."
+    meta:
+      dimension: {type: date, label: "Ngày đầu", hidden: true}
+  - name: last_event_date
+    description: "Ngày muộn nhất của PYC trong tháng, theo date_role."
+    meta:
+      dimension: {type: date, label: "Ngày cuối", hidden: true}
+  - name: mm_ttsx_estimate_max
+    description: "MAX(MM_TTSX_Estimate_10830) của PYC trong tháng đó."
+    meta:
+      dimension: {type: number, label: "MM TTSX Estimate (max)", hidden: true}
+  - name: history_edit_count_max
+    description: "MAX(Lần chỉnh sửa lịch sử) của PYC tới hết tháng đó."
+    meta:
+      dimension: {type: number, label: "Lần chỉnh sửa lịch sử (max)", hidden: true}
+  - name: check_monthly_commit_max
+    description: "MAX(Check Commit Tháng)."
+    meta:
+      dimension: {type: number, label: "Check Commit Tháng", hidden: true}
+  - name: mm_ttsx_estimate_monthly_commit
+    description: "MAX(MM_TTSX_Estimate_10830) chỉ trên dòng có Check Commit Tháng = 1."
+    meta:
+      dimension: {type: number, label: "MM TTSX Estimate (commit tháng)", hidden: true}
+  - name: snapshot_row_count
+    description: "Số dòng snapshot của PYC trong tháng đó — dùng để đếm số lần điều chỉnh."
+    meta:
+      dimension: {type: number, label: "Số dòng snapshot", hidden: true}
+  - name: year_value
+    description: "Năm của event_month."
+    meta:
+      dimension: {type: string, label: "Year"}
+  - name: month_year
+    description: "Định dạng MMM YYYY."
+    meta:
+      dimension: {type: string, label: "MonthYear"}
+  - name: quarter_year
+    description: "Định dạng Qn YYYY."
+    meta:
+      dimension: {type: string, label: "QuarterYear"}
+  - name: month_sort_key
+    description: "yyyymm dùng để sắp xếp month_year."
+    meta:
+      dimension: {type: number, label: "Month sort key", hidden: true}
+  - name: revisions_in_month
+    description: "Số lần chỉnh sửa lịch sử PHÁT SINH riêng trong tháng (chênh MAX so với tháng có dữ liệu liền trước)."
+    meta:
+      dimension: {type: number, label: "Số lần điều chỉnh phát sinh", hidden: true}

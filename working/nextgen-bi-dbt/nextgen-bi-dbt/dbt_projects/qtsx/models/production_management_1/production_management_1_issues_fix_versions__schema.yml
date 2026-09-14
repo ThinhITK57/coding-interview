@@ -1,0 +1,57 @@
+version: 2
+models:
+- name: production_management_1_issues_fix_versions
+  description: "Bảng production_management_1_issues_fix_versions (nguồn Power BI: Issues_FixVersions)."
+  meta:
+    label: "Issues_FixVersions"
+    powerbi_source: "Issues_FixVersions"
+  columns:
+  - name: id
+    description: "Cột Id trong Issues_FixVersions."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Issues_FixVersions."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Issues_FixVersions."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: issue_project_key
+    description: "Cột ISSUE_PROJECT_KEY trong Issues_FixVersions."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PROJECT_KEY"
+        hidden: true
+  - name: issue_time_spent_with_st
+    description: "Cột ISSUE_TIME_SPENT_WITH_ST trong Issues_FixVersions."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_TIME_SPENT_WITH_ST"
+        hidden: true
+  - name: total_effort_excl_reuse
+    description: "Cột Tổng_ULNL_đã_trừ_tái_sử_dụng_13370 trong Issues_FixVersions."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_ULNL_đã_trừ_tái_sử_dụng_13370"
+        hidden: true
+  - name: pro_ject_name_last
+    description: "Cột ProJect Name_last trong Issues_FixVersions. Cột tính toán, DAX gốc: IF(CONTAINSSTRING(LOOKUPVALUE('Project Name'[Id],'Project Name'[ISSUEWORKLOG-KEY],'Issues_FixVersions'[ISSUE_PROJECT_KEY]), 16101),'Issues_FixVersions'[ISSUE_PROJECT_KEY],LOOKUPVALUE('Project Name'[PROJECT_NAME_Last],'Project Name'[ISSUEWORKLOG-KEY],'Issues_FixVersions'[ISSUE_PROJECT_KEY]))"
+    meta:
+      dimension:
+        type: string
+        label: "ProJect Name_last"
+        hidden: true

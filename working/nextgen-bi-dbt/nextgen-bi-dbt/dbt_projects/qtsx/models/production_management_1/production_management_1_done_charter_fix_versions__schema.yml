@@ -1,0 +1,46 @@
+version: 2
+models:
+- name: production_management_1_done_charter_fix_versions
+  description: "Bảng production_management_1_done_charter_fix_versions (nguồn Power BI: Done charter_FixVersions)."
+  meta:
+    label: "Done charter_FixVersions"
+    powerbi_source: "Done charter_FixVersions"
+    joins:
+    - join: production_management_1_worklogs
+      sql_on: "${production_management_1_done_charter_fix_versions.id} = ${production_management_1_worklogs.worklog_issue_id}"
+      relationship: many-to-many
+  columns:
+  - name: id
+    description: "Cột Id trong Done charter_FixVersions."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: fix_version_issue_key
+    description: "Cột FIX_VERSION_ISSUE_KEY trong Done charter_FixVersions."
+    meta:
+      dimension:
+        type: string
+        label: "FIX_VERSION_ISSUE_KEY"
+        hidden: true
+  - name: fix_version_release_date
+    description: "Cột FIX_VERSION_RELEASE_DATE trong Done charter_FixVersions."
+    meta:
+      dimension:
+        type: timestamp
+        label: "FIX_VERSION_RELEASE_DATE"
+        hidden: true
+  - name: fix_version_name
+    description: "Cột FIX_VERSION_NAME trong Done charter_FixVersions."
+    meta:
+      dimension:
+        type: string
+        label: "FIX_VERSION_NAME"
+  - name: release_date
+    description: "Cột RELEASE_DATE trong Done charter_FixVersions. Cột tính toán, DAX gốc: DATE(YEAR('Done charter_FixVersions'[FIX_VERSION_RELEASE_DATE]), MONTH('Done charter_FixVersions'[FIX_VERSION_RELEASE_DATE]), DAY('Done charter_FixVersions'[FIX_VERSION_RELEASE_DATE]))"
+    meta:
+      dimension:
+        type: date
+        label: "RELEASE_DATE"
+        hidden: true

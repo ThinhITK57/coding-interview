@@ -1,0 +1,80 @@
+version: 2
+models:
+- name: qtsx_v2_lead_time
+  description: "Bảng qtsx_v2_lead_time (nguồn Power BI: Lead time)."
+  meta:
+    label: "Lead time"
+    powerbi_source: "Lead time"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_lead_time.projectname} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      average_days_to_done_v2:
+        type: average
+        sql: days_to_done_v2
+        label: "Average of Số ngày done v2"
+        round: 2
+        description: "Sinh từ Power BI: average(Lead time.Số ngày done v2)"
+  columns:
+  - name: issuekey
+    description: "Cột issuekey trong Lead time."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong Lead time."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: projectname
+    description: "Cột projectname trong Lead time."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+  - name: days_to_done
+    description: "Cột Số ngày done trong Lead time."
+    meta:
+      dimension:
+        type: number
+        label: "Số ngày done"
+        hidden: true
+  - name: design_review_done_date
+    description: "Cột Ngày done ĐGTK trong Lead time."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày done ĐGTK"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong Lead time. Cột tính toán, DAX gốc: FORMAT('Lead time'[Ngày done ĐGTK], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: created
+    description: "Cột created trong Lead time."
+    meta:
+      dimension:
+        type: timestamp
+        label: "created"
+        hidden: true
+  - name: days_to_done_v2
+    description: "Cột Số ngày done v2 trong Lead time. Cột tính toán, DAX gốc: DATEDIFF('Lead time'[created], 'Lead time'[Ngày done ĐGTK], DAY)"
+    meta:
+      dimension:
+        type: number
+        label: "Số ngày done v2"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong Lead time. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'Lead time'[projectname] in {\"aJiant\", \"NSM - NDR\", \"SOC PLATFORM\", \"VCS_ Consolidate Platform\", \"VCS-CyCir\", \"VCS-CyM\",\"VCS-InT INSIDER THREAT\"} , \"TT.Enterprise\", 'Lead time'[projectname] in {\"BRG\",\"Cloudrity Self Service\",\"F2DR\",\"LIG\",\"TML\",\"V-AntiDDoS\",\"VCS TAS\",\"Trách Nhiệm Xã Hội\",\"VCS-Hub\"}, \"TT.Telco\", 'Lead time'[projectname] in {\"M-Suite\",\"Security Chatbot\",\"VCS-KIAN\",\"TTSX_Sản phẩm nội bộ\"},\"TT.SX\", 'Lead time'[projectname] in {\"Threat Intelligence\"},\"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"

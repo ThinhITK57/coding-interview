@@ -1,0 +1,47 @@
+version: 2
+models:
+- name: production_management_1_worklog_issue
+  description: "Bảng production_management_1_worklog_issue (nguồn Power BI: worklogIssue)."
+  meta:
+    label: "worklogIssue"
+    powerbi_source: "worklogIssue"
+    joins:
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_worklog_issue.project_key} = ${production_management_1_project_name.issueworklog_key}"
+      relationship: many-to-many
+  columns:
+  - name: id
+    description: "Cột Id trong worklogIssue."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong worklogIssue."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_project_key
+    description: "Cột ISSUE_PROJECT_KEY trong worklogIssue."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PROJECT_KEY"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_16800 trong worklogIssue."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT_16800"
+        hidden: true
+  - name: project_key
+    description: "Cột PROJECT-KEY trong worklogIssue. Cột tính toán, DAX gốc: 'worklogIssue'[ISSUE_PROJECT_KEY]&'worklogIssue'[TTSX_PRODUCT_16800]"
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT-KEY"
+        hidden: true

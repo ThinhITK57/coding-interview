@@ -1,0 +1,249 @@
+version: 2
+
+models:
+- name: hr_ld_employee_certification
+  description: >
+    Bảng **hr_ld_employee_certification** lưu trữ thông tin chứng chỉ chuyên môn của nhân viên,
+    bao gồm thông tin chứng chỉ, kết quả đạt được, thời gian cấp, thời hạn hiệu lực
+    và trạng thái hiện tại của chứng chỉ. Dữ liệu được sử dụng để theo dõi năng lực
+    chuyên môn, quản lý vòng đời chứng chỉ, đánh giá mức độ tuân thủ yêu cầu nghề nghiệp
+    và hỗ trợ lập kế hoạch đào tạo, tái chứng nhận cho nhân viên.
+
+  meta:
+    label: "Employee Certification"
+    owner: "tranpth"
+    metrics:
+      certificate_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số chứng chỉ được ghi nhận trong dữ liệu."
+        label: "Certificate Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng số chứng chỉ"
+          - "Số lượng chứng chỉ"
+          - "Certificate Count"
+
+      certified_employee_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng nhân viên có ít nhất một chứng chỉ được ghi nhận."
+        label: "Certified Employee Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số nhân viên có chứng chỉ"
+          - "Certified Employee Count"
+
+      valid_certificate_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.certificate_current_status IS NOT NULL
+              AND UPPER(${TABLE}.certificate_current_status) LIKE '%CÒN%'
+            THEN ${TABLE}.id
+          END
+        description: "Số lượng chứng chỉ còn hiệu lực."
+        label: "Valid Certificate Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng số chứng chỉ còn hạn"
+          - "Số chứng chỉ còn hiệu lực"
+          - "Valid Certificate Count"
+
+      expired_certificate_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.certificate_current_status IS NOT NULL
+              AND UPPER(${TABLE}.certificate_current_status) LIKE '%HẾT%'
+            THEN ${TABLE}.id
+          END
+        description: "Số lượng chứng chỉ đã hết hiệu lực."
+        label: "Expired Certificate Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số chứng chỉ đã hết hạn"
+          - "Expired Certificate Count"
+
+      new_certificate_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.certificate_issue_date IS NOT NULL
+            THEN ${TABLE}.id
+          END
+        description: "Số lượng chứng chỉ có thông tin ngày cấp, dùng để theo dõi chứng chỉ tăng mới theo kỳ báo cáo."
+        label: "New Certificate Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số chứng chỉ tăng mới"
+          - "New Certificate Count"
+
+      expert_certificate_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.certificate_level = 'Expert'
+            THEN ${TABLE}.id
+          END
+        description: "Số lượng chứng chỉ có cấp độ Expert."
+        label: "Expert Certificate Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số chứng chỉ Expert"
+          - "Expert Certificate Count"
+
+      expert_certificate_share:
+        type: number
+        sql: 100.0 * ${expert_certificate_count} / NULLIF(${certificate_count}, 0.0)
+        description: "Tỷ trọng chứng chỉ cấp độ Expert trên tổng số chứng chỉ."
+        label: "Expert Certificate Share (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỉ trọng expert"
+          - "Tỷ trọng chứng chỉ Expert"
+          - "Expert Share"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi chứng chỉ nhân viên
+      meta:
+        dimension:
+          type: number
+          label: "Certification Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: month
+      description: Tháng ghi nhận thông tin chứng chỉ
+      meta:
+        dimension:
+          type: number
+          label: "Month"
+
+    - name: year
+      description: Năm ghi nhận thông tin chứng chỉ
+      meta:
+        dimension:
+          type: number
+          label: "Year"
+
+    - name: employee_code
+      description: Mã định danh duy nhất của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: full_name
+      description: Họ và tên nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: division_n
+      description: Khối chức năng mà nhân viên trực thuộc
+      meta:
+        dimension:
+          type: string
+          label: "Division"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: role_base
+      description: Nhóm vai trò hoặc chức danh cơ sở của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Role Base"
+
+    - name: level
+      description: Cấp bậc hoặc level hiện tại của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Level"
+
+    - name: employee_object
+      description: Nhóm đối tượng nhân sự theo phân loại quản trị nội bộ
+      meta:
+        dimension:
+          type: string
+          label: "Employee Object"
+
+    - name: certificate_check_flag
+      description: Cờ xác định nhân viên có thuộc đối tượng yêu cầu kiểm tra chứng chỉ hay không
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Check Flag"
+
+    - name: certificate_status
+      description: Trạng thái sở hữu hoặc đáp ứng chứng chỉ của nhân viên
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Status"
+
+    - name: certificate_name
+      description: Tên chứng chỉ chuyên môn
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Name"
+
+    - name: certificate_level
+      description: Cấp độ hoặc hạng của chứng chỉ
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Level"
+
+    - name: certificate_result
+      description: Kết quả đạt được của chứng chỉ hoặc kỳ thi chứng chỉ
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Result"
+
+    - name: certificate_type
+      description: Loại chứng chỉ theo nhóm chuyên môn hoặc nghiệp vụ
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Type"
+
+    - name: certificate_issue_date
+      description: Ngày cấp chứng chỉ
+      meta:
+        dimension:
+          type: timestamp
+          label: "Certificate Issue Date"
+
+    - name: certificate_validity_period
+      description: Thời hạn hiệu lực của chứng chỉ
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Validity Period"
+
+    - name: certificate_expiry_date
+      description: Ngày hết hạn của chứng chỉ
+      meta:
+        dimension:
+          type: timestamp
+          label: "Certificate Expiry Date"
+
+    - name: certificate_current_status
+      description: Trạng thái hiện tại của chứng chỉ (Còn hiệu lực/Hết hiệu lực/Sắp hết hạn...)
+      meta:
+        dimension:
+          type: string
+          label: "Certificate Current Status"

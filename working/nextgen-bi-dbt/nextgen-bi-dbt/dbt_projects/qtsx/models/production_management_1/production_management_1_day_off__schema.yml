@@ -1,0 +1,15 @@
+version: 2
+models:
+- name: production_management_1_day_off
+  description: "Bảng production_management_1_day_off (nguồn Power BI: ngày nghỉ)."
+  meta:
+    label: "ngày nghỉ"
+    powerbi_source: "ngày nghỉ"
+  columns:
+  - name: holiday
+    description: "Cột Holiday trong ngày nghỉ."
+    meta:
+      dimension:
+        type: date
+        label: "Holiday"
+        hidden: true

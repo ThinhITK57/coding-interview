@@ -1,0 +1,148 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_cloudrity
+  description: "Bảng qtsx_v2_kpikqi_cloudrity (nguồn Power BI: KPIKQI_cloudrity)."
+  meta:
+    label: "KPIKQI_cloudrity"
+    powerbi_source: "KPIKQI_cloudrity"
+  columns:
+  - name: created_at
+    description: "Cột CreatedAt trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: timestamp
+        label: "CreatedAt"
+        hidden: true
+  - name: updated_at
+    description: "Cột UpdatedAt trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: timestamp
+        label: "UpdatedAt"
+        hidden: true
+  - name: end_time
+    description: "Cột EndTime trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: date
+        label: "EndTime"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+        hidden: true
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước' trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả 1 kỳ trước'"
+        hidden: true
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước' trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả 2 kỳ trước'"
+        hidden: true
+  - name: trend
+    description: "Cột Trend trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "Trend"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit
+    description: "Cột Đơn vị trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+        hidden: true
+  - name: customer_name
+    description: "Cột CustomerName trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerName"
+        hidden: true
+  - name: customer_type
+    description: "Cột CustomerType trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType"
+        hidden: true
+  - name: customer_type_2026
+    description: "Cột CustomerType_2026 (from dws_kpi_systems) trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType_2026 (from dws_kpi_systems)"
+        hidden: true
+  - name: kpiname
+    description: "Cột KPIName trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "KPIName"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI_cloudrity."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: vs_target
+    description: "Cột So với target trong KPIKQI_cloudrity. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI_cloudrity'[Target] VAR _Result = ROUND('KPIKQI_cloudrity'[Kết quả], 2) VAR _Condition = UPPER(TRIM('KPIKQI_cloudrity'[Điều kiện])) RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Trường hợp điều kiện là >= _Condition = \">=\", IF(_Result >= _Target, 1, 0), -- Trường hợp điều kiện là <= _Condition = \"<=\", IF(_Result <= _Target, 1, 0), -- Trường hợp điều kiện là = _Condition = \"=\", IF(_Result = _Target, 1, 0), -- Giá trị mặc định nếu không khớp điều kiện hoặc điều kiện trống 0 ), BLANK() -- Trả về trống nếu Kết quả chưa có dữ liệu )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQI_cloudrity. Cột tính toán, DAX gốc: IF ( ISBLANK('KPIKQI_cloudrity'[So với Target]), BLANK(), -- Hoặc trả về 0 tùy bạn muốn xử lý dòng trống thế nào IF ( 'KPIKQI_cloudrity'[So với Target] > 0, \"Pass\", -- Đạt \"Fail\" -- Không đạt (Fail ở bất kỳ mức độ nào) ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+        hidden: true
+  - name: customer_group
+    description: "Cột Nhóm khách hàng trong KPIKQI_cloudrity. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI_cloudrity'[CustomerName] == \"MBbank\" || 'KPIKQI_cloudrity'[CustomerName] == \"Điện lực miền Nam\" || 'KPIKQI_cloudrity'[CustomerName] == \"Vietcombank\" || 'KPIKQI_cloudrity'[CustomerName] == \"Bộ Tài chính (MOF)\" || 'KPIKQI_cloudrity'[CustomerName] == \"Tổng Công ty Giải pháp doanh nghiệp Viettel\" || 'KPIKQI_cloudrity'[CustomerName] == \"Tổng Công ty Viễn thông Viettel\" || 'KPIKQI_cloudrity'[CustomerName] == \"Tổng công ty mạng lưới Viettel\" || 'KPIKQI_cloudrity'[CustomerName] == \"Vietnam Airline (VNA)\" || 'KPIKQI_cloudrity'[CustomerName] == \"wrs\" || 'KPIKQI_cloudrity'[CustomerName] == \"ccl\" , \"VVIP\", \"VIP\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm khách hàng"
+        hidden: true

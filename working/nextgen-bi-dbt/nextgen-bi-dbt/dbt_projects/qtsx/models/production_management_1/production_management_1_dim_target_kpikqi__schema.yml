@@ -1,0 +1,91 @@
+version: 2
+models:
+- name: production_management_1_dim_target_kpikqi
+  description: "Bảng production_management_1_dim_target_kpikqi (nguồn Power BI: Dim_TargetKPIKQI)."
+  meta:
+    label: "Dim_TargetKPIKQI"
+    powerbi_source: "Dim_TargetKPIKQI"
+    metrics:
+      count_sp:
+        type: count_distinct
+        sql: sp_metric
+        label: "Số SP"
+        description: "DAX: CALCULATE( DISTINCTCOUNT('Dim_TargetKPIKQI'[SP-MEtric]))"
+  columns:
+  - name: metric_name
+    description: "Cột Metric name trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: target
+    description: "Cột Target trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: note
+    description: "Cột Note trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "Note"
+        hidden: true
+  - name: viettel
+    description: "Cột Viettel trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "Viettel"
+        hidden: true
+  - name: viettel_socp
+    description: "Cột Viettel - SOCP trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "Viettel - SOCP"
+        hidden: true
+  - name: external_customer
+    description: "Cột KH ngoài trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "KH ngoài"
+        hidden: true
+  - name: sp_metric
+    description: "Cột SP-MEtric trong Dim_TargetKPIKQI. Cột tính toán, DAX gốc: 'Dim_TargetKPIKQI'[SPDV]&'Dim_TargetKPIKQI'[Metric name]"
+    meta:
+      dimension:
+        type: string
+        label: "SP-MEtric"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: unit
+    description: "Cột Đơn vị trong Dim_TargetKPIKQI."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+        hidden: true

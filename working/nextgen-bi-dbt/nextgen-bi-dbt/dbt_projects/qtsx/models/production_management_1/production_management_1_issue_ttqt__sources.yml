@@ -1,0 +1,32 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_issue_ttqt
+    description: "Nguồn Power BI: ISSUE TTQT"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_description
+      description: "Cột ISSUE_DESCRIPTION"
+    - name: solution_action
+      description: "Cột Giải_pháp_Action__22102"
+    - name: cause
+      description: "Cột Nguyên_nhân_22101"
+    - name: date_value
+      description: "Cột Ngày_21701"
+    - name: classification
+      description: "Cột Phân loại"
+    - name: owner_department
+      description: "Cột BP Phụ trách"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: impact
+      description: "Cột Ảnh_hưởng_22100"
+    - name: issue_priority
+      description: "Cột ISSUE_PRIORITY"

@@ -1,0 +1,181 @@
+version: 2
+
+models:
+  - name: cx_mixpanel_product_feature_usage_mart
+    description: >
+      Data mart tổng hợp các chỉ số sử dụng product_feature của từng product_category theo kỳ tuần và tháng.
+
+      Mỗi dòng tương ứng với một product_category, product_feature và report_period.
+      period_type xác định loại kỳ báo cáo: week hoặc month.
+
+      Dữ liệu được sử dụng để phân tích khả năng duy trì sử dụng feature,
+      tăng trưởng người dùng feature và mức độ sử dụng nhiều feature của user.
+
+      Semantic:
+      - Luôn sử dụng report_period làm mốc thời gian chính và period_type để xác định kỳ phân tích.
+      - Retention và growth được tính bằng cách so sánh user của kỳ hiện tại với kỳ liền trước.
+      - Các chỉ số feature breadth được tính trên toàn bộ user trong kỳ báo cáo.
+      - Không cộng dồn các chỉ số COUNT DISTINCT user_id hoặc COUNT DISTINCT product_feature giữa các ngày hoặc các kỳ.
+
+    meta:
+      label: "Feature Usage Metrics"
+      owner: "lyttt3"
+
+      metrics:
+
+        - name: retention_rate
+          label: Tỷ lệ duy trì sử dụng tính năng
+          description: >
+            Tỷ lệ user sử dụng một product_feature ở kỳ trước và tiếp tục
+            sử dụng chính feature đó ở kỳ hiện tại.
+
+            Công thức:
+            retained_users / previous_period_users.
+          type: number
+          sql: |
+            1.0 * retained_users
+            / NULLIF(previous_period_users, 0)
+
+        - name: user_growth_rate
+          label: Tốc độ tăng trưởng người dùng tính năng
+          description: >
+            Tỷ lệ số user sử dụng product_feature ở kỳ hiện tại
+            so với kỳ liền trước, bao gồm cả user mới.
+
+            Công thức:
+            current_period_users / previous_period_users.
+          type: number
+          sql: |
+            1.0 * current_period_users
+            / NULLIF(previous_period_users, 0)
+
+        - name: feature_usage_rate
+          label: Tỷ lệ sử dụng tính năng
+          description: >
+            Tỷ lệ user sử dụng product_feature trên tổng số active user
+            trong cùng 1 kỳ báo cáo (week/month).
+
+            Công thức:
+            current_period_users / active_users
+          type: average
+          sql: feature_usage_rate
+            
+        - name: average_features_per_active_user
+          label: Số tính năng trung bình sử dụng bởi người dùng
+          description: >
+            Số product_feature DISTINCT trung bình mà một active user sử dụng
+            trong kỳ báo cáo.
+
+            User có event nhưng product_feature IS NULL vẫn được tính là active
+            và được đưa vào mẫu số.
+
+            Công thức:
+            Tổng số product_feature DISTINCT của từng user
+            / Tổng số active user trong kỳ.
+          type: average
+          sql: average_features_per_active_user
+
+        - name: users_with_1_feature
+          label: Số người dùng sử dụng 1 tính năng
+          description: >
+            Số user sử dụng đúng 1 product_feature DISTINCT trong kỳ báo cáo.
+          type: average
+          sql: users_with_1_feature
+
+        - name: users_with_2_features
+          label: Số người dùng sử dụng 2 tính năng
+          description: >
+            Số user sử dụng đúng 2 product_feature DISTINCT trong kỳ báo cáo.
+          type: average
+          sql: users_with_2_features
+
+        - name: users_with_3_features
+          label: Số người dùng sử dụng 3 tính năng
+          description: >
+            Số user sử dụng đúng 3 product_feature DISTINCT trong kỳ báo cáo.
+          type: average
+          sql: users_with_3_features
+
+        - name: users_with_4_features
+          label: Số người dùng sử dụng 4 tính năng
+          description: >
+            Số user sử dụng đúng 4 product_feature DISTINCT trong kỳ báo cáo.
+          type: average
+          sql: users_with_4_features
+
+        - name: users_with_5_plus_features
+          label: Số người dùng sử dụng từ 5 tính năng trở lên
+          description: >
+            Số user sử dụng từ 5 product_feature DISTINCT trở lên trong kỳ báo cáo.
+          type: average
+          sql: users_with_5_plus_features
+
+    columns:
+      - name: period_type
+        description: >
+          Loại kỳ báo cáo. Giá trị gồm week hoặc month.
+
+      - name: report_period
+        description: >
+          Kỳ báo cáo. Với week là ngày bắt đầu tuần; với month là ngày bắt đầu tháng.
+          Dùng kết hợp với period_type để xác định khoảng thời gian phân tích.
+
+      - name: product_category
+        description: >
+          Nhóm sản phẩm/dịch vụ mà product_feature thuộc về.
+
+      - name: product_feature
+        description: >
+          Tính năng sản phẩm được xác định từ event Mixpanel theo logic mapping
+          của từng product_category.
+
+      - name: retained_users
+        description: >
+          Số user sử dụng product_feature ở kỳ trước và tiếp tục sử dụng
+          chính feature đó ở kỳ hiện tại.
+          Đây là tử số của retention_rate.
+
+      - name: current_period_users
+        description: >
+          Số user DISTINCT sử dụng product_feature trong kỳ hiện tại.
+          Đây là tử số của user_growth_rate.
+
+      - name: previous_period_users
+        description: >
+          Số user DISTINCT sử dụng product_feature trong kỳ liền trước.
+          Đây là mẫu số của retention_rate và user_growth_rate.
+
+      - name: retention_rate
+        description: >
+          Tỷ lệ user sử dụng product_feature ở kỳ trước và tiếp tục sử dụng
+          chính feature đó ở kỳ hiện tại.
+
+      - name: user_growth_rate
+        description: >
+          Tỷ lệ số user sử dụng product_feature ở kỳ hiện tại
+          so với kỳ liền trước.
+
+      - name: average_features_per_active_user
+        description: >
+          Số product_feature DISTINCT trung bình mà một active user sử dụng
+          trong kỳ báo cáo.
+
+      - name: users_with_1_feature
+        description: >
+          Số user sử dụng đúng 1 product_feature DISTINCT trong kỳ báo cáo.
+
+      - name: users_with_2_features
+        description: >
+          Số user sử dụng đúng 2 product_feature DISTINCT trong kỳ báo cáo.
+
+      - name: users_with_3_features
+        description: >
+          Số user sử dụng đúng 3 product_feature DISTINCT trong kỳ báo cáo.
+
+      - name: users_with_4_features
+        description: >
+          Số user sử dụng đúng 4 product_feature DISTINCT trong kỳ báo cáo.
+
+      - name: users_with_5_plus_features
+        description: >
+          Số user sử dụng từ 5 product_feature DISTINCT trở lên trong kỳ báo cáo.

@@ -1,0 +1,162 @@
+version: 2
+models:
+- name: production_management_1_n_5_vvip_prm
+  description: "Bảng production_management_1_n_5_vvip_prm (nguồn Power BI: 5VVIP_PRM)."
+  meta:
+    label: "5VVIP_PRM"
+    powerbi_source: "5VVIP_PRM"
+  columns:
+  - name: work_around_due
+    description: "Cột Work_Around_Due trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Work_Around_Due"
+        hidden: true
+  - name: work_around_breached
+    description: "Cột Work_Around_Breached trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: boolean
+        label: "Work_Around_Breached"
+        hidden: true
+  - name: permanent_fix_due
+    description: "Cột Triệt_để_Due trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Triệt_để_Due"
+        hidden: true
+  - name: permanent_fix_breached
+    description: "Cột Triệt_để_Breached trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: boolean
+        label: "Triệt_để_Breached"
+        hidden: true
+  - name: deploy_permanent_solution_due
+    description: "Cột Triển_khai_GPTT_Due trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Triển_khai_GPTT_Due"
+        hidden: true
+  - name: deploy_permanent_solution_breached
+    description: "Cột Triển_khai_GPTT_Breached trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: boolean
+        label: "Triển_khai_GPTT_Breached"
+        hidden: true
+  - name: deploy_workaround_solution_due
+    description: "Cột Triển_khai_GPTĐ_Due trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Triển_khai_GPTĐ_Due"
+        hidden: true
+  - name: deploy_workaround_solution_breached
+    description: "Cột Triển_khai_GPTĐ_Breached trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: boolean
+        label: "Triển_khai_GPTĐ_Breached"
+        hidden: true
+  - name: resolve_date
+    description: "Cột Resolve_Date_12007 trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: date
+        label: "Resolve_Date_12007"
+        hidden: true
+  - name: cause_due
+    description: "Cột Nguyên_nhân_Due trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Nguyên_nhân_Due"
+        hidden: true
+  - name: cause_breached
+    description: "Cột Nguyên_nhân_Breached trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: boolean
+        label: "Nguyên_nhân_Breached"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_reporter_name
+    description: "Cột ISSUE_REPORTER_NAME trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_REPORTER_NAME"
+        hidden: true
+  - name: issue_project_key
+    description: "Cột ISSUE_PROJECT_KEY trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PROJECT_KEY"
+        hidden: true
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_due_date
+    description: "Cột ISSUE_DUE_DATE trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: date
+        label: "ISSUE_DUE_DATE"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: id
+    description: "Cột Id trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: permanent_fix_deadline
+    description: "Cột Deadline_Triệt_để_12104 trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Deadline_Triệt_để_12104"
+        hidden: true
+  - name: cause_deadline
+    description: "Cột Deadline_nguyên_nhân_12103 trong 5VVIP_PRM."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Deadline_nguyên_nhân_12103"
+        hidden: true

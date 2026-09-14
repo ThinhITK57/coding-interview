@@ -1,0 +1,204 @@
+version: 2
+models:
+- name: production_management_1_issues_2
+  description: "Bảng production_management_1_issues_2 (nguồn Power BI: Issues (2))."
+  meta:
+    label: "Issues (2)"
+    powerbi_source: "Issues (2)"
+  columns:
+  - name: id
+    description: "Cột Id trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: customers
+    description: "Cột Customers_13905 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Customers_13905"
+        hidden: true
+  - name: year_value
+    description: "Cột Năm_13442 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Năm_13442"
+        hidden: true
+  - name: quarter
+    description: "Cột Quý_17507 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Quý_17507"
+        hidden: true
+  - name: week
+    description: "Cột Tuần_17508 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Tuần_17508"
+        hidden: true
+  - name: month_value
+    description: "Cột Tháng_17900 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Tháng_17900"
+        hidden: true
+  - name: total_alerts
+    description: "Cột Tổng_số_alert_18200 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_số_alert_18200"
+        hidden: true
+  - name: total_alerts_on_time
+    description: "Cột Tổng_số_alert_on_time_18201 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_số_alert_on_time_18201"
+        hidden: true
+  - name: alert_on_time_rate
+    description: "Cột Tỷ_lệ_alert_xử_lý_đúng_hạn_18220 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tỷ_lệ_alert_xử_lý_đúng_hạn_18220"
+        hidden: true
+  - name: sla_eval_alert_on_time
+    description: "Cột Đánh_giá_SLA_alert_đúng_hạn_18202 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh_giá_SLA_alert_đúng_hạn_18202"
+        hidden: true
+  - name: total_tier3_cases_handled
+    description: "Cột Tổng_số_Case_Tier_3_đã_xử_lý_18207 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_số_Case_Tier_3_đã_xử_lý_18207"
+        hidden: true
+  - name: total_tier3_cases_on_time
+    description: "Cột Tổng_số_Case_Tier_3_on_time_18208 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_số_Case_Tier_3_on_time_18208"
+        hidden: true
+  - name: tier3_case_on_time_rate
+    description: "Cột Tỷ_lệ_case_tier_3_xử_lý_đúng_hạn_18221 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tỷ_lệ_case_tier_3_xử_lý_đúng_hạn_18221"
+        hidden: true
+  - name: sla_eval_tier3_case_on_time
+    description: "Cột Đánh_giá_SLA_xử_lý_case_Tier_3_đúng_hạn_18209 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh_giá_SLA_xử_lý_case_Tier_3_đúng_hạn_18209"
+        hidden: true
+  - name: tong_count_case_tier_1_tier_3_da_xu_ly
+    description: "Cột Tổng_số_case_Tier_1__Tier_3_đã_xử_lý_18204 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_số_case_Tier_1__Tier_3_đã_xử_lý_18204"
+        hidden: true
+  - name: avg_case_handling_time_m
+    description: "Cột Trung_bình_thời_gian_xử_lý_case__m__18224 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Trung_bình_thời_gian_xử_lý_case__m__18224"
+        hidden: true
+  - name: total_tagging_incident_cases
+    description: "Cột Tổng_số_case_tagging_incident_18205 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_số_case_tagging_incident_18205"
+        hidden: true
+  - name: total_auto_tagging_incident_cases
+    description: "Cột Tổng_số_Case_auto_tagging_incident_18206 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_số_Case_auto_tagging_incident_18206"
+        hidden: true
+  - name: security_reports_done
+    description: "Cột Số_báo_cáo_ATTT_đã_thực_hiện_18210 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Số_báo_cáo_ATTT_đã_thực_hiện_18210"
+        hidden: true
+  - name: security_reports_on_time
+    description: "Cột Số_báo_cáo_ATTT_đúng_hạn_18211 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Số_báo_cáo_ATTT_đúng_hạn_18211"
+        hidden: true
+  - name: sla_eval_security_report
+    description: "Cột Đánh_giá_SLA_báo_cáo_ATTT_18212 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh_giá_SLA_báo_cáo_ATTT_18212"
+        hidden: true
+  - name: missed_critical_alerts
+    description: "Cột Số_lượng_cảnh_báo_Nghiêm_trọng_bỏ_lọt_18216 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Số_lượng_cảnh_báo_Nghiêm_trọng_bỏ_lọt_18216"
+        hidden: true
+  - name: sla_eval_missed_critical_alert
+    description: "Cột Đánh_giá_SLA_vận_hành_bỏ_lọt_cảnh_báo_nghiêm_trọng_18218 trong Issues (2)."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh_giá_SLA_vận_hành_bỏ_lọt_cảnh_báo_nghiêm_trọng_18218"
+        hidden: true
+  - name: missed_medium_alerts
+    description: "Cột Số_lượng_cảnh_báo_Trung_bình_bỏ_lọt_18217 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Số_lượng_cảnh_báo_Trung_bình_bỏ_lọt_18217"
+        hidden: true
+  - name: hunting_hosts_wrong_review
+    description: "Cột Số_máy_hunting_rà_soát_sai_18223 trong Issues (2)."
+    meta:
+      dimension:
+        type: number
+        label: "Số_máy_hunting_rà_soát_sai_18223"
+        hidden: true
+  - name: start_date
+    description: "Cột Start_Date_10700 trong Issues (2)."
+    meta:
+      dimension:
+        type: date
+        label: "Start_Date_10700"
+        hidden: true

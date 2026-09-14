@@ -1,0 +1,182 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_kpikqi_new
+    description: "Nguồn Power BI: KPIKQI_New"
+    columns:
+    - name: spdv
+      description: "Cột SPDV"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: result
+      description: "Cột Kết quả"
+    - name: target
+      description: "Cột Target"
+    - name: unit
+      description: "Cột Đơn vị"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: report_date
+      description: "Cột Ngày_báo_cáo_18900"
+    - name: end_time
+      description: "Cột EndTime"
+    - name: customer_type
+      description: "Cột CustomerType"
+    - name: report_date_2
+      description: "Cột Ngày báo cáo"
+    - name: customer_group
+      description: "Cột Nhóm Khách hàng"
+    - name: period_result
+      description: "Cột PeriodResult"
+    - name: vs_target
+      description: "Cột So với target"
+    - name: evaluation
+      description: "Cột ĐÁNH GIÁ"
+    - name: updated_at
+      description: "Cột UpdatedAt"
+    - name: flag
+      description: "Cột Flag"
+    - name: target_difference
+      description: "Cột TargetDifference"
+    - name: before2_periods_difference
+      description: "Cột Before2PeriodsDifference"
+    - name: before1_period_difference
+      description: "Cột Before1PeriodDifference"
+    - name: result_2
+      description: "Cột Result"
+    - name: evaluation_passed
+      description: "Cột Đánh giá đạt"
+    - name: kpi_trend
+      description: "Cột Xu hướng KPI"
+    - name: dv_customer
+      description: "Cột DV-KHÁCH HÀNG"
+    - name: sp_metric
+      description: "Cột SP-Metric"
+    - name: target_fin
+      description: "Cột Target_fin"
+    - name: kpitype
+      description: "Cột KPITYPE"
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: created_at
+      description: "Cột CreatedAt"
+    - name: start_time
+      description: "Cột StartTime"
+    - name: trend
+      description: "Cột Trend"
+    - name: dws_kpi_systems_id
+      description: "Cột dws_kpi_systems_id"
+    - name: dws_kpi_criterias_id
+      description: "Cột dws_kpi_criterias_id"
+    - name: calculate_time
+      description: "Cột CalculateTime"
+    - name: is_empty
+      description: "Cột IsEmpty"
+    - name: vs_target_two_periods
+      description: "Cột So với target 2 kỳ"
+    - name: evaluation_two_periods
+      description: "Cột ĐÁNH GIÁ 2 KỲ"
+    - name: key_week
+      description: "Cột Key_Week"
+    - name: key_month
+      description: "Cột Key_Month"
+    - name: has_log_metrics
+      description: "Cột HasLogMetrics"
+    - name: customer
+      description: "Cột Customer"
+    - name: vs_target_one_period
+      description: "Cột So với target 1 kỳ"
+    - name: evaluation_passed_prev_1_period
+      description: "Cột Đánh giá đạt 1 kỳ trước"
+    - name: evaluation_passed_prev_2_periods
+      description: "Cột Đánh giá đạt 2 kỳ trước"
+    - name: flag_two_periods_fail
+      description: "Cột Flag_2KỳFail"
+    - name: alert_icon
+      description: "Cột Cảnh báo_icon"
+    - name: result_prev_1_period
+      description: "Cột Kết quả 1 kỳ trước"
+    - name: result_prev_2_periods
+      description: "Cột Kết quả 2 kỳ trước"
+    - name: average_fail_two_periods
+      description: "Cột Average_Fail_2Kỳ"
+    - name: numbering_by_sort_col
+      description: "Cột Đánh số by Sort Col"
+    - name: spdv_dim
+      description: "Cột SPDV_Dim"
+    - name: customer_spdv
+      description: "Cột KHách hàng - SPDV"
+    - name: title
+      description: "Cột Title"
+    - name: result_prev_1_period_2
+      description: "Cột Kết quả 1 kỳ trước'"
+    - name: result_prev_2_periods_2
+      description: "Cột Kết quả 2 kỳ trước'"
+    - name: customer_jira
+      description: "Cột Khách hàng_jira"
+    - name: tick_external_customer
+      description: "Cột Tick KH Ngoài"
+    - name: month_key
+      description: "Cột MonthKey"
+    - name: tick_kpi
+      description: "Cột TickKPI"
+    - name: tick_month
+      description: "Cột TickMonth"
+    - name: dws_kpi_criterias_name
+      description: "Cột dws_kpi_criterias.Name"
+    - name: error
+      description: "Cột Error"
+    - name: kpi_type
+      description: "Cột Loại KPI"
+    - name: viettel
+      description: "Cột Viettel"
+    - name: socp
+      description: "Cột SOCP"
+    - name: external_customer
+      description: "Cột KH ngoài"
+    - name: spdv_fixed
+      description: "Cột SPDV_Fixed"
+    - name: target_condition
+      description: "Cột Điều kiện_Target"
+    - name: customer_2
+      description: "Cột Khách hàng"
+    - name: kpi_trend_period_n_1
+      description: "Cột Xu hướng KPI Kỳ N-1"
+    - name: month_year
+      description: "Cột MonthYear"
+    - name: tick_end_q4
+      description: "Cột Tick_end_Q4"
+    - name: report_month_date
+      description: "Cột Ngày báo cáo tháng"
+    - name: target_td
+      description: "Cột Target_TĐ"
+    - name: unit_of_measure_td
+      description: "Cột Đơn vị tính_TĐ"
+    - name: condition_td
+      description: "Cột Điều kiện_TĐ"
+    - name: kpi_classification_td
+      description: "Cột Phân loạiKPI_TĐ"
+    - name: tag_td
+      description: "Cột Tag_TĐ"
+    - name: vs_target_td
+      description: "Cột So với target_TĐ"
+    - name: evaluation_td
+      description: "Cột ĐÁNH GIÁ_TĐ"
+    - name: vs_target_one_period_td
+      description: "Cột So với target 1 kỳ_TĐ"
+    - name: kpi_trend_td
+      description: "Cột Xu hướng KPI_TĐ"
+    - name: so_with_period_n_1_td
+      description: "Cột So với kỳ N-1 (TĐ)"
+    - name: tick_vvip_2026
+      description: "Cột Tick VVIP 2026"
+    - name: customer_type_2026
+      description: "Cột CustomerType_2026 (from dws_kpi_systems)"

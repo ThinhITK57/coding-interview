@@ -1,0 +1,357 @@
+version: 2
+models:
+- name: production_management_1_kpikqi_customer
+  description: "Bảng production_management_1_kpikqi_customer (nguồn Power BI: KPIKQI KHÁCH HÀNG)."
+  meta:
+    label: "KPIKQI KHÁCH HÀNG"
+    powerbi_source: "KPIKQI KHÁCH HÀNG"
+    joins:
+    - join: production_management_1_division
+      sql_on: "${production_management_1_kpikqi_customer.center} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    metrics:
+      a_count_lan_xuat_hien_tooltip:
+        type: count
+        sql: "CASE WHEN (customer_group <> 'KHÁCH HÀNG NGOÀI' AND spdv <> 'Threat Intelligence') THEN 1 END"
+        label: "A_Số lần xuất hiện Tooltip"
+        description: "DAX: CALCULATE( COUNTROWS('KPIKQI KHÁCH HÀNG'), FILTER( 'KPIKQI KHÁCH HÀNG', 'KPIKQI KHÁCH HÀNG'[CustomerGroup] <> \"KHÁCH HÀNG NGOÀI\" && 'KPIKQI KHÁCH HÀNG'[SPDV] <> \"Threat Intelligence\" ) )"
+      count_distinct_spdv:
+        type: count_distinct
+        sql: spdv
+        label: "Số SP phụ trách"
+        description: "Sinh từ Power BI: count_distinct(KPIKQI KHÁCH HÀNG.SPDV)"
+      count_product_by_center:
+        type: count_distinct
+        sql: "CASE WHEN (spdv <> 'mSuite' OR spdv <> 'Threat Intelligence' OR spdv <> 'Cloudrity') THEN spdv END"
+        label: "Số sản phẩm theo trung tâm"
+        description: "DAX: CALCULATE( DISTINCTCOUNT('KPIKQI KHÁCH HÀNG'[SPDV]), 'KPIKQI KHÁCH HÀNG'[SPDV] <> \"mSuite\" || 'KPIKQI KHÁCH HÀNG'[SPDV] <> \"Threat Intelligence\" || 'KPIKQI KHÁCH HÀNG'[SPDV] <> \"Cloudrity\")"
+  columns:
+  - name: id
+    description: "Cột Id trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Id"
+        hidden: true
+  - name: start_time
+    description: "Cột StartTime trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: date
+        label: "StartTime"
+        hidden: true
+  - name: end_time
+    description: "Cột EndTime trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: date
+        label: "EndTime"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả"
+        hidden: true
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước' trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả 1 kỳ trước'"
+        hidden: true
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước' trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả 2 kỳ trước'"
+        hidden: true
+  - name: target_difference
+    description: "Cột TargetDifference trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: number
+        label: "TargetDifference"
+        hidden: true
+  - name: before2_periods_difference
+    description: "Cột Before2PeriodsDifference trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Before2PeriodsDifference"
+        hidden: true
+  - name: before1_period_difference
+    description: "Cột Before1PeriodDifference trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Before1PeriodDifference"
+        hidden: true
+  - name: result_2
+    description: "Cột Result trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Result"
+        hidden: true
+  - name: trend
+    description: "Cột Trend trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Trend"
+        hidden: true
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: dws_kpi_systems_id
+    description: "Cột dws_kpi_systems_id trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "dws_kpi_systems_id"
+        hidden: true
+  - name: dws_kpi_criterias_id
+    description: "Cột dws_kpi_criterias_id trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "dws_kpi_criterias_id"
+        hidden: true
+  - name: calculate_time
+    description: "Cột CalculateTime trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "CalculateTime"
+        hidden: true
+  - name: is_empty
+    description: "Cột IsEmpty trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "IsEmpty"
+        hidden: true
+  - name: customer_name
+    description: "Cột CustomerName trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerName"
+        hidden: true
+  - name: customer_type
+    description: "Cột CustomerType trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType"
+        hidden: true
+  - name: dws_kpi_criterias_name
+    description: "Cột dws_kpi_criterias.Name trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "dws_kpi_criterias.Name"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày Báo cáo trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: IF( 'KPIKQI KHÁCH HÀNG'[CriteriaPeriodType] = \"week\", 'KPIKQI KHÁCH HÀNG'[EndTime] - WEEKDAY('KPIKQI KHÁCH HÀNG'[EndTime], 2) + 7, 'KPIKQI KHÁCH HÀNG'[EndTime] )"
+    meta:
+      dimension:
+        type: date
+        label: "Ngày Báo cáo"
+        hidden: true
+  - name: customer_group
+    description: "Cột CustomerGroup trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI KHÁCH HÀNG'[CustomerName] = \"Viettel\",\"Viettel\", CONTAINSSTRING('KPIKQI KHÁCH HÀNG'[CustomerName],\"SOC\"),\"SOCP\", \"KHÁCH HÀNG NGOÀI\")"
+    meta:
+      dimension:
+        type: string
+        label: "CustomerGroup"
+        hidden: true
+  - name: period_result
+    description: "Cột PeriodResult trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: IF( 'KPIKQI KHÁCH HÀNG'[CriteriaPeriodType] = \"week\", LOOKUPVALUE('Dim_Date'[Tuần], 'Dim_Date'[Date], 'KPIKQI KHÁCH HÀNG'[Ngày Báo cáo]), IF( 'KPIKQI KHÁCH HÀNG'[CriteriaPeriodType] = \"month\", LOOKUPVALUE('Dim_Date'[MonthYear], 'Dim_Date'[Date], 'KPIKQI KHÁCH HÀNG'[Ngày Báo cáo]), BLANK() ) )"
+    meta:
+      dimension:
+        type: string
+        label: "PeriodResult"
+        hidden: true
+  - name: color
+    description: "Cột Màu sắc trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: IF( NOT(ISBLANK('KPIKQI KHÁCH HÀNG'[So với target])), SWITCH( TRUE(), 'KPIKQI KHÁCH HÀNG'[So với target] >= 0.6, \"4. Fail vượt Target >=60%\", 'KPIKQI KHÁCH HÀNG'[So với target] >= 0.3 && 'KPIKQI KHÁCH HÀNG'[So với target] < 0.6, \"3. Fail vượt Target >=30% & <60%\", 'KPIKQI KHÁCH HÀNG'[So với target] > 0 && 'KPIKQI KHÁCH HÀNG'[So với target] < 0.3, \"2. Fail vượt Target 0-30%\", 'KPIKQI KHÁCH HÀNG'[So với target] <= 0, \"1. Đạt\", BLANK() ))"
+    meta:
+      dimension:
+        type: string
+        label: "Màu sắc"
+        hidden: true
+  - name: vs_target
+    description: "Cột So với target trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI KHÁCH HÀNG'[Target] VAR _Result = 'KPIKQI KHÁCH HÀNG'[Kết quả] VAR _Condition= UPPER(TRIM('KPIKQI KHÁCH HÀNG'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: string
+        label: "So với target"
+        hidden: true
+  - name: vs_target_one_period
+    description: "Cột So với target 1 kỳ trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI KHÁCH HÀNG'[Target] VAR _Result = 'KPIKQI KHÁCH HÀNG'[Kết quả 1 kỳ trước] VAR _Condition= UPPER(TRIM('KPIKQI KHÁCH HÀNG'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: string
+        label: "So với target 1 kỳ"
+        hidden: true
+  - name: vs_target_two_periods
+    description: "Cột So với target 2 kỳ trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI KHÁCH HÀNG'[Target] VAR _Result = 'KPIKQI KHÁCH HÀNG'[Kết quả 2 kỳ trước] VAR _Condition= UPPER(TRIM('KPIKQI KHÁCH HÀNG'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, -- Case 2: >= _Condition = \">=\", DIVIDE(_Target - _Result, 100 - _Target, 0), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: string
+        label: "So với target 2 kỳ"
+        hidden: true
+  - name: evaluation_two_periods
+    description: "Cột Đánh giá 2 kỳ trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: IF( 'KPIKQI KHÁCH HÀNG'[Kết quả]='KPIKQI KHÁCH HÀNG'[Target],\"1. Đạt\", IF( 'KPIKQI KHÁCH HÀNG'[So với target]<> BLANK(), SWITCH( TRUE(), 'KPIKQI KHÁCH HÀNG'[So với target 2 kỳ]>= 0.6, \"4. Fail vượt Target >=60%\", 'KPIKQI KHÁCH HÀNG'[So với target 2 kỳ] >= 0.3 && 'KPIKQI KHÁCH HÀNG'[So với target]< 0.6,\"3. Fail vượt Target >=30% & <60%\", 'KPIKQI KHÁCH HÀNG'[So với target 2 kỳ]> 0 && 'KPIKQI KHÁCH HÀNG'[So với target] < 0.3, \"2. Fail vượt Target 0-30%\", 'KPIKQI KHÁCH HÀNG'[So với target 2 kỳ]<= 0, \"1. Đạt\", \"CHƯA CÓ KẾT QUẢ\")))"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá 2 kỳ"
+        hidden: true
+  - name: trend_2
+    description: "Cột Xu hướng trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: IF('KPIKQI KHÁCH HÀNG'[Trend]=\"Improve\",\"Cải thiện\", IF('KPIKQI KHÁCH HÀNG'[Trend]=\"Maintain\",\"Duy trì\",\"Suy giảm\"))"
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng"
+        hidden: true
+  - name: product_unit
+    description: "Cột SẢN PHẨM - ĐƠN VỊ trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: 'KPIKQI KHÁCH HÀNG'[SPDV]&\"-\"&'KPIKQI KHÁCH HÀNG'[CustomerName]"
+    meta:
+      dimension:
+        type: string
+        label: "SẢN PHẨM - ĐƠN VỊ"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: VAR AllValues = CALCULATETABLE ( VALUES ( 'Project vs. Department'[Khối] ), FILTER ( 'Project vs. Department', 'Project vs. Department'[Sản phẩm] = 'KPIKQI KHÁCH HÀNG'[SPDV] ) ) VAR AfterFilter = CALCULATETABLE ( VALUES ( 'Project vs. Department'[Khối] ), FILTER ( 'Project vs. Department', 'Project vs. Department'[Sản phẩm] = 'KPIKQI KHÁCH HÀNG'[SPDV] && NOT CONTAINSSTRING ( 'Project vs. Department'[ProjectName], \"OS\" ) ) ) RETURN SWITCH ( TRUE(), COUNTROWS ( AllValues ) = 1, MAXX ( AllValues, [Khối] ), COUNTROWS ( AfterFilter ) = 1, MAXX ( AfterFilter, [Khối] ), BLANK() -- Nếu vẫn nhiều giá trị thì để trống )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true
+  - name: sp_dv
+    description: "Cột SP-DV trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: 'KPIKQI KHÁCH HÀNG'[CustomerName]&\"-\"&'KPIKQI KHÁCH HÀNG'[Metric]"
+    meta:
+      dimension:
+        type: string
+        label: "SP-DV"
+        hidden: true
+  - name: created_at
+    description: "Cột CreatedAt trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: timestamp
+        label: "CreatedAt"
+        hidden: true
+  - name: updated_at
+    description: "Cột UpdatedAt trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: timestamp
+        label: "UpdatedAt"
+        hidden: true
+  - name: is_latest
+    description: "Cột IsLatest trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: VAR CurrentDate = 'KPIKQI KHÁCH HÀNG'[Ngày Báo cáo] VAR CurrentSPDV = 'KPIKQI KHÁCH HÀNG'[SP-DV] VAR CurrentMetric = 'KPIKQI KHÁCH HÀNG'[Metric] VAR CurrentUpdate = 'KPIKQI KHÁCH HÀNG'[UpdatedAt] VAR CurrentID = 'KPIKQI KHÁCH HÀNG'[Id] -- Lấy Id lớn nhất trong nhóm VAR MaxID = CALCULATE( MAX('KPIKQI KHÁCH HÀNG'[Id]), FILTER( ALL('KPIKQI KHÁCH HÀNG'), 'KPIKQI KHÁCH HÀNG'[Ngày Báo cáo] = CurrentDate && 'KPIKQI KHÁCH HÀNG'[SP-DV] = CurrentSPDV && 'KPIKQI KHÁCH HÀNG'[Metric] = CurrentMetric ) ) -- Nếu nhiều dòng cùng Id, chọn UpdatedAt mới nhất VAR MaxUpdatedAt = CALCULATE( MAX('KPIKQI KHÁCH HÀNG'[UpdatedAt]), FILTER( ALL('KPIKQI KHÁCH HÀNG'), 'KPIKQI KHÁCH HÀNG'[Ngày Báo cáo] = CurrentDate && 'KPIKQI KHÁCH HÀNG'[SP-DV] = CurrentSPDV && 'KPIKQI KHÁCH HÀNG'[Metric] = CurrentMetric && 'KPIKQI KHÁCH HÀNG'[Id] = MaxID ) ) RETURN IF(CurrentID = MaxID && CurrentUpdate = MaxUpdatedAt, 1, 0)"
+    meta:
+      dimension:
+        type: string
+        label: "IsLatest"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQI KHÁCH HÀNG. Cột tính toán, DAX gốc: SWITCH( TRUE(), NOT ISBLANK('KPIKQI KHÁCH HÀNG'[So với target]) && 'KPIKQI KHÁCH HÀNG'[So với target] <= 0, \"Đạt\", NOT ISBLANK('KPIKQI KHÁCH HÀNG'[Kết quả]) && 'KPIKQI KHÁCH HÀNG'[So với target] = 'KPIKQI KHÁCH HÀNG'[Kết quả], \"Đạt\", ISBLANK('KPIKQI KHÁCH HÀNG'[So với target]) , BLANK(), \"Không đạt\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+        hidden: true
+  - name: title
+    description: "Cột Title trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Title"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit
+    description: "Cột Đơn vị trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+        hidden: true
+  - name: criteria_code
+    description: "Cột CriteriaCode trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaCode"
+        hidden: true
+  - name: influx_db_query
+    description: "Cột InfluxDbQuery trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "InfluxDbQuery"
+        hidden: true
+  - name: influx_db_result
+    description: "Cột InfluxDbResult trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "InfluxDbResult"
+        hidden: true
+  - name: error
+    description: "Cột Error trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Error"
+        hidden: true
+  - name: dws_kpi_systems_name
+    description: "Cột dws_kpi_systems.Name trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "dws_kpi_systems.Name"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: customer_type_2026
+    description: "Cột CustomerType_2026 (from dws_kpi_systems) trong KPIKQI KHÁCH HÀNG."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType_2026 (from dws_kpi_systems)"
+        hidden: true

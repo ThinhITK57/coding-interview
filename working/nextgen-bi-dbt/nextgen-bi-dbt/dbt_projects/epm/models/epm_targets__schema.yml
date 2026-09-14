@@ -1,0 +1,265 @@
+version: 2
+
+models:
+  - name: epm_targets
+    description: >
+      Bảng lưu trữ thông tin chi tiết về các chỉ tiêu định lượng (Targets). 
+      Đây là nơi áp dụng 3 mức độ hoàn thành C (Cooperation/Tập đoàn), M (Must), N (Nice) 
+      để tính điểm chỉ tiêu và quy đổi trọng số lên Phiếu giao nhiệm vụ (Assignments).
+
+      Grain: Một dòng tương ứng với một chỉ tiêu định lượng.
+    meta:
+      label: "Chỉ tiêu định lượng (Targets)"
+      group_label: "EPM Dashboard"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Targets"
+        grain: "One row per quantitative target"
+        primary_department_dimension: "c_department"
+
+        restrictions:
+          - "Việc hoàn thành các mức C, M, N chỉ áp dụng trên Targets để dẫn đến tính điểm Assignments."
+          - "Sử dụng trường c_assignment_weight tại Targets làm trọng số tính điểm."
+
+    columns:
+      - name: sysid
+        description: "Mã định danh duy nhất của chỉ tiêu."
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "Target ID"
+
+      - name: name
+        description: "Tên chỉ tiêu định lượng (ví dụ: Tăng trưởng doanh thu 25%)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên chỉ tiêu"
+
+      - name: description
+        description: "Thuyết minh phương pháp tính và tiêu chí đánh giá chỉ tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Mô tả chỉ tiêu"
+
+      - name: c_update_description
+        description: "Thuyết minh chi tiết nội dung giao việc và các lưu ý chỉ đạo điều hành."
+        meta:
+          dimension:
+            type: string
+            label: "Cập nhật giải trình"
+
+      - name: unit
+        description: "Đơn vị tính (%, VND, USD, Hệ thống, Giờ, Người)."
+        meta:
+          dimension:
+            type: string
+            label: "Đơn vị tính"
+
+      - name: associated_objective
+        description: "Khóa ngoại trỏ trực tiếp đến Mục tiêu chiến lược (BSC.SYSID)."
+        meta:
+          dimension:
+            type: string
+            label: "Mục tiêu BSC liên kết"
+
+      - name: c_associated_assignment
+        description: "Khóa ngoại trỏ đến Phiếu giao việc trong bảng Assignment (Assignment.SYSID)."
+        meta:
+          dimension:
+            type: string
+            label: "PGNV liên kết"
+
+      - name: parent_target
+        description: "Khóa ngoại trỏ đến Chỉ tiêu cha cấp trên (Chỉ tiêu công ty -> Chỉ tiêu phòng ban)."
+        meta:
+          dimension:
+            type: string
+            label: "Chỉ tiêu cha"
+
+      - name: target_type
+        description: "Loại chỉ tiêu (Càng cao càng tốt, Càng thấp càng tốt, Duy trì trong ngưỡng)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại chỉ tiêu"
+
+      - name: c_assignee
+        description: "Nhân sự được giao cam kết thực hiện chỉ tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Nhân sự cam kết"
+
+      - name: created_by
+        description: "Người tạo và thời điểm khởi tạo chỉ tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Người tạo"
+
+      - name: c_department
+        description: "Đơn vị chịu trách nhiệm về chỉ tiêu này."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban chịu trách nhiệm"
+
+      - name: c_teams
+        description: "Nhóm thực hiện phối hợp."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm phối hợp"
+
+      - name: c_target_value_m
+        description: "Giá trị và toán tử so sánh cho Kịch bản Must (M)."
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị M (Must)"
+
+      - name: c_target_date_m
+        description: "Thời hạn hoàn thành chỉ tiêu tương ứng theo kịch bản M."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn kịch bản M"
+
+      - name: c_target_result_value_m
+        description: "Kết quả thực tế đạt được ở kịch bản M."
+        meta:
+          dimension:
+            type: number
+            label: "Kết quả thực tế M"
+
+      - name: c_target_value_n
+        description: "Giá trị và toán tử cho Kịch bản Nice (N)."
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị N (Nice)"
+
+      - name: c_target_date_n
+        description: "Thời hạn hoàn thành chỉ tiêu tương ứng theo kịch bản N."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn kịch bản N"
+
+      - name: c_target_result_value_n
+        description: "Kết quả thực tế đạt được ở kịch bản N."
+        meta:
+          dimension:
+            type: number
+            label: "Kết quả thực tế N"
+
+      - name: c_target_value_s
+        description: "Giá trị và toán tử cho Kịch bản Tập đoàn/Cooperation (C)."
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị C (Cooperation)"
+
+      - name: c_target_date_s
+        description: "Thời hạn hoàn thành chỉ tiêu tương ứng theo kịch bản C."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn kịch bản C"
+
+      - name: c_target_result_value_s
+        description: "Kết quả thực tế đạt được ở kịch bản C."
+        meta:
+          dimension:
+            type: number
+            label: "Kết quả thực tế C"
+
+      - name: state
+        description: "Trạng thái vòng đời chỉ tiêu (/State/Active, /State/Completed)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái vòng đời"
+
+      - name: status
+        description: "Đánh giá hiện trạng (Đạt, Vượt, Chưa đạt, Đang theo dõi)."
+        meta:
+          dimension:
+            type: string
+            label: "Tình trạng đánh giá"
+
+      - name: associated_item
+        description: "Khóa ngoại trỏ đến Dự án trong bảng Project (Project.SYSID)."
+        meta:
+          dimension:
+            type: string
+            label: "Dự án liên kết"
+
+      - name: percent_completed
+        description: "% hoàn thành tổng thể của chỉ tiêu."
+        meta:
+          dimension:
+            type: number
+            label: "Tỷ lệ hoàn thành (%)"
+
+      - name: weight
+        description: "Trọng số của chỉ tiêu trong mục tiêu tổng thể."
+        meta:
+          dimension:
+            type: number
+            label: "Trọng số"
+
+      - name: last_updated_on
+        description: "Người cập nhật và Watermark gia số thời gian để cào tăng dần."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày cập nhật"
+
+      - name: last_updated_by_system_on
+        description: "Dấu thời gian hệ thống tự động tính toán lại điểm kết quả."
+        meta:
+          dimension:
+            type: date
+            label: "Hệ thống cập nhật"
+
+      - name: created_on
+        description: "Người tạo và thời điểm khởi tạo chỉ tiêu."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày tạo"
+
+      - name: entity_owner
+        description: "Cán bộ sở hữu và quản lý chỉ tiêu trong tổ chức."
+        meta:
+          dimension:
+            type: string
+            label: "Chủ sở hữu"
+
+      - name: external_id
+        description: "Mã số chỉ tiêu quy chuẩn theo sổ tay KPI doanh nghiệp."
+        meta:
+          dimension:
+            type: string
+            label: "Mã quy chuẩn"
+
+      - name: entity_type
+        description: "Luôn mang giá trị cố định Target."
+        meta:
+          dimension:
+            type: string
+            label: "Loại đối tượng"
+
+      - name: c_assignment_weight
+        description: "Trọng số của chỉ tiêu khi được phân bổ vào bản giao việc Assignment (dùng để tính điểm Targets -> Assignments)."
+        meta:
+          dimension:
+            type: number
+            label: "Trọng số phân bổ Assignment"

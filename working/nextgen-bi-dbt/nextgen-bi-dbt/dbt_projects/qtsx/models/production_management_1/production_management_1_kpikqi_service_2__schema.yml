@@ -1,0 +1,127 @@
+version: 2
+models:
+- name: production_management_1_kpikqi_service_2
+  description: "Bảng production_management_1_kpikqi_service_2 (nguồn Power BI: KPIKQI dịch vụ2)."
+  meta:
+    label: "KPIKQI dịch vụ2"
+    powerbi_source: "KPIKQI dịch vụ2"
+  columns:
+  - name: id
+    description: "Cột Id trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày_báo_cáo_18900 trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_báo_cáo_18900"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "Target"
+        hidden: true
+  - name: unit
+    description: "Cột Đơn vị trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: viettel
+    description: "Cột Viettel trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "Viettel"
+        hidden: true
+  - name: socp
+    description: "Cột SOCP trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "SOCP"
+        hidden: true
+  - name: external_customer
+    description: "Cột KH ngoài trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "KH ngoài"
+        hidden: true
+  - name: customer_name
+    description: "Cột CustomerName trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerName"
+        hidden: true
+  - name: customer_type
+    description: "Cột CustomerType trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType"
+        hidden: true
+  - name: column12
+    description: "Cột Column12 trong KPIKQI dịch vụ2."
+    meta:
+      dimension:
+        type: string
+        label: "Column12"
+        hidden: true

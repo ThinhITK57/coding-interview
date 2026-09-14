@@ -1,0 +1,820 @@
+version: 2
+models:
+- name: crm_deals
+  description: >
+    Bảng crm_deals lưu trữ thông tin chi tiết về các giao dịch/cơ hội trong hệ thống CRM, bao gồm dữ liệu về khách hàng, công ty, 
+    giai đoạn bán hàng, giá trị giao dịch/cơ hội, ngân sách dự kiến cho giao dịch/cơ hội, xác suất thành công và các chỉ số liên quan đến quản lý cơ hội bán hàng. 
+    Bảng này được sử dụng để phân tích hiệu suất bán hàng, doanh số bán hàng, theo dõi vòng đời giao dịch/cơ hội, đánh giá chiến lược kinh doanh, 
+    và hỗ trợ quản lý dự án/nhân sự bán hàng. Doanh số ký hợp đồng
+    Semantic: 
+     - Khi người dùng hỏi "doanh số", ưu tiên lấy từ bảng crm_deals
+     - Hỏi doanh số ký hợp đồng theo đơn vị thực hiện bán hàng trực tiếp/trung tâm kinh doanh hiện tại chưa có, chỉ có khu vực/territory_name
+  meta:
+    label: "CRM Deals"
+    owner: "huongnv1"
+    joins:
+      - join: crm_contracts
+        sql_on: ${crm_deals.contract_id} = ${crm_contracts.id}
+        relationship: one-to-one
+    metrics:
+      deal_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số deal. Đây là measure mặc định cho các câu hỏi về số lượng deal và pipeline.
+        label: "Số lượng deal"
+        category: "Sales Performance"
+        synonyms:
+          - "Deal Count"
+          - "Số lượng deal"
+          - "Đếm deal"
+      
+      post_sales_cycle_days:
+        type: average
+        sql: >
+          CASE
+            WHEN fac_date IS NOT NULL
+              AND sign_date IS NOT NULL
+            THEN date_diff(
+              'day',
+              sign_date,
+              fac_date
+            )
+            ELSE 0.0
+          END
+        label: Sale Cycle - Số ngày Sau bán
+        description: >
+          Số ngày từ thời điểm ký hợp đồng đến thời điểm nghiệm thu bàn giao hoàn tất.
+          
+      contract_booking_amount:
+        type: sum
+        sql: CASE WHEN deal_stage_code = 'SIGNED' THEN vnd_amount ELSE 0.0 END
+        description: 'Tổng giá trị deal đã ký (SIGNED).'
+        label: "Doanh số ký HĐ"
+        category: "Sales Performance"
+        synonyms:
+          - "Total contract booking amount"
+          - "DS ký HĐ"
+          - "Doanh số ký hợp đồng"
+          - Doanh số thực hiện
+          
+      pipeline_booking_amount:
+        type: sum
+        sql: CASE WHEN deal_stage_code != 'SIGNED' THEN vnd_amount * probability / 100.00 ELSE 0.0 END
+        description: 'Giá trị deal dự báo sẽ ký theo trọng số xác suất (pipeline weighted). Đây là phần ước/dự báo, không phải số chốt.'
+        label: "Doanh số theo pipeline"
+        category: "Sales Performance"
+        synonyms:
+          - "Total pipeline booking amount"
+          - "DS theo pipeline"
+          - "Doanh số pipeline"
+
+      pipeline_value_amount:
+        type: sum
+        sql: CASE WHEN deal_stage_code != 'SIGNED' THEN vnd_amount * probability / 100.00 ELSE 0.0 END
+        description: Tổng giá trị pipeline theo trọng số xác suất thành công (VNĐ)
+        label: "Giá trị Pipeline (VNĐ)"
+        category: "Sales Performance"
+        synonyms:
+          - "Pipeline Value"
+          - "Giá trị Pipeline"
+          - "Giá trị pipeline VND"
+
+      pipeline_value_currency_amount:
+        type: sum
+        sql: CASE WHEN deal_stage_code != 'SIGNED' THEN currency_amount * probability / 100.00 ELSE 0.0 END
+        description: Tổng giá trị pipeline theo trọng số xác suất thành công trên nguyên tệ.
+        label: "Giá trị Pipeline (Nguyên tệ)"
+        category: "Sales Performance"
+        synonyms:
+          - "Pipeline Value Currency"
+          - "Giá trị Pipeline nguyên tệ"
+          - "Giá trị pipeline ngoại tệ"
+          
+      booking_amount:
+        type: number
+        sql: ${contract_booking_amount} + ${pipeline_booking_amount}
+        description: 'Tổng doanh số theo logic dự báo ở mức deal: DS = DS ký HĐ + DS theo pipeline.'
+        label: "Doanh số"
+        category: "Sales Performance"
+        synonyms:
+          - "DS"
+          - "Tổng doanh số"
+
+      total_deal_amount:
+        type: sum
+        sql: ${TABLE}.vnd_amount
+        description: Tổng giá trị deal theo VND.
+        label: "Tổng giá trị deal"
+        category: "Sales Performance"
+        synonyms:
+          - "Total Deal Amount"
+          - "Tổng deal giá trị"
+      avg_deal_amount:
+        type: average
+        sql: ${TABLE}.vnd_amount
+        description: Giá trị deal trung bình theo VND.
+        label: "Giá trị deal trung bình"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg Deal Amount"
+          - "Trung bình deal giá trị"
+      weighted_pipeline:
+        type: sum
+        sql: COALESCE(${TABLE}.vnd_amount, 0.0) * COALESCE(${TABLE}.probability, 0.0) / 100.0
+        description: Giá trị pipeline có trọng số theo xác suất của từng deal.
+        label: "Pipeline có trọng số"
+        category: "Sales Performance"
+        synonyms:
+          - "Weighted Pipeline"
+          - "Có trọng số pipeline"
+      won_deal_count:
+        type: sum
+        sql: CASE WHEN LOWER(${TABLE}.deal_status) IN ('closed won', 'won') THEN 1.0 ELSE 0.0 END
+        description: Số lượng deal thắng (Closed Won).
+        label: "Số deal thắng"
+        category: "Sales Performance"
+        synonyms:
+          - "Won Deal Count"
+          - "Số lượng thắng deal"
+      lost_deal_count:
+        type: sum
+        sql: CASE WHEN LOWER(${TABLE}.deal_status) IN ('closed lost', 'lost') THEN 1.0 ELSE 0.0 END
+        description: Số lượng deal thua (Closed Lost).
+        label: "Số deal thua"
+        category: "Sales Performance"
+        synonyms:
+          - "Lost Deal Count"
+          - "Số lượng thua deal"
+      win_rate:
+        type: number
+        sql: ROUND(${won_deal_count} / NULLIF(${lost_deal_count} + ${won_deal_count}, 0.0), 2) * 100.0
+        description: Tỷ lệ deal thắng trên tổng số  (lost deal +  win deal).
+        label: "Tỷ lệ thắng deal"
+        category: "Sales Performance"
+        synonyms:
+          - "Win Rate"
+          - "Tỷ lệ thắng"
+          - "Tỷ lệ thắng deal"
+      avg_days_to_close:
+        type: average
+        sql: ${TABLE}.days_to_close
+        description: Số ngày trung bình để đóng deal.
+        label: "Số ngày đóng deal trung bình"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg Days To Close"
+          - "Trung bình ngày đóng"
+      stale_pipeline_amount:
+        type: sum
+        sql: CASE WHEN COALESCE(${TABLE}.days_since_last_update, 0.0) >= 30.0 THEN COALESCE(${TABLE}.vnd_amount, 0.0) ELSE 0.0 END
+        description: Giá trị pipeline không được cập nhật từ 30 ngày trở lên.
+        label: "Giá trị pipeline chậm cập nhật"
+        category: "Sales Performance"
+        synonyms:
+          - "Stale Pipeline Amount"
+          - "Lâu không cập nhật pipeline giá trị"
+      budgeted_deal_rate:
+        type: number
+        sql: ROUND(SUM(CASE WHEN ${TABLE}.has_budget THEN 1.0 ELSE 0.0 END) / NULLIF(COUNT(*), 0.0), 2) * 100.0
+        description: Tỷ lệ deal có thông tin ngân sách.
+        label: "Tỷ lệ deal có ngân sách"
+        category: "Sales Performance"
+        synonyms:
+          - "Budgeted Deal Rate"
+          - "Tỷ lệ Budgeted deal"
+      total_expected_deal_value:
+        type: sum
+        sql: ${TABLE}.expected_deal_value
+        description: Tổng giá trị kỳ vọng của deal. Đây là KPI gần nhất với quy mô cơ hội kinh doanh.
+        label: "Tổng giá trị kỳ vọng deal"
+        category: "Sales Performance"
+        synonyms:
+          - "Total Expected Deal Value"
+          - "Tổng kỳ vọng deal giá trị"
+      total_budget_amount:
+        type: sum
+        sql: ${TABLE}.budget_amount
+        description: Tổng ngân sách của các deal.
+        label: "Tổng ngân sách deal"
+        category: "Sales Performance"
+        synonyms:
+          - "Total Budget Amount"
+          - "Tổng ngân sách giá trị"
+      total_currency_amount:
+        type: sum
+        sql: ${TABLE}.currency_amount
+        description: >
+          Tổng giá trị thanh toán theo đơn vị tiền tệ gốc của khách hàng (currency_amount),
+          chưa quy đổi sang VND. Chỉ nên phân tích cùng currency_code.
+        label: "Tổng giá trị nguyên tệ"
+        category: "Business Value"
+        synonyms:
+          - "Total Currency Amount"
+          - "Tổng tiền tệ giá trị"
+      total_vnd_amount:
+        type: sum
+        sql: ${TABLE}.vnd_amount
+        description: Tổng giá trị giao dịch/cơ hội/cơ hội theo đơn vị tiền tệ VND
+        label: "Tổng giá trị VND"
+        category: "Business Value"
+        synonyms:
+          - "Total VND Amount"
+          - "Tổng VND giá trị"
+      weighted_pipeline_value:
+        type: sum
+        sql: expected_deal_value * probability
+        description: Tổng giá trị pipeline có trọng số theo xác suất thành công của deal.
+        label: "Tổng giá trị pipeline có trọng số"
+        category: "Sales Performance"
+        synonyms:
+          - "Weighted Pipeline Value"
+          - "Có trọng số pipeline giá trị"
+      avg_expected_deal_value:
+        type: average
+        sql: ${TABLE}.expected_deal_value
+        description: Giá trị kỳ vọng trung bình trên mỗi deal.
+        label: "Giá trị kỳ vọng trung bình"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg Expected Deal Value"
+          - "Trung bình kỳ vọng deal giá trị"
+      avg_budget_amount:
+        type: average
+        sql: ${TABLE}.budget_amount
+        description: Ngân sách trung bình trên mỗi deal.
+        label: "Ngân sách trung bình"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg Budget Amount"
+          - "Trung bình ngân sách giá trị"
+      avg_currency_amount:
+        type: average
+        sql: ${TABLE}.currency_amount
+        description: Giá trị trung bình theo tiền tệ gốc.
+        label: "Giá trị nguyên tệ trung bình"
+        category: "Business Value"
+        synonyms:
+          - "Avg Currency Amount"
+          - "Trung bình tiền tệ giá trị"
+      avg_vnd_amount:
+        type: average
+        sql: ${TABLE}.vnd_amount
+        description: Giá trị VND trung bình trên mỗi deal.
+        label: "Giá trị VND trung bình"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg VND Amount"
+          - "Trung bình VND giá trị"
+      total_closed_won_amount:
+        type: sum
+        sql: CASE WHEN UPPER(${TABLE}.deal_status) = 'CLOSED WON' THEN ${TABLE}.vnd_amount ELSE 0.0 END
+        description: Tổng doanh số từ các deal/cơ hội bán hàng đã thắng (won) theo VND. Đây là định nghĩa chuẩn của doanh số thực tế.
+        label: "Tổng giá trị deal thắng"
+        category: "Sales Performance"
+        synonyms:
+          - "Total Closed Won Amount"
+          - "Tổng đã đóng thắng giá trị"
+      total_closed_lost_amount:
+        type: sum
+        sql: CASE WHEN UPPER(${TABLE}.deal_status) = 'CLOSED LOST' THEN ${TABLE}.vnd_amount ELSE 0.0 END
+        description: Tổng doanh số từ các deal/cơ hội bán hàng đã thua (LOST) theo VND. Đây là định nghĩa chuẩn của doanh số thực tế.
+        label: "Tổng giá trị deal thua"
+        category: "Sales Performance"
+        synonyms:
+          - "Total Closed Lost Amount"
+          - "Tổng đã đóng thua giá trị"
+      number_of_closed_won_deal:
+        type: number
+        sql: CAST(COUNT_IF(LOWER(deal_status) = LOWER('CLOSED WON')) AS DOUBLE)
+        description: Tổng số cơ hội bán hàng/deal đã thành công/thắng
+        label: "Số deal thắng (đã đóng)"
+        category: "Sales Performance"
+        synonyms:
+          - "Number Of Closed Won Deal"
+          - "Số lượng đã đóng thắng deal"
+      number_of_closed_lost_deal:
+        type: number
+        sql: CAST(COUNT_IF(LOWER(deal_status) = LOWER('CLOSED LOST')) AS DOUBLE)
+        description: Tổng số cơ hội bán hàng/deal đã thất bại/thua
+        label: "Số deal thua (đã đóng)"
+        category: "Sales Performance"
+        synonyms:
+          - "Number Of Closed Lost Deal"
+          - "Số lượng đã đóng thua deal"
+      number_of_deal_win_rate:
+        type: number
+        sql: ROUND(1.0 * COALESCE(${number_of_closed_won_deal}, 0.0) / COALESCE(${deal_count}, 1.0), 2) * 100.0
+        description: Tỷ lệ chuyển đổi thành công theo cơ hội bán hàng/deal
+        label: "Tỷ lệ thắng theo số lượng deal"
+        category: "Sales Performance"
+        synonyms:
+          - "Number Of Deal Win Rate"
+          - "Tỷ lệ số lượng deal thắng"
+      avg_probability:
+        type: average
+        sql: ${TABLE}.probability
+        description: Xác suất thành công trung bình của deal.
+        label: "Xác suất trung bình"
+        category: "Sales Performance"
+        synonyms:
+          - "Avg Probability"
+          - "Trung bình xác suất"
+      signed_deal_count:
+        type: sum
+        sql: CASE WHEN sign_date IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số deal đã có ngày ký.
+        label: "Số deal đã ký"
+        category: "Sales Performance"
+        synonyms:
+          - "Signed Deal Count"
+          - "Số lượng đã ký deal"
+      fac_deal_count:
+        type: sum
+        sql: CASE WHEN fac_date IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số deal đã FAC.
+        label: "Số deal đã FAC"
+        category: "Sales Performance"
+        synonyms:
+          - "Fac Deal Count"
+          - "Số lượng FAC deal"
+      closed_deal_count:
+        type: sum
+        sql: CASE WHEN closed_date IS NOT NULL THEN 1.0 ELSE 0.0 END
+        description: Số deal đã đóng.
+        label: "Số deal đã đóng"
+        category: "Sales Performance"
+        synonyms:
+          - "Closed Deal Count"
+          - "Số lượng đã đóng deal"
+      overdue_expected_close_count:
+        type: sum
+        sql: "CASE\n  WHEN expected_close_date IS NOT NULL\n   AND closed_date IS NULL\n   AND expected_close_date < CURRENT_TIMESTAMP\n  THEN 1.0 ELSE 0.0\nEND"
+        description: Số deal đã quá ngày kỳ vọng đóng nhưng chưa đóng.
+        label: "Số deal quá hạn kỳ vọng đóng"
+        category: "Sales Performance"
+        synonyms:
+          - "Overdue Expected Close Count"
+          - "Số lượng quá hạn kỳ vọng đóng"
+      signed_deal_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN COUNT(*) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(CASE WHEN sign_date IS NOT NULL THEN 1.0 ELSE 0.0 END) / COUNT(*)\nEND, 2) * 100.0 "
+        description: Tỷ lệ deal đã có ngày ký trên tổng số deal.
+        label: "Tỷ lệ deal đã ký"
+        category: "Sales Performance"
+        synonyms:
+          - "Signed Deal Rate"
+          - "Tỷ lệ đã ký deal"
+          - "Tỷ lệ ký deal"
+      fac_deal_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN COUNT(*) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(CASE WHEN fac_date IS NOT NULL THEN 1.0 ELSE 0.0 END) / COUNT(*)\nEND, 2) * 100.0"
+        description: Tỷ lệ deal đã FAC trên tổng số deal.
+        label: "Tỷ lệ deal đã FAC"
+        category: "Sales Performance"
+        synonyms:
+          - "Fac Deal Rate"
+          - "Tỷ lệ FAC deal"
+      closed_deal_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN COUNT(*) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(CASE WHEN closed_date IS NOT NULL THEN 1.0 ELSE 0.0 END) / COUNT(*)\nEND, 2) * 100.0"
+        description: Tỷ lệ deal đã đóng trên tổng số deal.
+        label: "Tỷ lệ deal đã đóng"
+        category: "Sales Performance"
+        synonyms:
+          - "Closed Deal Rate"
+          - "Tỷ lệ đã đóng deal"
+          - "Tỷ lệ đóng deal"
+      overdue_expected_close_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN COUNT(*) = 0.0 THEN 0.0\n  ELSE 1.0 * SUM(\n    CASE\n      WHEN expected_close_date IS NOT NULL\n       AND closed_date IS NULL\n       AND expected_close_date < CURRENT_TIMESTAMP\n      THEN 1.0 ELSE 0.0\n    END\n  ) / COUNT(*)\nEND, 2) * 100.0"
+        description: Tỷ lệ deal quá ngày kỳ vọng đóng nhưng chưa đóng.
+        label: "Tỷ lệ deal quá hạn kỳ vọng đóng"
+        category: "Sales Performance"
+        synonyms:
+          - "Overdue Expected Close Rate"
+          - "Tỷ lệ quá hạn kỳ vọng đóng"
+      first_signed_company_count:
+        type: count_distinct
+        sql: "CASE\n  WHEN deal_status = 'CLOSED WON'\n   AND company_tax_code IS NOT NULL\n   AND sign_date = first_sign_date_by_contract\n  THEN company_tax_code\nEND"
+        description: Số công ty ký mới.
+        label: "Số công ty ký mới"
+        category: "Sales Performance"
+        synonyms:
+          - "First Signed Company Count"
+          - "Số công ty ký mới"
+          - "Số khách hàng ký mới"
+  columns:
+  - name: am_group
+    description: Phân nhóm AM (Account Manager)
+    meta:
+      dimension:
+        type: string
+        label: Phân nhóm AM (Account Manager)
+  - name: deal_id
+    description: Mã định danh duy nhất của giao dịch/cơ hội trong hệ thống CRM.
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      dimension:
+        type: string
+        label: Mã deal
+        synonyms:
+        - Mã cơ hội
+        - định danh ID
+        - mã opp
+        - opportunity id
+  - name: deal_name
+    description: Tên giao dịch/cơ hội hoặc tên cơ hội bán hàng, dùng để nhận diện cơ hội trong CRM.
+  - name: currency_amount
+    description: Giá trị giao dịch/cơ hội theo đơn vị tiền tệ gốc tương ứng trong cột currency_code.
+    meta:
+      dimension:
+        type: number
+        label: Giá trị giao dịch/cơ hội theo đơn vị tiền tệ gốc
+  - name: vnd_amount
+    description: Giá trị giao dịch/cơ hội quy đổi sang VND, dùng để so sánh nội bộ, doanh số bán hàng
+    meta:
+      dimension:
+        type: number
+        label: Giá trị giao dịch/cơ hội VND
+  - name: expected_close_date
+    description: Ngày kỳ vọng giao dịch/cơ hội sẽ được chốt và hoàn tất.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày kỳ vọng chốt và hoàn tất
+  - name: closed_date
+    description: Ngày mà giao dịch/cơ hội được đóng hoặc ký hợp đồng.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày đóng
+  - name: stage_updated_time
+    description: Thời gian cập nhật lần cuối của giai đoạn giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: timestamp
+        label: Thời gian cập nhật lần cuối của giai đoạn
+  - name: days_since_last_update
+    description: Số ngày đã cập nhật
+    meta:
+      dimension:
+        type: number
+        label: Số ngày đã cập nhật
+  - name: is_deal_locked
+    description: Cho biết giao dịch/cơ hội đã bị khóa và không thể chỉnh sửa dữ liệu giá trị
+  - name: usd_to_vnd
+    description: Tỷ giá chuyển đổi từ đô la Mỹ (USD) sang đồng Việt Nam (VND) được sử dụng theo từng giao dịch/cơ hội
+    meta:
+      dimension:
+        type: number
+        label: Tỷ giá USD sang VND
+  - name: get_live_date
+    description: Ngày mà hợp đồng hoặc đề nghị bắt đầu có hiệu lực và được triển khai thực tế.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày mà hợp đồng hoặc đề nghị bắt đầu có hiệu lực 
+  - name: periodicity
+    description: Chu kỳ hoặc tần suất thanh toán, gia hạn của giao dịch/cơ hội trong CRM.
+  - name: has_budget
+    description: Cho biết giao dịch/cơ hội có ngân sách dự kiến hay không.
+  - name: company_id
+    description: Mã định danh duy nhất của công ty
+  - name: company_alias
+    description: Tên thay thế của khách hàng hoặc công ty, bao gồm tên viết tắt, tên gọi ngắn hoặc tên thường được sử dụng để nhận diện khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Tên thay thế khách hàng
+        synonyms:
+          - tên thay thế
+          - tên viết tắt
+          - viết tắt
+          - bí danh công ty
+          - biệt danh công ty
+          - tên gọi khác
+          - tên gọi ngắn
+          - alias
+          - company alias
+          - short name
+  - name: company_name
+    description: Tên khách hàng hoặc tên công ty được sử dụng để nhận diện khách hàng trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Tên khách hàng
+        synonyms:
+          - khách hàng
+          - tên khách hàng
+          - công ty
+          - tên công ty
+          - doanh nghiệp
+          - tên doanh nghiệp
+          - customer
+          - customer name
+          - company
+          - company name
+  - name: budget_amount
+    description: Ngân sách dự kiến cho giao dịch/cơ hội, giúp đánh giá kế hoạch chi tiêu.
+    meta:
+      dimension:
+        type: number
+        label: Ngân sách dự kiến cho giao dịch/cơ hội
+  - name: vvip_segment
+    description: Nhóm VIP/VVIP
+    meta:
+      dimension:
+        type: string
+        label: Nhóm VIP/VVIP
+  - name: customer_segment_l1
+    description: Phân khúc  khách hàng  cấp 1. Phân loại theo người dùng cuối (KH cuối)
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 1
+  - name: customer_segment_l2
+    description: Mức phân khúc khách hàng cấp 2. Phân loại theo người dùng cuối (KH cuối)
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 2
+  - name: customer_segment_l3
+    description: Phân khúc khách hàng cấp 3. Phân loại theo người dùng cuối (KH cuối)
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc cấp 3
+  - name: channel
+    description: Kênh mà giao dịch/cơ hội được thực hiện, thể hiện cách thức tiếp cận hoặc bán hàng.
+    meta:
+      dimension:
+        type: string
+        label: Customer Channel
+  - name: opportunity_weight_pct
+    description: Trọng số cơ hội kinh doanh, thể hiện mức độ ưu tiên hoặc quan trọng (0-100%)
+    meta:
+      dimension:
+        type: number
+        label: Trọng số cơ hội kinh doanh (0-100%)
+  - name: bidding_required
+    description: Cho biết liệu giao dịch/cơ hội có yêu cầu đấu thầu hay không.
+  - name: presales_name
+    description: Tên của nhân viên tiền bán hàng (presales) phụ trách giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: tên nhân viên tiền bán hàng
+  - name: project_manager
+    description: Tên người chịu trách nhiệm quản lý và giám sát dự án bán hàng trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: người quản lý dự án
+  - name: sales_admin
+    description: Tên người quản trị bán hàng phụ trách giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: người quản trị bán hàng
+  - name: partner_id
+    description: Column partner_id from bi_silver.crm_deals
+  - name: contract_id
+    description: Mã định danh duy nhất của hợp đồng trong hệ thống CRM.
+  - name: initial_source
+    description: Nguồn gốc ban đầu mà giao dịch/cơ hội được tạo ra.
+    meta:
+      dimension:
+        type: string
+        label: Lead init source
+  - name: warm_up_source
+    description: Nguồn gốc khởi tạo hoặc tiếp cận ban đầu của khách hàng tiềm năng trước khi chuyển sang giai đoạn giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Lead warn-up source
+  - name: territory_name
+    description: Tên khu vực hoặc vùng địa lý của khách hàng/Công ty
+    meta:
+      dimension:
+        type: string
+        label: Tên khu vực của khách hàng/công ty
+  - name: contract_duration_month
+    description: Thời gian ký kết hợp đồng tính bằng số tháng.
+    meta:
+      dimension:
+        type: number
+        label: Thời gian ký kết hợp đồng tính bằng số tháng
+  - name: is_created_contract
+    description: Column is_created_contract from bi_silver.crm_deals
+  - name: expire_date
+    description: Ngày mà giao dịch/cơ hội sẽ hết hiệu lực nếu không được ký hoặc hoàn thành.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày hết hiệu lực
+  - name: company_province
+    description: Tỉnh hoặc thành phố nơi công ty khách hàng đặt trụ sở.
+    meta:
+      dimension:
+        type: string
+        label: Tỉnh công ty
+  - name: company_country
+    description: Quốc gia của công ty khách hàng trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Quốc gia của công ty
+  - name: company_contact
+    description: Tên người đại diện hoặc người liên hệ của công ty trong giao dịch/cơ hội.
+  - name: currency_code
+    description: Mã tiền tệ được sử dụng cho giao dịch/cơ hội trong CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã tiền tệ
+  - name: quotation_status
+    description: Trạng thái hiện tại của báo giá trong quy trình bán hàng.
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái báo giá
+  - name: fac_date
+    description: FAC date.
+    meta:
+      dimension:
+        type: timestamp
+        label: FAC date
+  - name: am_username
+    description: Tên đăng nhập của người quản lý tài khoản (Account Manager) phụ trách giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Tên đăng nhập AM
+  - name: probability
+    description: Xác suất thành công của giao dịch/cơ hội (0-100%), dùng để dự báo cơ hội thành công.
+    meta:
+      dimension:
+        type: number
+        label: Xác suất thành công của giao dịch/cơ hội (0-100%)
+        synonyms:
+        - cơ hội cao khi >= 70
+        - cơ hội thấp khi < 70
+    
+  - name: updated_at
+    description: Thời gian cập nhật cuối cùng.
+    meta:
+      dimension:
+        type: timestamp
+        label: Thời gian cập nhật cuối cùng
+  - name: created_at
+    description: Thời điểm tạo giao dịch/cơ hội trong hệ thống CRM.
+    meta:
+      dimension:
+        type: timestamp
+        label: Thời điểm tạo giao
+  - name: deal_stage_id
+    description: Mã định danh của giai đoạn trong quy trình bán hàng.
+  - name: deal_status
+    description: Trạng thái hiện tại của giao dịch/cơ hội/Deal trong CRM.
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái giao dịch/cơ hội
+  - name: deal_payment_status_id
+    description: Mã trạng thái thanh toán của giao dịch/cơ hội.
+  - name: next_scheduled_activity_time
+    description: Thời điểm cho hoạt động tiếp theo của giao dịch/cơ hội trong CRM.
+  - name: last_assigned_at
+    description: Thời điểm cuối cùng mà giao dịch/cơ hội được giao cho người phụ trách.
+  - name: last_contacted_activity_status
+    description: Trạng thái của hoạt động cuối cùng mà nhân viên bán hàng đã liên hệ với khách hàng trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái hoạt động cuối cùng
+  - name: last_contacted_activity_time
+    description: Thời gian hoạt động liên hệ cuối cùng với cơ hội bán hàng.
+  - name: expected_deal_value
+    description: Giá trị kỳ vọng của giao dịch/cơ hội, thể hiện mức giá trị hợp đồng (doanh số) ước tính khi giao dịch/cơ hội thành công.
+  - name: signing_delay_days
+    description: Số ngày chậm ký hợp đồng giữa ngày kỳ vọng thành công và ngày thực tế ký hợp đồng.
+    meta:
+      dimension:
+        type: number
+        label: Số ngày chậm ký hợp đồng
+  - name: am_user_id
+    description: Mã người dùng của nhân viên quản lý tài khoản chịu trách nhiệm giao dịch/cơ hội.
+  - name: sales_account_id
+    description: Mã định danh tài khoản bán hàng chịu trách nhiệm cho giao dịch/cơ hội.
+  - name: deal_type_id
+    description: Mã loại giao dịch/cơ hội, xác định kiểu hợp đồng hoặc cơ hội bán hàng.
+  - name: deal_reason_id
+    description: Mã định danh cho lý do của giao dịch/cơ hội trong CRM.
+  - name: deal_payment_status
+    description: Trạng thái thanh toán của giao dịch/cơ hội, cho biết giao dịch/cơ hội đã được thanh toán, đang chờ hoặc chưa thanh toán.
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái thanh toán
+  - name: deal_stage_name
+    description: >
+      Tên giai đoạn hiện tại của giao dịch/cơ hội trong quy trình bán hàng. 
+      Bao gồm EN / VI : 'Signed / Ký hợp đồng', 'New' , 'Lost' , 'Negotiation / Đàm phán' , 'Quotation Sent / Báo giá', 'POC'
+    meta:
+      dimension:
+        type: string
+        label: Giai đoạn giao dịch/cơ hội
+      synonyms:
+      - Signed / Ký hợp đồng
+      - New
+      - Lost
+      - Negotiation / Đàm phán
+      - Quotation Sent / Báo giá
+      - POC
+  - name: sign_date
+    description: Ngày mà khách hàng ký hợp đồng trong giao dịch/cơ hội.
+  - name: deal_stage_code
+    description: >
+      Mã thể hiện giai đoạn hiện tại của một giao dịch/cơ hội trong quy trình bán hàng. Đã được làm gọn
+      Gồm: 'SIGNED', 'LOST', 'NEW', 'NEGOTIATION', 'QUOTATION_SENT', 'POC'. Được chuẩn hóa từ deal_stage_name
+    meta:
+      dimension:
+        type: string
+        label: Mã giai đoạn giao dịch/cơ hội. Đã được làm gọn từ deal_stage_name
+      synonyms:
+      - SIGNED
+      - LOST
+      - NEW
+      - NEGOTIATION
+      - QUOTATION_SENT
+      - POC
+  - name: due_date
+    description: Ngày đáo hạn của giao dịch/cơ hội, thể hiện thời hạn cần hoàn thành hoặc thanh toán.
+  - name: probability_bucket
+    description: Trạng thái mô tả mức độ xác suất thành công của cơ hội bán hàng.
+    meta:
+      dimension:
+        type: string
+        label: Nhóm xác suất cơ hội
+  - name: contract_type
+    description: Loại hợp đồng mô tả hình thức hoặc nhóm của hợp đồng ký kết với khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Loại hợp đồng
+  - name: deal_reason
+    description: Nguyên nhân tạo ra giao dịch/cơ hội hoặc lý do thất bại, hỗ trợ phân tích nguyên nhân.
+    meta:
+      dimension:
+        type: string
+        label: Lý do giao dịch/cơ hội
+  - name: deal_type
+    description: Loại deals/cơ hội
+    meta:
+      dimension:
+        type: string
+        label: Loại giao dịch/cơ hội
+  - name: am_territory_name
+    description: Khu vực địa lý của AM nơi quản lý cơ hội/hợp đồng
+    meta:
+      dimension:
+        type: string
+        label: Tên khu vực quản lý Deal/Contract
+  # - name: report_customer_segment
+  #   description: "Nhóm khách hàng tổng hợp theo quy tắc lát cắt trong tài liệu metrics."
+  #   meta:
+  #     dimension:
+  #       type: string
+  #       label: "Nhóm khách hàng báo cáo"
+  - name: channel_am
+    description: "Nhóm khách hàng tổng hợp theo quy tắc lát cắt trong tài liệu metrics."
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm AM kênh"
+  - name: vvip_am
+    description: "Nhóm AM VVIP"
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm AM VVIP"
+  - name: internal_am
+    description: "Phân nhóm nội bộ theo customer_segment_l1."
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm AM nội bộ"
+  - name: am_team_name
+    description: "AM team name"
+    meta:
+      dimension:
+        type: string
+        label: "AM team name"
+  - name: is_soc_qualified
+    description: "Đã đạt điều kiện xác định là SOC"
+    meta:
+      dimension:
+        type: boolean
+        label: "Đã đạt điều kiện xác định là SOC"

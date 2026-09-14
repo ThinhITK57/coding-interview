@@ -1,0 +1,297 @@
+version: 2
+models:
+- name: production_management_1_pyc_jira
+  description: "Bảng production_management_1_pyc_jira (nguồn Power BI: PYC Jira)."
+  meta:
+    label: "PYC Jira"
+    powerbi_source: "PYC Jira"
+    joins:
+    - join: production_management_1_os_mm_plan
+      sql_on: "${production_management_1_pyc_jira.ttsx_product} = ${production_management_1_os_mm_plan.ttsx_product}"
+      relationship: many-to-many
+    metrics:
+      commit_hien_tai:
+        type: max
+        sql: ttsx_pm_commit_date
+        label: "Commit hiện tại"
+        description: "DAX: MAX('PYC Jira'[Ngày_PM_TTSX_commit_10808])"
+      count_issue_key:
+        type: count
+        sql: issue_key
+        label: "Số phiếu"
+        description: "Sinh từ Power BI: count(PYC Jira.ISSUE_KEY)"
+      mm_pyc_done_mm_actual_ttsx:
+        type: sum
+        sql: "CASE WHEN issue_current_status_name = 'Done' THEN mm_pyc END"
+        label: "MM PYC DONE - MM ACTUAL TTSX"
+        description: "DAX: CALCULATE( SUM('PYC Jira'[MM_PYC_10705]), 'PYC Jira'[ISSUE_CURRENT_STATUS_NAME]=\"Done\")"
+      post_acceptance_bug_count_weighted:
+        type: sum
+        sql: post_acceptance_defect_count_weighted
+        label: "Số Bug sau nghiệm thu đã nhân hệ số"
+        description: "DAX: CALCULATE( SUM('PYC Jira'[Số Lỗi Sau Nghiệm thu (đã nhân hệ số)]))"
+      tong_count_pyc:
+        type: count_distinct
+        sql: issue_key
+        label: "Tổng số PYC"
+        description: "DAX: DISTINCTCOUNT('PYC Jira'[ISSUE_KEY])"
+  columns:
+  - name: id
+    description: "Cột Id trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong PYC Jira."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Status"
+  - name: issue_current_assignee_name
+    description: "Cột ISSUE_CURRENT_ASSIGNEE_NAME trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "PM"
+  - name: internal_due_date
+    description: "Cột Due_date_nội_bộ_10613 trong PYC Jira."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Due_date_nội_bộ_10613"
+        hidden: true
+  - name: project
+    description: "Cột Dự_án_10706 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT"
+  - name: mm_pyc
+    description: "Cột MM_PYC_10705 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_10705"
+        hidden: true
+  - name: request_created_date
+    description: "Cột Ngày_tạo_PYC_10708 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_tạo_PYC_10708"
+        hidden: true
+  - name: on_time_check
+    description: "Cột Check_đúng_hạn_10804 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Check_đúng_hạn_10804"
+        hidden: true
+  - name: order_value
+    description: "Cột Đơn_hàng_10707 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn_hàng_10707"
+        hidden: true
+  - name: end_date_commit
+    description: "Cột EndDate_commit trong PYC Jira. Cột tính toán, DAX gốc: 'PYC Jira'[Ngày_TTSX_commit_10845]"
+    meta:
+      dimension:
+        type: date
+        label: "EndDate_commit"
+        hidden: true
+  - name: post_acceptance_defect_count_weighted
+    description: "Cột Số Lỗi Sau Nghiệm thu (đã nhân hệ số) trong PYC Jira. Cột tính toán, DAX gốc: CALCULATE( SUM('Bug sau nghiệm thu'[Hệ số lỗi]), FILTER('Bug sau nghiệm thu',MONTH('Bug sau nghiệm thu'[Date_created])=MONTH('PYC Jira'[EndDate_commit])&&YEAR('Bug sau nghiệm thu'[Date_created])=YEAR('PYC Jira'[EndDate_commit])&&'Bug sau nghiệm thu'[TTSX_PRODUCT_16800]='PYC Jira'[Dự_án_10706]))"
+    meta:
+      dimension:
+        type: number
+        label: "Số Lỗi Sau Nghiệm thu (đã nhân hệ số)"
+        hidden: true
+  - name: post_acceptance_bug_count
+    description: "Cột Số Bug sau nghiệm thu trong PYC Jira. Cột tính toán, DAX gốc: CALCULATE( DISTINCTCOUNTNOBLANK('Bug sau nghiệm thu'[Id]), FILTER('Bug sau nghiệm thu',MONTH('Bug sau nghiệm thu'[Date_created])=MONTH('PYC Jira'[EndDate_commit])&&YEAR('Bug sau nghiệm thu'[Date_created])=YEAR('PYC Jira'[EndDate_commit])&&'Bug sau nghiệm thu'[TTSX_PRODUCT_16800]='PYC Jira'[Dự_án_10706]))"
+    meta:
+      dimension:
+        type: number
+        label: "Số Bug sau nghiệm thu"
+        hidden: true
+  - name: end_date_ttsp
+    description: "Cột End Date_TTSP trong PYC Jira. Cột tính toán, DAX gốc: DATE(YEAR('PYC Jira'[Ngày_kỳ_vọng_TTSX_bàn_giao_10151]),MONTH('PYC Jira'[Ngày_kỳ_vọng_TTSX_bàn_giao_10151]),DAY('PYC Jira'[Ngày_kỳ_vọng_TTSX_bàn_giao_10151]))"
+    meta:
+      dimension:
+        type: date
+        label: "End Date_TTSP"
+        hidden: true
+  - name: partner
+    description: "Cột Đối_tác_10801 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ĐỐI TÁC"
+  - name: payment_status
+    description: "Cột Trạng_thái_thanh_toán_10810 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Trạng_thái_thanh_toán_10810"
+        hidden: true
+  - name: mm_pyc_thuc_te
+    description: "Cột MM_PYC_Thực_tế_10823 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_Thực_tế_10823"
+        hidden: true
+  - name: mm_ttsx_estimate
+    description: "Cột MM_TTSX_Estimate_10830 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Estimate_10830"
+        hidden: true
+  - name: ttsx_pm_commit_date
+    description: "Cột Ngày_PM_TTSX_commit_10808 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_PM_TTSX_commit_10808"
+        hidden: true
+  - name: acceptance_completion_date
+    description: "Cột Ngày_hoàn_thành_nghiệm_thu_10805 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_hoàn_thành_nghiệm_thu_10805"
+        hidden: true
+  - name: expected_ttsx_handover_date
+    description: "Cột Ngày_kỳ_vọng_TTSX_bàn_giao_10151 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_kỳ_vọng_TTSX_bàn_giao_10151"
+        hidden: true
+  - name: expected_release_date
+    description: "Cột Ngày_kỳ_vọng_release_10817 trong PYC Jira."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày_kỳ_vọng_release_10817"
+        hidden: true
+  - name: end_date_acceptance
+    description: "Cột End Date_Nghiệm thu trong PYC Jira. Cột tính toán, DAX gốc: DATE(YEAR('PYC Jira'[Ngày_nghiệm_thu_thành_công_10847]),MONTH('PYC Jira'[Ngày_nghiệm_thu_thành_công_10847]),DAY('PYC Jira'[Ngày_nghiệm_thu_thành_công_10847]))"
+    meta:
+      dimension:
+        type: date
+        label: "End Date_Nghiệm thu"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_10803 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX Product"
+  - name: mm_ttsx_du_kien
+    description: "Cột MM_TTSX_Dự_kiến_10840 trong PYC Jira."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Dự_kiến_10840"
+        hidden: true
+  - name: ttsx_planned_date
+    description: "Cột Ngày_TTSX_Dự_kiến_10841 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_TTSX_Dự_kiến_10841"
+        hidden: true
+  - name: payment_date
+    description: "Cột Ngày_thanh_toán_10839 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_thanh_toán_10839"
+        hidden: true
+  - name: type_os
+    description: "Cột Loại_OS_10843 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "DIỆN ĐỐI TƯỢNG"
+  - name: partner_by_contract
+    description: "Cột Đối_tác_theo_HĐ_10842 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Đối_tác_theo_HĐ_10842"
+  - name: on_time_check_2
+    description: "Cột Kiểm tra đúng hạn trong PYC Jira. Cột tính toán, DAX gốc: IF(('PYC Jira'[End Date_Nghiệm thu]-'PYC Jira'[EndDate_commit])<=0,\"Pass\",\"Fail\")"
+    meta:
+      dimension:
+        type: string
+        label: "Kiểm tra đúng hạn"
+        hidden: true
+  - name: ttsx_commit_date
+    description: "Cột Ngày_TTSX_commit_10845 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_TTSX_commit_10845"
+        hidden: true
+  - name: ttsx_commit_jmcf_date
+    description: "Cột Ngày_TTSX_commit_JMCF_10838 trong PYC Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Ngày_TTSX_commit_JMCF_10838"
+        hidden: true
+  - name: acceptance_success_date
+    description: "Cột Ngày_nghiệm_thu_thành_công_10847 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_nghiệm_thu_thành_công_10847"
+        hidden: true
+  - name: release_date
+    description: "Cột Ngày_Release_10806 trong PYC Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_Release_10806"
+        hidden: true
+  - name: handover_date
+    description: "Cột Ngày_bàn_giao_10849 trong PYC Jira."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày_bàn_giao_10849"
+        hidden: true

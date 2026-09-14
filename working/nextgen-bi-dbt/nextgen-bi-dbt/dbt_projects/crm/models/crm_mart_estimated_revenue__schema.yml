@@ -1,0 +1,330 @@
+version: 2
+
+models:
+  - name: crm_mart_estimated_revenue
+    description: >
+      [CRM] Tổng hợp doanh thu chắc chắn, doanh thu dự báo
+      theo ngày báo cáo, SPDV, AM và phân khúc khách hàng.
+      Semantic: 
+        - Hỏi 'doanh thu', với thời gian trong tương lai sẽ là doanh thu chắc chắn, doanh thu dự báo pipeline và doanh thu ước tính và bóc tách theo cơ cấu. Tương tự khi hỏi N tháng đầu năm, hay N tháng cuối năm cũng cần đánh giá là tương lai hay quá khứ
+        - Bảng này được tổng hợp từ 2 bảng crm_committed_revenue và crm_expected_revenue
+        - revenue_segment_l1:  Dù người dùng có hỏi "KH" hay không, thì khi hỏi doanh thu , phân bổ doanh thu , kế hoạch doanh thu , tỷ lệ hoàn thành, mà có hỏi đến "phân khúc/cắt lớp" , thì cần sử dụng  revenue_segment_l1. Trừ khi người dùng chỉ định rõ sang cắt lớp khác
+        - Bảng này không cung cấp doanh số
+        - doanh thu ước đã ký hợp đồng: là Doanh thu chắc chắn theo kỳ ước (các tháng tương lai, tính cả tháng hiện tại)
+        - doanh thu ước chưa ký hợp đồng, doanh thu ước cơ hội: là Doanh thu pipeline value theo kỳ ước (các tháng tương lai, tính cả tháng hiện tại)
+        - doanh thu đã ký hợp đồng = bao gồm doanh thu đã thực hiện và doanh thu dự ước đã ký HĐ
+        - doanh thu dự ước = doanh thu dự ước đã ký (tháng tương lai) và doanh thu cơ hội chưa "Lost"/chưa ký HĐ (tháng tương lai, và không bao gồm cơ hội đã ký HĐ)
+        - doanh thu cơ hội chưa "Lost"/chưa ký HĐ = doanh thu cơ hội cao + doanh thu cơ hội thấp
+        - doanh thu cơ hội = pipeline value
+        - Khi hỏi doanh thu nhóm SDPV (có thể cắt lớp theo thời gian), không chỉ rõ nhóm nào thì mặc định nhóm tập đoàn product_service_group. Nếu tên nhóm có trong product_service_group thì ưu tiên, trừ trường hợp người dùng chỉ định rõ nhóm theo VCS
+
+    meta:
+      label: CRM Mart Estimated Revenue
+      group_label: CRM Revenue
+      owner: huongnv1
+      metrics:
+        committed_revenue_amount:
+          type: sum
+          sql: committed_revenue_amount
+          label: Doanh thu chắc chắn (DTCC)
+          description: Tổng doanh thu đã ký hợp đồng (Committed Revenue), bao gồm New, Renewal, Upsales và Other.
+          synonyms: [DTCC, committed revenue]
+
+        forecast_revenue_amount:
+          type: sum
+          sql: forecast_revenue_amount
+          label: Doanh thu dự báo
+          description: Tổng doanh thu dự báo cho kỳ đang mở/tương lai = DTCC + Doanh thu cơ hội cao + Doanh thu cơ hội thấp. Không dùng làm số chốt kỳ đã qua.
+          synonyms: 
+           - forecast
+           - forecast revenue
+           - doanh thu dự báo
+           - doanh thu ước
+           - doanh thu ước tính
+           - doanh thu dự kiến
+
+        pipeline_revenue_amount:
+          type: sum
+          sql: pipeline_revenue_amount
+          label: Giá trị pipeline value
+          description: Tổng giá trị pipeline value, không nhân xác suất thành công (Probability).
+
+        high_pipeline_revenue_amount:
+          type: sum
+          sql: high_pipeline_revenue_amount
+          label: Doanh thu dự ước cơ hội cao
+          description: Tổng giá trị doanh thu cơ hội Cao, không nhân xác suất thành công (Probability).
+
+        low_pipeline_revenue_amount:
+          type: sum
+          sql: low_pipeline_revenue_amount
+          label: Doanh thu dự ước cơ hội thấp
+          description: Tổng giá trị doanh thu cơ hội thấp, không nhân xác suất thành công (Probability).
+  
+
+        potential_revenue_amount:
+          type: sum
+          sql: potential_revenue_amount
+          label: Doanh thu tiềm năng
+          description: DTCC + full pipeline value (không weight probability).
+
+        estimated_revenue_amount:
+          type: sum
+          sql: estimated_revenue_amount
+          label: Doanh thu ước tính
+          description: Doanh thu ước của kỳ đang mở theo ETL logic (DTCC + Pipeline, không nhân Probability).
+          synonyms: [estimated revenue, DT ước, doanh thu ước]
+
+        arr_revenue_amount:
+          type: sum
+          sql: arr_revenue_amount
+          label: Doanh thu ARR
+          description: Tổng doanh thu ARR (Committed + Expected ARR).
+
+        renewal_revenue_amount:
+          type: sum
+          sql: renewal_revenue_amount
+          label: Doanh thu gia hạn
+          description: Doanh thu Renewal đã điều chỉnh theo rule 90% cho phần dự kiến.
+
+        new_revenue_amount:
+          type: sum
+          sql: new_revenue_amount
+          label: Doanh thu mới
+          description: Tổng doanh thu New = carryover + in-year.
+
+        other_type_committed_revenue_amount:
+          type: sum
+          sql: other_type_committed_revenue_amount
+          label: Doanh thu loại khác (Committed)
+          description: Doanh thu committed không thuộc New/Renew/Renewal/Upsales.
+
+        committed_non_si_revenue_amount:
+          type: sum
+          sql: committed_non_si_revenue_amount
+          label: Doanh thu CC ngoài SI
+          description: Doanh thu chắc chắn không thuộc SI.
+
+        committed_si_revenue_amount:
+          type: sum
+          sql: committed_si_revenue_amount
+          label: Doanh thu CC SI
+          description: Doanh thu chắc chắn thuộc SI.
+
+        allocation_revenue_amount:
+          type: sum
+          sql: allocation_revenue_amount
+          label: Doanh thu phân bổ
+          description: Doanh thu phục vụ mục tiêu allocation nội bộ.
+
+        estimated_non_si_revenue_amount:
+          type: sum
+          sql: estimated_non_si_revenue_amount
+          label: Doanh thu ước ngoài SI
+
+        estimated_si_revenue_amount:
+          type: sum
+          sql: estimated_si_revenue_amount
+          label: Doanh thu ước SI
+
+        # -------------------------
+        # RATIOS
+        # -------------------------
+
+        arr_revenue_ratio:
+          type: number
+          label: Tỷ lệ ARR trên tổng doanh thu ước
+          description: ARR / Estimated Revenue
+          format: percent
+          sql: >
+            CASE
+              WHEN ${estimated_revenue_amount} = 0.0 THEN 0.0
+              ELSE ${arr_revenue_amount} / ${estimated_revenue_amount}
+            END
+
+        arr_revenue_ratio_ex_si:
+          type: number
+          label: Tỷ lệ ARR (loại SI)
+          description: ARR / (Estimated Revenue - Estimated SI)
+          format: percent
+          sql: >
+            CASE
+              WHEN (${estimated_revenue_amount} - ${estimated_si_revenue_amount}) = 0.0 THEN NULL
+              ELSE ${arr_revenue_amount} / (${estimated_revenue_amount} - ${estimated_si_revenue_amount})
+            END
+
+    columns:
+      - name: report_date
+        description: Ngày báo cáo.
+        meta:
+          dimension:
+            type: date
+            label: Ngày báo cáo
+      - name: product_category
+        description: Danh mục SPDV.
+        meta:
+          dimension:
+            type: string
+            label: Nhóm SPDV
+      - name: revenue_segment_l1
+        description: Phân khúc khách hàng Bóc tách phân loại theo góc nhìn từ báo cáo doanh thu tập đoàn
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc doanh thu
+            synonyms:
+            - Ngoài
+            - Nội Bộ
+            - Quốc Tế
+            - Thị Trường
+            - Khác
+            - Khách hàng ngoài
+            - International
+            - Nội bộ
+            - Khác
+            - Bộ Quốc phòng
+            - Nhóm Khách hàng
+            - Nhóm KH
+      - name: customer_segment_l1
+        description: Phân khúc khách hàng cấp 1. Phân loại theo người dùng cuối (KH cuối)
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc khách hàng cấp 1
+      - name: customer_segment_l2
+        description: Phân khúc khách hàng cấp 2. Phân loại theo người dùng cuối (KH cuối)
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc khách hàng cấp 2
+      - name: am_group
+        description: Nhóm AM quản trị.
+        meta:
+          dimension:
+            type: string
+            label: Nhóm AM
+      - name: vvip_segment
+        description: Nhóm VIP/VVIP
+        meta:
+          dimension:
+            type: string
+            label: Nhóm VIP/VVIP
+      # - name: customer_segment
+      #   description: Segment tổng hợp để báo cáo.
+      #   meta:
+      #     dimension:
+      #       type: string
+      #       label: Nhóm khách hàng báo cáo
+      - name: opportunity_level
+        description: >
+          Mức độ cơ hội của deal. Giá trị gồm:
+          'Cao' = cơ hội cao = probability >= 70,
+          'Thấp' = cơ hội thấp  = probability < 70,
+          'Đã ký' = deal đã ký hợp đồng.
+        meta:
+          dimension:
+            type: string
+            label: Mức độ cơ hội
+      - name: deal_status
+        description: >
+          Trạng thái cơ hội
+        meta:
+          dimension:
+            type: string
+            label: Trạng thái cơ hội
+      - name: product_service_group_vcs
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm VCS.
+        meta:
+          dimension:
+            type: string
+            label: Nhóm sản phẩm/dịch vụ theo phân nhóm VCS
+            synonyms:
+            - Nhóm SPDV vận hành nội bộ VCS
+            - Nhóm Mass
+            - Nhóm Sản phẩm mới
+            - Nhóm MSS-Hệ sinh thái SOC
+            - Nhóm SP Standalone
+            - Nhóm Telco
+            - Nhóm Professional Services
+            - Nhóm MSS-CA
+            - Nhóm MSS-MDR Service
+            - Nhóm kinh doanh SI
+            - Nhóm SP Standalone-SPDV MỚI
+
+      - name: product_service_group
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ. 
+        meta:
+          dimension:
+            type: string
+            label: hóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ
+            synonyms:
+            - Nhóm SPDV báo cáo tập đoàn
+            - SPDV MỚI
+            - SP An ninh Viễn thông
+            - Hệ sinh thái SOC
+            - KHÁC (PC, PM phát sinh)
+            - Dịch vụ ATTT chuyên sâu
+      # - name: carryover_renew_committed_revenue_amount
+      #   description: DT Renew đã ký có vắt năm.
+      # - name: in_year_renew_committed_revenue_amount
+      #   description: DT Renew đã ký trong năm.
+      # - name: carryover_new_revenue_amount
+      #   description: DT New đã ký có vắt năm.
+      # - name: in_year_new_revenue_amount
+      #   description: DT New đã ký trong năm.
+      # - name: committed_non_si_revenue_amount
+      #   description: DTCC ngoài SI.
+      # - name: committed_si_revenue_amount
+      #   description: DTCC SI.
+      # - name: committed_arr_amount
+      #   description: DT ARR chắc chắn.
+      # - name: committed_none_arr_amount
+      #   description: DT non-ARR chắc chắn.
+      # - name: renewal_committed_revenue_amount
+      #   description: DT đã ký của nhóm Renewal.
+      # - name: in_year_renew_provisional_revenue_amount
+      #   description: DT Renew dự kiến trong năm.
+      # - name: new_committed_revenue_amount
+      #   description: Tổng DT đã ký của nhóm New.
+      # - name: carryover_upsales_committed_revenue_amount
+      #   description: DT Upsales đã ký có vắt năm.
+      # - name: in_year_upsales_committed_revenue_amount
+      #   description: DT Upsales đã ký trong năm.
+      # - name: upsales_committed_revenue_amount
+      #   description: Tổng DT đã ký của nhóm Upsales.
+      # - name: renewal_revenue_amount
+      #   description: DT gia hạn tổng hợp theo công thức nghiệp vụ.
+      # - name: new_revenue_amount
+      #   description: DT mới tổng hợp.
+      # - name: other_type_committed_revenue_amount
+      #   description: DTCC cho product_type ngoài nhóm chuẩn.
+      # - name: committed_revenue_amount
+      #   description: DTCC tổng hợp.
+      # - name: forecast_revenue_amount
+      #   description: DT dự báo = đã ký + pipeline weighted.
+      # - name: pipeline_revenue_amount
+      #   description: Giá trị pipeline không nhân Probability.
+      # - name: forecast_non_si_revenue_amount
+      #   description: DT dự báo ngoài SI.
+      # - name: forecast_si_revenue_amount
+      #   description: DT dự báo SI.
+      # - name: forecast_arr_amount
+      #   description: DT ARR dự báo.
+      # - name: forecast_non_arr_amount
+      #   description: DT non-ARR dự báo.
+      # - name: in_year_renew_forecast_revenue_amount
+      #   description: DT dự kiến Renew trong năm.
+      # - name: carryover_renew_forecast_revenue_amount
+      #   description: DT dự kiến Renew vắt năm.
+      # - name: estimated_non_si_revenue_amount
+      #   description: Tổng DT ước ngoài SI.
+      # - name: estimated_si_revenue_amount
+      #   description: Tổng DT ước SI.
+      # - name: estimated_revenue_amount
+      #   description: Tổng DT ước.
+      # - name: arr_revenue_amount
+      #   description: Tổng DT ARR.
+      # - name: allocation_revenue_amount
+      #   description: Tổng doanh thu phân bổ quản trị.

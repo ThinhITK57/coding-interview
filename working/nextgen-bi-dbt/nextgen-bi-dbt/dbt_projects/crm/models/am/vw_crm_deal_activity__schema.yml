@@ -1,0 +1,125 @@
+version: 2
+
+models:
+  - name: vw_crm_deal_activity
+    description: |
+      Opportunity/Deal-level CRM and sales progression statistics.
+
+      Grain:
+        1 row = 1 Opportunity.
+
+      Used to analyze:
+        - Opportunity creation
+        - Opportunity updates
+        - Sales stage progression
+        - Closing
+        - Signing
+        - Quotation availability
+        - Product allocation
+        - Contract association
+
+      IMPORTANT:
+      Fields such as has_quotations and has_allocated_products represent
+      current state and must not be interpreted as the exact date on which
+      the corresponding action occurred.
+
+    meta:
+      group_label: AM Dashboard
+      owner: huongnv1
+      
+    columns:
+
+      - name: object_id
+        description: Unique Opportunity ID.
+
+      - name: object_type
+        description: CRM object type. Always OPPORTUNITY.
+
+      - name: am_user_id
+        description: Account Manager ID owning the Opportunity.
+
+      - name: am_user_name
+        description: Account Manager name owning the Opportunity.
+
+      - name: activity_date
+        description: Date used for Opportunity activity statistics.
+
+      - name: created_at
+        description: Opportunity creation timestamp.
+
+      - name: updated_at
+        description: Last Opportunity update timestamp.
+
+      - name: stage_updated_time
+        description: Timestamp associated with Opportunity stage update.
+
+      - name: expected_close_date
+        description: Expected Opportunity close date.
+
+      - name: closed_date
+        description: Opportunity closing timestamp.
+
+      - name: sign_date
+        description: Opportunity signing timestamp.
+
+      - name: deal_stage_id
+        description: Opportunity stage ID.
+
+      - name: deal_stage_name
+        description: Opportunity stage name.
+
+      - name: deal_stage_code
+        description: Opportunity stage code.
+
+      - name: deal_status
+        description: Opportunity status.
+
+      - name: is_created
+        description: Indicates whether the Opportunity was created.
+
+      - name: is_updated
+        description: Indicates whether the Opportunity record was updated.
+
+      - name: is_stage_progressed
+        description: Indicates whether stage progression information exists.
+
+      - name: is_closed
+        description: Indicates whether the Opportunity has been closed.
+
+      - name: is_signed
+        description: Indicates whether the Opportunity is signed.
+
+      - name: has_quotation
+        description: |
+          Indicates whether the Opportunity currently has at least one quotation.
+
+          This is a current-state indicator and should not be interpreted
+          as quotation creation activity on the activity date.
+
+      - name: has_products
+        description: |
+          Indicates whether products are currently allocated to the Opportunity.
+
+      - name: has_allocated_records
+        description: Indicates whether allocated records exist.
+
+      - name: company_id
+        description: Company ID associated with the Opportunity.
+
+      - name: company_name
+        description: Company name associated with the Opportunity.
+
+      - name: company_tax_code
+        description: Company tax code.
+
+      - name: expected_deal_value
+        description: Expected value of the Opportunity.
+
+      - name: vnd_amount
+        description: Opportunity value converted to VND.
+
+      - name: contract_id
+        description: Contract associated with the Opportunity.
+
+      - name: is_created_contract
+        description: Indicates whether a contract has been created from the Opportunity.

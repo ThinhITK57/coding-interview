@@ -1,0 +1,100 @@
+version: 2
+
+models:
+- name: hr_ld_budget_detail
+  description: >
+    Bảng **hr_ld_budget_detail** lưu trữ thông tin ngân sách đào tạo theo từng loại ngân sách
+    trong năm 2026. Dữ liệu được lấy từ snapshot mới nhất của nguồn ngân sách đào tạo,
+    bao gồm tổng ngân sách được phân bổ, giá trị đã đề nghị phê duyệt, giá trị đã sử dụng
+    và ngân sách còn lại. Bảng được sử dụng để theo dõi tình hình sử dụng ngân sách L&D,
+    đánh giá mức độ giải ngân và hỗ trợ báo cáo quản trị chi phí đào tạo.
+
+  meta:
+    label: "L&D Budget Detail"
+    owner: "tranpth"
+
+    metrics:
+      total_budget_amount:
+        type: sum
+        sql: ${TABLE}.budget_amount
+        description: "Tổng ngân sách đào tạo được phân bổ."
+        label: "Tổng ngân sách đào tạo"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng ngân sách đào tạo"
+          - "Ngân sách đào tạo"
+          - "Total Budget Amount"
+
+      total_approval_request_amount:
+        type: sum
+        sql: ${TABLE}.approval_request_amount
+        description: "Tổng giá trị ngân sách đào tạo đã gửi đề nghị phê duyệt."
+        label: "Tổng ngân sách đề xuất"
+        category: "Learning & Development"
+
+      total_spent_amount:
+        type: sum
+        sql: ${TABLE}.spent_amount
+        description: "Tổng giá trị ngân sách đào tạo đã sử dụng."
+        label: "Chi phí đào tạo đã dùng"
+        category: "Learning & Development"
+        synonyms:
+          - "Ngân sách đã sử dụng"
+          - "Chi phí đào tạo đã dùng"
+          - "Total Spent Amount"
+
+      total_remaining_amount:
+        type: sum
+        sql: ${TABLE}.remaining_amount
+        description: "Tổng giá trị ngân sách đào tạo còn lại."
+        label: "Tổng Ngân sách còn lại"
+        category: "Learning & Development"
+        synonyms:
+          - "Ngân sách còn lại"
+          - "Remaining Budget"
+          - "Total Remaining Amount"
+
+      budget_usage_rate:
+        type: number
+        sql: >
+          100.0 * ${total_spent_amount}
+          / NULLIF(${total_budget_amount}, 0.0)
+        description: "Tỷ lệ ngân sách đào tạo đã sử dụng, được tính bằng total_spent_amount / total_budget_amount."
+        label: "Budget Usage Rate (%)"
+        category: "Learning & Development"
+
+      budget_remaining_rate:
+        type: number
+        sql: >
+          100.0 * ${total_remaining_amount}
+          / NULLIF(${total_budget_amount}, 0.0)
+        description: "Tỷ lệ ngân sách đào tạo còn lại, được tính bằng total_remaining_amount / total_budget_amount."
+        label: "Budget Remaining Rate (%)"
+        category: "Learning & Development"
+
+  columns:
+  - name: year
+    description: Năm ngân sách đào tạo, hiện được gán cố định là 2026.
+    meta:
+      dimension:
+        type: string
+        label: "Năm ngân sách"
+
+  - name: budget_type
+    description: Loại ngân sách đào tạo hoặc nhóm chi phí đào tạo.
+    meta:
+      dimension:
+        type: string
+        label: "Loại ngân sách"
+
+  - name: budget_amount
+    description: Tổng ngân sách đào tạo được phân bổ theo loại ngân sách.
+
+  - name: approval_request_amount
+    description: Tổng giá trị ngân sách đã được đề nghị phê duyệt theo loại ngân sách.
+
+  - name: spent_amount
+    description: Tổng giá trị ngân sách đào tạo đã sử dụng theo loại ngân sách.
+
+  - name: remaining_amount
+    description: Giá trị ngân sách đào tạo còn lại theo loại ngân sách, sau khi trừ phần đã sử dụng hoặc đã ghi nhận theo dữ liệu nguồn.

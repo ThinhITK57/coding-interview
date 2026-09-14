@@ -1,0 +1,124 @@
+version: 2
+
+models:
+  - name: br04_project_report
+    description: >
+      Báo cáo tổng quan Dự án (BR-04).
+      Cung cấp thông tin tiến độ, phân loại dự án, ban điều hành dự án (PM, Assignor, Assignee)
+      và trạng thái vòng đời.
+      Bảng vật lý chỉ chứa đúng 11 cột chuẩn hóa của nghiệp vụ.
+      Các chỉ số về sức khỏe dự án, tỷ lệ hoàn thành trung bình thuộc về Semantic Layer.
+
+      Grain: Một dòng tương ứng với một Dự án.
+
+    meta:
+      label: "Báo Cáo Tổng Quan Dự Án (BR-04)"
+      group_label: "Executive EPM Reports"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Project Portfolio"
+        grain: "One row per project"
+        primary_department_dimension: "department"
+        primary_pm_dimension: "project_manager"
+
+        restrictions:
+          - "Bảng vật lý không chứa điểm sức khỏe tổng hợp (health score) hay cờ rủi ro."
+          - "Các phép tính tỷ lệ và cờ trễ hạn được xử lý tại tầng dbt Semantic Layer."
+
+        derived_measures:
+          - name: "is_project_overdue"
+            label: "Dự Án Trễ Hạn"
+            formula: "CASE WHEN due_date < CURRENT_DATE AND percent_completed < 100.0 THEN 1 ELSE 0 END"
+            description: "Cờ xác định dự án đã qua ngày due_date nhưng chưa đạt 100%."
+            format: "boolean"
+
+          - name: "active_projects_count"
+            label: "Số Dự Án Đang Chạy"
+            formula: "COUNT(CASE WHEN state = '/State/Active' THEN 1 END)"
+            description: "Tổng số lượng dự án đang trong trạng thái Active."
+            format: "integer"
+
+          - name: "portfolio_average_progress"
+            label: "Tiến Độ Trung Bình Portfolio (%)"
+            formula: "AVG(percent_completed)"
+            description: "Tiến độ bình quân của toàn bộ danh mục dự án được lọc."
+            format: "percentage"
+
+    columns:
+      - name: name
+        description: "Tên dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Dự Án"
+
+      - name: project_type
+        description: "Phân loại dự án (Nội bộ, Khách hàng, Nghiên cứu, Chuyển đổi số)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại Dự Án"
+
+      - name: due_date
+        description: "Hạn chót kết thúc toàn bộ dự án."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày Kết Thúc Kế Hoạch"
+
+      - name: state
+        description: "Trạng thái vòng đời (/State/Draft, /State/Active, /State/Completed, /State/Canceled)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng Thái Vòng Đời"
+
+      - name: status
+        description: "Hiện trạng tiến độ đánh giá bởi PM (On Track, At Risk, Critical)."
+        meta:
+          dimension:
+            type: string
+            label: "Tình Trạng Tiến Độ"
+
+      - name: percent_completed
+        description: "Tỷ lệ % hoàn thành toàn bộ khối lượng công việc của dự án."
+        meta:
+          measure:
+            type: average
+            label: "Tiến Độ Hoàn Thành (%)"
+
+      - name: department
+        description: "Khối / Phòng ban chủ trì thực hiện dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng Ban Chủ Trì"
+
+      - name: assignor
+        description: "Lãnh đạo phê duyệt / Người giao dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Người Giao Dự Án"
+
+      - name: assignee
+        description: "Đơn vị hoặc cá nhân đầu mối tiếp nhận dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Đầu Mối Tiếp Nhận"
+
+      - name: project_manager
+        description: "Giám đốc dự án (PM - Project Manager) chịu trách nhiệm trực tiếp."
+        meta:
+          dimension:
+            type: string
+            label: "Giám Đốc Dự Án (PM)"
+
+      - name: resources
+        description: "Nhân sự và danh sách đơn vị tham gia dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Nguồn Lực Dự Án"

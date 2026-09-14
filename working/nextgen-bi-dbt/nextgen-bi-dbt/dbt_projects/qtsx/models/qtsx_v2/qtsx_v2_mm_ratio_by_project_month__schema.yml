@@ -1,0 +1,421 @@
+version: 2
+models:
+- name: qtsx_v2_mm_ratio_by_project_month
+  description: >-
+    Bug / Defect / bug productions / cycel time / Lead time / ĐGCL TTK / Issue ULNL
+    / worklog / ULNL_worklog_by_version_release / Man_month_QA đã gộp về grain
+    (YearMonth × sản phẩm) rồi ghép ngang. Dùng cho toàn bộ measure "chia cho
+    man-month" và các thẻ đếm "n SP Passed / n SP Failed".
+    GRAIN: (YearMonth × sản phẩm) — 1 dòng cho mỗi tổ hợp, không thể fan-out.
+  meta:
+    label: "Tỷ lệ MM theo sản phẩm / tháng"
+    metrics:
+
+      # === Tỷ lệ trên man-month ===========================================
+      kpi_mm_per_bug:
+        type: number
+        sql: "SUM(bug_score) / NULLIF(SUM(man_month), 0)"
+        label: "KPI MM per bug"
+        description: >-
+          DAX: DIVIDE([Total bug], [Total MM bug], 0) với
+          [Total bug] = SUM('Bug'[Điểm bug]), [Total MM bug] = SUM('Man_month_QA'[man month]).
+          Cùng công thức với measure 'Bug'.
+        round: 2
+
+      kpi_mm_per_defect:
+        type: number
+        sql: "SUM(defect_score) / NULLIF(SUM(man_month), 0)"
+        label: "KPI MM per Defect"
+        description: "DAX: DIVIDE([Total Defect], [Total MM], 0) — SUM('Defect'[Điểm defect]) / SUM('Man_month_QA'[man month])"
+        round: 2
+
+      hieu_su_dung_source_luc_ee:
+        type: number
+        sql: "SUM(ulnl_mm) / NULLIF(SUM(man_month), 0)"
+        label: "Hiệu quả sử dụng nguồn lực EE"
+        description: "DAX: DIVIDE(SUM('Issue ULNL'[ULNL MM]), SUM(Man_month_QA[man month]), 0)"
+        format: percent
+        round: 0
+
+      nang_xuat_lao_dong:
+        type: number
+        sql: "SUM(worklog_mm) / NULLIF(SUM(man_month), 0)"
+        label: "Năng xuất lao động"
+        description: "DAX: DIVIDE(SUM(worklog[MM Worklog]), SUM(Man_month_QA[man month]), 0)"
+        format: percent
+        round: 0
+
+      pct_worklog_by_version:
+        type: number
+        sql: "COALESCE(SUM(version_worklog_mm), 0) / NULLIF(COALESCE(SUM(man_month), 0), 0)"
+        label: "% Worklog by version"
+        description: >-
+          DAX: VAR _num = COALESCE(SUM(ULNL_worklog_by_version_release[MM Worklog]),0)
+          VAR _den = COALESCE(SUM(Man_month_QA[man month]),0) RETURN DIVIDE(_num,_den,0)
+        format: percent
+        round: 2
+
+      sum_man_month:
+        type: sum
+        sql: man_month
+        label: "Total MM"
+        description: "DAX: SUM('Man_month_QA'[man month])"
+
+      total_bug_score:
+        type: sum
+        sql: bug_score
+        label: "Total bug"
+        description: "DAX: SUM('Bug'[Điểm bug])"
+
+      total_defect_score:
+        type: sum
+        sql: defect_score
+        label: "Total Defect"
+        description: "DAX: SUM('Defect'[Điểm defect])"
+
+      # ----- priority = 1 -------------------------------------------------
+      # Power BI khai hai measure trùng công thức với kpi_mm_per_bug / kpi_mm_per_defect
+      # nhưng đặt tên "% bug" / "% defect" và format phần trăm. Giữ cả hai tên.
+      pct_bug:
+        type: number
+        sql: "SUM(bug_score) / NULLIF(SUM(man_month), 0)"
+        label: "% bug"
+        description: "DAX: DIVIDE([Total bug], [Total MM bug], 0) — trùng công thức kpi_mm_per_bug."
+        format: percent
+        round: 2
+
+      pct_defect:
+        type: number
+        sql: "SUM(defect_score) / NULLIF(SUM(man_month), 0)"
+        label: "% defect"
+        description: "DAX: DIVIDE([Total Defect], [Total MM], 0) — trùng công thức kpi_mm_per_defect."
+        format: percent
+        round: 2
+
+      rate_bug_p:
+        type: number
+        sql: "SUM(bug_prd_score) / NULLIF(SUM(man_month), 0)"
+        label: "Tỉ lệ Bug P"
+        description: "DAX: DIVIDE(SUM('bug productions'[Điểm bug]), SUM(Man_month_QA[man month]), 0)"
+        round: 2
+
+      hs_load_nguoi_by_versionrelease:
+        type: number
+        sql: "COALESCE(SUM(version_ulnl_mm), 0) / NULLIF(COALESCE(SUM(man_month), 0), 0)"
+        label: "HS_load_nguoi_by_versionrelease"
+        description: >-
+          DAX: VAR _num = COALESCE(SUM('ULNL_worklog_by_version_release'[ULNL MM]),0)
+          VAR _den = COALESCE(SUM(Man_month_QA[man month]),0) RETURN DIVIDE(_num,_den,0)
+        format: percent
+        round: 2
+
+      total_log_hours:
+        type: sum
+        sql: log_hours
+        label: "Total Log Hours"
+        description: "DAX: SUM(worklog[hour])"
+
+      standard_capacity_hours:
+        type: sum
+        sql: capacity_hours
+        label: "Standard Capacity Hours"
+        description: >-
+          DAX: [Working Days] * [Employee Count] * 8, với [Working Days] =
+          COUNTROWS('Dim_Date') lọc IsWorkingDay = TRUE và [Employee Count] =
+          DISTINCTCOUNT(worklog[authorUserName]).
+          KHÁC BẢN GỐC: [Employee Count] của DAX đếm trên TOÀN BỘ ngữ cảnh lọc, còn ở
+          đây đếm theo từng (sản phẩm × tháng) rồi cộng — người làm nhiều sản phẩm
+          trong một tháng sẽ được tính nhiều lần. Chỉ khớp tuyệt đối khi chart nhóm
+          theo đúng một sản phẩm.
+
+      tong_he_so_bug:
+        type: sum
+        sql: bug_os_weight
+        label: "Tong_He_So_Bug"
+        description: "DAX: SUM('Bug OS'[Hệ số Bug])"
+
+      mm_thuc_te_os:
+        type: sum
+        sql: pyc_os_mm_thuc_te
+        label: "MM_Thuc_Te"
+        description: >-
+          DAX: CALCULATE(SUM('PYC OS'[MM_PYC_Thực_tế_10823]),
+          'PYC OS'[ISSUE_CURRENT_STATUS_NAME] in {"Bàn giao TT Sản phẩm","Released",
+          "ĐG TTK","Nghiệm thu thành công"})
+
+      ti_le_bug_mm:
+        type: number
+        sql: "SUM(bug_os_weight) / NULLIF(SUM(pyc_os_mm_thuc_te), 0)"
+        label: "Ti_Le_Bug_MM"
+        description: >-
+          DAX: DIVIDE([Tong_He_So_Bug], [MM_Thuc_Te], 0). Hai bảng 'bug OS' và 'PYC OS'
+          đều nối tới bảng chiều 'Project' (quan hệ active 'bug OS'[Project] =
+          'Project'[Project Name]) nên gộp về grain (YearMonth × sản phẩm) rồi chia.
+          Thay cho hai measure text 'Hien_Thi_Ti_Le_KPI' ("… / KPI < 1.3") và
+          'Bug OS Rate Growth Display' (▲/▼): dùng Subtitle + Comparison của Big value.
+        round: 2
+
+      busy_rate:
+        type: number
+        sql: "SUM(log_hours) / NULLIF(SUM(capacity_hours), 0)"
+        label: "Busy Rate"
+        description: >-
+          DAX: DIVIDE([Total Log Hours], [Standard Capacity Hours], 0).
+          Thay cho hai measure text 'Busy rate display' ("… / KPI > 95%") và
+          'Busy rate so cùng kỳ' (▲/▼): dùng Subtitle + Comparison của Big value.
+          Xem lưu ý về [Employee Count] ở standard_capacity_hours.
+        format: percent
+        round: 1
+
+      # === Đếm sản phẩm Đạt / Không đạt ===================================
+      # Mỗi dòng của model đã là một (sản phẩm × tháng) nên so ngưỡng ngay trên dòng
+      # là đúng ngữ nghĩa COUNTROWS(FILTER(SUMMARIZE(...), ... > ngưỡng)) của DAX.
+      bug_project_pass:
+        type: count
+        sql: "CASE WHEN bug_score / NULLIF(man_month, 0) < 1 THEN project END"
+        label: "Bug Project Pass"
+        description: "DAX: COUNTROWS(FILTER('Project', CALCULATE([KPI MM per bug]) < 1))"
+
+      bug_project_fail:
+        type: count
+        sql: "CASE WHEN bug_score / NULLIF(man_month, 0) >= 1 THEN project END"
+        label: "Bug Project Fail"
+        description: "DAX: COUNTROWS(FILTER('Project', CALCULATE([KPI MM per bug]) >= 1))"
+
+      defect_project_pass:
+        type: count
+        sql: "CASE WHEN defect_score / NULLIF(man_month, 0) < 1 THEN project END"
+        label: "Defect Project Pass"
+        description: "DAX: COUNTROWS(FILTER('Project', CALCULATE([KPI MM per Defect]) < 1))"
+
+      defect_project_fail:
+        type: count
+        sql: "CASE WHEN defect_score / NULLIF(man_month, 0) >= 1 THEN project END"
+        label: "Defect Project Fail"
+        description: "DAX: COUNTROWS(FILTER('Project', CALCULATE([KPI MM per Defect]) >= 1))"
+
+      # === Cycle time / Lead time / Tần suất release ======================
+      average_days_to_done:
+        type: number
+        sql: "SUM(cycle_time_day_sum) / NULLIF(SUM(cycle_time_row_count), 0)"
+        label: "Cycel time AVG (ngày)"
+        description: >-
+          DAX: AVERAGE('cycel time'[Số ngày done]). Giữ tổng + số dòng nên đây là
+          trung bình trên toàn bộ dòng chi tiết, KHÔNG phải trung bình của các trung bình.
+          Thay cho measure text 'Cycel time AVG text' ("... ngày / KPI < 30") — phần
+          chữ "/ KPI < 30" dựng bằng subtitle của Big value trên Lightdash.
+        round: 0
+
+      cyceltime_pass:
+        type: count
+        sql: "CASE WHEN cycle_time_day_sum / NULLIF(cycle_time_row_count, 0) <= 30 THEN project END"
+        label: "Cyceltime Pass (số SP)"
+        description: >-
+          DAX: COUNTROWS(FILTER(SUMMARIZE('cycel time',[projectname],Dim_Date[YearMonth]),
+          CALCULATE(AVERAGE('cycel time'[Số ngày done])) <= 30))
+
+      cyceltime_fail:
+        type: count
+        sql: "CASE WHEN cycle_time_day_sum / NULLIF(cycle_time_row_count, 0) > 30 THEN project END"
+        label: "Cyceltime Fail (số SP)"
+        description: "DAX: như cyceltime_pass nhưng ngưỡng > 30"
+
+      average_days_to_done_v2:
+        type: number
+        sql: "SUM(lead_time_day_sum) / NULLIF(SUM(lead_time_row_count), 0)"
+        label: "Lead time AVG (ngày)"
+        description: >-
+          DAX: AVERAGE('Lead time'[Số ngày done v2]). Thay cho measure text
+          'Lead time AVG text' ("... ngày / KPI < 60").
+        round: 0
+
+      leadtime_pass:
+        type: count
+        sql: "CASE WHEN lead_time_day_sum / NULLIF(lead_time_row_count, 0) <= 60 THEN project END"
+        label: "Leadtime pass (số SP)"
+        description: >-
+          DAX: COUNTROWS(FILTER(SUMMARIZE('Lead time',[projectname],Dim_Date[YearMonth]),
+          CALCULATE(AVERAGE('Lead time'[Số ngày done v2])) <= 60))
+
+      leadtime_fail:
+        type: count
+        sql: "CASE WHEN lead_time_day_sum / NULLIF(lead_time_row_count, 0) > 60 THEN project END"
+        label: "Leadtime Fail (số SP)"
+        description: "DAX: như leadtime_pass nhưng ngưỡng > 60"
+
+      release_kpi:
+        type: number
+        sql: "SUM(release_freq_sum) / NULLIF(SUM(release_freq_row_count), 0)"
+        label: "Tần suất release TB (ngày)"
+        description: >-
+          DAX: AVERAGE('ĐGCL TTK'[Tần suất release]). Thay cho measure text
+          'Release KPI' ("... ngày / KPI < 30").
+        round: 0
+
+      spdv_pass_release:
+        type: count
+        sql: "CASE WHEN release_freq_sum / NULLIF(release_freq_row_count, 0) <= 30 THEN project END"
+        label: "SPDV Pass (Release)"
+        description: >-
+          DAX: COUNTROWS(FILTER(SUMMARIZE('ĐGCL TTK',[Project_12130],Dim_Date[YearMonth]),
+          CALCULATE(AVERAGE('ĐGCL TTK'[Tần suất release])) <= 30))
+
+      spdv_fail_release:
+        type: count
+        sql: "CASE WHEN release_freq_sum / NULLIF(release_freq_row_count, 0) > 30 THEN project END"
+        label: "SPDV Fail (Release)"
+        description: "DAX: như spdv_pass_release nhưng ngưỡng > 30"
+
+      # === Bug production ==================================================
+      bug_per_project:
+        type: number
+        sql: "CAST(SUM(bug_prd_count) AS DOUBLE) / NULLIF(COUNT(DISTINCT project), 0)"
+        label: "Bug per Project"
+        description: >-
+          Số bug production trung bình trên mỗi sản phẩm. Thay cho measure text
+          'KPI Display Full' ("x.xx / KPI < 1") và 'KPI Delta Display' (▲/▼ so cùng kỳ)
+          — hai phần trang trí đó dựng bằng Big value + comparison trên Lightdash.
+        round: 2
+
+      fail_projects_count:
+        type: count
+        sql: "CASE WHEN bug_prd_count >= 1 THEN project END"
+        label: "Fail Projects Count"
+        description: "Số sản phẩm có bug production trong kỳ. Thay cho 'Fail Projects display' (\"n SP Failed\")."
+
+      pass_projects_count:
+        type: count
+        sql: "CASE WHEN bug_prd_count IS NULL OR bug_prd_count = 0 THEN project END"
+        label: "Pass Projects Count"
+        description: >-
+          DAX: [Total Projects] - [Fail Projects Count]. Thay cho 'Pass Projects Count'
+          ("n SP Passed").
+
+  columns:
+  - name: year_month
+    description: "Kỳ báo cáo, định dạng 'YYYY - MM' giống Dim_Date[YearMonth]."
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+  - name: project
+    description: "Tên sản phẩm / dự án. Khoá nối thật là upper(trim(tên)) — xem ghi chú trong file .sql."
+    meta:
+      dimension:
+        type: string
+        label: "Sản phẩm"
+  - name: center
+    description: "Trung tâm, lấy từ bảng chiều 'Project' (không lấy từ bảng chi tiết vì giá trị không thống nhất)."
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+  - name: month_sort_key
+    description: "yyyymm dùng để sắp xếp year_month."
+    meta:
+      dimension:
+        type: number
+        label: "Month sort key"
+        hidden: true
+  - name: year_value
+    description: "Năm."
+    meta:
+      dimension:
+        type: string
+        label: "Year"
+  - name: man_month
+    description: "SUM('Man_month_QA'[man month])."
+    meta:
+      dimension: {type: number, label: "MM", hidden: true}
+  - name: bug_score
+    description: "SUM('Bug'[Điểm bug])."
+    meta:
+      dimension: {type: number, label: "Điểm bug", hidden: true}
+  - name: bug_count
+    description: "DISTINCTCOUNT('Bug'[issuekey])."
+    meta:
+      dimension: {type: number, label: "Số bug", hidden: true}
+  - name: defect_score
+    description: "SUM('Defect'[Điểm defect])."
+    meta:
+      dimension: {type: number, label: "Điểm defect", hidden: true}
+  - name: defect_count
+    description: "DISTINCTCOUNT('Defect'[issuekey])."
+    meta:
+      dimension: {type: number, label: "Số defect", hidden: true}
+  - name: bug_prd_count
+    description: "DISTINCTCOUNT('bug productions'[issuekey])."
+    meta:
+      dimension: {type: number, label: "Số bug production", hidden: true}
+  - name: bug_prd_score
+    description: "SUM('bug productions'[Điểm bug])."
+    meta:
+      dimension: {type: number, label: "Điểm bug production", hidden: true}
+  - name: cycle_time_day_sum
+    description: "SUM('cycel time'[Số ngày done])."
+    meta:
+      dimension: {type: number, label: "Tổng ngày cycle time", hidden: true}
+  - name: cycle_time_row_count
+    description: "Số dòng 'cycel time' có giá trị."
+    meta:
+      dimension: {type: number, label: "Số dòng cycle time", hidden: true}
+  - name: lead_time_day_sum
+    description: "SUM('Lead time'[Số ngày done v2])."
+    meta:
+      dimension: {type: number, label: "Tổng ngày lead time", hidden: true}
+  - name: lead_time_row_count
+    description: "Số dòng 'Lead time' có giá trị."
+    meta:
+      dimension: {type: number, label: "Số dòng lead time", hidden: true}
+  - name: release_freq_sum
+    description: "SUM('ĐGCL TTK'[Tần suất release])."
+    meta:
+      dimension: {type: number, label: "Tổng tần suất release", hidden: true}
+  - name: release_freq_row_count
+    description: "Số dòng 'ĐGCL TTK' có giá trị."
+    meta:
+      dimension: {type: number, label: "Số dòng ĐGCL TTK", hidden: true}
+  - name: release_issue_count
+    description: "DISTINCTCOUNT('ĐGCL TTK'[ISSUE_KEY])."
+    meta:
+      dimension: {type: number, label: "Số issue ĐGCL TTK", hidden: true}
+  - name: ulnl_mm
+    description: "SUM('Issue ULNL'[ULNL MM])."
+    meta:
+      dimension: {type: number, label: "ULNL MM", hidden: true}
+  - name: worklog_mm
+    description: "SUM(worklog[MM Worklog])."
+    meta:
+      dimension: {type: number, label: "MM Worklog", hidden: true}
+  - name: version_worklog_mm
+    description: "SUM(ULNL_worklog_by_version_release[MM Worklog])."
+    meta:
+      dimension: {type: number, label: "MM Worklog theo version", hidden: true}
+  - name: version_ulnl_mm
+    description: "SUM(ULNL_worklog_by_version_release[ULNL MM])."
+    meta:
+      dimension: {type: number, label: "ULNL MM theo version", hidden: true}
+  - name: log_hours
+    description: "SUM(worklog[hour])."
+    meta:
+      dimension: {type: number, label: "Giờ log", hidden: true}
+  - name: employee_count
+    description: "DISTINCTCOUNT(worklog[authorUserName]) trong (sản phẩm × tháng)."
+    meta:
+      dimension: {type: number, label: "Số nhân sự", hidden: true}
+  - name: working_days
+    description: "Số ngày làm việc trong tháng, lấy từ worklog[WorkingDays worklog]."
+    meta:
+      dimension: {type: number, label: "Ngày làm việc", hidden: true}
+  - name: capacity_hours
+    description: "[Standard Capacity Hours] = working_days * employee_count * 8."
+    meta:
+      dimension: {type: number, label: "Giờ công chuẩn", hidden: true}
+  - name: bug_os_weight
+    description: "SUM('bug OS'[Hệ số Bug])."
+    meta:
+      dimension: {type: number, label: "Hệ số Bug OS", hidden: true}
+  - name: pyc_os_mm_thuc_te
+    description: "SUM('PYC OS'[MM_PYC_Thực_tế_10823]) trên 4 trạng thái của [MM_Thuc_Te]."
+    meta:
+      dimension: {type: number, label: "MM thực tế OS", hidden: true}

@@ -1,0 +1,32 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_kpikqi_quarter_jira
+    description: "Nguồn Power BI: KPIKQI Quý Jira"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: result
+      description: "Cột kết quả"
+    - name: report_date
+      description: "Cột Ngày báo cáo"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: target
+      description: "Cột Target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: unit_of_measure
+      description: "Cột Đơn vị tính"
+    - name: customer_group
+      description: "Cột Nhóm khách hàng"
+    - name: kpi_type
+      description: "Cột Loại KPI"

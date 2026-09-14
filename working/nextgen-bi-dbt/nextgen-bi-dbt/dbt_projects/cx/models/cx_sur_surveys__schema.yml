@@ -1,0 +1,139 @@
+version: 2
+models:
+- name: cx_sur_surveys
+  description: Lưu trữ thông tin định danh và cấu hình của các cuộc khảo sát khách hàng. Đây là bảng master cấp cao nhất, dùng để phân loại khảo sát theo chiến dịch, thời gian, sản phẩm và vị trí trong hành trình trải nghiệm của khách hàng.
+  meta:
+    label: "Surveys"
+    owner: "lyttt3"
+    metrics:
+      survey_record_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số bản ghi khảo sát.
+        label: "Survey Record Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Survey Record Count"
+          - "Số lượng bản ghi khảo sát"
+      survey_count:
+        type: count_distinct
+        sql: ${TABLE}.survey_id
+        description: Tổng số khảo sát duy nhất.
+        label: "Survey Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Survey Count"
+          - "Số lượng khảo sát"
+      enabled_survey_count:
+        type: sum
+        sql: CASE WHEN ${TABLE}.enabled THEN 1.0 ELSE 0.0 END
+        description: 'VI: Số survey đang enable. | EN: Số survey đang enable.'
+        label: "Enabled Survey Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Enabled Survey Count"
+          - "Số lượng đang bật khảo sát"
+      enabled_survey_rate:
+        type: number
+        sql: ${enabled_survey_count} / NULLIF(${survey_record_count}, 0.0)
+        description: 'VI: Tỷ lệ survey đang enable. | EN: Tỷ lệ survey đang enable.'
+        label: "Enabled Survey Rate"
+        category: "Survey Analytics"
+        synonyms:
+          - "Enabled Survey Rate"
+          - "Tỷ lệ đang bật khảo sát"
+      distinct_survey_type_count:
+        type: count_distinct
+        sql: ${TABLE}.survey_type
+        description: Số loại khảo sát duy nhất.
+        label: "Distinct Survey Type Count"
+        category: "Survey Analytics"
+        synonyms:
+          - "Distinct Survey Type Count"
+          - "Số lượng khảo sát loại duy nhất"
+      distinct_journey_count:
+        type: count_distinct
+        sql: ${TABLE}.journey
+        description: Số giai đoạn hành trình khách hàng duy nhất.
+        label: "Distinct Journey Count"
+        category: "Product & Market Analytics"
+        synonyms:
+          - "Distinct Journey Count"
+          - "Số lượng hành trình duy nhất"
+      distinct_touchpoint_count:
+        type: count_distinct
+        sql: ${TABLE}.customer_touchpoint
+        description: Số điểm chạm khách hàng duy nhất.
+        label: "Distinct Touchpoint Count"
+        category: "Customer Analytics"
+        synonyms:
+          - "Distinct Touchpoint Count"
+          - "Số lượng Touchpoint duy nhất"
+      distinct_product_category_count:
+        type: count_distinct
+        sql: ${TABLE}.product_category
+        description: Số nhóm sản phẩm hoặc dịch vụ duy nhất có khảo sát.
+        label: "Distinct Product Category Count"
+        category: "Product & Market Analytics"
+        synonyms:
+          - "Distinct Product Category Count"
+          - "Số lượng sản phẩm danh mục duy nhất"
+  columns:
+  - name: survey_id
+    description: Mã định danh duy nhất của mỗi cuộc khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: Mã khảo sát
+    tests:
+    - not_null
+    - unique
+  - name: survey_type
+    description: Hình thức triển khai khảo sát (Mobile, Web Page, Widget nhúng).
+    meta:
+      dimension:
+        type: string
+        label: loại khảo sát
+  - name: survey_name
+    description: Tên hiển thị của phiếu khảo sát
+    meta:
+      dimension:
+        type: string
+        label: Tên khảo sát
+  - name: folder_name
+    description: Tên thư mục quản lý (Dùng để nhóm theo quý hoặc theo đơn vị CSKH, SOC...).
+    meta:
+      dimension:
+        type: string
+        label: tên thư mục
+  - name: created_at
+    description: Ngày giờ khởi tạo bản khảo sát trên hệ thống.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày tạo
+  - name: enabled
+    description: 'Trạng thái hoạt động (True: Đang thu thập dữ liệu / False: Đã đóng).'
+    meta:
+      dimension:
+        type: boolean
+        label: được bật
+  - name: journey
+    description: Giai đoạn hành trình khách hàng (Cân nhắc, Triển khai, Sử dụng, CSKH).
+    meta:
+      dimension:
+        type: string
+        label: hành trình khách hàng
+  - name: customer_touchpoint
+    description: Điểm tiếp xúc cụ thể kích hoạt khảo sát (Ticket, App, Báo cáo định kỳ).
+    meta:
+      dimension:
+        type: string
+        label: điểm tiếp xúc khách hàng
+  - name: product_category
+    description: Danh mục sản phẩm được khảo sát trong cuộc thăm dò.
+    meta:
+      dimension:
+        type: string
+        label: danh mục sản phẩm
+

@@ -1,0 +1,77 @@
+version: 2
+models:
+- name: qtsx_v2_version
+  description: "Bảng qtsx_v2_version (nguồn Power BI: Version)."
+  meta:
+    label: "Version"
+    powerbi_source: "Version"
+  columns:
+  - name: id
+    description: "Cột ID trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "ID"
+        hidden: true
+  - name: project
+    description: "Cột PROJECT trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT"
+        hidden: true
+  - name: vname
+    description: "Cột vname trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "vname"
+  - name: description
+    description: "Cột DESCRIPTION trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "DESCRIPTION"
+        hidden: true
+  - name: sequence
+    description: "Cột SEQUENCE trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "SEQUENCE"
+        hidden: true
+  - name: released
+    description: "Cột RELEASED trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "RELEASED"
+        hidden: true
+  - name: archived
+    description: "Cột ARCHIVED trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "ARCHIVED"
+        hidden: true
+  - name: url
+    description: "Cột URL trong Version."
+    meta:
+      dimension:
+        type: string
+        label: "URL"
+        hidden: true
+  - name: startdate
+    description: "Cột STARTDATE trong Version."
+    meta:
+      dimension:
+        type: timestamp
+        label: "STARTDATE"
+        hidden: true
+  - name: releasedate
+    description: "Cột RELEASEDATE trong Version."
+    meta:
+      dimension:
+        type: timestamp
+        label: "RELEASEDATE"
+        hidden: true

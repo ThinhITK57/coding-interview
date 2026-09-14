@@ -1,0 +1,65 @@
+version: 2
+models:
+- name: qtsx_v2_cycel_time
+  description: "Bảng qtsx_v2_cycel_time (nguồn Power BI: cycel time)."
+  meta:
+    label: "cycel time"
+    powerbi_source: "cycel time"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_cycel_time.projectname} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      average_days_to_done:
+        type: average
+        sql: days_to_done
+        label: "Average of Số ngày done"
+        description: "Sinh từ Power BI: average(cycel time.Số ngày done)"
+  columns:
+  - name: issuekey
+    description: "Cột issuekey trong cycel time."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong cycel time."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: projectname
+    description: "Cột projectname trong cycel time."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+  - name: days_to_done
+    description: "Cột Số ngày done trong cycel time."
+    meta:
+      dimension:
+        type: number
+        label: "Số ngày done"
+        hidden: true
+  - name: design_review_done_date
+    description: "Cột Ngày done ĐGTK trong cycel time."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày done ĐGTK"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong cycel time. Cột tính toán, DAX gốc: FORMAT('cycel time'[Ngày done ĐGTK], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong cycel time. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'cycel time'[projectname] in {\"aJiant\", \"NSM - NDR\", \"SOC PLATFORM\", \"VCS_ Consolidate Platform\", \"VCS-CyCir\", \"VCS-CyM\",\"VCS-InT INSIDER THREAT\"} , \"TT.Enterprise\", 'cycel time'[projectname] in {\"BRG\",\"Cloudrity Self Service\",\"F2DR\",\"LIG\",\"TML\",\"V-AntiDDoS\",\"VCS TAS\",\"Trách Nhiệm Xã Hội\"}, \"TT.Telco\", 'cycel time'[projectname] in {\"M-Suite\",\"Security Chatbot\",\"VCS-KIAN\"},\"TT.SX\", 'cycel time'[projectname] in {\"Threat Intelligence\"},\"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"

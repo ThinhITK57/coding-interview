@@ -1,0 +1,171 @@
+version: 2
+
+models:
+  - name: cx_lifecycle_customer_snapshot
+    description: >
+      Bảng snapshot vòng đời khách hàng tổng hợp (customer-level).
+
+      Đây là bảng GOLD dùng chính cho BI và AI chatbot.
+
+      Mỗi dòng tương ứng 1 khách hàng tại 1 ngày snapshot (period_end).
+
+      QUAN TRỌNG NHẤT:
+      - Luôn dùng period_end làm trục thời gian chính, bên cạnh đó hãy kết hợp với year, quarter, month để filter nếu câu hỏi có đề cập đến
+      - Không dùng sign_date hoặc expire_date để filter chính
+      - Đây là bảng chuẩn cho câu hỏi chatbot về khách hàng
+    
+    meta:
+      label: "Snapshot vòng đời khách hàng tổng hợp"
+      owner: "lyttt3"
+      metrics:
+
+        - name: total_customers
+          label: Tổng khách hàng
+          description: Tổng số khách hàng tại thời điểm snapshot
+          type: count_distinct
+          sql: tax_code
+
+        - name: active_customers
+          label: Khách hàng đang hoạt động
+          description: Số khách hàng đang ở trạng thái active
+          type: count_distinct
+          sql: |
+            CASE WHEN is_active = 1.0 THEN tax_code END
+
+        - name: churned_customers
+          label: Khách hàng đã rời bỏ
+          description: Khách hàng đã churn (không còn hoạt động > 90 ngày sau hết hạn)
+          type: count_distinct
+          sql: |
+            CASE WHEN is_churned = 1.0 THEN tax_code END
+
+        - name: new_customers
+          label: Khách hàng mới
+          description: Khách hàng mới phát sinh trong hệ thống
+          type: count_distinct
+          sql: |
+            CASE WHEN is_new_customer = 1.0 THEN tax_code END
+
+        - name: old_customers
+          label: Khách hàng cũ
+          description: Khách hàng có phát sinh hợp đồng và hợp đồng đó chưa hết hạn
+          type: count_distinct
+          sql: |
+            CASE WHEN is_new_customer = 0.0 and is_active = 1.0 THEN tax_code END
+
+        - name: renewal_customers
+          label: Khách hàng gia hạn
+          description: Khách hàng có phát sinh gia hạn hợp đồng
+          type: count_distinct
+          sql: |
+            CASE WHEN is_renewal = 1.0 THEN tax_code END
+
+        - name: upsell_customers
+          label: Khách hàng upsell
+          description: Khách hàng có phát sinh upsell
+          type: count_distinct
+          sql: |
+            CASE WHEN is_upsell = 1.0 THEN tax_code END
+
+        - name: returning_customers
+          label: Khách hàng quay lại
+          description: Khách hàng quay lại sau thời gian gián đoạn
+          type: count_distinct
+          sql: |
+            CASE WHEN is_returning_customer = 1.0 THEN tax_code END
+
+        # -----------------------------
+        # RATE METRICS
+        # -----------------------------
+
+        - name: churn_rate
+          label: Tỷ lệ churn theo khách hàng
+          description: Tỷ lệ khách hàng rời bỏ trên tổng khách hàng
+          type: number
+          sql: |
+            1.0 * COUNT(DISTINCT CASE WHEN is_churned = 1.0 THEN tax_code END)
+            / NULLIF(COUNT(DISTINCT tax_code), 0.0)
+
+        - name: renewal_rate
+          label: Tỷ lệ gia hạn theo khách hàng
+          description: Tỷ lệ khách hàng có gia hạn
+          type: number
+          sql: |
+            1.0 * COUNT(DISTINCT CASE WHEN is_renewal = 1.0 THEN tax_code END)
+            / NULLIF(COUNT(DISTINCT tax_code), 0.0)
+
+        - name: upsell_rate
+          label: Tỷ lệ upsell theo khách hàng
+          description: Tỷ lệ khách hàng có upsell
+          type: number
+          sql: |
+            1.0 * COUNT(DISTINCT CASE WHEN is_upsell = 1.0 THEN tax_code END)
+            / NULLIF(COUNT(DISTINCT tax_code), 0.0)
+
+        - name: new_customer_rate
+          label: Tỷ lệ khách mới theo khách hàng
+          description: Tỷ lệ khách hàng mới trên theo đầu khách hàng
+          type: number
+          sql: |
+            1.0 * COUNT(DISTINCT CASE WHEN is_new_customer = 1.0 THEN tax_code END)
+            / NULLIF(COUNT(DISTINCT tax_code), 0.0)
+
+    columns:
+      - name: year
+        description: Năm của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến năm.
+
+      - name: quarter
+        description: Quý của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến quý.
+
+      - name: month
+        description: Tháng của kỳ snapshot. Sử dụng trường này để lọc và phân tích dữ liệu khi câu hỏi đề cập đến tháng.
+
+      - name: period_start
+        description: Ngày đầu tiên của kỳ snapshot.
+
+      - name: period_end
+        description: Ngày cuối cùng của kỳ snapshot. Các chỉ số trạng thái (active, grace period, expiring,...) được xác định tại thời điểm này.
+
+      - name: tax_code
+        description: Mã số thuế khách hàng
+
+      - name: is_active
+        description: Khách hàng active
+
+      - name: is_expiring_90d
+        description: Khách hàng có hợp đồng sắp hết hạn trong 90 ngày
+
+      - name: is_grace_period
+        description: Khách hàng trong giai đoạn gia hạn
+
+      - name: is_new_customer
+        description: Khách hàng mới
+
+      - name: is_renewal
+        description: Khách hàng có phát sinh gia hạn
+
+      - name: is_upsell
+        description: Khách hàng có phát sinh upsell
+
+      - name: is_returning_customer
+        description: Khách hàng quay lại sau gián đoạn
+
+      - name: latest_expire_date
+        description: Ngày hết hạn hợp đồng gần nhất
+
+      - name: latest_sign_date
+        description: Ngày ký hợp đồng gần nhất
+
+      - name: total_contract
+        description: Tổng số hợp đồng của khách hàng
+
+      - name: total_product
+        description: Tổng số sản phẩm khách hàng đang sử dụng
+
+      - name: is_churned
+        description: Khách hàng đã churn (mất khách)
+
+      - name: customer_lifecycle
+        description: >
+          Trạng thái vòng đời khách hàng:
+          ACTIVE, GRACE_PERIOD, EXPIRING_90D, CHURNED, INACTIVE

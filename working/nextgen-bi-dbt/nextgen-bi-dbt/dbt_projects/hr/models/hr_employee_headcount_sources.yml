@@ -1,0 +1,83 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+  tables:
+  - name: hr_employee_headcount
+    description: Bảng **hr_employee_headcount** lưu trữ nhu cầu headcount/position demand, bao gồm số lượng vị trí cần tuyển dụng, trạng thái hiện có của vị trí và thông tin nhân sự được gán vào vị trí nếu đã fill. Bảng phục vụ workforce planning, demand vs supply, vacancy và capacity planning.
+    columns:
+      - name: plan_year
+        description: Năm kế hoạch nhân sự
+      - name: headcount_plan_type
+        description: "Phân loại kế hoạch. ĐB: Định biên chính, NĐB: Ngoài định biên, có thể là CTV hoặc IS/OS"
+      - name: headcount_status
+        description: Trạng thái hiện tại của headcount trong kế hoạch nhân sự
+      - name: division_n
+        description: Khối chức năng mà headcount hoặc nhân viên trực thuộc
+      - name: department_n_1
+        description: Đơn vị tổ chức cấp 1 của headcount hoặc nhân viên
+      - name: department_n_2
+        description: Phòng ban cấp 2 của headcount hoặc nhân viên
+      - name: department_n_3
+        description: Phòng ban cấp 3 của headcount hoặc nhân viên
+      - name: role_base
+        description: Nhóm vai trò hoặc chức danh cơ sở của vị trí
+      - name: specialization
+        description: Chuyên môn hoặc lĩnh vực chuyên trách của vị trí
+      - name: required_level
+        description: Cấp độ năng lực hoặc cấp bậc yêu cầu cho vị trí
+      - name: position_status
+        description: Trạng thái của vị trí trong kế hoạch headcount
+      - name: full_name
+        description: Họ và tên nhân viên đang đảm nhiệm vị trí, nếu có
+      - name: employee_code
+        description: Mã định danh của nhân viên đang đảm nhiệm vị trí, nếu có
+      - name: employee_type
+        description: Phân loại đối tượng nhân sự theo phân loại quản trị nội bộ
+      - name: contract_type
+        description: Loại hợp đồng hoặc hình thức ký kết với nhân viên
+      - name: hire_date_vcs
+        description: Ngày nhân viên bắt đầu làm việc tại VCS
+      - name: job_level
+        description: Cấp bậc hoặc level hiện tại của nhân viên
+      - name: branch
+        description: Khu vực hoặc thị trường làm việc của nhân viên/vị trí
+      - name: management_level
+        description: Cấp quản lý của nhân viên hoặc vị trí trong cơ cấu tổ chức
+      - name: branch
+        description: Chi nhánh làm việc của nhân viên hoặc vị trí
+      - name: business_email
+        description: Địa chỉ email công việc của nhân viên
+      - name: job_framework_position
+        description: Vị trí công việc theo khung nghề nghiệp hoặc job framework
+      - name: job_framework_position_2
+        description: Vị trí công việc cấp chi tiết hơn theo khung nghề nghiệp hoặc job framework
+      - name: service_group
+        description: Nhóm dịch vụ hoặc nhóm sản phẩm/dịch vụ mà vị trí tham gia
+      - name: service_group_new
+        description: Nhóm dịch vụ mới hoặc nhóm dịch vụ sau khi chuẩn hóa/phân loại lại
+      - name: is_ai_group
+        description: Cờ xác định headcount hoặc nhân viên có thuộc nhóm AI hay không
+      - name: is_ai_org
+        description: Cờ xác định headcount hoặc nhân viên có thuộc đơn vị AI hay không
+      - name: is_philippines_japan_market
+        description: Cờ xác định headcount hoặc nhân viên có phục vụ thị trường Philippines/Japan hay không
+      - name: is_domestic_business
+        description: Cờ xác định headcount hoặc nhân viên có thuộc nhóm kinh doanh trong nước hay không
+      - name: is_international_business
+        description: Cờ xác định headcount hoặc nhân viên có thuộc nhóm kinh doanh quốc tế hay không
+      - name: is_rnd
+        description: Cờ xác định headcount hoặc nhân viên có thuộc nhóm nghiên cứu và phát triển hay không
+      - name: is_indirect_group
+        description: Cờ xác định headcount hoặc nhân viên có thuộc nhóm gián tiếp hay không
+      - name: is_business_support
+        description: Cờ xác định headcount hoặc nhân viên có thuộc nhóm hỗ trợ kinh doanh hay không
+      - name: resource_type
+        description: "Phân loại nguồn lực nhân sự ở mức tổng quát, được xác định dựa trên loại nhân sự (employee_type) và cấp bậc công việc (position_level). Các nhóm bao gồm: TDS-NDS-HDDV, CTV, SV+Fresher, IS/OS. Dùng để phân tích cơ cấu nguồn lực và lập kế hoạch nhân sự."
+      - name: position_level
+        description: "Cấp bậc vị trí của nhân sự. Nếu nhân sự thuộc cấp quản lý thì lấy giá trị từ management_level; ngược lại lấy từ employee_level. Giá trị có thể gồm: N, N-1, N-2, Expert, Specialist, Senior, Experienced, Junior, Entry, CTV, Fresher, SV, IS, OS."
+      - name: hierarchy_level
+        description: "Thứ tự phân cấp số tương ứng với position_level, dùng để sắp xếp và phân tích thứ bậc nhân sự trong BI tools (Lightdash, Power BI,...). Giá trị nhỏ hơn thể hiện cấp bậc cao hơn. Mapping: N=1, N-1=2, N-2=3, Expert=4, ..., IS=13, OS=14."

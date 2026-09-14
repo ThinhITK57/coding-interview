@@ -1,0 +1,85 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_quarter_jira
+  description: "Bảng qtsx_v2_kpikqi_quarter_jira (nguồn Power BI: KPIKQI Quý Jira)."
+  meta:
+    label: "KPIKQI Quý Jira"
+    powerbi_source: "KPIKQI Quý Jira"
+  columns:
+  - name: id
+    description: "Cột Id trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: result
+    description: "Cột kết quả trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: number
+        label: "kết quả"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày báo cáo trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+        hidden: true
+  - name: customer_group
+    description: "Cột Nhóm khách hàng trong KPIKQI Quý Jira. Cột tính toán, DAX gốc: \"Khách hàng ngoài\""
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm khách hàng"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQI Quý Jira."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true

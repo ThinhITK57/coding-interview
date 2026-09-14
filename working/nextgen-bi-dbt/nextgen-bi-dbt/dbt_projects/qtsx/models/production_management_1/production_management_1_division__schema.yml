@@ -1,0 +1,14 @@
+version: 2
+models:
+- name: production_management_1_division
+  description: "Bảng production_management_1_division (nguồn Power BI: Khối)."
+  meta:
+    label: "Khối"
+    powerbi_source: "Khối"
+  columns:
+  - name: division
+    description: "Cột Khối trong Khối."
+    meta:
+      dimension:
+        type: string
+        label: "TRUNG TÂM"

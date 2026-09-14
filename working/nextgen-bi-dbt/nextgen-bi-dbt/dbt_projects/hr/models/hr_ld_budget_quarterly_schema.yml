@@ -1,0 +1,122 @@
+version: 2
+
+models:
+- name: hr_ld_budget_quarterly
+  description: >
+    Bảng **hr_ld_budget_quarterly** lưu trữ thông tin tổng hợp ngân sách đào tạo theo từng quý
+    trong năm 2026, được lấy từ snapshot mới nhất của nguồn dữ liệu ngân sách đào tạo theo quý.
+    Bảng bao gồm tổng ngân sách được phân bổ, giá trị đã đề nghị phê duyệt, giá trị đã sử dụng
+    và ngân sách còn lại theo từng quý. Dữ liệu được sử dụng để theo dõi tình hình phân bổ và
+    sử dụng ngân sách L&D theo quý, đánh giá tiến độ giải ngân và hỗ trợ báo cáo quản trị chi phí đào tạo.
+
+  meta:
+    label: "L&D Budget Quarterly"
+    owner: "tranpth"
+
+    metrics:
+      total_budget_amount:
+        type: sum
+        sql: ${TABLE}.budget_amount
+        description: "Tổng ngân sách đào tạo được phân bổ theo quý."
+        label: "Total Budget Amount"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng ngân sách đào tạo"
+          - "Ngân sách đào tạo theo quý"
+          - "Total Budget Amount"
+
+      total_approval_request_amount:
+        type: sum
+        sql: ${TABLE}.approval_request_amount
+        description: "Tổng giá trị ngân sách đào tạo đã gửi đề nghị phê duyệt theo quý."
+        label: "Total Approval Request Amount"
+        category: "Learning & Development"
+        synonyms:
+          - "Ngân sách đề nghị phê duyệt"
+          - "Giá trị đề nghị phê duyệt"
+          - "Total Approval Request Amount"
+
+      total_spent_amount:
+        type: sum
+        sql: ${TABLE}.spent_amount
+        description: "Tổng giá trị ngân sách đào tạo đã sử dụng theo quý."
+        label: "Total Spent Amount"
+        category: "Learning & Development"
+        synonyms:
+          - "Ngân sách đã sử dụng"
+          - "Chi phí đào tạo đã dùng"
+          - "Total Spent Amount"
+
+      total_remaining_amount:
+        type: sum
+        sql: ${TABLE}.remaining_amount
+        description: "Tổng giá trị ngân sách đào tạo còn lại theo quý."
+        label: "Total Remaining Amount"
+        category: "Learning & Development"
+        synonyms:
+          - "Ngân sách còn lại"
+          - "Remaining Budget"
+          - "Total Remaining Amount"
+
+      budget_usage_rate:
+        type: number
+        sql: >
+          100.0 * ${total_spent_amount}
+          / NULLIF(${total_budget_amount}, 0.0)
+        description: "Tỷ lệ ngân sách đào tạo đã sử dụng theo quý, được tính bằng total_spent_amount / total_budget_amount."
+        label: "Budget Usage Rate (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ sử dụng ngân sách"
+          - "Budget Usage Rate"
+
+      budget_remaining_rate:
+        type: number
+        sql: >
+          100.0 * ${total_remaining_amount}
+          / NULLIF(${total_budget_amount}, 0.0)
+        description: "Tỷ lệ ngân sách đào tạo còn lại theo quý, được tính bằng total_remaining_amount / total_budget_amount."
+        label: "Budget Remaining Rate (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ ngân sách còn lại"
+          - "Budget Remaining Rate"
+
+      approval_request_rate:
+        type: number
+        sql: >
+          100.0 * ${total_approval_request_amount}
+          / NULLIF(${total_budget_amount}, 0.0)
+        description: "Tỷ lệ ngân sách đã gửi đề nghị phê duyệt theo quý, được tính bằng total_approval_request_amount / total_budget_amount."
+        label: "Approval Request Rate (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ đề nghị phê duyệt"
+          - "Approval Request Rate"
+
+  columns:
+  - name: year
+    description: Năm ngân sách đào tạo, hiện được gán cố định là 2026
+    meta:
+      dimension:
+        type: string
+        label: "Năm ngân sách"
+
+  - name: quarter
+    description: Quý ngân sách đào tạo
+    meta:
+      dimension:
+        type: number
+        label: "Quý"
+
+  - name: budget_amount
+    description: Tổng ngân sách đào tạo được phân bổ theo quý
+
+  - name: approval_request_amount
+    description: Tổng giá trị ngân sách đã được đề nghị phê duyệt theo quý
+
+  - name: spent_amount
+    description: Tổng giá trị ngân sách đào tạo đã sử dụng theo quý
+
+  - name: remaining_amount
+    description: Giá trị ngân sách đào tạo còn lại theo quý

@@ -1,0 +1,83 @@
+version: 2
+models:
+- name: production_management_1_os_mm_plan
+  description: "Bảng production_management_1_os_mm_plan (nguồn Power BI: OS - MM PLan)."
+  meta:
+    label: "OS - MM PLan"
+    powerbi_source: "OS - MM PLan"
+    metrics:
+      sum_mm_os_plan:
+        type: sum
+        sql: mm_os_plan
+        label: "MM TTr - PLAN"
+        description: "Sinh từ Power BI: sum(OS - MM PLan.MM_OS_plan) | DAX measure: PLAN MM OS | DAX measure: MM TTr Planned (Plan Date)"
+  columns:
+  - name: id
+    description: "Cột Id trong OS - MM PLan."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong OS - MM PLan."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong OS - MM PLan."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong OS - MM PLan."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_10803 trong OS - MM PLan."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT"
+  - name: start_date
+    description: "Cột Start_date_10142 trong OS - MM PLan."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Start_date_10142"
+        hidden: true
+  - name: mm_os_plan
+    description: "Cột MM_OS_plan trong OS - MM PLan."
+    meta:
+      dimension:
+        type: number
+        label: "MM_OS_plan"
+        hidden: true
+  - name: plan_date
+    description: "Cột plan date trong OS - MM PLan. Cột tính toán, DAX gốc: DATE( YEAR('OS - MM PLan'[Start_date_10142] + TIME(7,0,0)), MONTH('OS - MM PLan'[Start_date_10142] + TIME(7,0,0)), DAY('OS - MM PLan'[Start_date_10142] + TIME(7,0,0)) )"
+    meta:
+      dimension:
+        type: date
+        label: "plan date"
+        hidden: true
+  - name: project
+    description: "Cột Dự_án_10706 trong OS - MM PLan."
+    meta:
+      dimension:
+        type: string
+        label: "Dự_án_10706"
+        hidden: true
+  - name: payment_date
+    description: "Cột Ngày_thanh_toán_10839 trong OS - MM PLan."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày_thanh_toán_10839"
+        hidden: true

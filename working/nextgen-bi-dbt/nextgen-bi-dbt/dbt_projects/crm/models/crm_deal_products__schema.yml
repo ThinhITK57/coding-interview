@@ -1,0 +1,397 @@
+models:
+  - name: crm_deal_products
+    description: >
+      Thông tin sản phẩm/dịch vụ được bán trong từng cơ hội/dự án,
+      bao gồm thông tin sản phẩm, số lượng/sản lượng, đơn giá, giá cơ sở,
+      chiết khấu, VAT và tổng giá trị bán hàng sau chiết khấu.
+
+    meta:
+      label: "Sản phẩm và giá bán theo cơ hội bán hàng"
+      owner: "huongnv1"
+      joins:
+        - join: crm_deals
+          sql_on: ${crm_deal_products.deal_id} = ${crm_deals.deal_id}
+          relationship: many-to-one
+      metrics:
+
+        deal_count:
+          type: count_distinct
+          sql: ${deal_id}
+          label: "Số cơ hội"
+
+        product_count:
+          type: count_distinct
+          sql: ${product_id}
+          label: "Số sản phẩm"
+
+        deal_product_count:
+          type: count
+          sql: ${product_id}
+          label: "Số dòng sản phẩm"
+
+        total_quantity:
+          type: sum
+          sql: ${quantitative}
+          label: "Tổng số lượng"
+
+        total_base_price:
+          type: sum
+          sql: ${base_price}
+          label: "Tổng giá cơ sở"
+          format: "#,##0.00"
+
+        total_discount:
+          type: sum
+          sql: ${discount}
+          label: "Tổng chiết khấu"
+          format: "#,##0.00"
+
+        total_final_total:
+          type: sum
+          sql: ${final_total}
+          label: "Tổng tiền bán hàng"
+          format: "#,##0.00"
+
+        avg_final_total:
+          type: average
+          sql: ${final_total}
+          label: "Giá trị bán hàng trung bình"
+          format: "#,##0.00"
+
+    columns:
+
+      # ============================================================
+      # DEAL
+      # ============================================================
+
+      - name: deal_id
+        description: "Mã định danh của cơ hội bán hàng."
+        meta:
+          dimension:
+            type: string
+            label: "Mã cơ hội"
+
+      - name: item_index
+        description: "Thứ tự của sản phẩm trong cơ hội bán hàng."
+        meta:
+          dimension:
+            type: number
+            label: "STT sản phẩm"
+
+      # ============================================================
+      # DEAL INFORMATION
+      # ============================================================
+
+      - name: expected_close_date
+        description: >
+          Ngày kỳ vọng ký thành công
+        meta:
+          dimension:
+            type: date
+            label: "Ngày kỳ vọng ký thành công"
+
+      - name: probability
+        description: >
+          Xác suất dự kiến cơ hội bán hàng thành công,
+          thể hiện khả năng cơ hội được chốt thành công.
+        meta:
+          dimension:
+            type: number
+            label: "Xác suất chốt"
+            format: "0%"
+            synonyms:
+            - cơ hội cao khi >= 70
+            - cơ hội thấp khi < 70
+
+      - name: channel
+        description: >
+          Kênh phát sinh hoặc kênh bán hàng của cơ hội.
+        meta:
+          dimension:
+            type: string
+            label: "Kênh bán hàng"
+
+      - name: presales_name
+        description: >
+          Nhân sự Presales phụ trách hỗ trợ tư vấn,
+          giải pháp hoặc kỹ thuật cho cơ hội bán hàng.
+        meta:
+          dimension:
+            type: string
+            label: "Nhân viên Presales"
+
+      - name: project_manager
+        description: >
+          Nhân sự quản lý dự án phụ trách cơ hội hoặc dự án
+          liên quan đến cơ hội bán hàng.
+        meta:
+          dimension:
+            type: string
+            label: "Quản lý dự án"
+
+      - name: partner
+        description: >
+          Mã định danh đối tác liên quan đến cơ hội bán hàng.
+        meta:
+          dimension:
+            type: number
+            label: "Mã đối tác"
+
+      - name: territory_name
+        description: >
+          Tên khu vực hoặc địa bàn kinh doanh phụ trách cơ hội.
+        meta:
+          dimension:
+            type: string
+            label: "Khu vực kinh doanh"
+
+      - name: deal_stage_name
+        description: >
+          Giai đoạn hiện tại của cơ hội trong quy trình bán hàng.
+        meta:
+          dimension:
+            type: string
+            label: "Giai đoạn cơ hội"
+
+      # ============================================================
+      # PRODUCT
+      # ============================================================
+
+      - name: product_id
+        description: "Mã định danh của sản phẩm."
+        meta:
+          dimension:
+            type: number
+            label: "Mã sản phẩm"
+
+      - name: product_name
+        description: "Tên sản phẩm/dịch vụ được bán."
+        meta:
+          dimension:
+            type: string
+            label: "Tên sản phẩm"
+
+      - name: category
+        description: "Nhóm sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm sản phẩm"
+
+      - name: version
+        description: "Phiên bản của sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Phiên bản sản phẩm"
+
+      - name: spdv_type
+        description: "Phân loại sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Loại SPDV"
+
+      - name: license
+        description: "Loại bản quyền của sản phẩm."
+        meta:
+          dimension:
+            type: string
+            label: "Loại bản quyền"
+
+      # ============================================================
+      # QUANTITY / PRODUCT CONFIG
+      # ============================================================
+
+      - name: quantitative
+        description: "Số lượng sản phẩm được bán."
+        meta:
+          dimension:
+            type: number
+            label: "Số lượng"
+
+          metrics:
+            total_quantity:
+              type: sum
+              label: "Tổng số lượng"
+
+            avg_quantity:
+              type: average
+              label: "Số lượng trung bình"
+
+      - name: product_unit
+        description: "Đơn vị tính của sản phẩm."
+        meta:
+          dimension:
+            type: string
+            label: "Đơn vị sản phẩm"
+
+      - name: product_package
+        description: "Gói sản phẩm/dịch vụ được bán."
+        meta:
+          dimension:
+            type: string
+            label: "Gói sản phẩm"
+
+      - name: product_price_type
+        description: "Loại giá áp dụng cho sản phẩm."
+        meta:
+          dimension:
+            type: string
+            label: "Loại giá sản phẩm"
+
+      - name: is_quantity_based
+        description: "Cho biết giá sản phẩm có được tính dựa trên số lượng hay không."
+        meta:
+          dimension:
+            type: boolean
+            label: "Tính giá theo số lượng"
+
+      # ============================================================
+      # VALUE / PRICE
+      # ============================================================
+
+      - name: min_value
+        description: "Giá trị tối thiểu áp dụng cho sản phẩm."
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị tối thiểu"
+            format: "#,##0.00"
+
+      - name: max_value
+        description: "Giá trị tối đa áp dụng cho sản phẩm."
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị tối đa"
+            format: "#,##0.00"
+
+      - name: base_price
+        description: "Giá cơ sở của sản phẩm trước khi áp dụng chiết khấu."
+        meta:
+          dimension:
+            type: number
+            label: "Giá cơ sở"
+            format: "#,##0.00"
+
+          metrics:
+            avg_base_price:
+              type: average
+              label: "Giá cơ sở trung bình"
+              format: "#,##0.00"
+
+      # ============================================================
+      # DISCOUNT / VAT
+      # ============================================================
+
+      - name: max_discount
+        description: "Mức chiết khấu tối đa được phép áp dụng."
+        meta:
+          dimension:
+            type: number
+            label: "Chiết khấu tối đa"
+            format: "#,##0.00"
+
+      - name: discount
+        description: "Mức chiết khấu thực tế được áp dụng cho sản phẩm."
+        meta:
+          dimension:
+            type: number
+            label: "Chiết khấu"
+            format: "#,##0.00"
+
+      - name: discount_type
+        description: "Loại chiết khấu được áp dụng."
+        meta:
+          dimension:
+            type: string
+            label: "Loại chiết khấu"
+
+      - name: vat
+        description: "Thuế giá trị gia tăng (VAT) áp dụng cho sản phẩm."
+        meta:
+          dimension:
+            type: number
+            label: "Thuế VAT"
+            format: "0.00%"
+
+      # ============================================================
+      # DURATION / ALLOCATION
+      # ============================================================
+
+      - name: duration
+        description: "Thời hạn sử dụng hoặc cung cấp sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: number
+            label: "Thời hạn"
+
+      - name: allocation_duration
+        description: "Thời gian phân bổ giá trị của sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: number
+            label: "Thời gian phân bổ"
+
+      - name: allocation_value
+        description: "Giá trị được phân bổ cho sản phẩm/dịch vụ."
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị phân bổ"
+            format: "#,##0.00"
+
+          metrics:
+            total_allocation_value:
+              type: sum
+              label: "Tổng giá trị phân bổ"
+              format: "#,##0.00"
+
+      # ============================================================
+      # FINAL PRICE
+      # ============================================================
+
+      - name: final_total
+        description: >
+          Tổng giá trị bán hàng của sản phẩm sau khi áp dụng
+          chiết khấu và các chính sách giá.
+        meta:
+          dimension:
+            type: number
+            label: "Tổng tiền sau chiết khấu"
+            format: "#,##0.00"
+
+          metrics:
+            total_final_total:
+              type: sum
+              label: "Tổng tiền bán hàng"
+              format: "#,##0.00"
+
+            avg_final_total:
+              type: average
+              label: "Giá trị bán hàng trung bình"
+              format: "#,##0.00"
+
+            min_final_total:
+              type: min
+              label: "Giá trị bán hàng thấp nhất"
+              format: "#,##0.00"
+
+            max_final_total:
+              type: max
+              label: "Giá trị bán hàng cao nhất"
+              format: "#,##0.00"
+
+      # ============================================================
+      # CURRENCY
+      # ============================================================
+
+      - name: currency
+        description: "Loại tiền tệ được sử dụng để tính giá sản phẩm."
+        meta:
+          dimension:
+            type: string
+            label: "Loại tiền tệ"
+
+    

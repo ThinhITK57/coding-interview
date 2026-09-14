@@ -1,0 +1,24 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_os_logwork
+    description: "Nguồn Power BI: OS-Logwork"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_project_id
+      description: "Cột ISSUE_PROJECT_ID"
+    - name: issue_time_spent
+      description: "Cột ISSUE_TIME_SPENT"
+    - name: issue_time_spent_with_st
+      description: "Cột ISSUE_TIME_SPENT_WITH_ST"
+    - name: order_value
+      description: "Cột Đơn_hàng_13421"
+    - name: project_name
+      description: "Cột PROJECT NAME"

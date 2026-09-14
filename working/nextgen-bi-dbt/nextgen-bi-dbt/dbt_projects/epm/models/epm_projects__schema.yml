@@ -1,0 +1,173 @@
+version: 2
+
+models:
+  - name: epm_projects
+    description: >
+      Bảng lưu trữ thông tin về các dự án kinh doanh được quản lý trên EPM 
+      (chủ yếu phục vụ mục đích thương mại của TTKDMB và các đơn vị).
+
+      Grain: Một dòng tương ứng với một dự án.
+    meta:
+      label: "Dự án kinh doanh (Projects)"
+      group_label: "EPM Dashboard"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Projects"
+        grain: "One row per business project"
+        primary_department_dimension: "c_department"
+        primary_manager_dimension: "project_manager"
+
+        restrictions:
+          - "Chỉ tập trung khai thác các dự án mang đi kinh doanh hoặc quản lý đặc thù bởi TTKDMB."
+
+    columns:
+      - name: sysid
+        description: "Mã định danh duy nhất của dự án."
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "Project ID"
+
+      - name: name
+        description: "Tên mô tả công việc / Tên dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Tên dự án"
+
+      - name: project_type
+        description: "Phân loại dự án (R&D, Khách hàng, Chuyển đổi số, Hạ tầng)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại dự án"
+
+      - name: track_status
+        description: "Đánh giá tổng quan: On Track, At Risk, Off Track."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái sức khỏe"
+
+      - name: percent_completed
+        description: "% hoàn thành thực tế và % kỳ vọng tại ngày báo cáo."
+        meta:
+          dimension:
+            type: number
+            label: "Tiến độ hoàn thành (%)"
+
+      - name: c_department
+        description: "Khối / Phòng ban chủ trì dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban chủ trì"
+
+      - name: c_assignee
+        description: "Nhân sự được giao trách nhiệm đầu mối dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Đầu mối phụ trách"
+
+      - name: created_by
+        description: "Người tạo và ngày khởi tạo dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Người tạo"
+
+      - name: project_manager
+        description: "Giám đốc Dự án (PM) chịu trách nhiệm toàn diện."
+        meta:
+          dimension:
+            type: string
+            label: "Quản lý dự án (PM)"
+
+      - name: c_action_resources
+        description: "Các nhân sự then chốt được điều động tham gia."
+        meta:
+          dimension:
+            type: string
+            label: "Tài nguyên tham gia"
+
+      - name: state
+        description: "Trạng thái vòng đời dự án (/State/Draft, /State/Active, /State/Completed, /State/Cancelled)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái vòng đời"
+
+      - name: parent
+        description: "Dự án cha cấp cao nhất hoặc đối tượng cha trực tiếp."
+        meta:
+          dimension:
+            type: string
+            label: "Đối tượng cha"
+
+      - name: parent_project
+        description: "Dự án cha cấp cao nhất hoặc đối tượng cha trực tiếp."
+        meta:
+          dimension:
+            type: string
+            label: "Dự án cha"
+
+      - name: manager
+        description: "Người sở hữu bản ghi và người kiểm duyệt."
+        meta:
+          dimension:
+            type: string
+            label: "Người kiểm duyệt"
+
+      - name: c_associated_objective
+        description: "Liên kết trực tiếp đến Mục tiêu chiến lược (BSC) / Target cấp cao."
+        meta:
+          dimension:
+            type: string
+            label: "Mục tiêu liên kết"
+
+      - name: last_updated_on
+        description: "Người cập nhật và Watermark thời gian dùng để cào dữ liệu tăng dần."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày cập nhật"
+
+      - name: last_updated_by_system_on
+        description: "Dấu thời gian hệ thống tự động cập nhật số liệu rollup."
+        meta:
+          dimension:
+            type: date
+            label: "Hệ thống cập nhật"
+
+      - name: created_on
+        description: "Người tạo và ngày khởi tạo dự án."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày tạo"
+
+      - name: entity_owner
+        description: "Người sở hữu bản ghi và người kiểm duyệt."
+        meta:
+          dimension:
+            type: string
+            label: "Chủ sở hữu"
+
+      - name: external_id
+        description: "ID nội bộ và mã dự án quy chuẩn của doanh nghiệp."
+        meta:
+          dimension:
+            type: string
+            label: "Mã quy chuẩn"
+
+      - name: entity_type
+        description: "Luôn mang giá trị cố định Task hoặc Project tùy cấu hình."
+        meta:
+          dimension:
+            type: string
+            label: "Loại thực thể"

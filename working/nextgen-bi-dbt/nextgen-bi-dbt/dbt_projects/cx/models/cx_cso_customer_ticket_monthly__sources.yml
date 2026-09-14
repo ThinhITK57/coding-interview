@@ -1,0 +1,22 @@
+version: 2
+sources:
+- name: bi_silver__cx
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: cx'
+  tables:
+  - name: cx_cso_customer_ticket_monthly
+    description: '[CX_CSO] Bảng tổng hợp số lượng ticket theo khách hàng và sản phẩm theo tháng, phục vụ phân tích hành vi như tần suất ticket và tỷ lệ tái diễn.'
+    columns:
+    - name: product_category
+      description: Nhóm sản phẩm hoặc dịch vụ mà khách hàng đang sử dụng. Dùng để phân tích hành vi ticket theo từng dòng sản phẩm.
+    - name: company_name
+      description: Tên công ty hoặc khách hàng. Là định danh chính để tính toán số lượng ticket và hành vi theo từng khách hàng.
+    - name: report_month
+      description: Mốc thời gian theo tháng (được truncate từ created_at). Là trục thời gian chính để phân tích xu hướng và hành vi khách hàng theo tháng.
+    - name: customer_group
+      description: Phân loại khách hàng theo cấp độ (ví dụ VVIP, VIP, Growth, Standard). Giá trị được lấy đại diện trong tháng cho mỗi khách hàng.
+    - name: customer_segment_l1
+      description: Phân khúc khách hàng cấp cao (ví dụ Nội bộ, Khách hàng ngoài, Bộ Quốc phòng, Quốc tế). Dùng để phân tích hành vi theo nhóm khách hàng chiến lược.
+    - name: ticket_count
+      description: Tổng số ticket của một khách hàng trong một tháng. Là chỉ số nền tảng để tính toán tần suất và hành vi sử dụng dịch vụ.

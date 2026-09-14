@@ -1,0 +1,14 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_sheet1
+    description: "Nguồn Power BI: Sheet1"
+    columns:
+    - name: column1
+      description: "Cột Column1"
+    - name: column2
+      description: "Cột Column2"

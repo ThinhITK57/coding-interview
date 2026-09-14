@@ -1,0 +1,306 @@
+version: 2
+sources:
+- name: bi_silver__epm
+  database: hive
+  schema: '{{ env_var(''DBT_TRINO_SCHEMA'', ''bi_silver'') }}'
+  description: 'Silver layer sources for domain: epm'
+  tables:
+  - name: epm_assignments
+    description: This table stores detailed information for assignments.
+    columns:
+    - name: sysid
+      description: 'Mã định danh duy nhất của bản ghi giao việc (ví dụ: /Assignment/ASN-2026-089).'
+      tests:
+      - not_null
+      - unique
+    - name: name
+      description: Tên bản giao việc / Tiêu đề phiếu giao nhiệm vụ KPI.
+    - name: description
+      description: Thuyết minh chi tiết nội dung giao việc và các lưu ý chỉ đạo điều
+        hành.
+    - name: created_by
+      description: Nhân sự khởi tạo phiếu giao việc trong hệ thống.
+    - name: c_assignor
+      description: Người giao việc / Thủ trưởng đơn vị phê duyệt giao nhiệm vụ KPI.
+    - name: c_assignee
+      description: Người nhận việc / Cán bộ nhân viên chịu trách nhiệm thực thi.
+    - name: c_start_date
+      description: Ngày bắt đầu có hiệu lực của bản giao nhiệm vụ.
+    - name: c_end_date
+      description: Hạn cuối hoàn thành và chốt đánh giá kết quả công việc.
+    - name: c_parent_assignment
+      description: Khóa ngoại trỏ đến Phiếu giao việc cha cấp trên (Giao từ Cấp Trưởng
+        phòng xuống Nhân viên).
+    - name: c_department
+      description: Phòng ban / Đơn vị tiếp nhận khối lượng công việc.
+    - name: entity_owner
+      description: Người sở hữu bản ghi trong hệ thống bảo mật phân quyền.
+    - name: c_achievement_rate
+      description: 'Tỷ lệ Hoàn thành Nhiệm vụ (%): Đánh giá tổng thể mức độ hoàn thành
+        bản giao việc.'
+    - name: c_total_weight
+      description: Tổng trọng số quy chuẩn của bản giao việc (chuẩn hóa = 100%).
+    - name: c_sum_target_weight_percent
+      description: Tổng tỷ lệ trọng số của toàn bộ các chỉ tiêu định lượng (Target)
+        gắn trong Assignment.
+    - name: last_updated_on
+      description: Watermark gia số thời gian dùng để cào dữ liệu tăng dần (Incremental).
+    - name: last_updated_by_system_on
+      description: Dấu thời gian hệ thống tự động chạy batch tính toán lại điểm kết
+        quả.
+    - name: created_on
+      description: Thời điểm tạo bản ghi phiếu giao việc.
+    - name: external_id
+      description: Mã tham chiếu văn bản chỉ đạo hoặc số quyết định bổ nhiệm/giao
+        việc.
+    - name: entity_type
+      description: Luôn mang giá trị cố định "Assignment".
+    - name: c_total_assignment_weight_result
+      description: 'Điểm Đánh giá KPI Cuối cùng: Căn cứ chính thức để xếp loại lao
+        động và chi trả thưởng hiệu quả (A, B, C).'
+  - name: epm_objectives
+    description: This table stores detailed information for objective.
+    columns:
+    - name: sysid
+      description: 'Mã định danh duy nhất của mục tiêu BSC (ví dụ: /Objective/BSC-2026-01).'
+      tests:
+      - not_null
+      - unique
+    - name: name
+      description: Tên mục tiêu chiến lược / Tiêu đề nghị quyết giao ban.
+    - name: description
+      description: Nội dung thuyết minh chi tiết về mục tiêu, định hướng chỉ đạo của
+        Lãnh đạo.
+    - name: created_by
+      description: Người tạo và thời điểm tạo mục tiêu.
+    - name: c_assignee
+      description: Lãnh đạo / Cá nhân chịu trách nhiệm chính trước HĐQT về mục tiêu
+        này.
+    - name: start_date
+      description: 'Ngày bắt đầu kỳ đánh giá mục tiêu chiến lược (ví dụ: 01/01/2026).'
+    - name: end_date
+      description: 'Ngày kết thúc kỳ đánh giá chiến lược (ví dụ: 31/12/2026).'
+    - name: parent_objective
+      description: Khóa ngoại trỏ đến Mục tiêu cha cấp trên (Phân cấp từ Tập đoàn
+        xuống Khối/Phòng).
+    - name: state
+      description: Trạng thái vòng đời mục tiêu (/State/Draft, /State/Active, /State/Completed).
+    - name: status
+      description: 'Đánh giá hiện trạng: Đang thực hiện, Hoàn thành, Hủy bỏ.'
+    - name: c_department
+      description: Khối / Phòng ban chịu trách nhiệm chính.
+    - name: c_objective_type
+      description: 'Phân loại mục tiêu theo 4 viễn cảnh BSC: Tài chính, Khách hàng,
+        Quy trình nội bộ, Học hỏi & Phát triển.'
+    - name: entity_owner
+      description: Người sở hữu bản ghi trong hệ thống.
+    - name: last_updated_on
+      description: Người cập nhật và Watermark gia số để cào dữ liệu tăng dần.
+    - name: last_updated_by_system_on
+      description: Dấu thời gian hệ thống tự động cập nhật số liệu rollup.
+    - name: created_on
+      description: Người tạo và thời điểm tạo mục tiêu.
+    - name: weight
+      description: 'Trọng số của mục tiêu này trong toàn bộ thẻ điểm BSC (ví dụ: 20.0%).'
+    - name: percent_of_plan
+      description: 'Tỷ lệ hoàn thành so với kế hoạch: frac{text{ActualPercent}}{text{PlannedPercent}}
+        x 100%.'
+    - name: actual_percent
+      description: '% tiến độ thực tế đã hoàn thành của mục tiêu.'
+    - name: planned_percent
+      description: '% tiến độ cần đạt được theo kế hoạch tại thời điểm xét duyệt.'
+    - name: external_id
+      description: Mã số văn bản, số hiệu nghị quyết HĐQT hoặc biên bản họp giao ban.
+    - name: entity_type
+      description: Luôn mang giá trị cố định "Objective" (hoặc "BSC").
+  - name: epm_projects
+    description: This table stores detailed information for projects.
+    columns:
+    - name: sysid
+      description: 'Mã định danh duy nhất của dự án (ví dụ: /Project/PRJ-2026-001).'
+      tests:
+      - not_null
+      - unique
+    - name: name
+      description: Tên mô tả công việc. [mô tả lấy từ bảng TASKS]
+    - name: project_type
+      description: Phân loại dự án (R&D, Khách hàng, Chuyển đổi số, Hạ tầng).
+    - name: track_status
+      description: 'Đánh giá tổng quan: "On Track", "At Risk", "Off Track".'
+    - name: percent_completed
+      description: '% hoàn thành thực tế và % kỳ vọng tại ngày báo cáo.'
+    - name: c_department
+      description: Khối / Phòng ban chủ trì dự án.
+    - name: c_assignee
+      description: Nhân sự được giao trách nhiệm đầu mối dự án.
+    - name: created_by
+      description: Người tạo và ngày khởi tạo dự án.
+    - name: project_manager
+      description: Giám đốc Dự án (PM) chịu trách nhiệm toàn diện.
+    - name: c_action_resources
+      description: Các nhân sự then chốt được điều động.
+    - name: state
+      description: Trạng thái vòng đời (/State/Draft, /State/Active, /State/Completed,
+        /State/Cancelled). [mô tả lấy từ bảng TASKS]
+    - name: parent
+      description: Dự án cha cấp cao nhất hoặc đối tượng cha trực tiếp.
+    - name: parent_project
+      description: Dự án cha cấp cao nhất hoặc đối tượng cha trực tiếp.
+    - name: manager
+      description: Người sở hữu bản ghi và người kiểm duyệt.
+    - name: c_associated_objective
+      description: Liên kết trực tiếp đến Mục tiêu BSC / Target cấp cao.
+    - name: last_updated_on
+      description: Người cập nhật và Watermark thời gian dùng để cào dữ liệu tăng
+        dần.
+    - name: last_updated_by_system_on
+      description: Dấu thời gian hệ thống tự động cập nhật số liệu rollup. [mô tả
+        lấy từ bảng OBJECTIVE]
+    - name: created_on
+      description: Người tạo và ngày khởi tạo dự án.
+    - name: entity_owner
+      description: Người sở hữu bản ghi và người kiểm duyệt.
+    - name: external_id
+      description: ID nội bộ và mã dự án quy chuẩn của doanh nghiệp.
+    - name: entity_type
+      description: Luôn mang giá trị cố định "Task". [mô tả lấy từ bảng TASKS]
+  - name: epm_targets
+    description: This table stores detailed information for targets.
+    columns:
+    - name: sysid
+      description: 'Mã định danh duy nhất của chỉ tiêu (ví dụ: /Target/TGT-2026-054).'
+      tests:
+      - not_null
+      - unique
+    - name: name
+      description: 'Tên chỉ tiêu định lượng (ví dụ: "Tăng trưởng doanh thu 25%", "Độ
+        khả dụng hệ thống 99.9%").'
+    - name: description
+      description: Thuyết minh phương pháp tính và tiêu chí đánh giá chỉ tiêu.
+    - name: c_update_description
+      description: Thuyết minh chi tiết nội dung giao việc và các lưu ý chỉ đạo điều
+        hành. [mô tả lấy từ bảng C_ASSIGNMENTS]
+    - name: unit
+      description: Đơn vị tính (%, VND, USD, Hệ thống, Giờ, Người).
+    - name: associated_objective
+      description: Khóa ngoại trỏ trực tiếp đến Mục tiêu chiến lược trong bảng BSC
+        (BSC.SYSID).
+    - name: c_associated_assignment
+      description: Khóa ngoại trỏ đến Phiếu giao việc trong bảng Assignment (Assignment.SYSID).
+    - name: parent_target
+      description: Khóa ngoại trỏ đến Chỉ tiêu cha cấp trên (Chỉ tiêu công ty -> Chỉ
+        tiêu phòng ban).
+    - name: target_type
+      description: Loại chỉ tiêu (Càng cao càng tốt, Càng thấp càng tốt, Duy trì trong
+        ngưỡng).
+    - name: c_assignee
+      description: Nhân sự được giao cam kết thực hiện chỉ tiêu.
+    - name: created_by
+      description: Người tạo và thời điểm khởi tạo chỉ tiêu.
+    - name: c_department
+      description: Phòng ban / Đơn vị chịu trách nhiệm về chỉ tiêu này.
+    - name: c_teams
+      description: (chưa có mô tả trong tài liệu)
+    - name: c_target_value_m
+      description: Giá trị và toán tử so sánh (ge, le, =) cho Kịch bản Cam kết (M).
+    - name: c_target_date_m
+      description: Thời hạn hoàn thành chỉ tiêu tương ứng theo từng kịch bản.
+    - name: c_target_result_value_m
+      description: (chưa có mô tả trong tài liệu)
+    - name: c_target_value_n
+      description: Giá trị và toán tử cho Kịch bản Phấn đấu (N).
+    - name: c_target_date_n
+      description: Thời hạn hoàn thành chỉ tiêu tương ứng theo từng kịch bản.
+    - name: c_target_result_value_n
+      description: (chưa có mô tả trong tài liệu)
+    - name: c_target_value_s
+      description: Giá trị và toán tử cho Kịch bản Tối thiểu chấp nhận được (S).
+    - name: c_target_date_s
+      description: Thời hạn hoàn thành chỉ tiêu tương ứng theo từng kịch bản.
+    - name: c_target_result_value_s
+      description: (chưa có mô tả trong tài liệu)
+    - name: state
+      description: Trạng thái vòng đời chỉ tiêu (/State/Active, /State/Completed).
+    - name: status
+      description: Đánh giá hiện trạng (Đạt, Vượt, Chưa đạt, Đang theo dõi).
+    - name: associated_item
+      description: Khóa ngoại trỏ đến Dự án trong bảng Project (Project.SYSID).
+    - name: percent_completed
+      description: '% hoàn thành tổng thể của chỉ tiêu.'
+    - name: weight
+      description: Trọng số của chỉ tiêu trong mục tiêu tổng thể.
+    - name: last_updated_on
+      description: Người cập nhật và Watermark gia số thời gian để cào tăng dần.
+    - name: last_updated_by_system_on
+      description: Dấu thời gian hệ thống tự động tính toán lại điểm kết quả.
+    - name: created_on
+      description: Người tạo và thời điểm khởi tạo chỉ tiêu.
+    - name: entity_owner
+      description: Cán bộ sở hữu và quản lý chỉ tiêu trong tổ chức.
+    - name: external_id
+      description: Mã số chỉ tiêu quy chuẩn theo sổ tay KPI doanh nghiệp.
+    - name: entity_type
+      description: Luôn mang giá trị cố định "Target".
+    - name: c_assignment_weight
+      description: Trọng số của chỉ tiêu khi được phân bổ vào bản giao việc Assignment.
+  - name: epm_tasks
+    description: This table stores detailed information for tasks.
+    columns:
+    - name: sysid
+      description: 'Khóa chính duy nhất do hệ thống sinh ra (ví dụ: /Task/009decb8a7834c).'
+      tests:
+      - not_null
+      - unique
+    - name: name
+      description: Tên mô tả công việc.
+    - name: task_type
+      description: Phân loại hình thức công việc (Chuẩn, Tóm tắt, Họp định kỳ).
+    - name: description
+      description: Nội dung thuyết minh chi tiết yêu cầu công việc.
+    - name: entity_owner
+      description: Người sở hữu bản ghi trong hệ thống bảo mật.
+    - name: parent_project
+      description: Khóa ngoại trỏ đến Dự án cấp cao nhất (Root Project).
+    - name: parent
+      description: Khóa ngoại trỏ đến đối tượng cha trực tiếp (Task cha hoặc Milestone
+        cha).
+    - name: external_id
+      description: Mã nghiệp vụ từ hệ thống ngoài (mã Jira, số công văn, mã kết luận
+        giao ban).
+    - name: work
+      description: Tổng số giờ công kế hoạch cần để hoàn thành task.
+    - name: duration
+      description: 'Tổng thời lượng làm việc dự kiến (ví dụ: 10d, 80h).'
+    - name: priority
+      description: (chưa có mô tả trong tài liệu)
+    - name: start_date
+      description: Ngày bắt đầu dự kiến theo kế hoạch hiện tại.
+    - name: due_date
+      description: Hạn hoàn thành dự kiến theo kế hoạch hiện tại.
+    - name: state
+      description: Trạng thái vòng đời (/State/Draft, /State/Active, /State/Completed,
+        /State/Cancelled).
+    - name: project
+      description: Khóa ngoại trỏ trực tiếp đến Dự án trực thuộc chứa Task này.
+    - name: percent_completed
+      description: '% hoàn thành tổng thể của công việc (0.0 rightarrow 100.0%).'
+    - name: actual_duration
+      description: Tổng thời lượng thực tế từ lúc bắt đầu đến khi kết thúc.
+    - name: actual_effort
+      description: Tổng số giờ công thực tế nhân sự đã bỏ ra (ghi nhận qua Timesheet).
+    - name: actual_start_date
+      description: Thời điểm thực tế bấm nút bắt đầu công việc.
+    - name: actual_end_date
+      description: Thời điểm thực tế công việc được xác nhận hoàn thành (100%).
+    - name: track_status
+      description: 'Trạng thái sức khỏe nhanh: "On Track" (Bình thường), "At Risk"
+        (Có rủi ro), "Off Track" (Mất kiểm soát).'
+    - name: last_updated_on
+      description: 'Watermark thời gian: Căn cứ cốt lõi để cào dữ liệu tăng dần (Incremental).'
+    - name: created_by
+      description: Nhân sự tạo mới bản ghi task.
+    - name: created_on
+      description: Thời điểm tạo bản ghi trong cơ sở dữ liệu.
+    - name: last_updated_by_system_on
+      description: Dấu thời gian hệ thống tự động cập nhật số liệu rollup. [mô tả
+        lấy từ bảng OBJECTIVE]

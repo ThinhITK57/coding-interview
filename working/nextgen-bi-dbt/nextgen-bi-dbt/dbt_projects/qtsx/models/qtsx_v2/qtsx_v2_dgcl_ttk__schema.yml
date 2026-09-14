@@ -1,0 +1,92 @@
+version: 2
+models:
+- name: qtsx_v2_dgcl_ttk
+  description: "Bảng qtsx_v2_dgcl_ttk (nguồn Power BI: ĐGCL TTK)."
+  meta:
+    label: "ĐGCL TTK"
+    powerbi_source: "ĐGCL TTK"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_dgcl_ttk.project} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      average_release_frequency:
+        type: average
+        sql: release_frequency
+        label: "Average of tần suất release"
+        round: 2
+        description: "Sinh từ Power BI: average(ĐGCL TTK.tần suất release) | DAX measure: Avg Release (Days)"
+      count_distinct_issue_key:
+        type: count_distinct
+        sql: issue_key
+        label: "Số lần release ĐGTK"
+        description: "Sinh từ Power BI: count_distinct(ĐGCL TTK.ISSUE_KEY)"
+  columns:
+  - name: id
+    description: "Cột Id trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày báo cáo trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+        hidden: true
+  - name: project
+    description: "Cột Project_12130 trong ĐGCL TTK."
+    meta:
+      dimension:
+        type: string
+        label: "Project_12130"
+  - name: completion_date_old
+    description: "Cột ngày hoàn thành old trong ĐGCL TTK. Cột tính toán, DAX gốc: CALCULATE( MAX('ĐGCL TTK'[Ngày báo cáo]), FILTER( 'ĐGCL TTK', 'ĐGCL TTK'[Nhóm project] = EARLIER('ĐGCL TTK'[Nhóm project]) && 'ĐGCL TTK'[Ngày báo cáo] < EARLIER('ĐGCL TTK'[Ngày báo cáo]) ) )"
+    meta:
+      dimension:
+        type: date
+        label: "ngày hoàn thành old"
+        hidden: true
+  - name: release_frequency
+    description: "Cột tần suất release trong ĐGCL TTK. Cột tính toán, DAX gốc: DATEDIFF( [ngày hoàn thành old], [Ngày báo cáo], DAY )"
+    meta:
+      dimension:
+        type: number
+        label: "tần suất release"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong ĐGCL TTK. Cột tính toán, DAX gốc: FORMAT('ĐGCL TTK'[Ngày báo cáo], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong ĐGCL TTK. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'ĐGCL TTK'[Project_12130] in {\"aJiant\", \"NSM - NDR\", \"SOC PLATFORM\", \"VCS_ Consolidate Platform\", \"VCS-CyCir\", \"VCS-CyM\",\"VCS-InT INSIDER THREAT\"} , \"TT.Enterprise\", 'ĐGCL TTK'[Project_12130] in {\"BRG\",\"Cloudrity Self Service\",\"F2DR\",\"LIG\",\"TML\",\"V-AntiDDoS\",\"VCS TAS\"}, \"TT.Telco\", 'ĐGCL TTK'[Project_12130] in {\"M-Suite\",\"Security Chatbot\",\"VCS-KIAN\"},\"TT.SX\", 'ĐGCL TTK'[Project_12130] in {\"Threat Intelligence\"},\"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+  - name: project_group
+    description: "Cột Nhóm project trong ĐGCL TTK. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'ĐGCL TTK'[Project_12130] in{\"VCS-CyCir\",\"VCS-CyM\",\"NSM - NDR\"}, \"SOCv1\", 'ĐGCL TTK'[Project_12130] in{\"Cloudrity Self Service\",\"V-AntiDDoS\"},\"WAF\", 'ĐGCL TTK'[Project_12130] )"
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm project"
+        hidden: true

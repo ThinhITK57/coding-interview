@@ -1,0 +1,23 @@
+name: 'finance'
+version: '1.0.0'
+profile: 'finance'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  finance:
+    +materialized: "{{ env_var('DBT_MATERIALIZED', 'ephemeral') }}"
+    +schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_gold') }}"
+    +tags: ['finance']
+    +meta:
+      openmetadata:
+        service: finance-gold

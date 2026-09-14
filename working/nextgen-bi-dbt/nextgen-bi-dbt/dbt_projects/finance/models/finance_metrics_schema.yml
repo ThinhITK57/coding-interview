@@ -1,0 +1,305 @@
+version: 2
+
+models:
+- name: finance_metrics
+  description: >
+    Bảng tổng hợp các chỉ số tài chính theo nhóm sản phẩm/dịch vụ, Trung tâm N-1 và ngày báo cáo.
+    Đây không phải bảng tổng hợp tài chính toàn công ty. Chỉ sử dụng khi phân tích tài chính
+    theo nhóm sản phẩm/dịch vụ thông qua product_category hoặc product_category_code.
+
+  meta:
+    label: "Chỉ số tài chính theo sản phẩm dịch vụ"
+    owner: "sonnv1"
+
+    metrics:
+      total_revenue_by_product_category:
+        type: sum
+        sql: ${TABLE}.total_revenue
+        description: >
+          Tổng doanh thu theo nhóm sản phẩm/dịch vụ. Không phải doanh thu toàn công ty.
+        label: "Doanh thu theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "Doanh thu theo sản phẩm"
+          - "Doanh thu theo dịch vụ"
+          - "Doanh thu theo nhóm sản phẩm"
+          - "Revenue by product category"
+
+      total_cost_by_product_category:
+        type: sum
+        sql: ${TABLE}.total_cost
+        description: >
+          Tổng chi phí theo nhóm sản phẩm/dịch vụ. Không phải tổng chi phí toàn công ty.
+        label: "Chi phí theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "Chi phí theo sản phẩm"
+          - "Chi phí theo dịch vụ"
+          - "Chi phí theo nhóm sản phẩm"
+          - "Cost by product category"
+
+      total_gross_profit_by_product_category:
+        type: sum
+        sql: ${TABLE}.gross_profit
+        description: >
+          Lợi nhuận gộp theo nhóm sản phẩm/dịch vụ.
+          Công thức đã được tính sẵn: total_revenue - direct_labor_os_cost - production_infra_cost.
+          Không phải lợi nhuận gộp toàn công ty.
+        label: "Lợi nhuận gộp theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "Lợi nhuận gộp theo sản phẩm"
+          - "Lợi nhuận gộp theo dịch vụ"
+          - "Gross profit by product category"
+
+      total_ebitda_by_product_category:
+        type: sum
+        sql: ${TABLE}.ebitda
+        description: >
+          EBITDA theo nhóm sản phẩm/dịch vụ.
+          Công thức đã được tính sẵn: total_revenue - total_cost + fixed_asset_depreciation_cost.
+          Không phải EBITDA toàn công ty.
+        label: "EBITDA theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "EBITDA theo sản phẩm"
+          - "EBITDA theo dịch vụ"
+          - "EBITDA by product category"
+
+      total_fixed_asset_depreciation_cost_by_product_category:
+        type: sum
+        sql: ${TABLE}.fixed_asset_depreciation_cost
+        description: >
+          Chi phí khấu hao tài sản cố định theo nhóm sản phẩm/dịch vụ.
+          Không phải chi phí khấu hao toàn công ty.
+        label: "Chi phí khấu hao theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "Khấu hao theo sản phẩm"
+          - "Khấu hao theo dịch vụ"
+          - "Depreciation cost by product category"
+
+      total_direct_labor_os_cost_by_product_category:
+        type: sum
+        sql: ${TABLE}.direct_labor_os_cost
+        description: >
+          Chi phí nhân công và outsource trực tiếp theo nhóm sản phẩm/dịch vụ.
+        label: "Chi phí nhân công OS trực tiếp theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "Chi phí nhân công trực tiếp theo sản phẩm"
+          - "Chi phí OS trực tiếp theo sản phẩm"
+          - "Direct labor OS cost by product category"
+
+      total_production_infra_cost_by_product_category:
+        type: sum
+        sql: ${TABLE}.production_infra_cost
+        description: >
+          Chi phí hạ tầng, máy chủ, tài nguyên và công cụ dụng cụ phục vụ sản xuất
+          theo nhóm sản phẩm/dịch vụ.
+        label: "Chi phí hạ tầng sản xuất theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "Chi phí hạ tầng theo sản phẩm"
+          - "Chi phí sản xuất theo dịch vụ"
+          - "Production infra cost by product category"
+
+      total_business_os_cost_by_product_category:
+        type: sum
+        sql: ${TABLE}.business_os_cost
+        description: >
+          Chi phí outsource kinh doanh theo nhóm sản phẩm/dịch vụ.
+        label: "Chi phí OS kinh doanh theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        synonyms:
+          - "Chi phí outsource kinh doanh theo sản phẩm"
+          - "Business OS cost by product category"
+
+        average_total_cost_by_product_category:
+          type: average
+          sql: ${TABLE}.total_cost
+          description: Chi phí trung bình theo nhóm sản phẩm/dịch vụ.
+          label: "Chi phí trung bình theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Average Cost"
+            - "Chi phí trung bình"
+
+        average_gross_profit_by_product_category:
+          type: average
+          sql: ${TABLE}.gross_profit
+          description: Lợi nhuận gộp trung bình theo nhóm sản phẩm/dịch vụ.
+          label: "Lợi nhuận gộp trung bình theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Average Gross Profit"
+            - "Lợi nhuận gộp trung bình"
+
+        average_ebitda_by_product_category:
+          type: average
+          sql: ${TABLE}.ebitda
+          description: EBITDA trung bình theo nhóm sản phẩm/dịch vụ.
+          label: "EBITDA trung bình theo nhóm sản phẩm dịch vụ"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Average EBITDA"
+            - "EBITDA trung bình"
+
+        total_record_count:
+          type: count
+          sql: "1.0"
+          description: Tổng số bản ghi chỉ số tài chính theo nhóm sản phẩm/dịch vụ.
+          label: "Số bản ghi chỉ số tài chính"
+          category: "Sản phẩm dịch vụ"
+          synonyms:
+            - "Record Count"
+            - "Số dòng dữ liệu"
+
+      total_gross_margin_by_product_category:
+        type: number
+        sql: ${total_gross_profit_by_product_category} / NULLIF(${total_revenue_by_product_category}, 0.0)
+        description: >
+          Biên lợi nhuận gộp theo nhóm sản phẩm/dịch vụ.
+          Không phải biên lợi nhuận gộp toàn công ty.
+        label: "Biên lợi nhuận gộp theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        format: "percent"
+        synonyms:
+          - "Gross margin by product category"
+          - "Biên lợi nhuận gộp theo sản phẩm"
+
+      ebitda_margin_by_product_category:
+        type: number
+        sql: ${total_ebitda_by_product_category} / NULLIF(${total_revenue_by_product_category}, 0.0)
+        description: >
+          Biên EBITDA theo nhóm sản phẩm/dịch vụ.
+          Không phải biên EBITDA toàn công ty.
+        label: "Biên EBITDA theo nhóm sản phẩm dịch vụ"
+        category: "Sản phẩm dịch vụ"
+        format: "percent"
+        synonyms:
+          - "EBITDA margin by product category"
+          - "Biên EBITDA theo sản phẩm"
+
+        direct_labor_cost_ratio_by_product_category:
+          type: number
+          sql: ${total_direct_labor_os_cost_by_product_category} / NULLIF(${total_cost_by_product_category}, 0.0)
+          description: Tỷ trọng chi phí nhân công và OS trực tiếp trên tổng chi phí theo nhóm sản phẩm/dịch vụ.
+          label: "Tỷ trọng chi phí nhân công OS trực tiếp"
+          category: "Sản phẩm dịch vụ"
+          format: "percent"
+          synonyms:
+            - "Direct Labor Cost Ratio"
+            - "Tỷ trọng chi phí nhân công trực tiếp"
+
+        fixed_asset_depreciation_ratio_by_product_category:
+          type: number
+          sql: ${total_fixed_asset_depreciation_cost_by_product_category} / NULLIF(${total_cost_by_product_category}, 0.0)
+          description: Tỷ trọng chi phí khấu hao tài sản cố định trên tổng chi phí theo nhóm sản phẩm/dịch vụ.
+          label: "Tỷ trọng chi phí khấu hao"
+          category: "Sản phẩm dịch vụ"
+          format: "percent"
+          synonyms:
+            - "Fixed Asset Depreciation Ratio"
+            - "Tỷ trọng chi phí khấu hao TSCĐ"
+
+        production_infrastructure_cost_ratio_by_product_category:
+          type: number
+          sql: ${total_production_infra_cost_by_product_category} / NULLIF(${total_cost_by_product_category}, 0.0)
+          description: Tỷ trọng chi phí hạ tầng sản xuất trên tổng chi phí theo nhóm sản phẩm/dịch vụ.
+          label: "Tỷ trọng chi phí hạ tầng sản xuất"
+          category: "Sản phẩm dịch vụ"
+          format: "percent"
+          synonyms:
+            - "Production Infrastructure Cost Ratio"
+            - "Tỷ trọng chi phí hạ tầng"
+
+        business_outsourcing_cost_ratio_by_product_category:
+          type: number
+          sql: ${total_business_os_cost_by_product_category} / NULLIF(${total_cost_by_product_category}, 0.0)
+          description: Tỷ trọng chi phí OS kinh doanh trên tổng chi phí theo nhóm sản phẩm/dịch vụ.
+          label: "Tỷ trọng chi phí OS kinh doanh"
+          category: "Sản phẩm dịch vụ"
+          format: "percent"
+          synonyms:
+            - "Business Outsourcing Cost Ratio"
+            - "Tỷ trọng chi phí thuê ngoài kinh doanh"
+
+  columns:
+  - name: report_date
+    description: Ngày báo cáo của chỉ số tài chính theo nhóm sản phẩm/dịch vụ.
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày báo cáo"
+
+  - name: product_category
+    description: >
+      Tên nhóm sản phẩm/dịch vụ. Đây là chiều phân tích trọng tâm của bảng.
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm sản phẩm dịch vụ"
+
+  - name: business_unit_level_1
+    description: Trung tâm N-1 hoặc đơn vị cấp 1 chịu trách nhiệm doanh thu hoặc chi phí của từng nhóm sản phẩm/dịch vụ.
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm N-1"
+
+  - name: total_revenue
+    description: Doanh thu theo nhóm sản phẩm/dịch vụ. Không phải doanh thu toàn công ty.
+    meta:
+      dimension:
+        type: number
+        label: "Doanh thu theo nhóm sản phẩm dịch vụ"
+
+  - name: total_cost
+    description: Chi phí theo nhóm sản phẩm/dịch vụ. Không phải chi phí toàn công ty.
+    meta:
+      dimension:
+        type: number
+        label: "Chi phí theo nhóm sản phẩm dịch vụ"
+
+  - name: gross_profit
+    description: Lợi nhuận gộp theo nhóm sản phẩm/dịch vụ. Không phải lợi nhuận gộp toàn công ty.
+    meta:
+      dimension:
+        type: number
+        label: "Lợi nhuận gộp theo nhóm sản phẩm dịch vụ"
+
+  - name: ebitda
+    description: EBITDA theo nhóm sản phẩm/dịch vụ. Không phải EBITDA toàn công ty.
+    meta:
+      dimension:
+        type: number
+        label: "EBITDA theo nhóm sản phẩm dịch vụ"
+
+  - name: fixed_asset_depreciation_cost
+    description: Chi phí khấu hao tài sản cố định theo nhóm sản phẩm/dịch vụ.
+    meta:
+      dimension:
+        type: number
+        label: "Chi phí khấu hao theo nhóm sản phẩm dịch vụ"
+
+  - name: direct_labor_os_cost
+    description: Chi phí nhân công và outsource trực tiếp theo nhóm sản phẩm/dịch vụ.
+    meta:
+      dimension:
+        type: number
+        label: "Chi phí nhân công OS trực tiếp"
+
+  - name: production_infra_cost
+    description: Chi phí hạ tầng, máy chủ, tài nguyên và công cụ dụng cụ phục vụ sản xuất theo nhóm sản phẩm/dịch vụ.
+    meta:
+      dimension:
+        type: number
+        label: "Chi phí hạ tầng sản xuất"
+
+  - name: business_os_cost
+    description: Chi phí outsource kinh doanh theo nhóm sản phẩm/dịch vụ.
+    meta:
+      dimension:
+        type: number
+        label: "Chi phí OS kinh doanh"

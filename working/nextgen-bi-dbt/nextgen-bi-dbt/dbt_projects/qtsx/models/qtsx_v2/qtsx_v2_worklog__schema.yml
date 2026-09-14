@@ -1,0 +1,143 @@
+version: 2
+models:
+- name: qtsx_v2_worklog
+  description: "Bảng qtsx_v2_worklog (nguồn Power BI: worklog)."
+  meta:
+    label: "worklog"
+    powerbi_source: "worklog"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_worklog.project_key} = ${qtsx_v2_project.project_key}"
+      relationship: many-to-one
+    - join: qtsx_v2_version_issue
+      sql_on: "${qtsx_v2_worklog.issue_id} = ${qtsx_v2_version_issue.issue_id}"
+      relationship: many-to-many
+    metrics:
+      employee_count:
+        type: count_distinct
+        sql: author_user_name
+        label: "Employee Count"
+        description: "DAX: DISTINCTCOUNT(worklog[authorUserName])"
+      sum_mm_worklog:
+        type: sum
+        sql: mm_worklog
+        label: "Worklog MM"
+        description: "Sinh từ Power BI: sum(worklog.MM Worklog)"
+      total_log_hours:
+        type: sum
+        sql: hour_value
+        label: "Total Log Hours"
+        description: "DAX: SUM(worklog[hour])"
+  columns:
+  - name: issue_id
+    description: "Cột issueId trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "issueId"
+        hidden: true
+  - name: id
+    description: "Cột ID trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "ID"
+        hidden: true
+  - name: project_key
+    description: "Cột projectKey trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "projectKey"
+        hidden: true
+  - name: comment_value
+    description: "Cột comment trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "comment"
+        hidden: true
+  - name: time_spent
+    description: "Cột timeSpent trong worklog."
+    meta:
+      dimension:
+        type: number
+        label: "timeSpent"
+        hidden: true
+  - name: updated_date
+    description: "Cột updatedDate trong worklog."
+    meta:
+      dimension:
+        type: timestamp
+        label: "updatedDate"
+        hidden: true
+  - name: started_date
+    description: "Cột startedDate trong worklog."
+    meta:
+      dimension:
+        type: date
+        label: "startedDate"
+        hidden: true
+  - name: created_date
+    description: "Cột createdDate trong worklog."
+    meta:
+      dimension:
+        type: timestamp
+        label: "createdDate"
+        hidden: true
+  - name: author_full_name
+    description: "Cột authorFullName trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "authorFullName"
+        hidden: true
+  - name: author_user_name
+    description: "Cột authorUserName trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "authorUserName"
+        hidden: true
+  - name: category_name
+    description: "Cột categoryName trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "categoryName"
+        hidden: true
+  - name: hour_value
+    description: "Cột hour trong worklog. Cột tính toán, DAX gốc: worklog[timeSpent] / 3600"
+    meta:
+      dimension:
+        type: number
+        label: "hour"
+        hidden: true
+  - name: mm_worklog
+    description: "Cột MM Worklog trong worklog. Cột tính toán, DAX gốc: worklog[timeSpent] / (28800*worklog[Working Days worklog])"
+    meta:
+      dimension:
+        type: number
+        label: "MM Worklog"
+        hidden: true
+  - name: working_days_worklog
+    description: "Cột Working Days worklog trong worklog. Cột tính toán, DAX gốc: VAR ResolvedDate = worklog[startedDate] VAR StartOfMonths = DATE( YEAR(ResolvedDate), MONTH(ResolvedDate), 1 ) VAR EndOfMonths = EOMONTH(ResolvedDate, 0) RETURN IF( ISBLANK(ResolvedDate), BLANK(), COUNTROWS( FILTER( CALENDAR(StartOfMonths, EndOfMonths), WEEKDAY([Date], 2) <= 5 -- Thứ 2 đến Thứ 6 ) ) )"
+    meta:
+      dimension:
+        type: number
+        label: "Working Days worklog"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong worklog. Cột tính toán, DAX gốc: FORMAT(worklog[startedDate], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: issuetype
+    description: "Cột issuetype trong worklog."
+    meta:
+      dimension:
+        type: string
+        label: "issuetype"
+        hidden: true

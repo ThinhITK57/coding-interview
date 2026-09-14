@@ -1,0 +1,113 @@
+version: 2
+models:
+- name: qtsx_v2_defect
+  description: "Bảng qtsx_v2_defect (nguồn Power BI: Defect)."
+  meta:
+    label: "Defect"
+    powerbi_source: "Defect"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_defect.projectname} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    - join: qtsx_v2_version
+      sql_on: "${qtsx_v2_defect.id_version} = ${qtsx_v2_version.id}"
+      relationship: many-to-one
+    metrics:
+      count_distinct_issuekey:
+        type: count_distinct
+        sql: issuekey
+        label: "Count of issuekey"
+        description: "Sinh từ Power BI: count_distinct(Defect.issuekey)"
+      count_issuekey:
+        type: count
+        sql: issuekey
+        label: "Count of issuekey"
+        description: "Sinh từ Power BI: count(Defect.issuekey)"
+      count_rows:
+        type: count
+        sql: "*"
+        label: "Số dòng"
+        description: "Metric phụ sinh từ DAX: COUNT(*)"
+      defect_count:
+        type: number
+        sql: "COALESCE(${count_rows}, 0)"
+        label: "Defect Count"
+        description: "DAX: IF ( ISBLANK(SELECTEDVALUE('Project'[Project Name])), BLANK(), COALESCE(COUNTROWS('Defect'), 0) )"
+      defect_project_fail:
+        type: count_distinct
+        sql: projectname
+        label: "Defect Project Fail"
+        description: "DAX: DISTINCTCOUNT('Defect'[projectname])"
+      total_defect:
+        type: sum
+        sql: defect_score
+        label: "Total Defect"
+        description: "DAX: SUM('Defect'[Điểm defect])"
+  columns:
+  - name: issuekey
+    description: "Cột issuekey trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+  - name: summary
+    description: "Cột summary trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+  - name: projectname
+    description: "Cột projectname trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+        hidden: true
+  - name: resolutiondate
+    description: "Cột resolutiondate trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "resolutiondate"
+        hidden: true
+  - name: priority
+    description: "Cột priority trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "priority"
+        hidden: true
+  - name: status
+    description: "Cột status trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "status"
+        hidden: true
+  - name: created
+    description: "Cột created trong Defect."
+    meta:
+      dimension:
+        type: date
+        label: "created"
+  - name: defect_score
+    description: "Cột Điểm defect trong Defect. Cột tính toán, DAX gốc: SWITCH( TRUE(), Defect[priority] = \"Critical\" , 5, Defect[priority] = \"high\" || Defect[priority] = \"Highest\", 3, 1)"
+    meta:
+      dimension:
+        type: number
+        label: "Điểm defect"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong Defect. Cột tính toán, DAX gốc: FORMAT('Defect'[created], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: id_version
+    description: "Cột ID version trong Defect."
+    meta:
+      dimension:
+        type: string
+        label: "ID version"
+        hidden: true

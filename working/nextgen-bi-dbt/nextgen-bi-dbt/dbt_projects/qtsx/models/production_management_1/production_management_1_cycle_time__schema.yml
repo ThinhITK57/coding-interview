@@ -1,0 +1,98 @@
+version: 2
+models:
+- name: production_management_1_cycle_time
+  description: "Bảng production_management_1_cycle_time (nguồn Power BI: Cycle Time)."
+  meta:
+    label: "Cycle Time"
+    powerbi_source: "Cycle Time"
+    joins:
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_cycle_time.issue_project_id} = ${production_management_1_milestone_versions_projects.id}"
+      relationship: many-to-one
+    - join: production_management_1_division
+      sql_on: "${production_management_1_cycle_time.division} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_cycle_time.issue_project_id} = ${production_management_1_project_name.id}"
+      relationship: many-to-many
+    metrics:
+      average_days_to_done:
+        type: average
+        sql: days_to_done
+        label: "Average of Số ngày done"
+        description: "Sinh từ Power BI: average(Cycle Time.Số ngày done)"
+      count_distinct_issue_key:
+        type: count_distinct
+        sql: issue_key
+        label: "Số Story"
+        description: "Sinh từ Power BI: count_distinct(Cycle Time.ISSUE_KEY)"
+      target:
+        type: number
+        sql: "MAX(CASE quarter(design_review_done_date)
+      WHEN 1 THEN 50 WHEN 2 THEN 50 WHEN 3 THEN 40 WHEN 4 THEN 30 END)"
+        label: "Target"
+        description: "DAX: SWITCH(SELECTEDVALUE('Dim_Date'[Quarter]), \"Q1\",50,\"Q2\",50,\"Q3\",40,\"Q4\",30). KHÁC BẢN GỐC: DAX đọc quý ĐANG ĐƯỢC CHỌN trên Dim_Date; ở đây suy từ quý của chính dòng dữ liệu (design_review_done_date) vì bảng không join dim_date. Trùng kết quả khi chart đã lọc/nhóm theo một quý."
+  columns:
+  - name: id
+    description: "Cột Id trong Cycle Time."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Cycle Time."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Cycle Time."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Cycle Time."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: design_review_done_date
+    description: "Cột Ngày_Done_ĐGTK_13449 trong Cycle Time."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_Done_ĐGTK_13449"
+        hidden: true
+  - name: days_to_done
+    description: "Cột Số ngày done trong Cycle Time."
+    meta:
+      dimension:
+        type: number
+        label: "Số ngày done"
+        hidden: true
+  - name: division
+    description: "Cột Khối trong Cycle Time. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[Khối],'milestone Versions_Projects'[Id],'Cycle Time'[ISSUE_PROJECT_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+        hidden: true
+  - name: issue_key_prefix
+    description: "Cột ISSUE_KEY_PREFIX trong Cycle Time. Cột tính toán, DAX gốc: VAR dashPos = SEARCH(\"-\", 'Cycle Time'[ISSUE_KEY], 1, BLANK()) RETURN IF( NOT ISBLANK(dashPos), LEFT('Cycle Time'[ISSUE_KEY], dashPos - 1), 'Cycle Time'[ISSUE_KEY] -- nếu không có dấu \"-\" thì trả lại toàn bộ )"
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY_PREFIX"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT NAME trong Cycle Time. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[PROJECT_NAME],'milestone Versions_Projects'[PROJECT_KEY],'Cycle Time'[ISSUE_KEY_PREFIX])"
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT NAME"
+        hidden: true

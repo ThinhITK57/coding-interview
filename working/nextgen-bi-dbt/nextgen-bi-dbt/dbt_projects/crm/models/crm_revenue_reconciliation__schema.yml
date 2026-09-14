@@ -1,0 +1,639 @@
+version: 2
+
+models:
+- name: crm_revenue_reconciliation
+  description: >
+    Bảng đối soát doanh thu giữa CRM và dữ liệu tài chính theo từng loại tính cước.
+    Bảng phục vụ kiểm tra chênh lệch và tổng hợp doanh thu thực hiện theo tháng báo cáo. 
+    Doanh thu đã thực hiện, Doanh thu báo cáo cho tập đoàn theo tháng . Doanh thu báo cáo tháng. Doanh thu chốt. 
+    Semantic: 
+      Bảng chỉ trả về doanh thu, không trả về doanh số, kể cả người dùng có hỏi "doanh số thực hiện"
+      Revenue scope:
+        Hỏi 'doanh thu', với thời gian trong quá khứ sẽ là 'doanh thu thực hiện' và bóc tách theo cơ cấu
+        - Revenue scope được xác định trước các phép phân tích khác.
+        - IF query chứa 'doanh thu' AND KHÔNG chứa ('thực hiện' | 'ước' | 'dự kiến' | 'forecast' | 'hóa đơn')
+          OR (thời gian bao gồm cả quá khứ + tương lai, ví dụ: 'doanh thu 2026'):
+          -> STOP & ASK: Hỏi người dùng chọn: (1) Doanh thu thực hiện, (2) Doanh thu ước tính/Dự báo, (3) Doanh thu Hóa đơn/Chưa hóa đơn
+        - Khi người dùng hỏi "doanh thu thực hiện", "doanh thu đã thực hiện",  và chỉ rõ một kỳ đã hoàn tất trong quá khứ, mặc định là Doanh thu thực hiện,
+          Thì đưa ra cả 3 số liệu vcs_revenue_amount,actual_revenue_calculated_amount, held_revenue_amount
+        - Nếu có "ước", "dự kiến", "forecast", "cả năm", "cuối năm" hoặc thời gian bao gồm kỳ tương lai, ưu tiên Doanh thu ước. 
+        - Các yêu cầu "theo khách hàng", "theo SPDV", "theo AM","so với kế hoạch", "cùng kỳ" là chiều hoặc phép phân tích áp dụng trên loại doanh thu đã xác định.
+        - Quan hệ bắt buộc:
+          vcs_revenue_amount = actual_revenue_calculated_amount + held_revenue_amount.
+
+      Time comparison:
+        - Với "cùng kỳ", "YoY", "so với năm trước",
+          sử dụng cùng một revenue metric cho kỳ hiện tại và kỳ so sánh.
+        - Sử dụng cùng một revenue metric cho kỳ hiện tại  và cùng khoảng thời gian của năm trước.
+        - Chênh lệch YoY =  Doanh thu kỳ hiện tại - Doanh thu cùng kỳ năm trước.
+        - Tỷ lệ tăng trưởng YoY =   Chênh lệch YoY / Doanh thu cùng kỳ năm trước * 100.
+
+        - Ví dụ:
+          Tháng 6/2026 so sánh với tháng 6/2025.
+          Quý II/2026 so sánh với quý II/2025.
+          Sáu tháng đầu năm 2026 so sánh với sáu tháng đầu năm 2025.
+
+        - Kết quả so sánh phải gồm:
+          doanh thu kỳ hiện tại,
+          doanh thu cùng kỳ năm trước,
+          chênh lệch tuyệt đối,
+          tỷ lệ tăng trưởng YoY,
+          và kết luận tăng, giảm hoặc không thay đổi.
+
+      Segment scope:
+        - Khi người dùng chỉ rõ L1/L2/L3,  sử dụng đúng customer_segment tương ứng.
+        - Nếu một giá trị lọc tồn tại ở nhiều cấp customer_segment và người dùng không chỉ rõ cấp, ưu tiên customer_segment_l1.
+        - revenue_segment_l1:  Dù người dùng có hỏi "KH" hay không, thì khi hỏi doanh thu , phân bổ doanh thu , kế hoạch doanh thu , tỷ lệ hoàn thành, mà có hỏi đến "phân khúc/cắt lớp" , thì cần sử dụng  revenue_segment_l1. Trừ khi người dùng chỉ định rõ sang cắt lớp khác
+        - Khi hỏi đến doanh thu theo trung tâm/đơn vị kinh doanh, sử dụng bảng crm_product_service_group_mapping để lọc lấy product_category rồi filter tiếp bảng này
+        - Khi hỏi doanh thu nhóm SDPV tập đoàn (product_service_group) , cần dùng số tập đoàn (không bao gồm phần HOLD) actual_revenue_calculated_amount
+        - Khi hỏi doanh thu nhóm SDPV vcs(product_service_group_vcs) , cần dùng số VCS (bao gồm phần HOLD) vcs_revenue_amount
+        - Khi hỏi doanh thu nhóm SDPV (có thể cắt lớp theo thời gian), không chỉ rõ nhóm nào thì ưu tiên mặc định nhóm tập đoàn product_service_group. Nếu tên nhóm có trong product_service_group thì ưu tiên, trừ trường hợp người dùng chỉ định rõ nhóm theo VCS
+
+    
+  meta:
+    label: "Doanh thu thực hiện CRM"
+    owner: "huongnv1"
+    metrics:
+      provisional_revenue_amount:
+        type: sum
+        sql: CASE WHEN ${billing_type} in ('Tạm tính' , 'TT')  THEN ${actual_revenue_amount} ELSE 0.0 END
+        description: Doanh thu tạm tính (billing_type in ('Tạm tính' , 'TT') ). Giá trị này luôn dương.
+        label: Doanh thu tạm tính
+
+      invoiced_revenue_amount:
+        type: sum
+        sql: CASE WHEN ${billing_type} in ('Hóa đơn', 'HD' , 'Phân bổ', 'PB' ) THEN ${actual_revenue_amount} ELSE 0.0 END
+        label: Doanh thu hóa đơn
+        description: >
+          Doanh thu được lấy từ nguồn kế toán theo tháng báo cáo. Giá trị này luôn dương.
+        synonyms:
+          - Doanh thu xuất hóa đơn
+          - Doanh thu thực hiện đã xuất hóa đơn
+      uninvoiced_revenue_amount:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${billing_type} NOT IN ('Hóa đơn', 'HD', 'HĐ', 'Phân bổ', 'PB')
+              OR ${billing_type} IS NULL
+            THEN ${actual_revenue_amount}
+            ELSE 0.0
+          END
+        label: Doanh thu chưa hóa đơn
+        description: >
+          Tổng doanh thu được ghi nhận tại thời điểm báo cáo chưa xuất hóa đơn tài chính
+          Bao gồm các bản ghi Tạm tính, Giảm trừ và các loại khác không thuộc nhóm Hóa đơn.
+        synonyms:
+          - Doanh thu chưa xuất hóa đơn
+          - Unbilled Revenue
+
+      revenue_adjustment_amount:
+        type: sum
+        sql: CASE WHEN ${billing_type} in ('Giảm trừ', 'GT' ) THEN ${actual_revenue_amount} ELSE 0.0 END
+        label: Doanh thu giảm trừ
+        description: >
+          Phần doanh thu đối ứng của doanh thu tạm tính và doanh thu hóa đơn
+          theo dữ liệu đối ứng từ Tài chính. Giá trị này luôn âm.
+        synonyms:
+          - Phần giảm trừ
+
+      other_revenue_amount:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${billing_type} IS NULL
+              OR ${billing_type} NOT IN (
+                'Giảm trừ', 'GT',
+                'Tạm tính', 'TT',
+                'Hóa đơn', 'HD'
+              )
+            THEN ${actual_revenue_amount}
+            ELSE 0.0
+          END
+        label: Doanh thu khác
+        description: Phần doanh thu khác, không thuộc các nhóm GT, TT, HD.
+
+      actual_revenue_calculated_amount:
+        type: sum
+        sql: >
+          CASE
+            WHEN COALESCE(${is_hold}, FALSE) = FALSE
+            THEN ${actual_revenue_amount}
+            ELSE 0.0
+          END
+        label: Doanh thu thực hiện báo cáo tập đoàn
+        description: >  
+          Doanh thu thực hiện báo cáo tập đoàn sau khi hiệu chỉnh từ  Doanh thu thực hiện thực tế theo kỳ. 
+          Sử dụng doanh thu HOLD để giữ lại hoặc sử dụng trong quá trình báo cáo tập đoàn
+        synonyms:
+          - doanh thu thực hiện
+          - doanh thu đã thực hiện
+          - doanh thu thực hiện theo tháng
+          - doanh thu đối soát
+          - actual revenue
+          - Doanh thu chốt
+          - Doanh thu
+          - Doanh thu báo cáo tập đoàn
+
+      held_revenue_amount:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${is_hold} = TRUE
+            THEN ${actual_revenue_amount}
+            ELSE 0.0
+          END
+        label: Doanh thu thực hiện giữ lại/sử dụng
+        description: >
+          Phần doanh thu thực hiện của VCS đang được để dành
+          và chưa tính vào doanh thu báo cáo Tập đoàn.
+          Chỉ bao gồm các bản ghi có is_hold = TRUE.
+          Không diễn giải held_revenue_amount là toàn bộ doanh thu thực hiện.
+        synonyms:
+          - doanh thu thực hiện
+          - doanh thu đã thực hiện
+          - doanh thu để dành
+          - doanh thu hold
+          - doanh thu giữ lại
+          - held revenue
+          - Số tiền bù vào/giảm trừ/sử dụng
+      vcs_revenue_amount:
+        type: sum
+        sql: ${actual_revenue_amount}
+        label: Doanh thu thực hiện thực tế theo kỳ VCS
+        description: >
+          Doanh thu thực hiện thực tế theo kỳ VCS= Doanh thu thực hiện báo cáo Tập đoàn + Doanh thu thực hiện giữ lại/sử dụng.
+        synonyms:
+          - doanh thu thực hiện
+          - doanh thu đã thực hiện
+          - Doanh thu thực tế
+          - doanh thu VCS
+          - tổng doanh thu VCS
+          - tổng doanh thu bao gồm để dành
+          - VCS revenue  
+      arr_revenue_amount:
+        type: sum
+        sql: CASE WHEN ${revenue_frequency_type} in ('Dòng tiền đều', 'DT dòng tiền đều', 'đều' ) THEN ${actual_revenue_amount} ELSE 0.0 END
+        label: Doanh thu dòng tiền đều
+        description: >
+          Doanh thu thực hiện dòng tiền đều
+        synonyms:
+           - Doanh thu bền vững
+           - ARR revenue
+
+  columns:
+    - name: invoice_date
+      description: Ngày xuất hóa đơn/Ngày báo cáo
+      meta:
+        dimension:
+          type: timestamp
+          label: Ngày báo cáo
+          synonyms:
+            - ngày báo cáo
+            - ngày hạch toán
+            - reporting date
+            - invoice day
+            - report date
+            - Ngày xuất hóa đơn
+            - reporting date
+            - Tháng báo cáo
+            - quý báo cáo
+            - năm báo cáo
+            
+    # - name: report_month
+    #   description: Tháng ghi nhận/Tháng báo cáo
+
+    - name: billing_type
+      description: Loại tính cước. Xuất hóa đơn (HD)/ tạm tính (TT) /  Giảm trừ(GT)/ Phân bổ (PB)
+
+    - name: transaction_description
+      description: Nội dung đề nghị TT (Theo chứng từ gốc)
+
+    # - name: revenue_amount
+    #   description: Số tiền doanh thu
+
+    # - name: shared_revenue_amount
+      # description: Doanh thu chia sẻ
+
+    - name: actual_revenue_amount
+      description: Doanh thu thực tể / doanh thu cuối / doanh thu thực hiện
+      meta:
+        dimension:
+          type: number
+          label: Doanh thu
+
+    # - name: vat_amount
+    #   description: Thuế GTGT
+
+    # - name: gross_amount
+      # description: Tổng giá trị trước khấu trừ/ Tiền hàng (đã bao gồm VAT)
+
+    # - name: shared_revenue_from_mss_amount
+    #   description: Doanh thu chia sẻ từ MSS
+
+    - name: revenue_frequency_type
+      description: >
+       Loại doanh thu. Dòng tiền đều/ Doanh thu 1 lần
+       Phân loại doanh thu theo tần suất ghi nhận:
+        Doanh thu dòng tiền đều hoặc doanh thu ghi nhận một lần.
+        Không dùng cho phân loại doanh thu Cũ/Mới.
+      meta:
+        dimension:
+          type: string
+          label: Loại doanh thu
+
+    - name: service_category
+      description: Nhóm dịch vụ. Phân loại SP/DV
+      meta:
+        dimension:
+          type: string
+          label: Nhóm dịch vụ
+
+    - name: revenue_segment_l1
+      description: Phân khúc khách hàng Bóc tách phân loại theo góc nhìn từ báo cáo doanh thu tập đoàn
+      meta:
+        dimension:
+          type: string
+          label: Phân khúc doanh thu
+          synonyms:
+          - Ngoài
+          - Nội Bộ
+          - Quốc Tế
+          - Thị Trường
+          - Khác
+          - Khách hàng ngoài
+          - International
+          - Nội bộ
+          - Khác
+          - Bộ Quốc phòng
+          - Nhóm Khách hàng
+          - Nhóm KH
+
+    - name: customer_segment_l1
+      description: Phân khúc khách hàng nhóm l1. Phân loại theo người dùng cuối (KH cuối)
+      meta:
+        dimension:
+          type: string
+          label: Phân khúc khách hàng nhóm l1
+          synonyms:
+          - Ngoài
+          - Nội Bộ
+          - Quốc Tế
+          - Thị Trường
+          - Khác
+          - Khách hàng ngoài
+          - International
+          - Nội bộ
+          - Khác
+          - Bộ Quốc phòng
+          - Nhóm Khách hàng
+          - Nhóm KH
+
+    - name: customer_segment_l2
+      description: Phân khúc khách hàng nhóm l2.  Phân loại theo người dùng cuối (KH cuối)
+      meta:
+        dimension:
+          type: string
+          label: Phân khúc khách hàng nhóm l2
+          synonyms:
+
+    - name: customer_segment_l3
+      description: Phân khúc khách hàng nhóm l3.  Phân loại theo người dùng cuối (KH cuối)
+      meta:
+        dimension:
+          type: string
+          label: Phân khúc khách hàng nhóm l3
+          synonyms:
+          - Province
+          - Khác
+          - Energy
+          - BFSI
+          - GOV
+          - DNL
+
+    - name: am_segment
+      description: Phân khúc khách hàng theo AM
+      meta:
+        dimension:
+          type: string
+          label: Phân khúc khách hàng theo AM
+          synonyms:
+
+    - name: business_center
+      description: Trung tâm kinh doanh
+      meta:
+        dimension:
+          type: string
+          label: Trung tâm kinh doanh
+          synonyms:
+          - Khác
+          - TT Miền Bắc = Trung tâm K D M B = Trung tâm KD MB = Trung tâm KDMB
+          - Quốc tế = Đơn vị quốc tế = International
+          - TT Miền Nam = Trung tâm K D M N = Trung tâm KD MN = Trung tâm KDMN
+          - Đơn vị kinh doanh
+
+    # - name: customer_classification
+    #   description: Phân loại khách hàng
+    #   meta:
+    #     dimension:
+    #       type: string
+    #       label: Phân loại khách hàng
+
+    # - name: customer_channel
+    #   description: Kênh khách hàng
+    #   meta:
+    #     dimension:
+    #       type: string
+    #       label: Kênh khách hàng
+    #       synonyms:
+    #       - segment kênh
+
+    - name: customer_alias
+      description: bí danh công ty
+
+    - name: customer_name
+      description: Tên khách hàng/Tên viết tắt
+      meta:
+        dimension:
+          type: string
+          label: Tên khách hàng/Tên viết tắt
+          synonyms:
+          - khách hàng
+          - tên khách hàng
+          - công ty
+          - tên công ty
+          - doanh nghiệp
+          - tên doanh nghiệp
+          - customer
+          - customer name
+          - company
+          - company name
+          - tên thay thế
+          - tên viết tắt
+          - viết tắt
+          - bí danh công ty
+          - biệt danh công ty
+          - tên gọi khác
+          - tên gọi ngắn
+          - alias
+          - company alias
+          - short name
+
+    # - name: segment
+    #   description: >
+    #     Phân khúc nghiệp vụ Viettel.
+    #     Đây là dimension mặc định khi người dùng hỏi
+    #     "phân khúc", "segment" hoặc "doanh thu theo phân khúc"
+    #     mà không nhắc đến khách hàng.
+    #   meta:
+    #     dimension:
+    #       type: string
+    #       label: Phân khúc
+    #       synonyms:
+    #         - phân khúc
+    #         - segment
+    #         - phân khúc Viettel
+    #         - Viettel segment
+    #         - Nội bộ/Ngoài
+
+    - name: department_name
+      description: Đơn vị phụ trách
+      meta:
+        dimension:
+          type: string
+          label: Đơn vị phụ trách
+
+    - name: vvip_segment
+      description: Nhóm VIP/VVIP
+      meta:
+        dimension:
+          type: string
+          label: Nhóm VIP/VVIP
+          synonyms:
+          - VVIP
+          - VIP
+          - Tiềm năng
+          - Standard
+
+    - name: account_manager_name
+      description: Nhân viên quản lý khách hàng
+
+    - name: presale_name
+      description: Nhân viên presale
+
+    - name: product_category
+      description: Tên dịch vụ/Sản phẩm cụ thể. Phân loại SI và Non-SI (Dịch vụ khác). Xác định SDPV liên quan doanh thu thực hiện này
+      meta:
+        dimension:
+          type: string
+          label: Tên sản phẩm/dịch vụ
+          synonyms:
+          - Product category
+          - Service category
+          - Sản phẩm dịch vụ
+          - SPDV
+          - Danh sách sản phẩm
+          - Danh sách dịch vụ
+          - Phân loại SI và Non-SI (Dịch vụ khác)
+
+    - name: revenue_classification
+      description: Phân loại doanh thu
+
+    - name: revenue_type
+      description: >
+        Loại doanh thu Cũ/Mới
+        Phân loại doanh thu theo trạng thái kinh doanh:
+        doanh thu mới, gia hạn, bán gia tăng, tài chính.
+        Không dùng cho phân loại dòng tiền đều / một lần.
+      meta:
+        dimension:
+          type: string
+          label: Loại doanh thu Cũ/Mới
+          synonyms:
+          - Doanh thu gia hạn
+          - Doanh thu mới
+          - Doanh thu bán gia tăng
+          - Doanh thu tài chính
+
+    # - name: soc_classification
+    #   description: Phân loại SOC (SOC và non-SOC)
+    #   meta:
+    #     dimension:
+    #       type: string
+    #       label: Phân loại SOC (SOC và non-SOC)
+    #       synonyms:
+    #       - SOC
+    #       - non-SOC
+
+    - name: territory_name
+      description: Thị trường/Khu Vực
+      meta:
+        dimension:
+          type: string
+          label: Thị trường/Khu Vực
+          synonyms:
+          - Khu vực kinh doanh
+          - Thị trường kinh doanh
+          - Territory name
+
+    - name: product_category_code
+      description: Mã SPDV
+      meta:
+        dimension:
+          type: string
+          label: Mã SPDV
+          synonyms:
+          - SPDV Code
+          - Product category Code
+          - Service category Code
+
+    - name: deployment_type
+      description: Loại hình triển khai cho SPDV
+      meta:
+        dimension:
+          type: string
+          label: Loại hình triển khai cho SPDV
+          synonyms:
+          - Standalone
+          - Service
+
+    - name: channel_name
+      description: Kênh bán
+      meta:
+        dimension:
+          type: string
+          label: Kênh bán
+          synonyms:
+          - Partner = Đối tác
+          - Direct = Trực tiếp
+          - segment kênh
+          - Kênh bán
+          - Kênh kinh doanh
+          - Kênh khách hàng
+
+    - name: partner_name
+      description: Tên đối tác kênh bán
+      meta:
+        dimension:
+          type: string
+          label: Tên đối tác kênh bán
+          synonyms:
+
+    - name: parent_product_category
+      description: parent product category
+      meta:
+        dimension:
+          type: string
+          label: Parent product category
+          synonyms:
+
+    - name: product_service_group_vcs
+      description: >
+        Nhóm sản phẩm/dịch vụ theo phân nhóm VCS.
+      meta:
+        dimension:
+          type: string
+          label: Nhóm sản phẩm/dịch vụ theo phân nhóm VCS
+          synonyms:
+          - Nhóm SPDV vận hành nội bộ VCS
+          - Nhóm Mass
+          - Nhóm Sản phẩm mới
+          - Nhóm MSS-Hệ sinh thái SOC
+          - Nhóm SP Standalone
+          - Nhóm Telco
+          - Nhóm Professional Services
+          - Nhóm MSS-CA
+          - Nhóm MSS-MDR Service
+          - Nhóm kinh doanh SI
+          - Nhóm SP Standalone-SPDV MỚI
+
+    - name: product_service_group
+      description: >
+        Nhóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ. 
+      meta:
+        dimension:
+          type: string
+          label: hóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ
+          synonyms:
+          - Nhóm SPDV báo cáo tập đoàn
+          - SPDV MỚI
+          - SP An ninh Viễn thông
+          - Hệ sinh thái SOC
+          - KHÁC (PC, PM phát sinh)
+          - Dịch vụ ATTT chuyên sâu = Nhóm Professional Services = Dịch vụ ATTT chuyên nghiệp
+    - name: product_version
+      description: Tên phiên bản của SPDV
+      meta:
+        dimension:
+          type: string
+          label: Tên phiên bản của SPDV
+          synonyms:
+          - Full
+          - SIEM
+          - VCS-NSM
+          - EDR-PC
+          - Compromise Assessment
+          - SOC On-Cloud
+          - SOC Hybrid
+          - Platinum
+          - NAC
+          - VCS-ESG
+          - VCS-AMA
+          - VCS-KIAN
+          - Khác
+          - Platform
+          - Pentest
+          - SOC On-Premise
+          - CS
+          - DDIPS
+          - Đánh giá trưởng thành
+          - Hardware
+          - BRG
+          - TAD
+          - IMS
+          - Software
+          - Thực chiến
+          - Service
+          - IT Security Assessment
+          - VCS-WSG
+          - VCS-InT
+          - Đào tạo
+          - WP-Gold
+          - Advanced
+          - F2DR
+          - TML
+          - V2S
+          - PS
+          - Incident Response
+          - Endpoint Security & SOC
+          - EPP
+
+    - name: team_name
+      description: AM Team Name
+      meta:
+        dimension:
+          type: string
+          label: AM Team Name
+
+    - name: is_hold
+      description: >
+        Bản ghi là doanh thu giữ lại
+        TRUE:
+        Bản ghi thuộc doanh thu để dành,
+        không tính vào doanh thu thực hiện báo cáo Tập đoàn.
+
+        FALSE hoặc NULL:
+          Bản ghi được tính vào doanh thu thực hiện báo cáo Tập đoàn.
+      meta:
+        dimension:
+          type: boolean
+          label: Là doanh thu giữ lại
+
+    - name: contract_number
+      description: contract number
+      meta:
+        dimension:
+          type: string
+          label: Contract number
+          synonyms:
+          - Mã hợp đồng
+          - Mã HĐ

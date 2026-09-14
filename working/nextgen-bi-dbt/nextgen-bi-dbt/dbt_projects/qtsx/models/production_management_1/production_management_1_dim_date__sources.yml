@@ -1,0 +1,44 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_dim_date
+    description: "Nguồn Power BI: Dim_Date"
+    columns:
+    - name: date_value
+      description: "Cột Date"
+    - name: year_value
+      description: "Cột Year"
+    - name: month_value
+      description: "Cột Month"
+    - name: month_name
+      description: "Cột MonthName"
+    - name: quarter
+      description: "Cột Quarter"
+    - name: week_num
+      description: "Cột WeekNum"
+    - name: week_year
+      description: "Cột WeekYear"
+    - name: month_year
+      description: "Cột MonthYear"
+    - name: quarter_year
+      description: "Cột QuarterYear"
+    - name: week_start
+      description: "Cột WeekStart"
+    - name: week_end
+      description: "Cột WeekEnd"
+    - name: week
+      description: "Cột Tuần"
+    - name: is_before_last_sunday_prev_week
+      description: "Cột IsBeforeLastSundayPrevWeek"
+    - name: day_in_week
+      description: "Cột DayInWeek"
+    - name: sort_key
+      description: "Cột SortKey"
+    - name: quarter_sort_key
+      description: "Cột QuarterSortKey"
+    - name: week_sort_key
+      description: "Cột WeekSortKey"

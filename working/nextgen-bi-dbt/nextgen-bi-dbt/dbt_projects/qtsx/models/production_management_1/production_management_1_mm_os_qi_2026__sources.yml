@@ -1,0 +1,16 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_mm_os_qi_2026
+    description: "Nguồn Power BI: MM OS QI-2026"
+    columns:
+    - name: project
+      description: "Cột Project"
+    - name: mm_os
+      description: "Cột MM OS"
+    - name: date_value
+      description: "Cột Ngày tháng"

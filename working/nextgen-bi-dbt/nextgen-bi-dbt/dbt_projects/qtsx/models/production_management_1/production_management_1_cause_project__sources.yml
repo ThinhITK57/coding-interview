@@ -1,0 +1,18 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_cause_project
+    description: "Nguồn Power BI: Nguyên nhân_Project"
+    columns:
+    - name: custom_field_id
+      description: "Cột CUSTOM_FIELD_ID"
+    - name: issue_id
+      description: "Cột ISSUE_ID"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: cause_checkbox
+      description: "Cột Nguyên_nhân_Checkbox_22106"

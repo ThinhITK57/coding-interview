@@ -1,0 +1,82 @@
+version: 2
+models:
+- name: production_management_1_project_name
+  description: "Bảng production_management_1_project_name (nguồn Power BI: Project Name)."
+  meta:
+    label: "Project Name"
+    powerbi_source: "Project Name"
+    joins:
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_project_name.project_name} = ${production_management_1_milestone_versions_projects.project_name}"
+      relationship: many-to-one
+    - join: production_management_1_ulnl_projects
+      sql_on: "${production_management_1_project_name.project_key} = ${production_management_1_ulnl_projects.project_key}"
+      relationship: many-to-one
+    - join: production_management_1_worklogs_projects
+      sql_on: "${production_management_1_project_name.project_key} = ${production_management_1_worklogs_projects.project_key}"
+      relationship: many-to-one
+    - join: production_management_1_division
+      sql_on: "${production_management_1_project_name.division} = ${production_management_1_division.division}"
+      relationship: many-to-one
+  columns:
+  - name: id
+    description: "Cột Id trong Project Name."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: project_key
+    description: "Cột PROJECT_KEY trong Project Name."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_KEY"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT trong Project Name."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT_NAME trong Project Name."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+        hidden: true
+  - name: project_name_last
+    description: "Cột PROJECT_NAME_Last trong Project Name."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+  - name: division
+    description: "Cột Khối trong Project Name."
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+  - name: key_value
+    description: "Cột KEY trong Project Name. Cột tính toán, DAX gốc: 'Project Name'[Id]&'Project Name'[TTSX_PRODUCT]"
+    meta:
+      dimension:
+        type: string
+        label: "KEY"
+        hidden: true
+  - name: issueworklog_key
+    description: "Cột ISSUEWORKLOG-KEY trong Project Name. Cột tính toán, DAX gốc: 'Project Name'[PROJECT_KEY]&'Project Name'[TTSX_PRODUCT]"
+    meta:
+      dimension:
+        type: string
+        label: "ISSUEWORKLOG-KEY"
+        hidden: true
+  - name: sort_order
+    description: "Cột Sắp xếp trong Project Name."
+    meta:
+      dimension:
+        type: string
+        label: "Sắp xếp"
+        hidden: true

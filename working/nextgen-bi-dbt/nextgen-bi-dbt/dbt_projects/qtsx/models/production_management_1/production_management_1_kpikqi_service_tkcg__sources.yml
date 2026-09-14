@@ -1,0 +1,56 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_kpikqi_service_tkcg
+    description: "Nguồn Power BI: KPIKQI Dịch vụ TKCG"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_description
+      description: "Cột ISSUE_DESCRIPTION"
+    - name: report_date
+      description: "Cột Ngày_báo_cáo_18900"
+    - name: contract_type
+      description: "Cột Loại_hợp_đồng_20400"
+    - name: co_soc247
+      description: "Cột Có_SOC247_20401"
+    - name: product
+      description: "Cột Sản_phẩm_20403"
+    - name: product_type
+      description: "Cột Loại_sản_phẩm_20404"
+    - name: version
+      description: "Cột Version_12333"
+    - name: latest_version
+      description: "Cột Latest_Version_20405"
+    - name: update_start_date
+      description: "Cột Ngày_bắt_đầu_update_20406"
+    - name: update_date
+      description: "Cột Ngày_update_20407"
+    - name: latency
+      description: "Cột Độ_trễ_20408"
+    - name: agent_latest
+      description: "Cột Agent_latest_20409"
+    - name: agent_online
+      description: "Cột Agent_online_20410"
+    - name: exception_reason
+      description: "Cột Lý_do_exception_20412"
+    - name: update_frequency
+      description: "Cột Tần_suất_update_20402"
+    - name: report_date_2
+      description: "Cột Ngày báo cáo"
+    - name: latest_version_coverage_tkcg
+      description: "Cột Độ phủ Phiên bản mới nhất_ TKCG"
+    - name: tick_month
+      description: "Cột Tick Month"
+    - name: month_key
+      description: "Cột MonthKey"
+    - name: quarter
+      description: "Cột Quý"
+    - name: tick_quarter
+      description: "Cột Tick Quý"

@@ -1,0 +1,148 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_service_tkcg
+  description: "Bảng qtsx_v2_kpikqi_service_tkcg (nguồn Power BI: KPIKQI Dịch vụ TKCG)."
+  meta:
+    label: "KPIKQI Dịch vụ TKCG"
+    powerbi_source: "KPIKQI Dịch vụ TKCG"
+  columns:
+  - name: summary
+    description: "Cột summary trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: description
+    description: "Cột description trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "description"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày báo cáo trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+        hidden: true
+  - name: contract_type
+    description: "Cột Loại_hợp_đồng_20400 trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Loại_hợp_đồng_20400"
+        hidden: true
+  - name: co_soc247
+    description: "Cột Có_SOC247_20401 trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Có_SOC247_20401"
+        hidden: true
+  - name: product
+    description: "Cột Sản_phẩm_20403 trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Sản_phẩm_20403"
+        hidden: true
+  - name: version
+    description: "Cột Version_12333 trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Version_12333"
+        hidden: true
+  - name: latest_version
+    description: "Cột Latest Version trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Latest Version"
+        hidden: true
+  - name: update_start_date
+    description: "Cột Ngày bắt đầu update trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày bắt đầu update"
+        hidden: true
+  - name: update_date
+    description: "Cột Ngày update trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày update"
+        hidden: true
+  - name: latency
+    description: "Cột Độ_trễ_20408 trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: number
+        label: "Độ_trễ_20408"
+        hidden: true
+  - name: agent_latest
+    description: "Cột Agent latest trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Agent latest"
+        hidden: true
+  - name: agent_online
+    description: "Cột Agent online trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Agent online"
+        hidden: true
+  - name: exception_reason
+    description: "Cột Lý do exception trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Lý do exception"
+        hidden: true
+  - name: update_frequency
+    description: "Cột Tần suất update trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Tần suất update"
+        hidden: true
+  - name: exception_value
+    description: "Cột Exception trong KPIKQI Dịch vụ TKCG."
+    meta:
+      dimension:
+        type: string
+        label: "Exception"
+        hidden: true
+  - name: tick_month
+    description: "Cột Tick Month trong KPIKQI Dịch vụ TKCG. Cột tính toán, DAX gốc: VAR MaxDateInMonth = CALCULATE ( MAX ( 'KPIKQI Dịch vụ TKCG'[Ngày báo cáo] ), ALLEXCEPT ( 'KPIKQI Dịch vụ TKCG', 'KPIKQI Dịch vụ TKCG'[Sản_phẩm_20403], 'KPIKQI Dịch vụ TKCG'[MonthKey] ) ) RETURN IF ( 'KPIKQI Dịch vụ TKCG'[Ngày báo cáo] = MaxDateInMonth, 1, 0 )"
+    meta:
+      dimension:
+        type: number
+        label: "Tick Month"
+        hidden: true
+  - name: month_key
+    description: "Cột MonthKey trong KPIKQI Dịch vụ TKCG. Cột tính toán, DAX gốc: YEAR('KPIKQI Dịch vụ TKCG'[Ngày báo cáo])*100 + MONTH('KPIKQI Dịch vụ TKCG'[Ngày báo cáo])"
+    meta:
+      dimension:
+        type: number
+        label: "MonthKey"
+        hidden: true
+  - name: quarter
+    description: "Cột Quý trong KPIKQI Dịch vụ TKCG. Cột tính toán, DAX gốc: LOOKUPVALUE('Dim_Date'[QuarterYear],Dim_Date[Date],'KPIKQI Dịch vụ TKCG'[Ngày báo cáo])"
+    meta:
+      dimension:
+        type: string
+        label: "Quý"
+        hidden: true
+  - name: tick_quarter
+    description: "Cột Tick Quý trong KPIKQI Dịch vụ TKCG. Cột tính toán, DAX gốc: VAR CurrDate = 'KPIKQI Dịch vụ TKCG'[Ngày báo cáo] VAR CurrProduct = 'KPIKQI Dịch vụ TKCG'[Sản_phẩm_20403] VAR CurrQuarter = 'KPIKQI Dịch vụ TKCG'[Quý] -- Tháng lớn nhất (MonthKey) trong cùng Quý + cùng Sản phẩm VAR MaxMonthInQuarter = CALCULATE( MAX( 'KPIKQI Dịch vụ TKCG'[MonthKey] ), FILTER( ALL( 'KPIKQI Dịch vụ TKCG' ), 'KPIKQI Dịch vụ TKCG'[Sản_phẩm_20403] = CurrProduct && 'KPIKQI Dịch vụ TKCG'[Quý] = CurrQuarter ) ) -- Lấy ngày lớn nhất trong tháng đó VAR MaxDateInThatMonth = CALCULATE( MAX( 'KPIKQI Dịch vụ TKCG'[Ngày báo cáo] ), FILTER( ALL( 'KPIKQI Dịch vụ TKCG' ), 'KPIKQI Dịch vụ TKCG'[Sản_phẩm_20403] = CurrProduct && 'KPIKQI Dịch vụ TKCG'[MonthKey] = MaxMonthInQuarter ) ) RETURN IF( CurrDate = MaxDateInThatMonth, 1, 0 )"
+    meta:
+      dimension:
+        type: number
+        label: "Tick Quý"
+        hidden: true

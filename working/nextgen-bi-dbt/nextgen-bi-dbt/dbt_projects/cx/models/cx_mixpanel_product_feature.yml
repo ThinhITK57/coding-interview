@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: cx_mixpanel_product_feature
+    description: >
+      Bảng lưu trữ dữ liệu sử dụng sản phẩm và tính năng theo user và ngày.
+
+      Grain: user_id × product_category × product_feature × report_date
+
+      Dùng để phân tích active user, số người sử dụng tính năng,
+      tỷ lệ sử dụng tính năng, số lần và tần suất sử dụng tính năng.
+
+      Semantic:
+      - Luôn sử dụng report_date làm mốc thời gian chính để filter và phân tích.
+      - Các metric COUNT DISTINCT user_id phải tính trên toàn bộ khoảng thời gian được chọn, bởi người dùng yêu cầu.
+      - Không cộng kết quả COUNT DISTINCT user_id theo ngày để tạo kết quả cho một khoảng thời gian.
+      - product_feature = NULL không được tính là sử dụng tính năng.
+      - User có event nhưng product_feature = NULL vẫn được tính là active user nếu is_active_user = 1.
+
+    meta:
+      label: "Sử dụng sản phẩm và tính năng"
+      owner: "lyttt3"
+
+      metrics:
+
+        - name: active_users
+          label: Số người dùng active
+          description: >
+            Số user DISTINCT có is_active_user = 1 trong khoảng thời gian được chọn.
+            Không cộng số active user của từng ngày.
+          type: count_distinct
+          sql: |
+            CASE WHEN is_active_user = 1 THEN user_id END
+
+        - name: feature_users
+          label: Số người sử dụng tính năng
+          description: >
+            Số user DISTINCT có sử dụng product_feature trong khoảng thời gian được chọn.
+            Chỉ tính các bản ghi có product_feature IS NOT NULL.
+          type: count_distinct
+          sql: |
+            CASE WHEN product_feature IS NOT NULL THEN user_id END
+
+
+        - name: feature_usage_count
+          label: Số lần sử dụng tính năng
+          description: >
+            Tổng số lần sử dụng product_feature trong khoảng thời gian được chọn.
+            Chỉ tính product_feature IS NOT NULL.
+
+            Mỗi lần user phát sinh event được mapping thành product_feature
+            được tính là 1 lần sử dụng. Số lần sử dụng được tổng hợp theo ngày.
+          type: sum
+          sql: |
+            CASE
+              WHEN product_feature IS NOT NULL THEN product_feature_usage_count
+              ELSE 0
+            END
+
+        - name: feature_usage_frequency
+          label: Tần suất sử dụng tính năng
+          description: >
+            Số lần sử dụng trung bình trên mỗi user sử dụng feature
+            trong khoảng thời gian được chọn.
+
+            Công thức:
+            Tổng số lần sử dụng feature / Số user DISTINCT sử dụng feature.
+          type: number
+          sql: |
+            1.0 * SUM(
+              CASE
+                WHEN product_feature IS NOT NULL THEN product_feature_usage_count
+                ELSE 0
+              END
+            )
+            / NULLIF(
+                COUNT(DISTINCT CASE WHEN product_feature IS NOT NULL THEN user_id END),
+                0
+              )
+
+    columns:
+
+      - name: report_date
+        description: >
+          Ngày ghi nhận dữ liệu sử dụng sản phẩm/tính năng.
+          Dùng làm trục thời gian chính để filter và phân tích.
+
+      - name: user_id
+        description: >
+          Định danh người dùng. Dùng để tính DISTINCT user,
+          active user và các metric theo người dùng.
+
+      - name: is_active_user
+        description: >
+          Cờ xác định user active.
+          Giá trị 1 nghĩa là user có phát sinh event trong ngày
+          và được tính vào active user, kể cả khi product_feature = NULL.
+
+      # - name: is_blacklist_user
+      #   description: >
+      #     Đánh dấu người dùng có nằm trong danh sách blacklist theo user_id và product_category.
+      #     Giá trị 1 là user thuộc blacklist; 0 là không thuộc blacklist.
+
+      - name: product_category
+        description: >
+          Nhóm Sản phẩm dịch vụ (SPDV) mà user thao tác.
+
+      - name: product_feature
+        description: >
+          Tính năng sản phẩm được user sử dụng.
+          Một số event được mapping thành product_feature.
+          Rule mapping thay đổi theo từng product_category (SPDV).
+          Giá trị NULL nghĩa là event không được mapping thành tính năng
+          và không được tính vào các metric sử dụng tính năng.
+
+      - name: product_feature_usage_count
+        description: >
+          Số lần user sử dụng product_feature trong ngày.
+          Mỗi event được mapping thành product_feature được tính là 1 lần sử dụng.
+          Số lần sử dụng được đếm và tổng hợp theo ngày.

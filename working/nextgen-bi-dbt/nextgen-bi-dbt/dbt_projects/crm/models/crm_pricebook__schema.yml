@@ -1,0 +1,297 @@
+version: 2
+models:
+- name: crm_pricebook
+  description: Bảng crm_pricebook lưu trữ thông tin bảng giá sản phẩm, gồm giá bán, chiết khấu, đơn vị tiền tệ, trạng thái và loại sản phẩm. Dữ liệu hỗ trợ quản lý chính sách giá, phân tích lợi nhuận, báo cáo định giá và quyết định chiến lược giá.
+  meta:
+    label: "Pricebook"
+    owner: "huongnv1"
+    metrics:
+      price_item_count:
+        type: count
+        sql: '1.0'
+        description: Tổng số item trong bảng giá.
+        label: "Price Item Count"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Price Item Count"
+          - "Số lượng giá mục"
+      avg_price:
+        type: average
+        sql: ${TABLE}.price
+        description: Giá trung bình của sản phẩm.
+        label: "Avg Price"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Price"
+          - "Trung bình giá"
+      min_price:
+        type: min
+        sql: ${TABLE}.price
+        description: Giá thấp nhất của sản phẩm.
+        label: "Min Price"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Min Price"
+          - "Giá trị giá nhỏ nhất"
+      max_price:
+        type: max
+        sql: ${TABLE}.price
+        description: Giá cao nhất của sản phẩm.
+        label: "Max Price"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Max Price"
+          - "Giá trị giá lớn nhất"
+      avg_csmp_discount:
+        type: average
+        sql: ${TABLE}.csmp_discount
+        description: Chiết khấu CSMP trung bình.
+        label: "Avg Csmp Discount"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Csmp Discount"
+          - "Trung bình Csmp Discount"
+      avg_csmp_discount_silver:
+        type: average
+        sql: ${TABLE}.csmp_discount_silver
+        description: Chiết khấu CSMP cho tier Silver.
+        label: "Avg Csmp Discount Silver"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Csmp Discount Silver"
+          - "Trung bình Csmp Discount Silver"
+      avg_csmp_discount_gold:
+        type: average
+        sql: ${TABLE}.csmp_discount_gold
+        description: Chiết khấu CSMP cho tier Gold.
+        label: "Avg Csmp Discount Gold"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Csmp Discount Gold"
+          - "Trung bình Csmp Discount Gold"
+      avg_csmp_discount_diamond:
+        type: average
+        sql: ${TABLE}.csmp_discount_diamond
+        description: Chiết khấu CSMP cho tier Diamond.
+        label: "Avg Csmp Discount Diamond"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Csmp Discount Diamond"
+          - "Trung bình Csmp Discount Diamond"
+      avg_price_min:
+        type: average
+        sql: ${TABLE}.price_min
+        description: Giá tối thiểu trung bình.
+        label: "Avg Price Min"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Price Min"
+          - "Trung bình giá nhỏ nhất"
+      avg_price_max:
+        type: average
+        sql: ${TABLE}.price_max
+        description: Giá tối đa trung bình.
+        label: "Avg Price Max"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Avg Price Max"
+          - "Trung bình giá lớn nhất"
+      max_csmp_discount:
+        type: max
+        sql: ${TABLE}.csmp_discount
+        description: Mức chiết khấu CSMP lớn nhất.
+        label: "Max Csmp Discount"
+        category: "Pricing & Quotation"
+        synonyms:
+          - "Max Csmp Discount"
+          - "Giá trị lớn nhất của Csmp Discount"
+  columns:
+  - name: product_id
+    description: Mã định danh duy nhất của sản phẩm.
+    meta:
+      dimension:
+        type: number
+        label: Mã định danh sản phẩm
+    data_tests:
+    - not_null
+    - unique
+  - name: product_name
+    description: Tên sản phẩm.
+    meta:
+      dimension:
+        type: string
+        label: Tên sản phẩm
+  - name: product_description
+    description: Mô tả chi tiết sản phẩm.
+    meta:
+      dimension:
+        type: string
+        label: Mô tả sản phẩm
+  - name: product_group
+    description: Nhóm SPDV
+    meta:
+      dimension:
+        type: string
+        label: Nhóm SPDV
+  - name: product_sub_group
+    description: Nhóm cấp 2 của SPDV
+    meta:
+      dimension:
+        type: string
+        label: Nhóm cấp 2 của SPDV
+  - name: category_code
+    description: Mã định danh nhóm SPDV
+    meta:
+      dimension:
+        type: string
+        label: Mã định danh nhóm SPDV
+  - name: product_category
+    description: 'Danh mục sản phẩm mà sản phẩm thuộc (ví dụ: VCS-aJiant, MSS, SI, ...).'
+    meta:
+      dimension:
+        type: string
+        label: Loại sản phẩm
+  - name: sku
+    description: Mã SKU duy nhất của sản phẩm.
+    meta:
+      dimension:
+        type: string
+        label: Mã SKU
+  - name: product_version
+    description: Phiên bản sản phẩm.
+    meta:
+      dimension:
+        type: string
+        label: Phiên bản sản phẩm
+  - name: item_type
+    description: Loại mặt hàng (Product/Service) trong bảng giá.
+    meta:
+      dimension:
+        type: string
+        label: Loại mặt hàng
+  - name: is_active
+    description: True nếu bản ghi bảng giá đang được kích hoạt.
+    meta:
+      dimension:
+        type: boolean
+        label: Trạng thái hoạt động
+  - name: product_type
+    description: Loại sản phẩm (nhóm/dạng sản phẩm).
+    meta:
+      dimension:
+        type: string
+        label: Loại sản phẩm
+  - name: sub_type
+    description: 'Phân loại phụ của sản phẩm hoặc gói dịch vụ (ví dụ: Diamond, Gold, Silver, ...).'
+    meta:
+      dimension:
+        type: string
+        label: Loại phụ
+  - name: product_license
+    description: Loại giấy phép (Subscription, Perpetual, Time).
+    meta:
+      dimension:
+        type: string
+        label: Giấy phép sản phẩm
+  - name: price_type
+    description: 'Loại giá (ví dụ: danh sách, khuyến mại).'
+    meta:
+      dimension:
+        type: string
+        label: Loại giá
+  - name: package
+    description: Gói sản phẩm/dịch vụ áp dụng trong bảng giá.
+    meta:
+      dimension:
+        type: string
+        label: Cách đóng gói
+  - name: price
+    description: Giá bán của sản phẩm.
+    meta:
+      dimension:
+        type: number
+        label: Giá thành
+  - name: currency_code
+    description: Mã tiền tệ dùng cho mức giá sản phẩm.
+    meta:
+      dimension:
+        type: string
+        label: Mã tiền tệ
+  - name: price_min
+    description: Giá tối thiểu sản phẩm có thể áp dụng.
+    meta:
+      dimension:
+        type: number
+        label: Giá tối thiểu
+  - name: price_max
+    description: Giá tối đa sản phẩm có thể áp dụng.
+    meta:
+      dimension:
+        type: number
+        label: Giá tối đa
+  - name: price_unit
+    description: 'Đơn vị tính của mức giá (ví dụ: mỗi người dùng, mỗi tháng).'
+    meta:
+      dimension:
+        type: string
+        label: Đơn vị đóng gói
+  - name: is_quantity_based
+    description: True nếu mức giá dựa trên số lượng mua.
+    meta:
+      dimension:
+        type: boolean
+        label: is_quantity_based
+  - name: is_related_csmp
+    description: True nếu bảng giá liên quan chương trình CSMP.
+    meta:
+      dimension:
+        type: boolean
+        label: is_related_csmp
+  - name: csmp_discount
+    description: Mức chiết khấu CSMP áp dụng cho sản phẩm.
+    meta:
+      dimension:
+        type: number
+        label: Chiết khấu CSMP
+  - name: csmp_discount_silver
+    description: Chiết khấu dành cho khách hàng hạng Silver.
+    meta:
+      dimension:
+        type: number
+        label: Chiết khấu Silver
+  - name: csmp_discount_gold
+    description: Chiết khấu dành cho khách hàng hạng Vàng.
+    meta:
+      dimension:
+        type: number
+        label: Chiết khấu Vàng
+  - name: csmp_discount_diamond
+    description: Chiết khấu dành cho khách hàng hạng Kim Cương.
+    meta:
+      dimension:
+        type: number
+        label: Chiết khấu kim cương
+  - name: created_at
+    description: Ngày và giờ bản ghi pricebook được tạo.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày tạo bản ghi
+  - name: updated_at
+    description: Thời điểm bản ghi được cập nhật lần cuối.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày cập nhật bản ghi
+  - name: item_code
+    description: Mã vật tư
+    meta:
+      dimension:
+        type: string
+        label: item_code
+  - name: idd
+    description: Định danh 1 đơn vị vật tư cụ thể
+    meta:
+      dimension:
+        type: string
+        label: idd

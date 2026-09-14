@@ -1,0 +1,47 @@
+version: 2
+models:
+- name: production_management_1_acceptance_bug
+  description: "Bảng production_management_1_acceptance_bug (nguồn Power BI: Bug nghiệm thu)."
+  meta:
+    label: "Bug nghiệm thu"
+    powerbi_source: "Bug nghiệm thu"
+    joins:
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_acceptance_bug.issue_project_id} = ${production_management_1_project_name.id}"
+      relationship: many-to-many
+  columns:
+  - name: id
+    description: "Cột Id trong Bug nghiệm thu."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Bug nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Bug nghiệm thu."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Bug nghiệm thu."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong Bug nghiệm thu."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+        hidden: true

@@ -1,0 +1,85 @@
+version: 2
+models:
+- name: production_management_1_kpikqiq
+  description: "Bảng production_management_1_kpikqiq (nguồn Power BI: KPIKQIQ)."
+  meta:
+    label: "KPIKQIQ"
+    powerbi_source: "KPIKQIQ"
+  columns:
+  - name: report_date
+    description: "Cột Ngày báo cáo trong KPIKQIQ."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+        hidden: true
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong KPIKQIQ."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQIQ."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+        hidden: true
+  - name: group_value
+    description: "Cột Nhóm trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQIQ."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true

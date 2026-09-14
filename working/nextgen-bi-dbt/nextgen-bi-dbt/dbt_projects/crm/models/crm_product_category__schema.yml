@@ -1,0 +1,12 @@
+version: 2
+models:
+- name: crm_product_category
+  description: Staging model selecting data from source bi_silver.crm_product_category
+  meta:
+    label: "Product Category"
+    owner: "huongnv1"
+  columns:
+  - name: category_code
+    description: category_code
+  - name: product_category
+    description: product_category

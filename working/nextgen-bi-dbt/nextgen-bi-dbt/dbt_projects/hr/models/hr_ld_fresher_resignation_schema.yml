@@ -1,0 +1,171 @@
+version: 2
+
+models:
+- name: hr_ld_fresher_resignation
+  description: >
+    Bảng **hr_ld_fresher_resignation** lưu trữ thông tin các nhân sự Fresher nghỉ việc
+    trong quá trình tham gia chương trình đào tạo hoặc giai đoạn thực tập công việc (OJT).
+    Dữ liệu bao gồm thông tin cá nhân, thời gian nghỉ việc, lý do nghỉ việc, lộ trình đào tạo,
+    người hướng dẫn và đơn vị công tác. Dữ liệu được sử dụng để phân tích tỷ lệ nghỉ việc của
+    Fresher, đánh giá hiệu quả chương trình đào tạo và hỗ trợ xây dựng các chính sách giữ chân
+    nhân sự mới.
+
+  meta:
+    label: "Fresher Resignation"
+    owner: "tranpth"
+
+    metrics:
+      fresher_resignation_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng Fresher nghỉ việc trong quá trình đào tạo hoặc OJT."
+        label: "Fresher Resignation Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher nghỉ việc"
+          - "Số Fresher nghỉ"
+          - "Fresher Resignation Count"
+
+      resignation_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi nghỉ việc của Fresher."
+        label: "Resignation Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi nghỉ việc"
+          - "Resignation Record Count"
+
+      avg_days_before_resignation:
+        type: average
+        sql: date_diff('day', CAST(${TABLE}.onboard_date AS date), CAST(${TABLE}.resigned_date AS date))
+        description: "Số ngày trung bình từ khi Fresher tham gia chương trình đến khi nghỉ việc."
+        label: "Average Days Before Resignation"
+        category: "Learning & Development"
+        synonyms:
+          - "Thời gian gắn bó trung bình"
+          - "Số ngày trước khi nghỉ việc"
+          - "Average Days Before Resignation"
+
+      resigned_during_ojt_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN UPPER(${TABLE}.training_phase) LIKE '%OJT%'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng Fresher nghỉ việc trong giai đoạn OJT."
+        label: "Resigned During OJT Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher nghỉ trong OJT"
+          - "Resigned During OJT Count"
+
+      resigned_before_ojt_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN UPPER(${TABLE}.training_phase) NOT LIKE '%OJT%'
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng Fresher nghỉ việc trước khi bước vào giai đoạn OJT."
+        label: "Resigned Before OJT Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher nghỉ trước OJT"
+          - "Resigned Before OJT Count"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi nghỉ việc của Fresher
+      meta:
+        dimension:
+          type: number
+          label: "Resignation Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: employee_code
+      description: Mã định danh của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: onboard_date
+      description: Ngày nhân sự Fresher bắt đầu tham gia chương trình đào tạo hoặc gia nhập công ty
+      meta:
+        dimension:
+          type: timestamp
+          label: "Onboard Date"
+
+    - name: resigned_date
+      description: Ngày nhân sự Fresher nghỉ việc
+      meta:
+        dimension:
+          type: timestamp
+          label: "Resigned Date"
+
+    - name: resignation_reason
+      description: Lý do nghỉ việc của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Resignation Reason"
+
+    - name: training_phase
+      description: Giai đoạn đào tạo mà Fresher đang tham gia tại thời điểm nghỉ việc
+      meta:
+        dimension:
+          type: string
+          label: "Training Phase"
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Training Major"
+
+    - name: mentor_name
+      description: Họ và tên người hướng dẫn hoặc mentor phụ trách Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Mentor Name"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 tiếp nhận hoặc quản lý Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: ojt_start_date
+      description: Ngày bắt đầu chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+      meta:
+        dimension:
+          type: timestamp
+          label: "OJT Start Date"
+
+    - name: ojt_end_date
+      description: Ngày kết thúc chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+      meta:
+        dimension:
+          type: timestamp
+          label: "OJT End Date"
+
+    - name: current_work_location
+      description: Địa điểm hoặc khu vực làm việc của Fresher tại thời điểm nghỉ việc
+      meta:
+        dimension:
+          type: string
+          label: "Current Work Location"

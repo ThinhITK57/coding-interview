@@ -1,0 +1,158 @@
+version: 2
+
+models:
+  - name: cx_sur_question_response
+    description: >
+      Bảng lưu trữ chi tiết các câu trả lời của khách hàng trong các khảo sát.
+
+      Grain: survey_id × response_id × question_id × answers_item_index
+
+      Dùng để phân tích kết quả khảo sát NPS, CSAT, CES,
+      mức độ hài lòng của khách hàng, hiệu suất sản phẩm,
+      hành trình trải nghiệm và các điểm tiếp xúc với khách hàng.
+
+      Semantic:
+      - Mỗi bản ghi thể hiện một câu trả lời cho một câu hỏi trong khảo sát.
+      - cso_ticket_id được sử dụng để xác định các khảo sát được thực hiện
+        sau khi ticket được đóng.
+      - kpi_group và kpi_sub_group dùng để phân loại nhóm chỉ số khảo sát.
+      - Các customer_* là các lát cắt thông tin khách hàng dùng cho phân tích.
+
+    meta:
+      label: "Survey Responses"
+      owner: "lyttt3"
+
+      metrics:
+
+    columns:
+
+      - name: response_id
+        description: >
+          Mã định danh duy nhất cho mỗi phản hồi trong khảo sát.
+
+      - name: survey_id
+        description: >
+          Mã định danh của khảo sát mà câu trả lời thuộc về.
+        tests:
+          - not_null
+
+      - name: question_id
+        description: >
+          Mã định danh duy nhất của câu hỏi trong khảo sát.
+
+      - name: respondent_uuid
+        description: >
+          Mã định danh duy nhất của người trả lời khảo sát.
+
+      - name: choice_id
+        description: >
+          Mã định danh của lựa chọn trả lời được khách hàng chọn trong khảo sát.
+
+      - name: answers_item_index
+        description: >
+          Thứ tự nội dung trả lời trong phần Multiple Answers.
+
+      - name: collected_date
+        description: >
+          Ngày ghi nhận dữ liệu trả lời khảo sát.
+
+      - name: cso_ticket_id
+        description: >
+          Mã định danh của ticket.
+          Nếu data ở dạng số có 5 ký tự (eg: 54123),
+          thì có nghĩa survey này được tạo ra để khảo sát với ticket đã đóng.
+
+      - name: response_email
+        description: >
+          Email của khách hàng được sử dụng để xác định người trả lời khảo sát.
+
+      - name: question_type
+        description: >
+          Loại câu hỏi được sử dụng trong khảo sát.
+
+      - name: answer_string
+        description: >
+          Nội dung câu trả lời dạng văn bản mà khách hàng cung cấp trong khảo sát.
+
+      - name: answer_tag
+        description: >
+          Nhãn mô tả loại hoặc nhóm câu trả lời trong khảo sát khách hàng.
+
+      - name: comment
+        description: >
+          Bình luận hoặc nhận xét tự do của khách hàng trong khảo sát.
+
+      - name: choice_content
+        description: >
+          Nội dung văn bản của lựa chọn mà khách hàng đã chọn trong câu hỏi khảo sát.
+
+      - name: item_content
+        description: >
+          Nội dung văn bản của mục câu hỏi trong khảo sát khách hàng.
+
+      - name: answer_number
+        description: >
+          Số thứ tự của câu trả lời trong mỗi bản khảo sát.
+
+      - name: item_score_value
+        description: >
+          Điểm số dạng số của câu trả lời.
+          Bằng 0 nếu câu trả lời chỉ là đánh giá dạng text.
+
+      - name: item_score_label
+        description: >
+          Đánh giá dạng text của câu trả lời, ví dụ Good, Bad hoặc Medium.
+
+      - name: question_clean
+        description: >
+          Nội dung câu hỏi đã được chuẩn hóa.
+
+      - name: kpi_type
+        description: >
+          Loại chỉ số đo lường của câu hỏi khảo sát.
+
+      - name: journey
+        description: >
+          Giai đoạn trải nghiệm của khách hàng trong hành trình tương tác.
+
+      - name: customer_touchpoint
+        description: >
+          Điểm tiếp xúc của khách hàng trong hành trình tương tác.
+
+      - name: product_category
+        description: >
+          Nhóm sản phẩm hoặc dịch vụ được khách hàng đánh giá trong khảo sát.
+
+      - name: kpi_group
+        description: >
+          Nhóm KPI của câu hỏi khảo sát, ví dụ NPS, CSAT hoặc CES.
+
+      - name: kpi_sub_group
+        description: >
+          Nhóm KPI chi tiết thuộc nhóm KPI chính.
+
+      - name: customer_name
+        description: >
+          Tên khách hàng/doanh nghiệp.
+
+      - name: customer_group
+        description: >
+          Phân loại khách hàng theo cấp độ: VVIP, VIP, Growth, Standard.
+
+      - name: customer_segement_level1
+        description: >
+          Phân khúc khách hàng cấp 1, thể hiện nhóm thị trường hoặc loại khách hàng chính.
+
+      - name: customer_segement_level2
+        description: >
+          Phân khúc khách hàng cấp 2, thể hiện nhóm phân loại chi tiết hơn
+          trong phân khúc cấp 1.
+
+      - name: customer_segement_level3
+        description: >
+          Phân khúc khách hàng cấp 3, thể hiện nhóm phân loại chi tiết nhất
+          trong hệ thống phân khúc khách hàng.
+
+      - name: customer_contact_level
+        description: >
+          Vị trí/chức danh của đầu mối liên hệ phía khách hàng.

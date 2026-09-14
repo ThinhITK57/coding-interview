@@ -1,0 +1,75 @@
+version: 2
+models:
+- name: production_management_1_bug_issues
+  description: "Bảng production_management_1_bug_issues (nguồn Power BI: Bug - Issues)."
+  meta:
+    label: "Bug - Issues"
+    powerbi_source: "Bug - Issues"
+    joins:
+    - join: production_management_1_issues_fix_versions
+      sql_on: "${production_management_1_bug_issues.issue_key} = ${production_management_1_issues_fix_versions.issue_key}"
+      relationship: one-to-one
+  columns:
+  - name: id
+    description: "Cột Id trong Bug - Issues."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Bug - Issues."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong Bug - Issues."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Bug - Issues."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Bug - Issues."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Bug - Issues."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong Bug - Issues."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: cso_ticket_link
+    description: "Cột CSO_Ticket_link_12542 trong Bug - Issues."
+    meta:
+      dimension:
+        type: string
+        label: "CSO_Ticket_link_12542"
+        hidden: true
+  - name: link_ticket_cso
+    description: "Cột Link_Ticket_CSO_13625 trong Bug - Issues."
+    meta:
+      dimension:
+        type: string
+        label: "Link_Ticket_CSO_13625"
+        hidden: true

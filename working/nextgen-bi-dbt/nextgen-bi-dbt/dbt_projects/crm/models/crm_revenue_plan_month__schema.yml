@@ -1,0 +1,213 @@
+version: 2
+
+models:
+  - name: crm_revenue_plan_month
+    description: >
+      Kế hoạch doanh thu theo tháng và nhóm phân khúc khách hàng. Dữ liệu bao gồm
+      kế hoạch doanh thu Must, Nice, Tập đoàn ban đầu và các giá trị kế hoạch
+      đã điều chỉnh tương ứng. Số liệu điều chỉnh là số liệu sử dụng để điều hành kinh doanh.
+
+      Semantic:
+      - Khi hỏi "kế hoạch doanh thu" chung chung, mặc định sử dụng kế hoạch đã điều chỉnh
+        và trả cả 3 chỉ tiêu Must/Nice/Tập đoàn giao.
+      - Khi hỏi cụ thể Must, Nice hoặc Tập đoàn thì chỉ trả chỉ tiêu tương ứng, ưu tiên trả kế hoạch điều chỉnh nếu người dùng không chỉ cụ thể số liệu nào.
+      - Khi hỏi "kế hoạch doanh thu" không chỉ rõ cấp Tập đoàn hay trung tâm MSN,
+        mặc định lấy cấp Tập đoàn.
+      - Có hai loại kế hoạch: kế hoạch ban đầu và kế hoạch điều chỉnh trong quá trình kinh doanh.
+      - Kế hoạch theo năm không đổi; kế hoạch theo tháng có thể được điều chỉnh theo tình hình kinh doanh.
+      - Với các tháng trong quá khứ, kế hoạch điều chỉnh chính bằng doanh thu đã thực hiện.
+      - Khi đề cập "kế hoạch doanh thu" liên quan đến VCS/Tập đoàn giao chỉ tiêu,
+        sử dụng chỉ tiêu kế hoạch Tập đoàn.
+      - Khi hỏi "doanh thu" với thời gian tương lai, không sử dụng model này;
+        sử dụng model doanh thu tương ứng để trả DTCC, DT dự báo, DT ước và cơ cấu doanh thu.
+      - Kế hoạch SI (ngoài , nội bộ, bqp), sử dụng cột customer_segment_l2
+      - revenue_segment_l1:  Dù người dùng có hỏi "KH" hay không, thì khi hỏi doanh thu , phân bổ doanh thu , kế hoạch doanh thu , tỷ lệ hoàn thành, mà có hỏi đến "phân khúc/cắt lớp" , thì cần sử dụng  revenue_segment_l1. Trừ khi người dùng chỉ định rõ sang cắt lớp khác
+
+    meta:
+      label: "Kế hoạch doanh thu phân khúc khách hàng theo tháng"
+      owner: "huongnv1"
+
+    columns:
+
+      # =========================
+      # DIMENSIONS
+      # =========================
+
+      - name: plan_date
+        description: >
+          Tháng kế hoạch doanh thu.
+        meta:
+          dimension:
+            type: date
+            label: "Tháng kế hoạch"
+            time_interval: MONTH
+            synonyms:
+              - "tháng kế hoạch"
+              - "kỳ kế hoạch"
+              - "thời gian kế hoạch"
+              - "tháng"
+
+      - name: customer_segment_l2
+        description: >
+          Phân khúc khách hàng cấp 2 dùng để phân loại và phân tích
+          kế hoạch doanh thu chi tiết.
+        meta:
+          dimension:
+            type: string
+            label: "Phân khúc khách hàng cấp 2"
+            synonyms:
+              - "nhóm khách hàng cấp 2"
+              - "customer segment l2"
+              - "segment l2"
+              - Direct / Local Channel
+              - Khách hàng SI ngoài
+              - Khách hàng SI nội bộ
+              - Khách hàng ngoài
+              - Khách hàng nội bộ
+              - Viettel Global Partner
+              - Doanh thu tài chính
+              - Khách hàng SI ngoài
+              - Khách hàng SI nội bộ
+
+      - name: customer_segment_l1
+        description: >
+          Phân khúc khách hàng cấp 1, là cấp phân loại khách hàng tổng quát.
+        meta:
+          dimension:
+            type: string
+            label: "Phân khúc khách hàng cấp 1"
+            synonyms:
+              - "nhóm khách hàng cấp 1"
+              - "customer segment l1"
+              - "segment l1"
+              - Bộ Quốc phòng
+              - International = Quốc tế
+              - Khách hàng ngoài
+              - Nội bộ
+              - Doanh thu tài chính
+              
+      - name: revenue_segment_l1
+        description: Phân khúc khách hàng Bóc tách phân loại theo góc nhìn từ báo cáo doanh thu tập đoàn
+        meta:
+          dimension:
+            type: string
+            label: Phân khúc doanh thu
+            synonyms:
+            - Ngoài
+            - Nội Bộ
+            - Quốc Tế
+            - Thị Trường
+            - Khác
+            - Khách hàng ngoài
+            - International
+            - Nội bộ
+            - Khác
+            - Bộ Quốc phòng
+            - Nhóm Khách hàng
+            - Nhóm KH
+
+      # - name: report_customer_segment
+      #   description: Segment báo cáo tổng hợp.
+      #   meta:
+      #     dimension:
+      #       type: string
+      #       label: Nhóm khách hàng báo cáo
+
+      # =========================
+      # PLAN METRICS
+      # =========================
+
+      - name: must_value
+        description: >
+          Giá trị kế hoạch doanh thu Must trước điều chỉnh (VND).
+        meta:
+          metrics:
+            sum_must_revenue_plan:
+              type: sum
+              label: "Kế hoạch doanh thu Must"
+              description: "Tổng kế hoạch doanh thu Must trước điều chỉnh."
+              synonyms:
+                - "doanh thu kế hoạch Must"
+                - "kế hoạch Must"
+                - "Must plan"
+                - "Must revenue plan"
+
+      - name: nice_value
+        description: >
+          Giá trị kế hoạch doanh thu Nice trước điều chỉnh (VND).
+        meta:
+          metrics:
+            sum_nice_revenue_plan:
+              type: sum
+              label: "Kế hoạch doanh thu Nice"
+              description: "Tổng kế hoạch doanh thu Nice trước điều chỉnh."
+              synonyms:
+                - "doanh thu kế hoạch Nice"
+                - "kế hoạch Nice"
+                - "Nice plan"
+                - "Nice revenue plan"
+
+      - name: group_value
+        description: >
+          Giá trị kế hoạch doanh thu Tập đoàn trước điều chỉnh (VND).
+        meta:
+          metrics:
+            sum_group_revenue_plan:
+              type: sum
+              label: "Kế hoạch doanh thu Tập đoàn"
+              description: "Tổng kế hoạch doanh thu Tập đoàn trước điều chỉnh."
+              synonyms:
+                - "doanh thu kế hoạch Tập đoàn"
+                - "kế hoạch Tập đoàn"
+                - "Group plan"
+                - "Group revenue plan"
+
+
+      # =========================
+      # ADJUSTED PLAN METRICS
+      # =========================
+
+      - name: adjusted_must_value
+        description: >
+          Giá trị kế hoạch doanh thu Must đã được điều chỉnh (VND).
+        meta:
+          metrics:
+            sum_adjusted_must_revenue_plan:
+              type: sum
+              label: "Kế hoạch doanh thu Must điều chỉnh"
+              description: "Tổng kế hoạch doanh thu Must sau điều chỉnh."
+              synonyms:
+                - "kế hoạch Must điều chỉnh"
+                - "doanh thu Must điều chỉnh"
+                - "Adjusted Must"
+                - "Adjusted Must plan"
+
+      - name: adjusted_nice_value
+        description: >
+          Giá trị kế hoạch doanh thu Nice đã được điều chỉnh (VND).
+        meta:
+          metrics:
+            sum_adjusted_nice_revenue_plan:
+              type: sum
+              label: "Kế hoạch doanh thu Nice điều chỉnh"
+              description: "Tổng kế hoạch doanh thu Nice sau điều chỉnh."
+              synonyms:
+                - "kế hoạch Nice điều chỉnh"
+                - "doanh thu Nice điều chỉnh"
+                - "Adjusted Nice"
+                - "Adjusted Nice plan"
+
+      - name: adjusted_group_value
+        description: >
+          Giá trị kế hoạch doanh thu Tập đoàn đã được điều chỉnh (VND).
+        meta:
+          metrics:
+            sum_adjusted_group_revenue_plan:
+              type: sum
+              label: "Kế hoạch doanh thu Tập đoàn điều chỉnh"
+              description: "Tổng kế hoạch doanh thu Tập đoàn sau điều chỉnh."
+              synonyms:
+                - "kế hoạch Tập đoàn điều chỉnh"
+                - "doanh thu Tập đoàn điều chỉnh"
+                - "Adjusted Group"
+                - "Adjusted Group plan"

@@ -1,0 +1,278 @@
+version: 2
+models:
+- name: production_management_1_mm_ratio_by_project_month
+  description: >-
+    Bug Production / ULNL / FixVersions / mamday hr đã gộp về grain
+    (tháng × khối × sản phẩm) rồi ghép ngang. Dùng cho các measure "chia khối
+    lượng cho man-month" mà nếu khai báo join thẳng sẽ bị fan-out.
+    GRAIN: (tháng × khối × sản phẩm) — 1 dòng duy nhất cho mỗi tổ hợp.
+  meta:
+    label: "Tỷ lệ MM theo sản phẩm / tháng"
+    metrics:
+      sum_man_month:
+        type: sum
+        sql: man_month
+        label: "MM"
+        description: "DAX: SUM('mamday hr'[man month])"
+
+      pct_production_bug_rate:
+        type: number
+        sql: "SUM(bug_prd_score) / NULLIF(SUM(man_month), 0)"
+        label: "% BUG Prd"
+        description: >-
+          DAX: if(ISBLANK(SUM('Bug Production'[Tỉ lệ production bug])), BLANK(),
+          DIVIDE(SUM('Bug Production'[Tỉ lệ production bug]), SUM('mamday hr'[man month])))
+        round: 2
+
+      count_bug_prd:
+        type: sum
+        sql: bug_prd_count
+        label: "Số BUG Prd"
+        description: "DAX: CALCULATE(DISTINCTCOUNT('Bug Production'[ISSUE_KEY]))"
+
+      count_bug_production:
+        type: sum
+        sql: bug_prd_count_not_rejected
+        label: "Số Bug Production"
+        description: >-
+          DAX: COALESCE(CALCULATE(DISTINCTCOUNT('Bug Production'[ISSUE_KEY]),
+          FILTER('Bug Production','Bug Production'[ISSUE_CURRENT_STATUS_NAME] <> "Rejected")), 0)
+
+      pct_hieu_suat_load_nguoi:
+        type: number
+        sql: "CASE WHEN SUM(ulnl_mm) IS NULL THEN NULL ELSE SUM(ulnl_mm) / NULLIF(SUM(man_month), 0) END"
+        label: "% Hiệu suất load người"
+        description: >-
+          DAX: SWITCH(TRUE(), ISBLANK(SUM(ULNL[ULNL MM])), BLANK(),
+          DIVIDE(SUM(ULNL[ULNL MM]), SUM('mamday hr'[man month])))
+        format: percent
+        round: 2
+
+      mm_tong_fixversions:
+        type: sum
+        sql: man_month
+        label: "MM Tổng_FIXVERSIONS"
+        description: >-
+          DAX: CALCULATE(SUM('mamday hr'[man month]),
+          USERELATIONSHIP('mamday hr'[Sản phẩm/dịch vụ], FixVersions[Project Name])).
+          Quan hệ thay thế đó chính là khoá `project` của model này.
+
+      pct_logwork_fixversions:
+        type: number
+        sql: "SUM(fixversion_logworks) / NULLIF(SUM(man_month), 0)"
+        label: "%LOGWORK FIXVERSIONS"
+        description: "DAX: DIVIDE(SUM('FixVersions'[LOGWORKS]), 'FixVersions'[MM Tổng_FIXVERSIONS])"
+        format: percent
+        round: 2
+
+      pct_ulnl_fixversions:
+        type: number
+        sql: "SUM(fixversion_ulnl_mm_release) / NULLIF(SUM(man_month), 0)"
+        label: "%ULNL FIXVERSIONS"
+        description: "DAX: DIVIDE(SUM('FixVersions'[ULNL MM Release]), 'FixVersions'[MM Tổng_FIXVERSIONS])"
+        format: percent
+        round: 2
+
+      mm_ulnl_release:
+        type: sum
+        sql: fixversion_ulnl_mm_release
+        label: "MM ULNL RELEASE"
+        description: >-
+          DAX: CALCULATE(SUM(FixVersions[ULNL MM Release]),
+          USERELATIONSHIP('Dim_Date'[Date],FixVersions[DATE_RELEASE]),
+          USERELATIONSHIP('Project Name'[PROJECT_NAME_Last],'FixVersions'[Project Name])).
+          Cả hai quan hệ thay thế đã được nướng sẵn vào grain của model này.
+
+      sum_ulnl_mm:
+        type: sum
+        sql: ulnl_mm
+        label: "ULNL MM"
+        description: "DAX: SUM(ULNL[ULNL MM])"
+
+      # ----- priority = 1 -------------------------------------------------
+      ulnl_fix_version:
+        type: sum
+        sql: ulnl_fix_version_mm
+        label: "ULNL FIX VERSION"
+        description: >-
+          DAX: CALCULATE(SUM(ULNL[ULNL MM]),
+          USERELATIONSHIP('Done charter_FixVersions'[FIX_VERSION_ISSUE_KEY],'ULNL'[ISSUE_KEY]),
+          USERELATIONSHIP(Dim_Date[Date],'Done charter_FixVersions'[RELEASE_DATE])).
+          Cả hai quan hệ thay thế đã nướng vào cột `ulnl_fix_version_mm` (ULNL gắn
+          vào NGÀY RELEASE của fix version, không phải ngày resolve).
+
+      pct_ulnl_done_release:
+        type: number
+        sql: "SUM(ulnl_fix_version_mm) / NULLIF(SUM(man_month), 0)"
+        label: "% ULNL DONE RELEASE"
+        description: >-
+          DAX: DIVIDE(CALCULATE(ULNL[ULNL FIX VERSION], REMOVEFILTERS('Khối')),
+          CALCULATE(SUM('mamday hr'[man month]), REMOVEFILTERS('Khối')), 0).
+          KHÁC BẢN GỐC: REMOVEFILTERS('Khối') bị bỏ — nếu chart có lọc khối thì con số
+          ở đây theo khối, còn bản gốc luôn tính toàn công ty. Muốn khớp tuyệt đối thì
+          đừng đặt `division` vào chart dùng metric này.
+        format: percent
+        round: 2
+
+      sum_worklog_mm:
+        type: sum
+        sql: worklog_mm
+        label: "Worklog MM"
+        description: "DAX: SUM(Worklogs[Worklog MM])"
+
+      pct_worklog:
+        type: number
+        sql: "SUM(worklog_mm) / NULLIF(SUM(man_month), 0)"
+        label: "% worklog"
+        description: "DAX: DIVIDE(SUM(Worklogs[Worklog MM]),SUM('mamday hr'[man month]))"
+        format: percent
+        round: 2
+
+      worklog_fix_version:
+        type: sum
+        sql: worklog_fix_version_mm
+        label: "Worklog fix version"
+        description: >-
+          DAX: CALCULATE(SUM('Worklogs'[WorklogFIX_Version]),
+          USERELATIONSHIP('Worklogs'[ISSUE_KEY],'Done charter_FixVersions'[FIX_VERSION_ISSUE_KEY])).
+          Quan hệ thay thế đó gắn worklog vào NGÀY RELEASE của fix version.
+
+      pct_worklog_fix_version:
+        type: number
+        sql: "SUM(worklog_fix_version_mm) / NULLIF(SUM(man_month), 0)"
+        label: "% worklog fix VERSION"
+        description: "DAX: DIVIDE('Worklogs'[Worklog fix version],SUM('mamday hr'[man month]))"
+        format: percent
+        round: 2
+
+      mm_dev_team:
+        type: sum
+        sql: dev_team_mm
+        label: "MM Dev team"
+        description: >-
+          DAX: CALCULATE(SUM('mm_QA_fixversion'[man month]),
+          USERELATIONSHIP('mm_QA_fixversion'[Sản phẩm/dịch vụ],'Project Name'[PROJECT_NAME_Last]))
+
+      mm_os:
+        type: sum
+        sql: os_mm
+        label: "MM OS"
+        description: >-
+          DAX: CALCULATE(SUM('MM OS QI-2026'[MM OS]),
+          TREATAS(VALUES('MMRelease'[project_name]),'MM OS QI-2026'[Project]),
+          TREATAS(VALUES('MMRelease'[EndOfMonth]),'MM OS QI-2026'[Ngày tháng])).
+          Hai TREATAS đó chính là khoá (sản phẩm, tháng) của model này.
+
+  columns:
+  - name: month_start
+    description: "Đầu tháng."
+    meta:
+      dimension:
+        type: date
+        label: "Tháng"
+  - name: year_value
+    description: "Năm."
+    meta:
+      dimension:
+        type: string
+        label: "Year"
+  - name: month_year
+    description: "Định dạng MMM YYYY."
+    meta:
+      dimension:
+        type: string
+        label: "MonthYear"
+  - name: quarter_year
+    description: "Định dạng Qn YYYY."
+    meta:
+      dimension:
+        type: string
+        label: "QuarterYear"
+  - name: month_sort_key
+    description: "yyyymm dùng để sắp xếp."
+    meta:
+      dimension:
+        type: number
+        label: "Month sort key"
+        hidden: true
+  - name: division
+    description: "Khối / trung tâm."
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+  - name: project
+    description: "Sản phẩm / dự án (PROJECT_NAME_Last)."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME_Last"
+  - name: man_month
+    description: "SUM('mamday hr'[man month]) của tháng × khối × sản phẩm."
+    meta:
+      dimension:
+        type: number
+        label: "MM"
+        hidden: true
+  - name: bug_prd_score
+    description: "SUM('Bug Production'[Tỉ lệ production bug])."
+    meta:
+      dimension:
+        type: number
+        label: "Điểm bug production"
+        hidden: true
+  - name: bug_prd_count
+    description: "DISTINCTCOUNT('Bug Production'[ISSUE_KEY])."
+    meta:
+      dimension:
+        type: number
+        label: "Số bug production"
+        hidden: true
+  - name: bug_prd_count_not_rejected
+    description: "DISTINCTCOUNT ISSUE_KEY, bỏ trạng thái Rejected."
+    meta:
+      dimension:
+        type: number
+        label: "Số bug production (bỏ Rejected)"
+        hidden: true
+  - name: ulnl_mm
+    description: "SUM(ULNL[ULNL MM])."
+    meta:
+      dimension:
+        type: number
+        label: "ULNL MM"
+        hidden: true
+  - name: fixversion_logworks
+    description: "SUM('FixVersions'[LOGWORKS])."
+    meta:
+      dimension:
+        type: number
+        label: "LOGWORKS"
+        hidden: true
+  - name: fixversion_ulnl_mm_release
+    description: "SUM('FixVersions'[ULNL MM Release])."
+    meta:
+      dimension:
+        type: number
+        label: "ULNL MM Release"
+        hidden: true
+  - name: ulnl_fix_version_mm
+    description: "SUM(ULNL[ULNL MM]) gắn theo NGÀY RELEASE của fix version (qua 'Done charter_FixVersions')."
+    meta:
+      dimension: {type: number, label: "ULNL FIX VERSION", hidden: true}
+  - name: worklog_mm
+    description: "SUM(Worklogs[Worklog MM]), quy về sản phẩm qua worklogIssue -> Project Name."
+    meta:
+      dimension: {type: number, label: "Worklog MM", hidden: true}
+  - name: worklog_fix_version_mm
+    description: "SUM(Worklogs[WorklogFIX_Version]) gắn theo NGÀY RELEASE của fix version."
+    meta:
+      dimension: {type: number, label: "Worklog fix version", hidden: true}
+  - name: dev_team_mm
+    description: "SUM('mm_QA_fixversion'[man month]). Tên cột khác tên metric `mm_dev_team` vì Lightdash bỏ metric khi trùng tên dimension."
+    meta:
+      dimension: {type: number, label: "MM Dev team (cột thô)", hidden: true}
+  - name: os_mm
+    description: "SUM('MM OS QI-2026'[MM OS]). Tên cột khác tên metric `mm_os` vì Lightdash bỏ metric khi trùng tên dimension."
+    meta:
+      dimension: {type: number, label: "MM OS (cột thô)", hidden: true}

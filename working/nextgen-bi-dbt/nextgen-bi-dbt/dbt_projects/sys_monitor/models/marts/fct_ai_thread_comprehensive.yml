@@ -1,0 +1,183 @@
+version: 2
+
+models:
+  - name: fct_ai_thread_comprehensive
+    description: "Conversation-level AI thread facts with prompt, response, tool usage, timing, and user context."
+    meta:
+      label: "AI Thread Comprehensive"
+      group_label: "Observability"
+      metrics:
+        ai_thread_count:
+          type: count_distinct
+          label: "Total AI Threads"
+          sql: "${ai_thread_uuid}"
+        active_ai_users:
+          type: count_distinct
+          label: "Active AI Users"
+          sql: "${user_uuid}"
+        total_thread_prompts:
+          type: sum
+          label: "Thread Prompts"
+          sql: "${prompt_count}"
+        total_thread_tool_calls:
+          type: sum
+          label: "Thread Tool Calls"
+          sql: "${tool_call_count}"
+        average_prompts_per_thread:
+          type: average
+          label: "Average Prompts per Thread"
+          sql: "${prompt_count}"
+        average_tool_calls_per_thread:
+          type: average
+          label: "Average Tool Calls per Thread"
+          sql: "${tool_call_count}"
+        total_thread_prompt_characters:
+          type: sum
+          label: "Total Prompt Characters"
+          sql: "${total_prompt_characters}"
+        total_thread_response_characters:
+          type: sum
+          label: "Total Response Characters"
+          sql: "${total_response_characters}"
+        total_thread_characters:
+          type: sum
+          label: "Total Characters"
+          sql: "${total_characters}"
+        average_thread_duration_seconds:
+          type: average
+          label: "Average Thread Duration Seconds"
+          sql: "${thread_duration_seconds}"
+    columns:
+      - name: ai_thread_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "AI Thread UUID"
+      - name: agent_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Agent UUID"
+      - name: agent_name
+        meta:
+          dimension:
+            type: string
+            label: "Agent Name"
+      - name: project_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Project UUID"
+      - name: organization_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Organization UUID"
+      - name: created_from
+        meta:
+          dimension:
+            type: string
+            label: "Created From"
+      - name: title
+        meta:
+          dimension:
+            type: string
+            label: "Thread Title"
+      - name: thread_created_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Thread Created At"
+      - name: thread_date
+        meta:
+          dimension:
+            type: date
+            label: "Thread Date"
+      - name: thread_month
+        meta:
+          dimension:
+            type: date
+            label: "Thread Month"
+      - name: thread_year
+        meta:
+          dimension:
+            type: number
+            label: "Thread Year"
+      - name: user_uuid
+        meta:
+          dimension:
+            type: string
+            label: "User UUID"
+      - name: first_name
+        meta:
+          dimension:
+            type: string
+            label: "First Name"
+      - name: last_name
+        meta:
+          dimension:
+            type: string
+            label: "Last Name"
+      - name: user_total_ai_threads
+        meta:
+          dimension:
+            type: number
+            label: "User Total AI Threads"
+      - name: prompt_count
+        meta:
+          dimension:
+            type: number
+            label: "Prompt Count"
+      - name: total_prompt_characters
+        meta:
+          dimension:
+            type: number
+            label: "Total Prompt Characters"
+      - name: total_response_characters
+        meta:
+          dimension:
+            type: number
+            label: "Total Response Characters"
+      - name: total_characters
+        meta:
+          dimension:
+            type: number
+            label: "Total Characters"
+      - name: avg_prompt_characters_per_prompt
+        meta:
+          dimension:
+            type: number
+            label: "Average Prompt Characters per Prompt"
+      - name: avg_response_characters_per_prompt
+        meta:
+          dimension:
+            type: number
+            label: "Average Response Characters per Prompt"
+      - name: avg_total_characters_per_prompt
+        meta:
+          dimension:
+            type: number
+            label: "Average Total Characters per Prompt"
+      - name: tool_call_count
+        meta:
+          dimension:
+            type: number
+            label: "Tool Call Count"
+      - name: first_prompt_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "First Prompt At"
+      - name: last_prompt_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Last Prompt At"
+      - name: thread_duration_seconds
+        meta:
+          dimension:
+            type: number
+            label: "Thread Duration Seconds"

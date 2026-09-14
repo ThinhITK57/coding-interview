@@ -1,0 +1,253 @@
+version: 2
+models:
+- name: qtsx_v2_kpikqi_nocodb
+  description: "Bảng qtsx_v2_kpikqi_nocodb (nguồn Power BI: KPIKQI_nocodb)."
+  meta:
+    label: "KPIKQI_nocodb"
+    powerbi_source: "KPIKQI_nocodb"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_kpikqi_nocodb.project_name} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      count_evaluation:
+        type: count
+        sql: evaluation
+        label: "Tỷ lệ Pass / Fail"
+        description: "Sinh từ Power BI: count(KPIKQI_nocodb.Đánh giá)"
+      customer_fail_count:
+        type: count_distinct
+        sql: "CASE WHEN evaluation = 'Fail' THEN customer_name END"
+        label: "Customer FAIL"
+        description: "DAX: [Customer Count Nocodb] khi Dim_Status[Status] = \"Fail\" — đếm khách có ít nhất một dòng Đánh giá = \"Fail\"."
+      customer_pass_count:
+        type: number
+        sql: "COUNT(DISTINCT customer_name) - COUNT(DISTINCT CASE WHEN evaluation = 'Fail' THEN customer_name END)"
+        label: "Customer PASSED"
+        description: "DAX: [Customer Count Nocodb] khi Dim_Status[Status] = \"Pass\" — đếm khách KHÔNG có dòng \"Fail\" nào. Thay cho hai measure text 'Customer Pass Growth Text' / 'Customer Pass Growth Detail' (▲/▼ Tăng/Giảm n khách): bật Comparison của Big value trên metric này."
+      has_fail:
+        type: count
+        sql: "CASE WHEN evaluation = 'Fail' THEN 1 END"
+        label: "Has Fail"
+        description: "DAX: CALCULATE( COUNTROWS(KPIKQI_nocodb), KPIKQI_nocodb[Đánh giá] = \"Fail\" )"
+      spdv_fail_count:
+        type: count_distinct
+        sql: "CASE WHEN evaluation = 'Fail' THEN spdv END"
+        label: "SPDV FAIL"
+        description: "DAX: [SPDV Count Nocodb] khi Dim_Status[Status] = \"Fail\"."
+      spdv_pass_count:
+        type: number
+        sql: "COUNT(DISTINCT spdv) - COUNT(DISTINCT CASE WHEN evaluation = 'Fail' THEN spdv END)"
+        label: "SPDV PASSED"
+        description: "DAX: [SPDV Count Nocodb] khi Dim_Status[Status] = \"Pass\". Thay cho 'SPDV Pass Growth Text' / 'SPDV Pass Growth Detail'."
+      sum_result:
+        type: sum
+        sql: result
+        label: "Kết quả"
+        description: "Sinh từ Power BI: sum(KPIKQI_nocodb.Kết quả)"
+      sum_target:
+        type: sum
+        sql: target
+        label: "Target"
+        description: "Sinh từ Power BI: sum(KPIKQI_nocodb.Target)"
+  columns:
+  - name: created_at
+    description: "Cột CreatedAt trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: timestamp
+        label: "CreatedAt"
+        hidden: true
+  - name: updated_at
+    description: "Cột UpdatedAt trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: timestamp
+        label: "UpdatedAt"
+        hidden: true
+  - name: end_time
+    description: "Cột EndTime trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: date
+        label: "EndTime"
+  - name: result
+    description: "Cột Kết quả trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước' trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: number
+        label: "Kỳ trước"
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước' trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả 2 kỳ trước'"
+        hidden: true
+  - name: trend
+    description: "Cột Trend trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "Trend"
+        hidden: true
+  - name: target
+    description: "Cột Target trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "KPI TYPE"
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+  - name: unit
+    description: "Cột Đơn vị trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+  - name: customer_name
+    description: "Cột CustomerName trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerName"
+  - name: customer_type
+    description: "Cột CustomerType trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType"
+        hidden: true
+  - name: kpiname
+    description: "Cột KPIName trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "KPIName"
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: customer_group
+    description: "Cột Nhóm khách hàng trong KPIKQI_nocodb. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI_nocodb'[CustomerName] == \"MBbank\" || 'KPIKQI_nocodb'[CustomerName] == \"Điện lực miền Nam\" || 'KPIKQI_nocodb'[CustomerName] == \"Vietcombank\" || 'KPIKQI_nocodb'[CustomerName] == \"Bộ Tài chính (MOF)\" || 'KPIKQI_nocodb'[CustomerName] == \"Tổng Công ty Giải pháp doanh nghiệp Viettel\" || 'KPIKQI_nocodb'[CustomerName] == \"Tổng Công ty Viễn thông Viettel\" || 'KPIKQI_nocodb'[CustomerName] == \"Tổng công ty mạng lưới Viettel\" || 'KPIKQI_nocodb'[CustomerName] == \"Vietnam Airline (VNA)\" || 'KPIKQI_nocodb'[CustomerName] == \"wrs\" || 'KPIKQI_nocodb'[CustomerName] == \"ccl\" , \"VVIP\", \"VIP\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm khách hàng"
+  - name: vs_target
+    description: "Cột So với target trong KPIKQI_nocodb. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI_nocodb'[Target] VAR _Result = ROUND('KPIKQI_nocodb'[Kết quả], 2) VAR _Condition = UPPER(TRIM('KPIKQI_nocodb'[Điều kiện])) RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Trường hợp điều kiện là >= _Condition = \">=\", IF(_Result >= _Target, 1, 0), -- Trường hợp điều kiện là <= _Condition = \"<=\", IF(_Result <= _Target, 1, 0), -- Trường hợp điều kiện là = _Condition = \"=\", IF(_Result = _Target, 1, 0), -- Giá trị mặc định nếu không khớp điều kiện hoặc điều kiện trống 0 ), BLANK() -- Trả về trống nếu Kết quả chưa có dữ liệu )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQI_nocodb. Cột tính toán, DAX gốc: IF ( ISBLANK('KPIKQI_nocodb'[So với Target]), BLANK(), -- Hoặc trả về 0 tùy bạn muốn xử lý dòng trống thế nào IF ( 'KPIKQI_nocodb'[So với Target] > 0, \"Pass\", -- Đạt \"Fail\" -- Không đạt (Fail ở bất kỳ mức độ nào) ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+  - name: year_value
+    description: "Cột Year trong KPIKQI_nocodb. Cột tính toán, DAX gốc: YEAR(KPIKQI_nocodb[EndTime])"
+    meta:
+      dimension:
+        type: number
+        label: "Year"
+        hidden: true
+  - name: month_value
+    description: "Cột Month trong KPIKQI_nocodb. Cột tính toán, DAX gốc: FORMAT(KPIKQI_nocodb[EndTime], \"YYYY-MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "Month"
+        hidden: true
+  - name: quarter
+    description: "Cột Quarter trong KPIKQI_nocodb. Cột tính toán, DAX gốc: \"Q\" & FORMAT(KPIKQI_nocodb[EndTime], \"Q\") & \"-\" & YEAR(KPIKQI_nocodb[EndTime])"
+    meta:
+      dimension:
+        type: string
+        label: "Quarter"
+        hidden: true
+  - name: week
+    description: "Cột Week trong KPIKQI_nocodb. Cột tính toán, DAX gốc: WEEKNUM(KPIKQI_nocodb[EndTime], 2)"
+    meta:
+      dimension:
+        type: number
+        label: "Week"
+        hidden: true
+  - name: year_week
+    description: "Cột YearWeek trong KPIKQI_nocodb. Cột tính toán, DAX gốc: YEAR(KPIKQI_nocodb[EndTime]) & \"-W\" & FORMAT(KPIKQI_nocodb[Week], \"00\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearWeek"
+        hidden: true
+  - name: vs_target_value
+    description: "Cột So với target value trong KPIKQI_nocodb. Cột tính toán, DAX gốc: VAR _Target = 'KPIKQI_nocodb'[Target] VAR _Result = ROUND('KPIKQI_nocodb'[Kết quả],2) VAR _Condition= UPPER(TRIM('KPIKQI_nocodb'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, _Condition = \">=\", IF(_Condition = \">=\"&&(_Result - _Target=0) , -1, DIVIDE(_Target - _Result, 100 - _Target, 0)), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target value"
+        hidden: true
+  - name: evaluation_value
+    description: "Cột Đánh giá value trong KPIKQI_nocodb. Cột tính toán, DAX gốc: IF( 'KPIKQI_nocodb'[Kết quả]='KPIKQI_nocodb'[Target],\"1. Đạt\", IF( 'KPIKQI_nocodb'[So với target value]<> BLANK(), SWITCH( TRUE(), 'KPIKQI_nocodb'[So với target value] = 0, \"1. Đạt\", 'KPIKQI_nocodb'[So với target value] >= 0.6, \"4. Fail vượt Target >=60%\", 'KPIKQI_nocodb'[So với target value] >= 0.3 && 'KPIKQI_nocodb'[So với target value] < 0.6,\"3. Fail vượt Target >=30% & <60%\", 'KPIKQI_nocodb'[So với target value] > 0 && 'KPIKQI_nocodb'[So với target value] < 0.3, \"2. Fail vượt Target 0-30%\", 'KPIKQI_nocodb'[So với target value] < 0, \"1. Đạt\", \"CHƯA CÓ KẾT QUẢ\")))"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá value"
+  - name: center
+    description: "Cột Trung tâm trong KPIKQI_nocodb. Cột tính toán, DAX gốc: SWITCH( TRUE(), KPIKQI_nocodb[SPDV] = \"AntiDDOS\" || KPIKQI_nocodb[SPDV] = \"Cloudrity\", \"TT.Telco\", KPIKQI_nocodb[SPDV] = \"SOAR\" || KPIKQI_nocodb[SPDV] = \"SIEM\" || KPIKQI_nocodb[SPDV] = \"NSM\" || KPIKQI_nocodb[SPDV] = \"NDR\" || KPIKQI_nocodb[SPDV] = \"EDR\" || KPIKQI_nocodb[SPDV] = \"SOC Platform\", \"TT.Enterprise\", KPIKQI_nocodb[SPDV] = \"KIAN\" || KPIKQI_nocodb[SPDV] = \"M-Suite\", \"TT.SX\", KPIKQI_nocodb[SPDV] = \"TI Sản phẩm\", \"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+  - name: project_name
+    description: "Cột Project Name trong KPIKQI_nocodb. Cột tính toán, DAX gốc: SWITCH( TRUE(), KPIKQI_nocodb[SPDV] = \"AntiDDOS\" , \"V-AntiDDoS\", KPIKQI_nocodb[SPDV] = \"Cloudrity\" , \"Cloudrity Self Service\", KPIKQI_nocodb[SPDV] = \"EDR\" , \"aJiant\", KPIKQI_nocodb[SPDV] = \"KIAN\" , \"VCS-KIAN\", KPIKQI_nocodb[SPDV] = \"M-Suite\" , \"M-Suite\", KPIKQI_nocodb[SPDV] = \"NDR\" , \"NSM - NDR\", KPIKQI_nocodb[SPDV] = \"NSM\" , \"NSM - NDR\", KPIKQI_nocodb[SPDV] = \"SIEM\" , \"VCS-CyM\", KPIKQI_nocodb[SPDV] = \"SOAR\" , \"VCS-CyCir\", KPIKQI_nocodb[SPDV] = \"SOC Platform\" , \"SOC PLATFORM\", KPIKQI_nocodb[SPDV] = \"TI Sản phẩm\" , \"Threat Intelligence\", KPIKQI_nocodb[SPDV] )"
+    meta:
+      dimension:
+        type: string
+        label: "Project Name"
+        hidden: true
+  - name: so_with_period_n_1_td
+    description: "Cột So với kỳ N-1 (TĐ) trong KPIKQI_nocodb. Cột tính toán, DAX gốc: VAR CurrentResult = KPIKQI_nocodb[Kết quả] -- Tháng N VAR PrevResult = KPIKQI_nocodb[Kết quả 1 kỳ trước'] -- Tháng N-1 VAR Conditioncheck = KPIKQI_nocodb[Điều kiện] RETURN IF( OR( ISBLANK(CurrentResult), ISBLANK(PrevResult) ), BLANK(), SWITCH( TRUE(), -- Trường hợp >= : (Tháng N-1 - Tháng N) / (100 - Tháng N-1) Conditioncheck = \">=\", DIVIDE(PrevResult - CurrentResult, 100 - PrevResult), -- Trường hợp <= : (Tháng N - Tháng N-1) / Tháng N-1 Conditioncheck = \"<=\", DIVIDE(CurrentResult - PrevResult, PrevResult), -- Trường hợp = : Đúng bằng thì trả về 0 (Không chênh lệch), khác thì BLANK() Conditioncheck = \"=\", IF(CurrentResult = PrevResult, 0, BLANK()), BLANK() ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với kỳ N-1 (TĐ)"
+  - name: customer_type_2026
+    description: "Cột CustomerType_2026 (from dws_kpi_systems) trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerType_2026 (from dws_kpi_systems)"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI_nocodb."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+  - name: trend_v2
+    description: "Cột Trend v2 trong KPIKQI_nocodb. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'KPIKQI_nocodb'[Trend] = \"Decline\", \"Suy giảm\", 'KPIKQI_nocodb'[Trend] = \"Improve\", \"Cải thiện\", 'KPIKQI_nocodb'[Trend] = \"Maintain\", \"Duy trì\", BLANK())"
+    meta:
+      dimension:
+        type: string
+        label: "Trend"

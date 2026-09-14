@@ -1,0 +1,15 @@
+version: 2
+models:
+- name: production_management_1_bucket_revision
+  description: "Bảng production_management_1_bucket_revision (nguồn Power BI: Bucket Revision)."
+  meta:
+    label: "Bucket Revision"
+    powerbi_source: "Bucket Revision"
+  columns:
+  - name: bucket
+    description: "Cột Bucket trong Bucket Revision."
+    meta:
+      dimension:
+        type: string
+        label: "Bucket"
+        hidden: true

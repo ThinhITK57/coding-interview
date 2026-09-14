@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: bi_silver__cx
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: cx'
+  tables:
+  - name: cx_cso_ticket_tags
+    description: Bảng cx_cso_ticket_tags lưu trữ các nhãn được gắn cho ticket hỗ trợ khách hàng, giúp phân loại và theo dõi nội dung yêu cầu. Dữ liệu phục vụ báo cáo phân tích xu hướng vấn đề, hiệu suất xử lý ticket và đánh giá mức độ phổ biến của các chủ đề.
+    columns:
+    - name: ticket_id
+      description: Mã định danh duy nhất của ticket hỗ trợ khách hàng.
+      tests:
+      - not_null
+    - name: tag
+      description: Nhãn phân loại nội dung hoặc chủ đề của ticket hỗ trợ khách hàng.
+    - name: created_at
+      description: Ngày/giờ tạo thẻ ticket trong hệ thống.
+    - name: updated_at
+      description: Ngày/giờ cập nhật cuối cùng của thẻ ticket.

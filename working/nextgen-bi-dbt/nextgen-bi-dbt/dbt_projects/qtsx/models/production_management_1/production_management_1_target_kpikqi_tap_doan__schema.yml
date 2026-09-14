@@ -1,0 +1,91 @@
+version: 2
+models:
+- name: production_management_1_target_kpikqi_tap_doan
+  description: "Bảng production_management_1_target_kpikqi_tap_doan (nguồn Power BI: Target KPIKQI Tập đoàn)."
+  meta:
+    label: "Target KPIKQI Tập đoàn"
+    powerbi_source: "Target KPIKQI Tập đoàn"
+  columns:
+  - name: stt
+    description: "Cột STT trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: number
+        label: "STT"
+        hidden: true
+  - name: customer_group
+    description: "Cột Nhóm Khách hàng trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm Khách hàng"
+  - name: metric_name
+    description: "Cột Metric name trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: target_td
+    description: "Cột Target_TĐ trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: number
+        label: "Target_TĐ"
+        hidden: true
+  - name: unit_of_measure_td
+    description: "Cột Đơn vị tính_TĐ trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính_TĐ"
+        hidden: true
+  - name: condition_td
+    description: "Cột Điều kiện_TĐ trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện_TĐ"
+        hidden: true
+  - name: kpi_type_td
+    description: "Cột Loại KPI_TĐ trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI_TĐ"
+        hidden: true
+  - name: note
+    description: "Cột Note trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Note"
+        hidden: true
+  - name: product_service_name
+    description: "Cột Tên SPDV trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Tên SPDV"
+        hidden: true
+  - name: tag
+    description: "Cột Tag trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Tag"
+        hidden: true
+  - name: sp_metric
+    description: "Cột SP-Metric trong Target KPIKQI Tập đoàn. Cột tính toán, DAX gốc: 'Target KPIKQI Tập đoàn'[Tên SPDV]&'Target KPIKQI Tập đoàn'[Metric name]"
+    meta:
+      dimension:
+        type: string
+        label: "SP-Metric"
+        hidden: true
+  - name: column11
+    description: "Cột Column11 trong Target KPIKQI Tập đoàn."
+    meta:
+      dimension:
+        type: string
+        label: "Column11"
+        hidden: true

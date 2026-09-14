@@ -1,0 +1,34 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_kpikqispq
+    description: "Nguồn Power BI: KPIKQISPQ"
+    columns:
+    - name: report_date
+      description: "Cột Ngày_báo_cáo_18900"
+    - name: customer_name
+      description: "Cột CustomerName"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: target
+      description: "Cột Target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: unit
+      description: "Cột Đơn vị"
+    - name: result
+      description: "Cột Kết quả"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: customer_type
+      description: "Cột CustomerType"
+    - name: kpi_type
+      description: "Cột Loại KPI"
+    - name: column12
+      description: "Cột Column12"

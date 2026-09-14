@@ -1,0 +1,34 @@
+# Example config for lineage_agent_trino_hive.py
+openmetadata:
+  hostPort: http://localhost:8036/api
+  jwtTokenEnv: OM_JWT
+
+# Optional default service name.
+# If omitted, each edge must specify from.service and to.service.
+# service: crm-gold
+
+# Define ETL flow edges: raw -> silver -> gold
+edges:
+  - from:
+      service: crm-raw
+      database: hive
+      schema: bi_raw
+      table: crm_deals_raw
+    to:
+      service: crm-silver
+      database: hive
+      schema: bi_silver
+      table: crm_deals
+    description: PySpark ETL step raw to silver (cross-service)
+
+  - from:
+      service: crm-silver
+      database: hive
+      schema: bi_silver
+      table: crm_deals
+    to:
+      service: crm-gold
+      database: hive
+      schema: bi_gold
+      table: fct_crm_deals
+    description: PySpark ETL step silver to gold (cross-service)

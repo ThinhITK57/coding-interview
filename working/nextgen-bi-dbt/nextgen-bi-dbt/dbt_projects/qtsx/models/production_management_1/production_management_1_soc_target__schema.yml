@@ -1,0 +1,71 @@
+version: 2
+models:
+- name: production_management_1_soc_target
+  description: "Bảng production_management_1_soc_target (nguồn Power BI: SOC_Target)."
+  meta:
+    label: "SOC_Target"
+    powerbi_source: "SOC_Target"
+  columns:
+  - name: customer
+    description: "Cột Khách hàng trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "Khách hàng"
+        hidden: true
+  - name: summary
+    description: "Cột Summary trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "Summary"
+        hidden: true
+  - name: customer_s_severity
+    description: "Cột Customer's severity trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "Customer's severity"
+        hidden: true
+  - name: id
+    description: "Cột ID trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "ID"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: target
+    description: "Cột Target trong SOC_Target."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+        hidden: true
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: key_target
+    description: "Cột Key_target trong SOC_Target."
+    meta:
+      dimension:
+        type: string
+        label: "Key_target"
+        hidden: true

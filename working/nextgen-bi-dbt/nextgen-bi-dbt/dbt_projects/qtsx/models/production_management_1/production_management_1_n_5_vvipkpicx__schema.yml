@@ -1,0 +1,59 @@
+version: 2
+models:
+- name: production_management_1_n_5_vvipkpicx
+  description: "Bảng production_management_1_n_5_vvipkpicx (nguồn Power BI: 5VVIPKPICX)."
+  meta:
+    label: "5VVIPKPICX"
+    powerbi_source: "5VVIPKPICX"
+    metrics:
+      kpi_csat:
+        type: max
+        sql: csat
+        label: "KPI CSAT"
+        description: "DAX: SELECTEDVALUE('5VVIPKPICX'[CSAT]). SELECTEDVALUE trả giá trị khi nhóm chỉ còn 1 dòng; dùng MAX — trùng kết quả ở grain (SPDV × quý) mà chart đang dùng."
+      median_csat:
+        type: median
+        sql: csat
+        label: "Median of CSAT"
+        description: "Sinh từ Power BI: median(5VVIPKPICX.CSAT)"
+      median_nps:
+        type: median
+        sql: nps
+        label: "KPI NPS"
+        description: "Sinh từ Power BI: median(5VVIPKPICX.NPS)"
+  columns:
+  - name: spdv
+    description: "Cột SPDV trong 5VVIPKPICX."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: quarter
+    description: "Cột Quý trong 5VVIPKPICX."
+    meta:
+      dimension:
+        type: string
+        label: "Quý"
+        hidden: true
+  - name: csat
+    description: "Cột CSAT trong 5VVIPKPICX."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT"
+        hidden: true
+  - name: ces
+    description: "Cột CES trong 5VVIPKPICX."
+    meta:
+      dimension:
+        type: number
+        label: "CES"
+        hidden: true
+  - name: nps
+    description: "Cột NPS trong 5VVIPKPICX."
+    meta:
+      dimension:
+        type: number
+        label: "NPS"
+        hidden: true

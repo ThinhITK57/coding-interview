@@ -1,0 +1,37 @@
+version: 2
+sources:
+- name: bi_silver__noc
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: noc'
+  tables:
+  - name: noc_entities
+    description: "Lưu trữ thông tin định danh và mối liên kết giữa các thực thể hạ tầng mạng (Hosts) với các thực thể kinh doanh (Khách hàng, Dự án). Bảng này là cơ sở để phân loại và báo cáo tài nguyên hạ tầng theo mục đích sử dụng."
+    columns:
+    - name: customer
+      description: "Tên khách hàng hoặc đối tác sở hữu/sử dụng tài nguyên."
+    - name: project
+      description: "Tên dự án hoặc chiến dịch mà tài nguyên này phục vụ."
+    - name: host
+      description: "(Key) Tên máy chủ hoặc định danh thiết bị mạng."
+  - name: noc_metrics
+    description: "Lưu trữ các chỉ số đo lường hiệu suất (Performance Metrics) của hệ thống mạng và máy chủ theo thời gian thực. Dữ liệu hỗ trợ giám sát sức khỏe hạ tầng, phân tích xu hướng tải (Load Trend) và đảm bảo các chỉ tiêu KPI về vận hành kỹ thuật."
+    columns:
+    - name: metric_name
+      description: "Tên chỉ số đo lường (CPU, RAM, Disk IO, Network...)."
+    - name: agg_type
+      description: "Cách thức tổng hợp dữ liệu (Min, Max, Mean, Last)."
+    - name: customer
+      description: "Khách hàng liên quan đến lưu lượng/tài nguyên đo được."
+    - name: project
+      description: "Dự án liên quan đến chỉ số hiệu suất này."
+    - name: host
+      description: "Tên máy chủ phát sinh chỉ số đo lường."
+    - name: metric_value
+      description: "(Metric) Giá trị đo lường thực tế của chỉ số."
+    - name: metric_ts
+      description: "(Time Key) Timestamp ghi nhận chỉ số (độ chính xác cao)."
+    - name: metric_time
+      description: "Thời gian ghi nhận giá trị metric trong hệ thống NOC."
+    - name: dt
+      description: "Ngày ghi nhận dữ liệu (phục vụ phân vùng dữ liệu)."

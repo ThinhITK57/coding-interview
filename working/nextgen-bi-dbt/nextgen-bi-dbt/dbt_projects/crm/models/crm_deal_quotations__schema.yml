@@ -1,0 +1,58 @@
+version: 2
+models:
+- name: crm_deal_quotations
+  description: Bảng này lưu trữ các báo giá liên quan đến các giao dịch/cơ hội trong hệ thống CRM, bao gồm thông tin về tiền tệ, trạng thái và các chiết khấu áp dụng. Nó được sử dụng để phân tích hiệu suất bán hàng, theo dõi tỷ lệ chuyển đổi từ báo giá sang hợp đồng và lập báo cáo doanh số theo thời gian và khu vực.
+  meta:
+    label: "Deal Quotations"
+    owner: "huongnv1"
+  columns:
+  - name: deal_id
+    description: Mã định danh duy nhất của giao dịch/cơ hội (deal) trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã giao dịch/cơ hội
+    data_tests:
+    - not_null
+  - name: quotation_id
+    description: Mã định danh duy nhất của báo giá trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã báo giá
+  - name: created_at
+    description: Thời điểm tạo báo giá trong hệ thống CRM.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày tạo
+  - name: status
+    description: Trạng thái hiện tại của báo giá trong giao dịch/cơ hội CRM.
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái báo giá
+  - name: tlang
+    description: Ngôn ngữ được sử dụng cho báo giá trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Ngôn ngữ báo giá
+  - name: currency_code
+    description: Mã tiền tệ được sử dụng cho báo giá trong CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã tiền tệ
+  - name: global_discount
+    description: Mức chiết khấu toàn cục được áp dụng cho báo giá trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: number
+        label: Chiết khấu toàn cục
+  - name: global_discount_type
+    description: Loại giảm giá toàn cục được áp dụng cho báo giá trong CRM.
+    meta:
+      dimension:
+        type: string
+        label: Loại giảm giá

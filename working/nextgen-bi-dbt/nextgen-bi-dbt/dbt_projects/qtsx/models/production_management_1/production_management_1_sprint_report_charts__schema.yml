@@ -1,0 +1,120 @@
+version: 2
+models:
+- name: production_management_1_sprint_report_charts
+  description: "Bảng production_management_1_sprint_report_charts (nguồn Power BI: SprintReportCharts)."
+  meta:
+    label: "SprintReportCharts"
+    powerbi_source: "SprintReportCharts"
+  columns:
+  - name: sprint_report_sprint_name
+    description: "Cột SPRINT_REPORT_SPRINT_NAME trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_SPRINT_NAME"
+        hidden: true
+  - name: sprint_report_sprint_state
+    description: "Cột SPRINT_REPORT_SPRINT_STATE trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_SPRINT_STATE"
+        hidden: true
+  - name: sprint_report_sprint_goal
+    description: "Cột SPRINT_REPORT_SPRINT_GOAL trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_SPRINT_GOAL"
+        hidden: true
+  - name: sprint_report_sprint_activated_date
+    description: "Cột SPRINT_REPORT_SPRINT_ACTIVATED_DATE trong SprintReportCharts."
+    meta:
+      dimension:
+        type: timestamp
+        label: "SPRINT_REPORT_SPRINT_ACTIVATED_DATE"
+        hidden: true
+  - name: sprint_report_sprint_start_date
+    description: "Cột SPRINT_REPORT_SPRINT_START_DATE trong SprintReportCharts."
+    meta:
+      dimension:
+        type: timestamp
+        label: "SPRINT_REPORT_SPRINT_START_DATE"
+        hidden: true
+  - name: sprint_report_sprint_end_date
+    description: "Cột SPRINT_REPORT_SPRINT_END_DATE trong SprintReportCharts."
+    meta:
+      dimension:
+        type: timestamp
+        label: "SPRINT_REPORT_SPRINT_END_DATE"
+        hidden: true
+  - name: sprint_report_sprint_complete_date
+    description: "Cột SPRINT_REPORT_SPRINT_COMPLETE_DATE trong SprintReportCharts."
+    meta:
+      dimension:
+        type: timestamp
+        label: "SPRINT_REPORT_SPRINT_COMPLETE_DATE"
+        hidden: true
+  - name: sprint_report_issue_key
+    description: "Cột SPRINT_REPORT_ISSUE_KEY trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_ISSUE_KEY"
+        hidden: true
+  - name: sprint_report_issue_report_status
+    description: "Cột SPRINT_REPORT_ISSUE_REPORT_STATUS trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_ISSUE_REPORT_STATUS"
+        hidden: true
+  - name: sprint_report_issue_summary
+    description: "Cột SPRINT_REPORT_ISSUE_SUMMARY trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_ISSUE_SUMMARY"
+        hidden: true
+  - name: sprint_report_issue_type
+    description: "Cột SPRINT_REPORT_ISSUE_TYPE trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_ISSUE_TYPE"
+        hidden: true
+  - name: sprint_report_issue_priority
+    description: "Cột SPRINT_REPORT_ISSUE_PRIORITY trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_ISSUE_PRIORITY"
+        hidden: true
+  - name: sprint_report_issue_status
+    description: "Cột SPRINT_REPORT_ISSUE_STATUS trong SprintReportCharts."
+    meta:
+      dimension:
+        type: string
+        label: "SPRINT_REPORT_ISSUE_STATUS"
+        hidden: true
+  - name: sprint_report_issue_estimation_value
+    description: "Cột SPRINT_REPORT_ISSUE_ESTIMATION_VALUE trong SprintReportCharts."
+    meta:
+      dimension:
+        type: number
+        label: "SPRINT_REPORT_ISSUE_ESTIMATION_VALUE"
+        hidden: true
+  - name: sprint_report_issue_estimation_value_current
+    description: "Cột SPRINT_REPORT_ISSUE_ESTIMATION_VALUE_CURRENT trong SprintReportCharts."
+    meta:
+      dimension:
+        type: number
+        label: "SPRINT_REPORT_ISSUE_ESTIMATION_VALUE_CURRENT"
+        hidden: true
+  - name: sprint_report_issue_added_after_start_time
+    description: "Cột SPRINT_REPORT_ISSUE_ADDED_AFTER_START_TIME trong SprintReportCharts."
+    meta:
+      dimension:
+        type: boolean
+        label: "SPRINT_REPORT_ISSUE_ADDED_AFTER_START_TIME"
+        hidden: true

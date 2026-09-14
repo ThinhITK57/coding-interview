@@ -1,0 +1,22 @@
+version: 2
+models:
+- name: production_management_1_sheet1
+  description: "Bảng production_management_1_sheet1 (nguồn Power BI: Sheet1)."
+  meta:
+    label: "Sheet1"
+    powerbi_source: "Sheet1"
+  columns:
+  - name: column1
+    description: "Cột Column1 trong Sheet1."
+    meta:
+      dimension:
+        type: string
+        label: "Column1"
+        hidden: true
+  - name: column2
+    description: "Cột Column2 trong Sheet1."
+    meta:
+      dimension:
+        type: string
+        label: "Column2"
+        hidden: true

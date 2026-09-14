@@ -1,0 +1,29 @@
+version: 2
+models:
+- name: production_management_1_projects_3
+  description: "Bảng production_management_1_projects_3 (nguồn Power BI: Projects (3))."
+  meta:
+    label: "Projects (3)"
+    powerbi_source: "Projects (3)"
+  columns:
+  - name: id
+    description: "Cột Id trong Projects (3)."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT_NAME trong Projects (3)."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+        hidden: true
+  - name: project_key
+    description: "Cột PROJECT_KEY trong Projects (3)."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_KEY"
+        hidden: true

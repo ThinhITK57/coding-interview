@@ -1,0 +1,204 @@
+version: 2
+
+models:
+  - name: company_contacts
+    description: "Bảng này lưu trữ thông tin liên hệ của các công ty, bao gồm tên công ty, tên hiển thị, họ và tên, địa chỉ email và nguồn hệ thống gốc. Nó hỗ trợ việc quản lý quan hệ khách hàng và cho phép thực hiện các báo cáo phân tích danh sách liên hệ, nguồn dữ liệu và thời gian cập nhật."
+    meta:
+      label: "Company Contacts"
+
+
+    columns:
+      - name: company_id
+        description: "Mã định danh duy nhất của công ty trong hệ thống CRM."
+
+
+        tests:
+          - not_null
+          - unique
+      - name: company_name
+        description: "Tên công ty mà liên hệ thuộc về trong hệ thống CRM."
+
+        meta:
+          dimension:
+            label: "tên công ty"
+
+
+      - name: source_system
+        description: "Hệ thống nguồn mà thông tin liên hệ được lấy về."
+
+        meta:
+          dimension:
+            label: "hệ thống nguồn"
+
+
+      - name: contact_id
+        description: "Column contact_id from bi_silver.company_contacts"
+
+
+      - name: contact_name
+        description: "Tên hiển thị của liên hệ trong hệ thống CRM."
+
+        meta:
+          dimension:
+            label: "tên hiển thị"
+
+
+      - name: first_name
+        description: "Column first_name from bi_silver.company_contacts"
+
+
+      - name: last_name
+        description: "Column last_name from bi_silver.company_contacts"
+
+
+      - name: email
+        description: "Địa chỉ email của liên hệ công ty."
+
+        meta:
+          dimension:
+            label: "Email"
+
+
+      - name: email_domain
+        description: "Column email_domain from bi_silver.company_contacts"
+
+
+      - name: created_at
+        description: "Thời điểm mà bản ghi liên hệ công ty được tạo trong hệ thống."
+
+        meta:
+          dimension:
+            label: "ngày tạo"
+
+
+      - name: updated_at
+        description: "Thời điểm cuối cùng mà thông tin liên hệ công ty được cập nhật."
+
+        meta:
+          dimension:
+            label: "thời gian cập nhật"
+
+
+  - name: contract_collected_invoices
+    description: "Staging model selecting data from source bi_silver.contract_collected_invoices"
+    meta:
+      label: "Collected Invoices"
+
+
+    columns:
+      - name: idd
+        description: "Column idd from bi_silver.contract_collected_invoices"
+
+
+        tests:
+          - not_null
+          - unique
+      - name: sales_channel
+        description: "Column sales_channel from bi_silver.contract_collected_invoices"
+
+
+      - name: transaction_code
+        description: "Column transaction_code from bi_silver.contract_collected_invoices"
+
+
+      - name: invoice_number
+        description: "Column invoice_number from bi_silver.contract_collected_invoices"
+
+
+      - name: contract_num
+        description: "Column contract_num from bi_silver.contract_collected_invoices"
+
+
+      - name: customer_code
+        description: "Column customer_code from bi_silver.contract_collected_invoices"
+
+
+      - name: contract_description
+        description: "Column contract_description from bi_silver.contract_collected_invoices"
+
+
+      - name: company_name
+        description: "Column company_name from bi_silver.contract_collected_invoices"
+
+
+      - name: original_currency
+        description: "Column original_currency from bi_silver.contract_collected_invoices"
+
+
+      - name: initial_receivable_amount
+        description: "Column initial_receivable_amount from bi_silver.contract_collected_invoices"
+
+
+      - name: total_received_amount
+        description: "Column total_received_amount from bi_silver.contract_collected_invoices"
+
+
+      - name: remaining_balance_amount
+        description: "Column remaining_balance_amount from bi_silver.contract_collected_invoices"
+
+
+      - name: invoice_date
+        description: "Column invoice_date from bi_silver.contract_collected_invoices"
+
+
+      - name: payment_deadline
+        description: "Column payment_deadline from bi_silver.contract_collected_invoices"
+
+
+      - name: payment_date
+        description: "Column payment_date from bi_silver.contract_collected_invoices"
+
+
+      - name: overdue_months_numeric
+        description: "Column overdue_months_numeric from bi_silver.contract_collected_invoices"
+
+
+      - name: overdue_status_enum
+        description: "Column overdue_status_enum from bi_silver.contract_collected_invoices"
+
+
+      - name: am_username
+        description: "Column am_username from bi_silver.contract_collected_invoices"
+
+
+  - name: giang_test_masterplan
+    description: "Staging model selecting data from source bi_silver.giang_test_masterplan"
+
+
+    columns:
+      - name: plan_date
+        description: "Column plan_date from bi_silver.giang_test_masterplan"
+
+
+      - name: category_code
+        description: "Column category_code from bi_silver.giang_test_masterplan"
+
+
+      - name: product_category
+        description: "Column product_category from bi_silver.giang_test_masterplan"
+
+
+      - name: customer_segment_l1
+        description: "Column customer_segment_l1 from bi_silver.giang_test_masterplan"
+
+
+      - name: customer_segment_l2
+        description: "Column customer_segment_l2 from bi_silver.giang_test_masterplan"
+
+
+      - name: plan_viettel_group
+        description: "Column plan_viettel_group from bi_silver.giang_test_masterplan"
+
+
+      - name: plan_must
+        description: "Column plan_must from bi_silver.giang_test_masterplan"
+
+
+      - name: plan_should
+        description: "Column plan_should from bi_silver.giang_test_masterplan"
+
+
+      - name: plan_nice
+        description: "Column plan_nice from bi_silver.giang_test_masterplan"
+
+

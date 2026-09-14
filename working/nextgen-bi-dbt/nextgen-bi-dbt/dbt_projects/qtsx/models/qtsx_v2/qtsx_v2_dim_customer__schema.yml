@@ -1,0 +1,15 @@
+version: 2
+models:
+- name: qtsx_v2_dim_customer
+  description: "Bảng qtsx_v2_dim_customer (nguồn Power BI: Dim_Customer)."
+  meta:
+    label: "Dim_Customer"
+    powerbi_source: "Dim_Customer"
+  columns:
+  - name: customer_name
+    description: "Cột CustomerName trong Dim_Customer."
+    meta:
+      dimension:
+        type: string
+        label: "CustomerName"
+        hidden: true

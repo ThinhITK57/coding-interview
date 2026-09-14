@@ -1,0 +1,133 @@
+version: 2
+
+models:
+  - name: vw_crm_am_daily
+    description: |
+      Daily CRM statistics by Account Manager (AM).
+
+      Grain:
+        1 row = 1 AM × 1 activity date.
+
+      This model is the primary semantic model for AM-level CRM KPI,
+      trend analysis, ranking, and comparison.
+
+      IMPORTANT:
+      This model is derived from current CRM object tables and their
+      created_at / updated_at / status fields. It is NOT a complete
+      audit log of user actions.
+
+      Therefore:
+      - created_object_count represents objects created on the date.
+      - updated_object_count represents objects whose record was updated.
+      - progressed_object_count represents opportunities with stage progression information.
+      - contacted_object_count represents objects with contact activity information.
+      - signed_object_count represents signed contracts.
+      - business_outcome_count represents business outcomes such as first contracts.
+
+      Do not interpret updated_object_count as the exact number of
+      meaningful AM business actions.
+
+    meta:
+      primary_key: activity_date
+      semantic_type: crm_am_daily_statistics
+      group_label: AM Dashboard
+      owner: huongnv1
+
+    columns:
+
+      - name: activity_date
+        description: |
+          Date of CRM activity/statistics.
+
+          Use this field as the primary date dimension when analyzing
+          daily AM CRM statistics.
+
+        meta:
+          dimension_type: time
+          semantic_role: activity_date
+
+      - name: am_user_id
+        description: |
+          Unique CRM user ID of the Account Manager (AM).
+
+          Use this field to identify and group statistics by AM.
+
+        meta:
+          semantic_role: am_id
+
+      - name: am_user_name
+        description: |
+          Display name of the Account Manager (AM).
+
+          Use this field for human-readable AM analysis.
+
+        meta:
+          semantic_role: am_name
+
+      - name: created_object_count
+        description: |
+          Number of distinct CRM objects created by the AM on the given date,
+          based on the underlying object records.
+
+          This is a CRM record creation statistic, not a complete audit-log
+          measure of user activity.
+
+        meta:
+          metric_type: count
+          semantic_role: crm_created_objects
+
+      - name: updated_object_count
+        description: |
+          Number of distinct CRM objects with an update recorded for the date.
+
+          This metric indicates CRM record modification but does not guarantee
+          that each update represents a meaningful business action by the AM.
+
+        meta:
+          metric_type: count
+          semantic_role: crm_updated_objects
+
+      - name: progressed_object_count
+        description: |
+          Number of distinct CRM objects representing sales progression,
+          primarily opportunity stage progression.
+
+          Use this metric to analyze sales pipeline progression.
+
+        meta:
+          metric_type: count
+          semantic_role: sales_progression
+
+      - name: contacted_object_count
+        description: |
+          Number of distinct CRM objects with recorded customer contact
+          information.
+
+          Use this metric to analyze customer-contact coverage.
+
+        meta:
+          metric_type: count
+          semantic_role: customer_contact
+
+      - name: signed_object_count
+        description: |
+          Number of distinct contracts signed on the given date.
+
+          This represents a business outcome rather than a generic CRM update.
+
+        meta:
+          metric_type: count
+          semantic_role: signed_contract
+
+      - name: business_outcome_count
+        description: |
+          Number of distinct CRM objects representing a business outcome.
+
+          Currently this includes outcomes such as first contracts.
+
+          This metric should be treated as a business outcome KPI,
+          not as a raw activity count.
+
+        meta:
+          metric_type: count
+          semantic_role: business_outcome

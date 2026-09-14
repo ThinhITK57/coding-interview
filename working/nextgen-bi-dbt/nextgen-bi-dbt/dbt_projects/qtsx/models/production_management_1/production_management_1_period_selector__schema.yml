@@ -1,0 +1,22 @@
+version: 2
+models:
+- name: production_management_1_period_selector
+  description: "Bảng production_management_1_period_selector (nguồn Power BI: PeriodSelector)."
+  meta:
+    label: "PeriodSelector"
+    powerbi_source: "PeriodSelector"
+  columns:
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong PeriodSelector."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: period_value
+    description: "Cột PeriodValue trong PeriodSelector."
+    meta:
+      dimension:
+        type: string
+        label: "PeriodValue"
+        hidden: true

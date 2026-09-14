@@ -1,0 +1,23 @@
+version: 2
+models:
+- name: crm_deal_reasons
+  description: Bảng crm_deal_reasons lưu trữ các lý do liên quan đến giao dịch/cơ hội trong hệ thống CRM, bao gồm nguyên nhân dẫn đến thành công hoặc thất bại của các giao dịch/cơ hội. Bảng này được sử dụng để phân tích hiệu suất bán hàng, đánh giá chiến lược kinh doanh và xác định các yếu tố ảnh hưởng đến kết quả giao dịch/cơ hội.
+  meta:
+    label: "Deal Reasons"
+    owner: "huongnv1"
+  columns:
+  - name: id
+    description: Mã định danh duy nhất cho mỗi lý do giao dịch/cơ hội trong CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã ID
+    data_tests:
+    - not_null
+    - unique
+  - name: reason_name
+    description: Tên lý do mà khách hàng hoặc nhân viên ghi nhận khi giao dịch/cơ hội không thành công.
+    meta:
+      dimension:
+        type: string
+        label: lý do giao dịch/cơ hội

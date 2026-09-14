@@ -1,0 +1,22 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_done_charter
+    description: "Nguồn Power BI: done charter"
+    columns:
+    - name: issuekey
+      description: "Cột issuekey"
+    - name: summary
+      description: "Cột summary"
+    - name: projectname
+      description: "Cột projectname"
+    - name: status
+      description: "Cột status"
+    - name: created
+      description: "Cột created"
+    - name: duedate
+      description: "Cột duedate"

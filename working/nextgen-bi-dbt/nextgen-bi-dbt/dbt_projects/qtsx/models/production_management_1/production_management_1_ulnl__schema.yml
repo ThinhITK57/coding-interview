@@ -1,0 +1,123 @@
+version: 2
+models:
+- name: production_management_1_ulnl
+  description: "Bảng production_management_1_ulnl (nguồn Power BI: ULNL)."
+  meta:
+    label: "ULNL"
+    powerbi_source: "ULNL"
+    joins:
+    - join: production_management_1_ulnl_projects
+      sql_on: "${production_management_1_ulnl.issue_project_id} = ${production_management_1_ulnl_projects.id}"
+      relationship: many-to-one
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_ulnl.issue_project_id} = ${production_management_1_milestone_versions_projects.id}"
+      relationship: many-to-one
+    - join: production_management_1_division
+      sql_on: "${production_management_1_ulnl.division} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_ulnl.key_value} = ${production_management_1_project_name.key_value}"
+      relationship: many-to-many
+    metrics:
+      sum_total_effort_excl_reuse:
+        type: sum
+        sql: total_effort_excl_reuse
+        label: "SUM ULNL"
+        description: "Sinh từ Power BI: sum(ULNL.Tổng_ULNL_đã_trừ_tái_sử_dụng_13370)"
+      sum_ulnl_mm:
+        type: sum
+        sql: ulnl_mm
+        label: "Sum of ULNL MM"
+        description: "Sinh từ Power BI: sum(ULNL.ULNL MM)"
+  columns:
+  - name: id
+    description: "Cột Id trong ULNL."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+        hidden: true
+  - name: issue_resolved
+    description: "Cột ISSUE_RESOLVED trong ULNL."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_RESOLVED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong ULNL."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: total_effort_excl_reuse
+    description: "Cột Tổng_ULNL_đã_trừ_tái_sử_dụng_13370 trong ULNL."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng_ULNL_đã_trừ_tái_sử_dụng_13370"
+        hidden: true
+  - name: working_days_in_month
+    description: "Cột WorkingDaysInMonth trong ULNL. Cột tính toán, DAX gốc: VAR SelectedDate = ULNL[ISSUE_RESOLVED] RETURN IF( ISBLANK(SelectedDate), BLANK(), -- hoặc 0 nếu bạn muốn trả về số 0 khi ngày trống VAR StartDate = DATE(YEAR(SelectedDate), MONTH(SelectedDate), 1) VAR EndDate = EOMONTH(SelectedDate, 0) VAR WorkingDays = COUNTX( FILTER( ADDCOLUMNS( CALENDAR(StartDate, EndDate), \"WeekDay\", WEEKDAY([Date], 2) ), [WeekDay] <= 5 ), [Date] ) VAR holidays = COUNTROWS( FILTER('ngày nghỉ', 'ngày nghỉ'[Holiday] >= StartDate && 'ngày nghỉ'[Holiday] <= EndDate ) ) RETURN WorkingDays - holidays )"
+    meta:
+      dimension:
+        type: number
+        label: "WorkingDaysInMonth"
+        hidden: true
+  - name: division
+    description: "Cột Khối trong ULNL. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[Khối],'milestone Versions_Projects'[Id],'ULNL'[ISSUE_PROJECT_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+        hidden: true
+  - name: ulnl_mm
+    description: "Cột ULNL MM trong ULNL. Cột tính toán, DAX gốc: ULNL[Tổng_ULNL_đã_trừ_tái_sử_dụng_13370]/(ULNL[WorkingDaysInMonth]*8)"
+    meta:
+      dimension:
+        type: number
+        label: "ULNL MM"
+        hidden: true
+  - name: dateonly
+    description: "Cột DATEONLY trong ULNL. Cột tính toán, DAX gốc: DATE(YEAR('ULNL'[ISSUE_RESOLVED]), MONTH('ULNL'[ISSUE_RESOLVED]), DAY('ULNL'[ISSUE_RESOLVED]))"
+    meta:
+      dimension:
+        type: date
+        label: "DATEONLY"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_16800 trong ULNL."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT_16800"
+        hidden: true
+  - name: key_value
+    description: "Cột KEY trong ULNL. Cột tính toán, DAX gốc: 'ULNL'[ISSUE_PROJECT_ID]&'ULNL'[TTSX_PRODUCT_16800]"
+    meta:
+      dimension:
+        type: string
+        label: "KEY"
+        hidden: true

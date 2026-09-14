@@ -1,0 +1,32 @@
+version: 2
+sources:
+- name: bi_silver__cx
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: cx'
+  tables:
+  - name: cx_sur_question_answer_choices
+    description: Lưu trữ danh sách chuẩn hóa các câu hỏi khảo sát và các phương án trả lời tương ứng. Bảng này dùng để tham chiếu (Lookup) các thông tin định tính như nội dung câu hỏi, loại hình khảo sát, vị trí trong hành trình khách hàng và các nhóm KPI liên quan.
+    columns:
+    - name: survey_id
+      description: Mã định danh duy nhất của khảo sát thu thập phản hồi khách hàng.
+      tests:
+      - not_null
+    - name: question_id
+      description: Mã định danh duy nhất của câu hỏi trong khảo sát.
+    - name: question_type
+      description: Loại câu hỏi được sử dụng trong khảo sát khách hàng.
+    - name: question_clean
+      description: Tiêu đề câu hỏi
+    - name: answer_choice_id
+      description: Mã định danh duy nhất cho mỗi lựa chọn trả lời trong khảo sát.
+    - name: answer_choice_content
+      description: Nội dung văn bản của lựa chọn trả lời trong câu hỏi khảo sát.
+    - name: kpi_type
+      description: Chỉ số đo lường
+    - name: journey
+      description: Giai đoạn trải nghiệm
+    - name: customer_touchpoint
+      description: Điểm tiếp xúc mà khách hàng tương tác với doanh nghiệp trong hành trình mua hàng.
+    - name: product_category
+      description: Danh mục sản phẩm dịch vụ khảo sát

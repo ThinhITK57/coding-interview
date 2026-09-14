@@ -1,0 +1,26 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_mm_release_issue2
+    description: "Nguồn Power BI: MM Release_issue2"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_current_parent
+      description: "Cột ISSUE_CURRENT_PARENT"
+    - name: cso_ticket_link
+      description: "Cột CSO_Ticket_link_12542"
+    - name: link_ticket_cso
+      description: "Cột Link_Ticket_CSO_13625"
+    - name: parent_issue_num
+      description: "Cột parent_issue_num"
+    - name: cso_ticket_link_2
+      description: "Cột CSO Ticket Link"

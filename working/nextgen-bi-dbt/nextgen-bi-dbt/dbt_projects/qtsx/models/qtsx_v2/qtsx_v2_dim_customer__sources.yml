@@ -1,0 +1,12 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_dim_customer
+    description: "Nguồn Power BI: Dim_Customer"
+    columns:
+    - name: customer_name
+      description: "Cột CustomerName"

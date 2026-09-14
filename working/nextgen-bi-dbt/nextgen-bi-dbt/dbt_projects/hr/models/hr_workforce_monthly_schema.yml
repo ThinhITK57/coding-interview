@@ -1,0 +1,770 @@
+version: 2
+
+models:
+- name: hr_workforce_monthly
+  description: >
+    Bảng **hr_workforce_monthly** lưu trữ dữ liệu tổng hợp biến động nguồn nhân lực theo từng tháng,
+    được tổng hợp theo các chiều phân tích như đơn vị tổ chức, loại hợp đồng, nhóm nguồn lực,
+    cấp bậc công việc, vị trí, vùng năng lực, thâm niên và giới tính. Bảng bao gồm các chỉ số
+    về nhân sự đầu kỳ, cuối kỳ, nhân sự bình quân, tuyển mới, nghỉ việc, nghỉ việc tự nguyện,
+    nghỉ việc theo quyết định công ty, nghỉ việc sớm, thăng chức, thay đổi cấp bậc vị trí,
+    thay đổi vùng năng lực, luân chuyển nội bộ, kết quả đánh giá hiệu suất và các tỷ lệ quản trị
+    nhân sự. Dữ liệu được sử dụng để theo dõi biến động Workforce, phân tích xu hướng nhân sự,
+    đánh giá hiệu quả tuyển dụng và duy trì nhân sự, đồng thời hỗ trợ xây dựng dashboard Workforce.
+
+  meta:
+    label: "Workforce Monthly"
+    owner: "tranpth"
+
+    metrics:
+      opening_headcount:
+        type: sum
+        sql: ${TABLE}.opening_headcount
+        description: "Tổng số nhân sự đầu kỳ trong phạm vi lọc của tháng báo cáo."
+        label: "Opening Headcount"
+        category: "Workforce"
+        synonyms:
+          - "nhân sự đầu kỳ"
+          - "Headcount đầu kỳ"
+          - "Opening Headcount"
+
+      closing_headcount:
+        type: sum
+        sql: ${TABLE}.closing_headcount
+        description: "Tổng số nhân sự cuối kỳ trong phạm vi lọc của tháng báo cáo."
+        label: "Closing Headcount"
+        category: "Workforce"
+        synonyms:
+          - "nhân sự cuối kỳ"
+          - "Nhân sự cuối kỳ"
+          - "Closing Headcount"
+
+      avg_headcount:
+        type: sum
+        sql: ${TABLE}.avg_headcount
+        description: "Tổng nhân sự bình quân trong kỳ, được tính bằng trung bình của nhân sự đầu kỳ và cuối kỳ theo từng tổ hợp chiều phân tích."
+        label: "Average Headcount"
+        category: "Workforce"
+        synonyms:
+          - "nhân sự bình quân"
+          - "Lao động bình quân"
+          - "Average Headcount"
+
+      new_hire_count:
+        type: sum
+        sql: ${TABLE}.new_hire_count
+        description: "Tổng số nhân sự tuyển mới trong kỳ."
+        label: "New Hire Count"
+        category: "Workforce"
+        synonyms:
+          - "Tuyển mới"
+          - "Số nhân sự tuyển mới"
+          - "New Hire Count"
+
+      resigned_count:
+        type: sum
+        sql: ${TABLE}.resigned_count
+        description: "Tổng số nhân sự nghỉ việc trong kỳ."
+        label: "Resigned Count"
+        category: "Workforce"
+        synonyms:
+          - "Nghỉ việc"
+          - "Số nhân sự nghỉ việc"
+          - "Resigned Count"
+
+      voluntary_exit_count:
+        type: sum
+        sql: ${TABLE}.voluntary_exit_count
+        description: "Tổng số nhân sự nghỉ việc tự nguyện trong kỳ."
+        label: "Voluntary Exit Count"
+        category: "Workforce"
+        synonyms:
+          - "Nghỉ việc tự nguyện"
+          - "Số nhân sự nghỉ tự nguyện"
+          - "Voluntary Exit Count"
+
+      company_termination_count:
+        type: sum
+        sql: ${TABLE}.company_termination_count
+        description: "Tổng số nhân sự nghỉ việc theo quyết định của công ty trong kỳ."
+        label: "Company Termination Count"
+        category: "Workforce"
+        synonyms:
+          - "Nghỉ việc theo quyết định công ty"
+          - "Chấm dứt hợp đồng"
+          - "Company Termination Count"
+
+      quick_quit_count:
+        type: sum
+        sql: ${TABLE}.quick_quit_count
+        description: "Tổng số nhân sự nghỉ việc sớm trong kỳ (theo quy tắc quick quit của mô hình nguồn)."
+        label: "Quick Quit Count"
+        category: "Workforce"
+        synonyms:
+          - "Nghỉ việc sớm"
+          - "Quick quit"
+          - "Quick Quit Count"
+
+      promotion_count:
+        type: sum
+        sql: ${TABLE}.promotion_count
+        description: "Tổng số nhân sự có thay đổi cấp bậc vị trí hoặc vùng năng lực trong kỳ."
+        label: "Promotion Count"
+        category: "Workforce"
+        synonyms:
+          - "Thăng chức"
+          - "Số nhân sự thăng chức"
+          - "Promotion Count"
+
+      position_level_change_count:
+        type: sum
+        sql: ${TABLE}.position_level_change_count
+        description: "Tổng số nhân sự có thay đổi cấp bậc vị trí trong kỳ."
+        label: "Position Level Change Count"
+        category: "Workforce"
+        synonyms:
+          - "Thay đổi cấp bậc"
+          - "Thay đổi position level"
+          - "Position Level Change Count"
+
+      competency_zone_change_count:
+        type: sum
+        sql: ${TABLE}.competency_zone_change_count
+        description: "Tổng số nhân sự có thay đổi vùng năng lực trong kỳ."
+        label: "Competency Zone Change Count"
+        category: "Workforce"
+        synonyms:
+          - "Thay đổi vùng năng lực"
+          - "Competency Zone Change Count"
+
+      internal_transfer_in:
+        type: sum
+        sql: ${TABLE}.internal_transfer_in
+        description: "Tổng số nhân sự luân chuyển nội bộ vào đơn vị hoặc nhóm phân tích trong kỳ."
+        label: "Internal Transfer In"
+        category: "Workforce"
+        synonyms:
+          - "Luân chuyển vào"
+          - "Điều chuyển vào"
+          - "Internal Transfer In"
+
+      internal_transfer_out:
+        type: sum
+        sql: ${TABLE}.internal_transfer_out
+        description: "Tổng số nhân sự luân chuyển nội bộ ra khỏi đơn vị hoặc nhóm phân tích trong kỳ."
+        label: "Internal Transfer Out"
+        category: "Workforce"
+        synonyms:
+          - "Luân chuyển ra"
+          - "Điều chuyển ra"
+          - "Internal Transfer Out"
+
+      internal_transfer_net:
+        type: sum
+        sql: ${TABLE}.internal_transfer_net
+        description: "Chênh lệch luân chuyển nội bộ, bằng số luân chuyển vào trừ số luân chuyển ra."
+        label: "Internal Transfer Net"
+        category: "Workforce"
+        synonyms:
+          - "Luân chuyển thuần"
+          - "Net internal transfer"
+          - "Internal Transfer Net"
+
+      net_change:
+        type: sum
+        sql: ${TABLE}.net_change
+        description: "Biến động nhân sự thuần trong kỳ, được tính bằng tuyển mới + luân chuyển vào - luân chuyển ra - nghỉ việc."
+        label: "Net Headcount Change"
+        category: "Workforce"
+        synonyms:
+          - "Biến động nhân sự thuần"
+          - "Biến động nhân sự"
+          - "Net Headcount Change"
+
+      snapshot_closing_headcount:
+        type: sum
+        sql: ${TABLE}.snapshot_closing_headcount
+        description: "Tổng nhân sự cuối kỳ theo dữ liệu snapshot nguồn."
+        label: "Snapshot Closing Headcount"
+        category: "Workforce"
+
+      headcount_variance:
+        type: sum
+        sql: ${TABLE}.headcount_variance
+        description: "Chênh lệch giữa nhân sự cuối kỳ theo snapshot nguồn và nhân sự cuối kỳ tính toán (snapshot_closing_headcount - closing_headcount)."
+        label: "Headcount Variance"
+        category: "Workforce"
+
+      attrition_rate:
+        type: number
+        sql: >
+          100.0 * ${resigned_count} / NULLIF(${avg_headcount}, 0.0)
+        description: "Tỷ lệ nghỉ việc trong kỳ, được tính bằng resigned_count / avg_headcount."
+        label: "Attrition Rate (%)"
+        category: "Workforce"
+        synonyms:
+          - "Tỷ lệ nghỉ việc"
+          - "Attrition Rate"
+
+      turnover_rate:
+        type: number
+        sql: >
+          100.0 * ${resigned_count} / NULLIF(${avg_headcount}, 0.0)
+        description: "Tỷ lệ biến động nghỉ việc trong kỳ; hiện dùng cùng công thức với Attrition Rate (resigned_count / avg_headcount)."
+        label: "Turnover Rate (%)"
+        category: "Workforce"
+        synonyms:
+          - "Tỷ lệ turnover"
+          - "Tỷ lệ biến động nhân sự"
+          - "Turnover Rate"
+
+      voluntary_turnover_rate:
+        type: number
+        sql: >
+          100.0 * ${voluntary_exit_count} / NULLIF(${avg_headcount}, 0.0)
+        description: "Tỷ lệ nghỉ việc tự nguyện trong kỳ, được tính bằng voluntary_exit_count / avg_headcount."
+        label: "Voluntary Turnover Rate (%)"
+        category: "Workforce"
+        synonyms:
+          - "Tỷ lệ nghỉ việc tự nguyện"
+          - "Voluntary Turnover Rate"
+
+      involuntary_turnover_rate:
+        type: number
+        sql: >
+          100.0 * ${company_termination_count} / NULLIF(${avg_headcount}, 0.0)
+        description: "Tỷ lệ nghỉ việc theo quyết định công ty trong kỳ, được tính bằng company_termination_count / avg_headcount."
+        label: "Involuntary Turnover Rate (%)"
+        category: "Workforce"
+        synonyms:
+          - "Tỷ lệ nghỉ việc không tự nguyện"
+          - "Involuntary Turnover Rate"
+
+      quick_quit_rate_by_avg_headcount:
+        type: number
+        sql: >
+          100.0 * ${quick_quit_count} / NULLIF(${avg_headcount}, 0.0)
+        description: "Tỷ lệ nghỉ việc sớm trên nhân sự bình quân, được tính bằng quick_quit_count / avg_headcount."
+        label: "Quick Quit Rate by Average Headcount (%)"
+        category: "Workforce"
+
+      quick_quit_rate_by_new_hire:
+        type: number
+        sql: >
+          100.0 * ${quick_quit_count} / NULLIF(${new_hire_count}, 0.0)
+        description: "Tỷ lệ nghỉ việc sớm trên tuyển mới trong kỳ, được tính bằng quick_quit_count / new_hire_count."
+        label: "Quick Quit Rate by New Hire (%)"
+        category: "Workforce"
+
+      hiring_rate:
+        type: number
+        sql: >
+          100.0 * ${new_hire_count} / NULLIF(${avg_headcount}, 0.0)
+        description: "Tỷ lệ tuyển mới trong kỳ, được tính bằng new_hire_count / avg_headcount."
+        label: "Hiring Rate (%)"
+        category: "Workforce"
+        synonyms:
+          - "Tỷ lệ tuyển mới"
+          - "Hiring Rate"
+
+      promotion_rate:
+        type: number
+        sql: >
+          100.0 * ${promotion_count} / NULLIF(${avg_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự thăng chức hoặc thay đổi cấp bậc/vùng năng lực, được tính bằng promotion_count / avg_headcount."
+        label: "Promotion Rate (%)"
+        category: "Workforce"
+        synonyms:
+          - "Tỷ lệ thăng chức"
+          - "Promotion Rate"
+
+      official_headcount:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.closing_headcount
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự thuộc nhóm nguồn lực chính (resource_type = 'TDS-NDS-HDDV')."
+        label: "Official Headcount"
+        category: "Workforce"
+        synonyms:
+          - "Nhân sự chính thức"
+          - "Nguồn lực chính"
+          - "Official Headcount"
+
+      official_opening_headcount:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.opening_headcount
+            ELSE 0.0
+          END
+        description: "Tổng nhân sự chính thức đầu kỳ thuộc nhóm nguồn lực chính."
+        label: "Official Opening Headcount"
+        category: "Workforce"
+
+      official_avg_headcount:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.avg_headcount
+            ELSE 0.0
+          END
+        description: "Tổng nhân sự chính thức bình quân thuộc nhóm nguồn lực chính."
+        label: "Official Average Headcount"
+        category: "Workforce"
+
+      official_new_hire_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.new_hire_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức tuyển mới trong kỳ."
+        label: "Official New Hire Count"
+        category: "Workforce"
+
+      official_resigned_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.resigned_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức nghỉ việc trong kỳ."
+        label: "Official Resigned Count"
+        category: "Workforce"
+
+      official_voluntary_exit_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.voluntary_exit_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức nghỉ việc tự nguyện trong kỳ."
+        label: "Official Voluntary Exit Count"
+        category: "Workforce"
+
+      official_company_termination_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.company_termination_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức nghỉ việc theo quyết định của công ty trong kỳ."
+        label: "Official Company Termination Count"
+        category: "Workforce"
+
+      official_quick_quit_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.quick_quit_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức nghỉ việc sớm trong kỳ."
+        label: "Official Quick Quit Count"
+        category: "Workforce"
+
+      official_promotion_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.promotion_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức được thăng chức hoặc thay đổi cấp bậc/vùng năng lực trong kỳ."
+        label: "Official Promotion Count"
+        category: "Workforce"
+
+      official_internal_transfer_in:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.internal_transfer_in
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức luân chuyển nội bộ vào đơn vị hoặc nhóm phân tích trong kỳ."
+        label: "Official Internal Transfer In"
+        category: "Workforce"
+
+      official_internal_transfer_out:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.internal_transfer_out
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức luân chuyển nội bộ ra khỏi đơn vị hoặc nhóm phân tích trong kỳ."
+        label: "Official Internal Transfer Out"
+        category: "Workforce"
+
+      official_internal_transfer_net:
+        type: number
+        sql: >
+          ${official_internal_transfer_in} - ${official_internal_transfer_out}
+        description: "Chênh lệch luân chuyển nội bộ của nhóm nhân sự chính thức, được tính bằng chuyển vào - chuyển ra."
+        label: "Official Internal Transfer Net"
+        category: "Workforce"
+
+      official_attrition_rate:
+        type: number
+        sql: >
+          100.0 * ${official_resigned_count}
+          / NULLIF(${official_avg_headcount}, 0.0)
+        description: "Tỷ lệ nghỉ việc của nhóm nhân sự chính thức, được tính bằng official_resigned_count / official_avg_headcount."
+        label: "Official Attrition Rate (%)"
+        category: "Workforce"
+
+      official_hiring_rate:
+        type: number
+        sql: >
+          100.0 * ${official_new_hire_count}
+          / NULLIF(${official_avg_headcount}, 0.0)
+        description: "Tỷ lệ tuyển mới của nhóm nhân sự chính thức, được tính bằng official_new_hire_count / official_avg_headcount."
+        label: "Official Hiring Rate (%)"
+        category: "Workforce"
+
+      official_promotion_rate:
+        type: number
+        sql: >
+          100.0 * ${official_promotion_count}
+          / NULLIF(${official_avg_headcount}, 0.0)
+        description: "Tỷ lệ thăng chức hoặc thay đổi cấp bậc/vùng năng lực của nhóm nhân sự chính thức, được tính bằng official_promotion_count / official_avg_headcount."
+        label: "Official Promotion Rate (%)"
+        category: "Workforce"
+
+      performance_employee_count:
+        type: sum
+        sql: ${TABLE}.performance_employee_count
+        description: "Tổng số nhân sự có kết quả đánh giá hiệu suất trong kỳ."
+        label: "Performance Employee Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự được đánh giá"
+          - "Số nhân sự có đánh giá hiệu suất"
+          - "Performance Employee Count"
+
+      performance_not_evaluated_count:
+        type: number
+        sql: >
+          ${closing_headcount} - ${performance_employee_count}
+        description: "Tổng số nhân sự chưa có kết quả đánh giá hiệu suất trong kỳ, được tính bằng closing_headcount - performance_employee_count."
+        label: "Performance Not Evaluated Count"
+        category: "Performance"
+        synonyms:
+          - "Không đánh giá"
+          - "Chưa đánh giá"
+          - "Nhân sự chưa có đánh giá hiệu suất"
+
+      performance_not_pass_count:
+        type: sum
+        sql: ${TABLE}.performance_not_pass_count
+        description: "Tổng số nhân sự có kết quả đánh giá hiệu suất ở mức Không đạt."
+        label: "Performance Not Pass Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự không đạt"
+          - "Nhân sự hiệu suất không đạt"
+          - "Performance Not Pass Count"
+
+      performance_pass_count:
+        type: sum
+        sql: ${TABLE}.performance_pass_count
+        description: "Tổng số nhân sự có kết quả đánh giá hiệu suất ở mức Đạt."
+        label: "Performance Pass Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự đạt"
+          - "Nhân sự hiệu suất đạt"
+          - "Performance Pass Count"
+
+      performance_exceed_count:
+        type: sum
+        sql: ${TABLE}.performance_exceed_count
+        description: "Tổng số nhân sự có kết quả đánh giá hiệu suất ở mức Vượt yêu cầu."
+        label: "Performance Exceed Count"
+        category: "Performance"
+        synonyms:
+          - "Số nhân sự vượt yêu cầu"
+          - "Nhân sự hiệu suất vượt yêu cầu"
+          - "Performance Exceed Count"
+
+      performance_not_evaluated_rate:
+        type: number
+        sql: >
+          100.0 * ${performance_not_evaluated_count}
+          / NULLIF(${closing_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự chưa có kết quả đánh giá hiệu suất trên tổng nhân sự cuối kỳ."
+        label: "Performance Not Evaluated Rate (%)"
+        category: "Performance"
+
+      performance_not_pass_rate:
+        type: number
+        sql: >
+          100.0 * ${performance_not_pass_count}
+          / NULLIF(${closing_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự có kết quả đánh giá hiệu suất Không đạt trên tổng nhân sự cuối kỳ."
+        label: "Performance Not Pass Rate (%)"
+        category: "Performance"
+
+      performance_pass_rate:
+        type: number
+        sql: >
+          100.0 * ${performance_pass_count}
+          / NULLIF(${closing_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự có kết quả đánh giá hiệu suất Đạt trên tổng nhân sự cuối kỳ."
+        label: "Performance Pass Rate (%)"
+        category: "Performance"
+
+      performance_exceed_rate:
+        type: number
+        sql: >
+          100.0 * ${performance_exceed_count}
+          / NULLIF(${closing_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự có kết quả đánh giá hiệu suất Vượt yêu cầu trên tổng nhân sự cuối kỳ."
+        label: "Performance Exceed Rate (%)"
+        category: "Performance"
+
+      official_performance_employee_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.performance_employee_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức có kết quả đánh giá hiệu suất trong kỳ."
+        label: "Official Performance Employee Count"
+        category: "Performance"
+
+      official_performance_not_evaluated_count:
+        type: number
+        sql: >
+          ${official_headcount} - ${official_performance_employee_count}
+        description: "Tổng số nhân sự chính thức chưa có kết quả đánh giá hiệu suất trong kỳ, được tính bằng official_headcount - official_performance_employee_count."
+        label: "Official Performance Not Evaluated Count"
+        category: "Performance"
+
+      official_performance_not_pass_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.performance_not_pass_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức có kết quả đánh giá hiệu suất ở mức Không đạt."
+        label: "Official Performance Not Pass Count"
+        category: "Performance"
+
+      official_performance_pass_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.performance_pass_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức có kết quả đánh giá hiệu suất ở mức Đạt."
+        label: "Official Performance Pass Count"
+        category: "Performance"
+
+      official_performance_exceed_count:
+        type: sum
+        sql: >
+          CASE
+            WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+            THEN ${TABLE}.performance_exceed_count
+            ELSE 0.0
+          END
+        description: "Tổng số nhân sự chính thức có kết quả đánh giá hiệu suất ở mức Vượt yêu cầu."
+        label: "Official Performance Exceed Count"
+        category: "Performance"
+
+      official_performance_not_evaluated_rate:
+        type: number
+        sql: >
+          100.0 * ${official_performance_not_evaluated_count}
+          / NULLIF(${official_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự chính thức chưa có kết quả đánh giá hiệu suất trên tổng nhân sự chính thức cuối kỳ."
+        label: "Official Performance Not Evaluated Rate (%)"
+        category: "Performance"
+
+      official_performance_not_pass_rate:
+        type: number
+        sql: >
+          100.0 * ${official_performance_not_pass_count}
+          / NULLIF(${official_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự chính thức có kết quả đánh giá hiệu suất Không đạt trên tổng nhân sự chính thức cuối kỳ."
+        label: "Official Performance Not Pass Rate (%)"
+        category: "Performance"
+
+      official_performance_pass_rate:
+        type: number
+        sql: >
+          100.0 * ${official_performance_pass_count}
+          / NULLIF(${official_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự chính thức có kết quả đánh giá hiệu suất Đạt trên tổng nhân sự chính thức cuối kỳ."
+        label: "Official Performance Pass Rate (%)"
+        category: "Performance"
+
+      official_performance_exceed_rate:
+        type: number
+        sql: >
+          100.0 * ${official_performance_exceed_count}
+          / NULLIF(${official_headcount}, 0.0)
+        description: "Tỷ lệ nhân sự chính thức có kết quả đánh giá hiệu suất Vượt yêu cầu trên tổng nhân sự chính thức cuối kỳ."
+        label: "Official Performance Exceed Rate (%)"
+        category: "Performance"
+
+  columns:
+  - name: report_year
+    description: Năm báo cáo của dữ liệu Workforce
+    meta:
+      dimension:
+        type: number
+        label: "Năm báo cáo"
+
+  - name: snapshot_year_month
+    description: Tháng báo cáo theo định dạng YYYYMM
+    meta:
+      dimension:
+        type: number
+        label: "Tháng báo cáo"
+  - name: snapshot_month_label
+    description: TNhãn hiển thị của tháng báo cáo theo định dạng yyyy-MMM, ví dụ 2025-Jan.
+    meta:
+      dimension:
+        type: string
+        label: "Tháng báo cáo theo chu kỳ"
+        order_by: snapshot_year_month
+
+  - name: month_start
+    description: Ngày đầu tiên của kỳ báo cáo tháng
+    meta:
+      dimension:
+        type: date
+        label: "Ngày đầu tháng"
+
+  - name: month_end
+    description: Ngày cuối cùng của kỳ báo cáo tháng
+    meta:
+      dimension:
+        type: date
+        label: "Ngày cuối tháng"
+
+  - name: division_n
+    description: Khối hoặc đơn vị cấp cao của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Khối N"
+
+  - name: department_n_1
+    description: Đơn vị tổ chức cấp 1 của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm N-1"
+
+  - name: department_n_2
+    description: Đơn vị tổ chức cấp 2 của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Bộ phận N-2"
+
+  - name: department_n_3
+    description: Đơn vị tổ chức cấp 3 của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Phòng ban N-3"
+
+  - name: contract_type
+    description: Loại hợp đồng hoặc hình thức ký kết với nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Loại hợp đồng"
+
+  - name: resource_type
+    description: Nhóm nguồn lực nhân sự được chuẩn hóa theo đối tượng nhân sự và cấp bậc vị trí
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm nguồn lực"
+
+  - name: job_level
+    description: Nhóm chức danh hoặc cấp độ công việc của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Job Level"
+
+  - name: position_level
+    description: Cấp bậc vị trí của nhân sự trong cơ cấu tổ chức
+    meta:
+      dimension:
+        type: string
+        label: "Cấp bậc level"
+        order_by: hierarchy_level
+
+  - name: hierarchy_level
+    description: Thứ tự phân cấp của position_level dùng để sắp xếp trong BI; giá trị nhỏ hơn tương ứng cấp bậc cao hơn
+    meta:
+      dimension:
+        type: number
+        label: "Hierarchy Level"
+        hidden: true
+
+  - name: competency_zone
+    description: Vùng năng lực hoặc chuyên môn của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Vùng năng lực"
+
+  - name: tenure_group
+    description: Nhóm thâm niên làm việc của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm thâm niên"
+
+  - name: gender
+    description: Giới tính của nhân sự
+    meta:
+      dimension:
+        type: string
+        label: "Giới tính"
+
+  - name: source_snapshot_date
+    description: Ngày snapshot nguồn được sử dụng để tính toán dữ liệu Workforce cho tháng báo cáo
+    meta:
+      dimension:
+        type: date
+        label: "Ngày snapshot nguồn"
+
+  - name: snapshot_fill_type
+    description: Cách thức chọn snapshot cho tháng báo cáo, gồm NORMAL, BACKFILL, CARRY_FORWARD hoặc RESIGNED_ONLY
+    meta:
+      dimension:
+        type: string
+        label: "Loại lấy snapshot"

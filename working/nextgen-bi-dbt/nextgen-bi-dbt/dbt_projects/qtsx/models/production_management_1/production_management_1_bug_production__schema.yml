@@ -1,0 +1,141 @@
+version: 2
+models:
+- name: production_management_1_bug_production
+  description: "Bảng production_management_1_bug_production (nguồn Power BI: Bug Production)."
+  meta:
+    label: "Bug Production"
+    powerbi_source: "Bug Production"
+    joins:
+    - join: production_management_1_division
+      sql_on: "${production_management_1_bug_production.division} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    - join: production_management_1_milestone_versions_projects
+      sql_on: "${production_management_1_bug_production.issue_project_id} = ${production_management_1_milestone_versions_projects.id}"
+      relationship: many-to-one
+    - join: production_management_1_ulnl_projects
+      sql_on: "${production_management_1_bug_production.project_name} = ${production_management_1_ulnl_projects.project_name}"
+      relationship: many-to-one
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_bug_production.issue_project_id} = ${production_management_1_project_name.id}"
+      relationship: many-to-many
+    metrics:
+      count_bug_prd:
+        type: count_distinct
+        sql: issue_key
+        label: "Số BUG Prd"
+        round: 0
+        description: "DAX: CALCULATE( DISTINCTCOUNT('Bug Production'[ISSUE_KEY]))"
+      count_bug_production:
+        type: number
+        sql: "COALESCE(${count_distinct_issue_key_filtered}, 0)"
+        label: "Số Bug Production"
+        description: "DAX: COALESCE( CALCULATE( DISTINCTCOUNT('Bug Production'[ISSUE_KEY]), FILTER('Bug Production', 'Bug Production'[ISSUE_CURRENT_STATUS_NAME] <> \"Rejected\") ), 0 )"
+      count_distinct_issue_key_filtered:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_name <> 'Rejected' THEN issue_key END"
+        label: "count_distinct issue_key (có điều kiện)"
+        description: "Metric phụ sinh từ DAX: COUNT_DISTINCT(issue_key) kèm điều kiện của CALCULATE"
+      pct_bug_production_thanh_cong:
+        type: number
+        sql: "CAST(COUNT(DISTINCT CASE WHEN issue_current_status_name IN ('RESOLVED', 'Done') THEN issue_key END) AS DOUBLE) / NULLIF(COUNT(DISTINCT CASE WHEN issue_current_status_name <> 'Rejected' THEN issue_key END), 0)"
+        label: "%Bug Production Thành công"
+        format: percent
+        round: 2
+        description: "DAX: DIVIDE(CALCULATE(DISTINCTCOUNT('Bug Production'[ISSUE_KEY]), FILTER('Bug Production','Bug Production'[ISSUE_CURRENT_STATUS_NAME]=\"RESOLVED\" || 'Bug Production'[ISSUE_CURRENT_STATUS_NAME]=\"Done\")), 'Project vs. Department'[Số Bug Production])"
+  columns:
+  - name: id
+    description: "Cột Id trong Bug Production."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Bug Production."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_resolved
+    description: "Cột ISSUE_RESOLVED trong Bug Production."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_RESOLVED"
+        hidden: true
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong Bug Production."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Bug Production."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Bug Production."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Bug Production."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong Bug Production."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: division
+    description: "Cột Khối trong Bug Production. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[Khối],'milestone Versions_Projects'[Id],'Bug Production'[ISSUE_PROJECT_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+        hidden: true
+  - name: production_bug_rate
+    description: "Cột Tỉ lệ production bug trong Bug Production. Cột tính toán, DAX gốc: SWITCH( 'Bug Production'[ISSUE_PRIORITY], \"High\", 3, \"Highest\", 3, \"Critcal\", 5, 1 )"
+    meta:
+      dimension:
+        type: number
+        label: "Tỉ lệ production bug"
+        hidden: true
+  - name: status_report
+    description: "Cột Status report trong Bug Production. Cột tính toán, DAX gốc: SWITCH( 'Bug Production'[ISSUE_CURRENT_STATUS_NAME], \"Done ĐGTK\", \"Done DGTK\", \"todo\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Status report"
+        hidden: true
+  - name: date_value
+    description: "Cột Date trong Bug Production. Cột tính toán, DAX gốc: DATE(YEAR('Bug Production'[ISSUE_CREATED]), MONTH('Bug Production'[ISSUE_CREATED]), DAY('Bug Production'[ISSUE_CREATED]))"
+    meta:
+      dimension:
+        type: date
+        label: "Date"
+        hidden: true
+  - name: issue_key_prefix
+    description: "Cột ISSUE_KEY_PREFIX trong Bug Production. Cột tính toán, DAX gốc: VAR dashPos = SEARCH(\"-\", 'Bug Production'[ISSUE_KEY], 1, BLANK()) RETURN IF( NOT ISBLANK(dashPos), LEFT('Bug Production'[ISSUE_KEY], dashPos - 1), 'Bug Production'[ISSUE_KEY] -- nếu không có dấu \"-\" thì trả lại toàn bộ )"
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY_PREFIX"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT NAME trong Bug Production. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[PROJECT_NAME],'milestone Versions_Projects'[PROJECT_KEY],'Bug Production'[ISSUE_KEY_PREFIX])"
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT NAME"

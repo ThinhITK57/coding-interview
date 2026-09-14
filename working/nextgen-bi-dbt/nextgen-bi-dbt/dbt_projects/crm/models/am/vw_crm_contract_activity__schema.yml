@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: vw_crm_contract_activity
+    description: |
+      Contract-level CRM and business outcome statistics.
+
+      Grain:
+        1 row = 1 Contract.
+
+      Used to analyze:
+        - Contract creation
+        - Contract updates
+        - Contract signing
+        - First contract
+        - Contract value
+        - Contract status
+
+      Signed contracts and first contracts are business outcomes,
+      not generic CRM activities.
+    
+    meta:
+      group_label: AM Dashboard
+      owner: huongnv1
+
+    columns:
+
+      - name: object_id
+        description: Unique Contract ID.
+
+      - name: object_type
+        description: CRM object type. Always CONTRACT.
+
+      - name: am_user_id
+        description: Account Manager ID associated with the Contract.
+
+      - name: am_user_name
+        description: Account Manager name associated with the Contract.
+
+      - name: activity_date
+        description: Contract activity date.
+
+      - name: created_at
+        description: Contract creation timestamp.
+
+      - name: updated_at
+        description: Last Contract update timestamp.
+
+      - name: sign_date
+        description: Contract signing timestamp.
+
+      - name: fac_date
+        description: Contract FAC timestamp.
+
+      - name: is_created
+        description: Indicates whether the Contract was created.
+
+      - name: is_updated
+        description: Indicates whether the Contract was updated.
+
+      - name: is_signed
+        description: Indicates whether the Contract has been signed.
+
+      - name: is_first_contract
+        description: |
+          Indicates whether the Contract is classified as the first contract
+          for the customer.
+
+      - name: contract_amount
+        description: Contract amount.
+
+      - name: vcs_contract_amount
+        description: Contract amount attributed to VCS.
+
+      - name: viettel_contract_amount
+        description: Contract amount attributed to Viettel.
+
+      - name: status
+        description: Contract status.
+
+      - name: status_code
+        description: Contract status code.
+
+      - name: contract_type
+        description: Contract type.
+
+      - name: deal_id
+        description: Opportunity associated with the Contract.
+
+      - name: tax_code
+        description: Customer tax code.
+
+      - name: customer_name
+        description: Customer name.
+
+      - name: customer_segment_l1
+        description: Customer segment level 1.
+
+      - name: customer_segment_l2
+        description: Customer segment level 2.
+
+      - name: customer_segment_l3
+        description: Customer segment level 3.

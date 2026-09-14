@@ -1,0 +1,100 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_fact_tong_hop_diem
+    description: "Nguồn Power BI: fact_tong_hop_diem"
+    columns:
+    - name: n_1_nps_change_duplicate_customer
+      description: "Cột 1 % Thay đổi NPS (Khách hàng trùng)"
+    - name: n_1_csat_score_duplicate_customer_previous_period
+      description: "Cột 1 CSAT Score (Khách hàng trùng - Kỳ trước)"
+    - name: n_1_csat_score_duplicate_customer
+      description: "Cột 1 CSAT Score (Khách hàng trùng)"
+    - name: n_1_csat_change_duplicate_customer_ko_cthd
+      description: "Cột 1 Thay đổi CSAT (Khách hàng trùng ko CTHĐ)"
+    - name: n_1_nps_score_duplicate_customer_previous_period
+      description: "Cột 1 NPS Score (Khách hàng trùng - Kỳ trước)"
+    - name: n_1_nps_score_duplicate_customer
+      description: "Cột 1 NPS Score (Khách hàng trùng)"
+    - name: ces
+      description: "Cột CES"
+    - name: ces_score
+      description: "Cột CES Score (%)"
+    - name: expert
+      description: "Cột Chuyên gia"
+    - name: csat_avg
+      description: "Cột CSAT Avg"
+    - name: csat_avg_company
+      description: "Cột CSAT Avg công ty"
+    - name: csat_product_quality
+      description: "Cột CSAT chất lượng SPDV"
+    - name: csat_personnel
+      description: "Cột CSAT nhân sự"
+    - name: csat_personnel_2
+      description: "Cột CSAT nhan su (%)"
+    - name: csat_process
+      description: "Cột CSAT quy trình"
+    - name: csat_process_2
+      description: "Cột CSAT quy trinh (%)"
+    - name: csat_score
+      description: "Cột CSAT Score (%)"
+    - name: csat_score_duplicate_customer
+      description: "Cột CSAT Score (Khách hàng trùng)"
+    - name: csat_score_duplicate_customer_previous_period
+      description: "Cột CSAT Score (Khách hàng trùng - Kỳ trước)"
+    - name: distinct_ten_cong_ty
+      description: "Cột Distinct_Ten_Cong_Ty"
+    - name: companion
+      description: "Cột Đồng hành"
+    - name: email
+      description: "Cột Email"
+    - name: email_trung_2_quy_lien_tiep
+      description: "Cột Email_trung 2 quy lien tiep"
+    - name: is_email_spdvin_cthd
+      description: "Cột IsEmailSPDVInCTHD"
+    - name: id
+      description: "Cột id"
+    - name: khach_hang_npsthap_nhat
+      description: "Cột KhachHangNPSThapNhat"
+    - name: khach_hang_npsthap_nhat_2_qgan_nhat
+      description: "Cột KhachHangNPSThapNhat_2QGanNhat"
+    - name: nhom_cong_ty
+      description: "Cột Nhom_CongTy"
+    - name: survey_period
+      description: "Cột Kỳ survey"
+    - name: nps
+      description: "Cột NPS"
+    - name: nps_company
+      description: "Cột NPS công ty"
+    - name: nps_score
+      description: "Cột NPS Score"
+    - name: nps_score_duplicate_customer_previous_period
+      description: "Cột NPS Score (Khách hàng trùng - Kỳ trước)"
+    - name: nps_score_duplicate_customer
+      description: "Cột NPS Score (Khách hàng trùng)"
+    - name: nps_score_v1
+      description: "Cột NPS Score v1"
+    - name: previous_year_quarter_numeric
+      description: "Cột PreviousYearQuarterNumeric"
+    - name: nps_class_by_customer
+      description: "Cột Phân loại NPS theo KH"
+    - name: quarter
+      description: "Cột Quarter"
+    - name: quarter_number
+      description: "Cột Quarter_Number"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: csat_change_duplicate_customer
+      description: "Cột Thay đổi CSAT (Khách hàng trùng)"
+    - name: nps_change_duplicate_customer
+      description: "Cột Thay đổi NPS (Khách hàng trùng)"
+    - name: response_rate
+      description: "Cột Tỷ lệ phản hồi"
+    - name: year_value
+      description: "Cột Year"
+    - name: year_quarter_numeric
+      description: "Cột YearQuarterNumeric"

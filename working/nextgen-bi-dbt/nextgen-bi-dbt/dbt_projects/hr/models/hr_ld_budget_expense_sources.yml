@@ -1,0 +1,47 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: "Silver layer sources for domain: hr"
+  tables:
+  - name: hr_ld_budget_expense
+    description: >
+      Bảng **hr_ld_budget_expense** lưu trữ chi tiết các khoản chi ngân sách đào tạo (L&D)
+      theo từng hạng mục chi phí trong năm 2026. Dữ liệu được lấy từ snapshot mới nhất của
+      nguồn ngân sách đào tạo, bao gồm thông tin hạng mục chi, nhóm chi phí, quý thực hiện,
+      giá trị đề xuất, giá trị đã hạch toán, chênh lệch giữa đề xuất và thực tế cùng ngày quyết toán.
+      Bảng được sử dụng để theo dõi tình hình sử dụng ngân sách đào tạo, phân tích cơ cấu chi phí
+      và phục vụ báo cáo quản trị tài chính của hoạt động đào tạo.
+
+    columns:
+      - name: id
+        description: Mã định danh của khoản mục chi phí, được lấy từ số thứ tự của dữ liệu nguồn.
+
+      - name: year
+        description: Năm ngân sách đào tạo.
+
+      - name: expense_description
+        description: Nội dung hoặc diễn giải của khoản chi đào tạo.
+
+      - name: expense_category
+        description: Nhóm hoặc loại chi phí đào tạo của khoản chi.
+
+      - name: quarter
+        description: Quý phát sinh hoặc ghi nhận khoản chi đào tạo.
+
+      - name: proposal_amount
+        description: Giá trị kinh phí được đề xuất cho khoản chi đào tạo.
+
+      - name: accounted_amount
+        description: Giá trị kinh phí đã được hạch toán hoặc quyết toán cho khoản chi đào tạo.
+
+      - name: amount_difference
+        description: Chênh lệch giữa giá trị đề xuất và giá trị đã hạch toán của khoản chi đào tạo.
+
+      - name: settlement_date
+        description: Ngày quyết toán hoặc ghi nhận hoàn tất khoản chi đào tạo.
+
+      - name: note
+        description: Thông tin ghi chú hoặc diễn giải bổ sung của khoản chi đào tạo.

@@ -1,0 +1,98 @@
+version: 2
+sources:
+- name: bi_silver__other
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: other'
+  tables:
+  - name: company_contacts
+    description: "Bảng này lưu trữ thông tin liên hệ của các công ty, bao gồm tên công ty, tên hiển thị, họ và tên, địa chỉ email và nguồn hệ thống gốc. Nó hỗ trợ việc quản lý quan hệ khách hàng và cho phép thực hiện các báo cáo phân tích danh sách liên hệ, nguồn dữ liệu và thời gian cập nhật."
+    columns:
+    - name: company_id
+      description: "Mã định danh duy nhất của công ty trong hệ thống CRM."
+      tests:
+      - not_null
+      - unique
+    - name: company_name
+      description: Tên công ty mà liên hệ thuộc về trong hệ thống CRM.
+    - name: source_system
+      description: Hệ thống nguồn mà thông tin liên hệ được lấy về.
+    - name: contact_id
+      description: Column contact_id in company_contacts
+    - name: contact_name
+      description: Tên hiển thị của liên hệ trong hệ thống CRM.
+    - name: first_name
+      description: Column first_name in company_contacts
+    - name: last_name
+      description: Column last_name in company_contacts
+    - name: email
+      description: Địa chỉ email của liên hệ công ty.
+    - name: email_domain
+      description: Column email_domain in company_contacts
+    - name: created_at
+      description: Thời điểm mà bản ghi liên hệ công ty được tạo trong hệ thống.
+    - name: updated_at
+      description: Thời điểm cuối cùng mà thông tin liên hệ công ty được cập nhật.
+  - name: contract_collected_invoices
+    description: Source table contract_collected_invoices in hive.bi_silver
+    columns:
+    - name: idd
+      description: Column idd in contract_collected_invoices
+      tests:
+      - not_null
+      - unique
+    - name: sales_channel
+      description: Column sales_channel in contract_collected_invoices
+    - name: transaction_code
+      description: Column transaction_code in contract_collected_invoices
+    - name: invoice_number
+      description: Column invoice_number in contract_collected_invoices
+    - name: contract_num
+      description: Column contract_num in contract_collected_invoices
+    - name: customer_code
+      description: Column customer_code in contract_collected_invoices
+    - name: contract_description
+      description: Column contract_description in contract_collected_invoices
+    - name: company_name
+      description: Column company_name in contract_collected_invoices
+    - name: original_currency
+      description: Column original_currency in contract_collected_invoices
+    - name: initial_receivable_amount
+      description: Column initial_receivable_amount in contract_collected_invoices
+    - name: total_received_amount
+      description: Column total_received_amount in contract_collected_invoices
+    - name: remaining_balance_amount
+      description: Column remaining_balance_amount in contract_collected_invoices
+    - name: invoice_date
+      description: Column invoice_date in contract_collected_invoices
+    - name: payment_deadline
+      description: Column payment_deadline in contract_collected_invoices
+    - name: payment_date
+      description: Column payment_date in contract_collected_invoices
+    - name: overdue_months_numeric
+      description: Column overdue_months_numeric in contract_collected_invoices
+    - name: overdue_status_enum
+      description: Column overdue_status_enum in contract_collected_invoices
+    - name: am_username
+      description: Column am_username in contract_collected_invoices
+  - name: giang_test_masterplan
+    description: Source table giang_test_masterplan in hive.bi_silver
+    columns:
+    - name: plan_date
+      description: Column plan_date in giang_test_masterplan
+    - name: category_code
+      description: Column category_code in giang_test_masterplan
+    - name: product_category
+      description: Column product_category in giang_test_masterplan
+    - name: customer_segment_l1
+      description: Column customer_segment_l1 in giang_test_masterplan
+    - name: customer_segment_l2
+      description: Column customer_segment_l2 in giang_test_masterplan
+    - name: plan_viettel_group
+      description: Column plan_viettel_group in giang_test_masterplan
+    - name: plan_must
+      description: Column plan_must in giang_test_masterplan
+    - name: plan_should
+      description: Column plan_should in giang_test_masterplan
+    - name: plan_nice
+      description: Column plan_nice in giang_test_masterplan

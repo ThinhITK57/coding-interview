@@ -1,0 +1,17 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_product_tree_item_code
+    description: Source table crm_product_tree_item_code in hive.bi_silver
+    columns:
+    - name: idd
+      description: Column idd in crm_product_tree_item_code
+      tests:
+      - not_null
+      - unique
+    - name: item_code
+      description: Column item_code in crm_product_tree_item_code

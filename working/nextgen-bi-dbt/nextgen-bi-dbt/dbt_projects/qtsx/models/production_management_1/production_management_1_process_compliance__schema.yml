@@ -1,0 +1,54 @@
+version: 2
+models:
+- name: production_management_1_process_compliance
+  description: "Bảng production_management_1_process_compliance (nguồn Power BI: Tuân thủ quy trình)."
+  meta:
+    label: "Tuân thủ quy trình"
+    powerbi_source: "Tuân thủ quy trình"
+    joins:
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_process_compliance.product_name_ttqt} = ${production_management_1_project_name.project_name_last}"
+      relationship: many-to-many
+  columns:
+  - name: id
+    description: "Cột Id trong Tuân thủ quy trình."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Tuân thủ quy trình."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_due_date
+    description: "Cột ISSUE_DUE_DATE trong Tuân thủ quy trình."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_DUE_DATE"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Tuân thủ quy trình."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: product_name_ttqt
+    description: "Cột Tên_sản_phẩm_TTQT_17001 trong Tuân thủ quy trình."
+    meta:
+      dimension:
+        type: string
+        label: "Tên_sản_phẩm_TTQT_17001"
+        hidden: true
+  - name: rate_process_compliance
+    description: "Cột Tỉ_lệ_tuân_thủ_quy_trình_17000 trong Tuân thủ quy trình."
+    meta:
+      dimension:
+        type: number
+        label: "Tỉ_lệ_tuân_thủ_quy_trình_17000"
+        hidden: true

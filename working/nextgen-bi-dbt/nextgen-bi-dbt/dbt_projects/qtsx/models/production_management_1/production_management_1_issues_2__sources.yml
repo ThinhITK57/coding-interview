@@ -1,0 +1,66 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_issues_2
+    description: "Nguồn Power BI: Issues (2)"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: customers
+      description: "Cột Customers_13905"
+    - name: year_value
+      description: "Cột Năm_13442"
+    - name: quarter
+      description: "Cột Quý_17507"
+    - name: week
+      description: "Cột Tuần_17508"
+    - name: month_value
+      description: "Cột Tháng_17900"
+    - name: total_alerts
+      description: "Cột Tổng_số_alert_18200"
+    - name: total_alerts_on_time
+      description: "Cột Tổng_số_alert_on_time_18201"
+    - name: alert_on_time_rate
+      description: "Cột Tỷ_lệ_alert_xử_lý_đúng_hạn_18220"
+    - name: sla_eval_alert_on_time
+      description: "Cột Đánh_giá_SLA_alert_đúng_hạn_18202"
+    - name: total_tier3_cases_handled
+      description: "Cột Tổng_số_Case_Tier_3_đã_xử_lý_18207"
+    - name: total_tier3_cases_on_time
+      description: "Cột Tổng_số_Case_Tier_3_on_time_18208"
+    - name: tier3_case_on_time_rate
+      description: "Cột Tỷ_lệ_case_tier_3_xử_lý_đúng_hạn_18221"
+    - name: sla_eval_tier3_case_on_time
+      description: "Cột Đánh_giá_SLA_xử_lý_case_Tier_3_đúng_hạn_18209"
+    - name: tong_count_case_tier_1_tier_3_da_xu_ly
+      description: "Cột Tổng_số_case_Tier_1__Tier_3_đã_xử_lý_18204"
+    - name: avg_case_handling_time_m
+      description: "Cột Trung_bình_thời_gian_xử_lý_case__m__18224"
+    - name: total_tagging_incident_cases
+      description: "Cột Tổng_số_case_tagging_incident_18205"
+    - name: total_auto_tagging_incident_cases
+      description: "Cột Tổng_số_Case_auto_tagging_incident_18206"
+    - name: security_reports_done
+      description: "Cột Số_báo_cáo_ATTT_đã_thực_hiện_18210"
+    - name: security_reports_on_time
+      description: "Cột Số_báo_cáo_ATTT_đúng_hạn_18211"
+    - name: sla_eval_security_report
+      description: "Cột Đánh_giá_SLA_báo_cáo_ATTT_18212"
+    - name: missed_critical_alerts
+      description: "Cột Số_lượng_cảnh_báo_Nghiêm_trọng_bỏ_lọt_18216"
+    - name: sla_eval_missed_critical_alert
+      description: "Cột Đánh_giá_SLA_vận_hành_bỏ_lọt_cảnh_báo_nghiêm_trọng_18218"
+    - name: missed_medium_alerts
+      description: "Cột Số_lượng_cảnh_báo_Trung_bình_bỏ_lọt_18217"
+    - name: hunting_hosts_wrong_review
+      description: "Cột Số_máy_hunting_rà_soát_sai_18223"
+    - name: start_date
+      description: "Cột Start_Date_10700"

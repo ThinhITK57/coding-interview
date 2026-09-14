@@ -1,0 +1,530 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "Cleaned system users table."
+    meta:
+      metrics:
+        active_user_rate:
+          type: number
+          label: "Active User Rate"
+          sql: "(${active_user_count} / NULLIF(${user_count}, 0))"
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique
+      - name: user_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            user_count:
+              type: count_distinct
+              label: "Total Users"
+            active_user_count:
+              type: count_distinct
+              label: "Active Users"
+              sql: "CASE WHEN ${is_active} THEN ${user_uuid} END"
+            setup_complete_user_count:
+              type: count_distinct
+              label: "Setup Complete Users"
+              sql: "CASE WHEN ${is_setup_complete} THEN ${user_uuid} END"
+      - name: first_name
+      - name: last_name
+      - name: created_at
+      - name: is_marketing_opted_in
+      - name: is_tracking_anonymized
+      - name: is_setup_complete
+      - name: is_active
+      - name: updated_at
+
+  - name: stg_projects
+    description: "Cleaned projects table."
+    columns:
+      - name: project_id
+        tests:
+          - not_null
+          - unique
+      - name: project_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            project_count:
+              type: count_distinct
+              label: "Total Projects"
+      - name: name
+      - name: project_type
+      - name: created_at
+      - name: organization_id
+      - name: dbt_connection_type
+      - name: created_by_user_uuid
+      - name: dbt_version
+      - name: scheduler_timezone
+      - name: query_timezone
+      - name: has_default_user_spaces
+      - name: project_defaults
+      - name: color_palette_uuid
+
+  - name: stg_charts
+    description: "Cleaned saved charts table."
+    columns:
+      - name: saved_query_id
+        tests:
+          - not_null
+          - unique
+      - name: saved_query_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            chart_count:
+              type: count_distinct
+              label: "Total Charts"
+            active_chart_count:
+              type: count_distinct
+              label: "Active Charts"
+              sql: "CASE WHEN ${deleted_at} IS NULL THEN ${saved_query_uuid} END"
+      - name: name
+      - name: description
+      - name: space_id
+      - name: created_at
+      - name: deleted_at
+        meta:
+          metrics:
+            deleted_chart_row_count:
+              type: count
+              label: "Deleted Chart Rows"
+
+  - name: stg_dashboards
+    description: "Cleaned dashboards table."
+    columns:
+      - name: dashboard_id
+        tests:
+          - not_null
+          - unique
+      - name: dashboard_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            dashboard_count:
+              type: count_distinct
+              label: "Total Dashboards"
+            active_dashboard_count:
+              type: count_distinct
+              label: "Active Dashboards"
+              sql: "CASE WHEN ${deleted_at} IS NULL THEN ${dashboard_uuid} END"
+      - name: name
+      - name: description
+      - name: space_id
+      - name: created_at
+      - name: slug
+      - name: views_count
+      - name: first_viewed_at
+      - name: deleted_at
+      - name: deleted_by_user_uuid
+
+  - name: stg_ai_agents
+    description: "Cleaned AI agents table."
+    meta:
+      metrics:
+        data_access_enabled_rate:
+          type: number
+          label: "Data Access Enabled Rate"
+          sql: "(${data_access_enabled_ai_agent_count} / NULLIF(${ai_agent_count}, 0))"
+    columns:
+      - name: ai_agent_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            ai_agent_count:
+              type: count_distinct
+              label: "Total AI Agents"
+            data_access_enabled_ai_agent_count:
+              type: count_distinct
+              label: "Data Access Enabled Agents"
+              sql: "CASE WHEN ${enable_data_access} THEN ${ai_agent_uuid} END"
+            self_improving_ai_agent_count:
+              type: count_distinct
+              label: "Self Improving Agents"
+              sql: "CASE WHEN ${enable_self_improvement} THEN ${ai_agent_uuid} END"
+      - name: organization_uuid
+      - name: project_uuid
+      - name: name
+      - name: slug
+      - name: description
+      - name: image_url
+      - name: enable_data_access
+      - name: enable_self_improvement
+      - name: enable_reasoning
+      - name: version
+      - name: created_at
+      - name: updated_at
+
+  - name: stg_ai_threads
+    description: "Cleaned AI threads table."
+    columns:
+      - name: ai_thread_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            ai_thread_count:
+              type: count_distinct
+              label: "Total AI Threads"
+      - name: agent_uuid
+      - name: agent_name
+        meta:
+          dimension:
+            type: string
+            label: "Agent Name"
+      - name: organization_uuid
+      - name: project_uuid
+      - name: created_from
+        meta:
+          metrics:
+            slack_thread_count:
+              type: count
+              label: "Slack Threads"
+              sql: "CASE WHEN ${created_from} = 'slack' THEN ${ai_thread_uuid} END"
+            web_app_thread_count:
+              type: count
+              label: "Web App Threads"
+              sql: "CASE WHEN ${created_from} = 'web_app' THEN ${ai_thread_uuid} END"
+      - name: title
+      - name: title_generated_at
+      - name: created_at
+
+  - name: stg_ai_prompts
+    description: "Cleaned AI prompts table."
+    meta:
+      metrics:
+        prompt_response_rate:
+          type: number
+          label: "Prompt Response Rate"
+          sql: "(${responded_prompt_count} / NULLIF(${ai_prompt_count}, 0))"
+        prompt_error_rate:
+          type: number
+          label: "Prompt Error Rate"
+          sql: "(${error_prompt_count} / NULLIF(${ai_prompt_count}, 0))"
+    columns:
+      - name: ai_prompt_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            ai_prompt_count:
+              type: count_distinct
+              label: "Total AI Prompts"
+            responded_prompt_count:
+              type: count_distinct
+              label: "Responded Prompts"
+              sql: "CASE WHEN ${responded_at} IS NOT NULL THEN ${ai_prompt_uuid} END"
+            error_prompt_count:
+              type: count_distinct
+              label: "Errored Prompts"
+              sql: "CASE WHEN ${error_message} IS NOT NULL THEN ${ai_prompt_uuid} END"
+      - name: ai_thread_uuid
+      - name: created_by_user_uuid
+      - name: prompt
+      - name: response
+      - name: error_message
+      - name: status
+      - name: responded_at
+      - name: response_time_seconds
+      - name: response_time_minutes
+      - name: human_score
+      - name: human_feedback
+      - name: saved_query_uuid
+      - name: created_at
+
+  - name: stg_ai_tool_calls
+    description: "Cleaned AI tool call table."
+    columns:
+      - name: ai_agent_tool_call_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            tool_call_count:
+              type: count_distinct
+              label: "Total Tool Calls"
+      - name: ai_prompt_uuid
+      - name: tool_call_id
+      - name: tool_name
+      - name: tool_args
+      - name: created_at
+
+  - name: stg_managed_agent_settings
+    description: "Cleaned managed agent settings table."
+    columns:
+      - name: project_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            managed_agent_project_count:
+              type: count_distinct
+              label: "Managed Agent Projects"
+            enabled_managed_agent_project_count:
+              type: count_distinct
+              label: "Enabled Managed Agent Projects"
+              sql: "CASE WHEN ${enabled} THEN ${project_uuid} END"
+      - name: enabled
+      - name: schedule_cron
+      - name: enabled_by_user_uuid
+      - name: slack_channel_id
+      - name: anthropic_agent_id
+      - name: anthropic_agent_config_hash
+      - name: anthropic_environment_id
+      - name: anthropic_vault_id
+      - name: created_at
+      - name: updated_at
+
+  - name: stg_managed_agent_actions
+    description: "Cleaned managed agent actions table."
+    columns:
+      - name: action_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            managed_agent_action_count:
+              type: count_distinct
+              label: "Managed Agent Actions"
+            active_managed_agent_action_count:
+              type: count_distinct
+              label: "Active Managed Agent Actions"
+              sql: "CASE WHEN ${reversed_at} IS NULL THEN ${action_uuid} END"
+      - name: project_uuid
+      - name: session_id
+      - name: action_type
+      - name: target_type
+      - name: target_uuid
+      - name: target_name
+      - name: description
+      - name: reversed_at
+      - name: reversed_by_user_uuid
+      - name: created_at
+
+  - name: stg_scheduler_log
+    description: "Cleaned scheduler log table."
+    meta:
+      metrics:
+        scheduler_failure_rate:
+          type: number
+          label: "Scheduler Failure Rate"
+          sql: "(${failed_scheduler_log_count} / NULLIF(${scheduler_log_count}, 0))"
+    columns:
+      - name: scheduler_log_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            scheduler_log_count:
+              type: count_distinct
+              label: "Total Scheduler Logs"
+            failed_scheduler_log_count:
+              type: count_distinct
+              label: "Failed Scheduler Logs"
+              sql: "CASE WHEN ${status} IN ('failed', 'error') THEN ${scheduler_log_uuid} END"
+      - name: task
+      - name: scheduler_uuid
+      - name: job_id
+      - name: created_at
+      - name: scheduled_time
+      - name: job_group
+      - name: status
+      - name: target
+      - name: target_type
+
+  - name: stg_jobs
+    description: "Cleaned background jobs table."
+    meta:
+      metrics:
+        job_success_rate:
+          type: number
+          label: "Job Success Rate"
+          sql: "(${successful_job_count} / NULLIF(${job_count}, 0))"
+        job_failure_rate:
+          type: number
+          label: "Job Failure Rate"
+          sql: "(${failed_job_count} / NULLIF(${job_count}, 0))"
+    columns:
+      - name: job_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            job_count:
+              type: count_distinct
+              label: "Total Jobs"
+            successful_job_count:
+              type: count_distinct
+              label: "Successful Jobs"
+              sql: "CASE WHEN ${job_status} = 'success' THEN ${job_uuid} END"
+            failed_job_count:
+              type: count_distinct
+              label: "Failed Jobs"
+              sql: "CASE WHEN ${job_status} = 'failed' THEN ${job_uuid} END"
+      - name: project_uuid
+      - name: user_uuid
+      - name: created_at
+      - name: updated_at
+      - name: job_status
+      - name: job_type
+
+  - name: stg_job_steps
+    description: "Cleaned background job steps table."
+    columns:
+      - name: step_id
+        tests:
+          - not_null
+          - unique
+      - name: job_uuid
+      - name: created_at
+      - name: updated_at
+      - name: step_status
+      - name: step_type
+      - name: step_error
+      - name: started_at
+
+  - name: stg_analytics_chart_views
+    description: "Cleaned chart analytics table."
+    columns:
+      - name: analytics_chart_view_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            chart_view_count:
+              type: count_distinct
+              label: "Chart Views"
+      - name: chart_uuid
+      - name: user_uuid
+        meta:
+          metrics:
+            unique_users:
+              type: count_distinct
+              label: "Unique Users"
+      - name: timestamp
+        meta:
+          dimension:
+            type: timestamp
+            label: "Timestamp"
+      - name: viewed_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Viewed At"
+      - name: viewed_date
+        meta:
+          dimension:
+            type: date
+            label: "Viewed Date"
+      - name: context
+
+  - name: stg_ai_tool_results
+    description: "Cleaned AI tool result table."
+    columns:
+      - name: ai_agent_tool_result_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            tool_result_count:
+              type: count_distinct
+              label: "Total Tool Results"
+      - name: ai_prompt_uuid
+      - name: tool_call_id
+      - name: tool_name
+      - name: result
+      - name: created_at
+
+  - name: stg_analytics_dashboard_views
+    description: "Cleaned dashboard analytics table."
+    columns:
+      - name: analytics_dashboard_view_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            dashboard_view_count:
+              type: count_distinct
+              label: "Dashboard Views"
+      - name: dashboard_uuid
+      - name: user_uuid
+        meta:
+          metrics:
+            unique_users:
+              type: count_distinct
+              label: "Unique Users"
+      - name: timestamp
+        meta:
+          dimension:
+            type: timestamp
+            label: "Timestamp"
+      - name: viewed_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Viewed At"
+      - name: viewed_date
+        meta:
+          dimension:
+            type: date
+            label: "Viewed Date"
+      - name: context
+
+  - name: stg_analytics_app_views
+    description: "Cleaned app analytics table."
+    columns:
+      - name: analytics_app_view_uuid
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            app_view_count:
+              type: count_distinct
+              label: "App Views"
+      - name: app_id
+      - name: user_uuid
+        meta:
+          metrics:
+            unique_users:
+              type: count_distinct
+              label: "Unique Users"
+      - name: timestamp
+        meta:
+          dimension:
+            type: timestamp
+            label: "Timestamp"
+      - name: viewed_at
+        meta:
+          dimension:
+            type: timestamp
+            label: "Viewed At"
+      - name: viewed_date
+        meta:
+          dimension:
+            type: date
+            label: "Viewed Date"

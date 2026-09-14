@@ -1,0 +1,225 @@
+version: 2
+
+models:
+  - name: finance_revenue_cost_items
+    description: >
+      Bảng theo dõi điều chỉnh của Tài chính về tình hình doanh thu và chi phí của công ty.
+      Dữ liệu được ghi nhận theo thời gian báo cáo, loại khoản mục tài chính, nhóm khoản mục cấp 2
+      và mã khoản mục. Toàn bộ giá trị và chỉ số tài chính trong bảng đều là giá trị không bao gồm VAT.
+      Bảng phục vụ phân tích tình hình doanh thu, chi phí, lợi nhuận và EBITDA tổng hợp của công ty.
+
+    meta:
+      label: "Revenue Cost Items"
+      owner: "sonnv1"
+      finance_rules:
+        currency: "VND"
+        amount_unit: "Million VND"
+        vat_policy: "Excluded"
+
+      metrics:
+        total_revenue_amount:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.item_type_code = 'DT'
+              THEN ${TABLE}.base_currency_amount
+              ELSE 0.0
+            END
+          description: Tổng doanh thu theo dữ liệu ghi nhận của Tài chính, không bao gồm VAT.
+          label: "Tổng doanh thu tài chính"
+          category: "Revenue & Cost"
+          synonyms:
+            - "Tổng doanh thu tài chính"
+            - "Total Finance Revenue"
+            - "Doanh thu công ty"
+            - "Doanh thu tài chính"
+
+        total_cost_amount:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.item_type_code = 'CP'
+              THEN ${TABLE}.base_currency_amount
+              ELSE 0.0
+            END
+          description: Tổng chi phí theo dữ liệu ghi nhận của Tài chính, không bao gồm VAT.
+          label: "Tổng chi phí"
+          category: "Revenue & Cost"
+          synonyms:
+            - "Tổng chi phí tài chính"
+            - "Total Finance Cost"
+            - "Chi phí công ty"
+            - "Total Cost Amount"
+
+        total_record_count:
+          type: count
+          sql: "1.0"
+          description: Tổng số bản ghi doanh thu/chi phí tài chính.
+          label: "Số bản ghi doanh thu chi phí"
+          category: "Revenue & Cost"
+          synonyms:
+            - "Record Count"
+            - "Số dòng dữ liệu"
+
+        profit:
+          type: number
+          sql: ${total_revenue_amount} - ${total_cost_amount}
+          description: Lợi nhuận = Tổng doanh thu - Tổng chi phí, không bao gồm VAT.
+          label: "Lợi nhuận"
+          category: "Revenue & Cost"
+          synonyms:
+            - "Lợi nhuận"
+            - "Profit"
+            - "Lãi"
+            - "Net Profit"
+            - "Doanh thu trừ chi phí"
+
+        fixed_asset_depreciation_cost:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.item_type_code = 'CP'
+                AND ${TABLE}.item_category_level_2 = 'Chi phí khấu hao tài sản cố định'
+              THEN ${TABLE}.base_currency_amount
+              ELSE 0.0
+            END
+          description: Tổng chi phí khấu hao tài sản cố định, không bao gồm VAT.
+          label: "Chi phí khấu hao tài sản cố định"
+          category: "Revenue & Cost"
+          synonyms:
+            - "Chi phí khấu hao"
+            - "Khấu hao tài sản cố định"
+            - "Depreciation cost"
+            - "Fixed asset depreciation cost"
+
+        ebitda:
+          type: number
+          sql: ${profit} + ${fixed_asset_depreciation_cost}
+          description: EBITDA = Lợi nhuận + Chi phí khấu hao tài sản cố định, không bao gồm VAT.
+          label: "EBITDA"
+          category: "Revenue & Cost"
+          synonyms:
+            - "EBITDA"
+            - "Lợi nhuận trước khấu hao"
+            - "Lợi nhuận cộng khấu hao"
+
+        gross_margin:
+          type: number
+          sql: ${profit} / NULLIF(${total_revenue_amount}, 0.0)
+          description: Tỷ suất lợi nhuận trên doanh thu.
+          label: "Biên lợi nhuận"
+          category: "Revenue & Cost"
+          format: "percent"
+          synonyms:
+            - "Net Profit Margin"
+            - "ROS"
+
+        ebitda_margin:
+          type: number
+          sql: ${ebitda} / NULLIF(${total_revenue_amount}, 0.0)
+          description: Tỷ suất EBITDA trên doanh thu.
+          label: "Biên EBITDA"
+          category: "Revenue & Cost"
+          format: "percent"
+          synonyms:
+            - "EBITDA Margin"
+            - "Biên EBITDA"
+
+        ebitda_current_period_ytd:
+          type: sum
+          sql: >
+            CASE
+              WHEN year(${TABLE}.report_date) = (
+                SELECT year(MAX(t.report_date))
+                FROM ${TABLE} t
+              )
+              AND month(${TABLE}.report_date) <= (
+                SELECT month(MAX(t.report_date))
+                FROM ${TABLE} t
+              )
+              THEN
+                CASE
+                  WHEN ${TABLE}.item_type_code = 'DT'
+                  THEN ${TABLE}.base_currency_amount
+                  WHEN ${TABLE}.item_type_code = 'CP'
+                    AND ${TABLE}.item_category_level_2 = 'Chi phí khấu hao tài sản cố định'
+                  THEN 0.0
+                  WHEN ${TABLE}.item_type_code = 'CP'
+                  THEN -${TABLE}.base_currency_amount
+                  ELSE 0.0
+                END
+              ELSE 0.0
+            END
+          description: >
+            EBITDA lũy kế năm hiện tại đến tháng dữ liệu mới nhất, không bao gồm VAT.
+            Công thức tương đương EBITDA = Lợi nhuận + Chi phí khấu hao tài sản cố định,
+            tính từ đầu năm đến tháng max report_date.
+          label: "EBITDA Cùng kỳ HT"
+          category: "Revenue & Cost"
+          synonyms:
+            - "EBITDA Cùng kỳ HT"
+            - "EBITDA hiện tại"
+            - "EBITDA YTD hiện tại"
+            - "EBITDA lũy kế hiện tại"
+
+    columns:
+      - name: report_date
+        description: Ngày báo cáo của khoản mục doanh thu hoặc chi phí.
+        meta:
+          dimension:
+            type: timestamp
+            label: "Ngày báo cáo"
+
+      - name: item_type_code
+        description: >
+          Mã loại khoản mục tài chính. DT là Doanh thu, CP là Chi phí.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['DT', 'CP']
+        meta:
+          dimension:
+            type: string
+            label: "Mã loại khoản mục"
+
+      - name: item_type_name
+        description: >
+          Tên loại khoản mục tài chính gồm Doanh thu hoặc Chi phí.
+        meta:
+          dimension:
+            type: string
+            label: "Loại khoản mục"
+
+      - name: item_category_level_2
+        description: >
+          Khoản mục tài chính cấp 2 do Phòng Tài chính quản lý và theo dõi,
+          dùng để phân loại doanh thu hoặc chi phí.
+        meta:
+          dimension:
+            type: string
+            label: "Khoản mục cấp 2"
+
+      - name: item_code
+        description: >
+          Mã định danh của khoản mục tài chính, phục vụ quản lý và tổng hợp báo cáo.
+        meta:
+          dimension:
+            type: string
+            label: "Mã khoản mục"
+
+      - name: base_currency_amount
+        description: >
+          Giá trị doanh thu hoặc chi phí theo đồng tiền cơ sở của hệ thống,
+          đơn vị triệu VND. Giá trị không bao gồm thuế VAT.
+        meta:
+          dimension:
+            type: number
+            label: "Giá trị"
+
+      - name: currency_code
+        description: >
+          Mã đồng tiền cơ sở sử dụng trong báo cáo. Hiện tại mặc định là VND.
+        meta:
+          dimension:
+            type: string
+            label: "Mã tiền tệ"

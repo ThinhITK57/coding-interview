@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_trainee_resignation
+    description: >
+      Bảng **hr_ld_trainee_resignation** lưu trữ thông tin sinh viên thực tập hoặc
+      sinh viên tham gia chương trình đào tạo nhưng nghỉ việc trước khi hoàn thành
+      chương trình hoặc trước khi được chuyển đổi sang vị trí chính thức. Dữ liệu
+      bao gồm thông tin sinh viên, chương trình đào tạo, thời điểm nghỉ việc, lý do
+      nghỉ việc, giai đoạn đào tạo, đơn vị tiếp nhận và thông tin người hướng dẫn.
+      Dữ liệu được sử dụng để phân tích tỷ lệ nghỉ việc, nguyên nhân nghỉ việc và
+      đánh giá hiệu quả chương trình đào tạo nguồn nhân lực trẻ.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi nghỉ việc của sinh viên
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên sinh viên
+
+    - name: employee_code
+      description: Mã định danh của sinh viên hoặc mã nhân sự được cấp trong chương trình đào tạo
+
+    - name: training_program
+      description: Tên chương trình đào tạo hoặc thực tập mà sinh viên tham gia
+
+    - name: resigned_date
+      description: Ngày sinh viên nghỉ việc hoặc rời khỏi chương trình đào tạo
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của sinh viên
+
+    - name: resignation_reason
+      description: Lý do sinh viên nghỉ việc hoặc rời khỏi chương trình đào tạo
+
+    - name: training_phase
+      description: Giai đoạn đào tạo mà sinh viên đang tham gia tại thời điểm nghỉ việc
+
+    - name: employment_type
+      description: Loại hình tham gia chương trình của sinh viên, ví dụ thực tập sinh hoặc trainee
+
+    - name: expected_full_time_date
+      description: Ngày dự kiến chuyển sang trạng thái nhân viên chính thức
+
+    - name: mentor_email
+      description: Địa chỉ email của mentor hoặc người hướng dẫn sinh viên
+
+    - name: team
+      description: Nhóm hoặc đội ngũ công tác tiếp nhận sinh viên
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 quản lý hoặc tiếp nhận sinh viên
+
+    - name: training_result_link
+      description: Đường dẫn đến tài liệu hoặc hệ thống lưu trữ kết quả đào tạo của sinh viên

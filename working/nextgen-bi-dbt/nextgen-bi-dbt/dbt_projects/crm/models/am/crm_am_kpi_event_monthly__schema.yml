@@ -1,0 +1,291 @@
+version: 2
+
+models:
+  - name: crm_am_kpi_event_monthly
+    description: >
+      Tổng hợp KPI theo Account Manager và tháng báo cáo.
+      Dữ liệu được tính toán từ crm_am_kpi_raw_events, bao gồm
+      doanh thu, công nợ, khách hàng, báo giá, nhập dữ liệu,
+      tương tác khách hàng và điểm tuân thủ CRM.
+
+    meta:
+      label: "CRM AM KPI Monthly"
+      group_label: "AM Dashboard"
+      owner: "huongnv1"
+
+    columns:
+
+      # ============================================================
+      # 1. TIME
+      # ============================================================
+
+      - name: report_month
+        description: "Tháng báo cáo KPI, được chuẩn hóa về ngày đầu tháng"
+        meta:
+          dimension:
+            type: date
+            label: "Tháng báo cáo"
+            time_intervals:
+              - YEAR
+              - QUARTER
+              - MONTH
+
+      # ============================================================
+      # 2. ACCOUNT MANAGER
+      # ============================================================
+
+      - name: am_user_id
+        description: "Số ID của Account Manager"
+        meta:
+          dimension:
+            type: string
+            label: "ID AM"
+
+      - name: am_user_name
+        description: "Tên hiển thị của Account Manager"
+        meta:
+          dimension:
+            type: string
+            label: "Tên AM"
+
+      - name: am_group
+        description: "Nhóm Account Manager"
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm AM"
+
+      - name: am_status
+        description: "Trạng thái Account Manager"
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái AM"
+
+      # ============================================================
+      # 3. REVENUE
+      # ============================================================
+
+      - name: renewal_revenue
+        description: "Doanh thu Renewal của AM trong tháng"
+        meta:
+          dimension:
+            type: number
+            label: "Doanh thu gia hạn"
+          metrics:
+            total_renewal_revenue:
+              type: sum
+              label: "Tổng doanh thu gia hạn"
+              description: "Tổng doanh thu Renewal"
+              format: "VND #,##0"
+
+      - name: new_revenue
+        description: "Doanh thu Mới của AM trong tháng."
+        meta:
+          dimension:
+            type: number
+            label: "Doanh thu mới"
+          metrics:
+            total_new_revenue:
+              type: sum
+              label: "Tổng doanh thu mới"
+              description: "Tổng doanh thu New và Upsales"
+              format: "VND #,##0"
+
+      # ============================================================
+      # 4. RECEIVABLE
+      # ============================================================
+
+      - name: total_initial_receivable_amount
+        description: "Tổng công nợ phải thu ban đầu của AM trong tháng"
+        meta:
+          dimension:
+            type: number
+            label: "Công nợ phải thu ban đầu"
+          metrics:
+            total_initial_receivable:
+              type: sum
+              label: "Tổng công nợ phải thu ban đầu"
+              description: "Tổng giá trị công nợ phải thu ban đầu"
+              format: "VND #,##0"
+
+      - name: total_remaining_balance_amount
+        description: "Tổng công nợ còn lại của AM trong tháng"
+        meta:
+          dimension:
+            type: number
+            label: "Dư nợ còn lại chưa thu"
+          metrics:
+            total_remaining_balance:
+              type: sum
+              label: "Tổng dư nợ còn lại chưa thu"
+              description: "Tổng giá trị công nợ còn lại"
+              format: "VND #,##0"
+
+      - name: receivable_ratio
+        description: >
+          Tỷ lệ công nợ còn lại trên tổng công nợ phải thu ban đầu
+        meta:
+          dimension:
+            type: number
+            label: "Tỷ lệ công nợ"
+          metrics:
+            receivable_ratio_metric:
+              type: number
+              sql: > 
+                    1.0 * sum(${total_remaining_balance_amount}) /sum(${total_initial_receivable_amount})
+              label: "Tỷ lệ công nợ bình quân"
+              description: "Tỷ lệ công nợ còn lại bình quân"
+              format: "0.00%"
+
+      # ============================================================
+      # 5. CUSTOMER / SALES
+      # ============================================================
+
+      - name: new_customer_count
+        description: "Số lượng khách hàng mới của AM trong tháng"
+        meta:
+          dimension:
+            type: number
+            label: "Khách hàng mới"
+          metrics:
+            total_new_customers:
+              type: sum
+              label: "Tổng khách hàng mới"
+              description: "Tổng số khách hàng mới"
+
+      - name: quotation_count
+        description: "Số lượng báo giá của AM trong tháng"
+        meta:
+          dimension:
+            type: number
+            label: "Số báo giá"
+          metrics:
+            total_quotations:
+              type: sum
+              label: "Tổng số báo giá"
+              description: "Tổng số báo giá"
+
+      # ============================================================
+      # 6. DATA ENTRY
+      # ============================================================
+
+      - name: total_assigned_contacts
+        description: "Tổng số Contact được assign cho AM trong tháng"
+        meta:
+          dimension:
+            type: number
+            label: "Contact được giao"
+          metrics:
+            total_assigned_contact_count:
+              type: sum
+              label: "Tổng Contact được giao"
+              description: "Tổng số Contact được assign"
+
+      - name: contacts_completed_within_24h
+        description: >
+          Số Contact được hoàn tất nhập dữ liệu trong vòng 24 giờ
+          kể từ thời điểm được assign.
+        meta:
+          dimension:
+            type: number
+            label: "Contact hoàn tất trong 24h"
+          metrics:
+            total_contacts_completed_24h:
+              type: sum
+              label: "Tổng Contact hoàn tất trong 24h"
+              description: "Tổng số Contact hoàn tất trong vòng 24 giờ"
+
+      - name: data_entry_score
+        description: >
+          Điểm KPI nhập dữ liệu CRM của AM. Điểm tối đa là 20
+        meta:
+          dimension:
+            type: number
+            label: "Điểm nhập dữ liệu CRM"
+          metrics:
+            average_data_entry_score:
+              type: average
+              label: "Điểm nhập dữ liệu CRM bình quân"
+              description: "Điểm nhập dữ liệu CRM bình quân"
+              format: "0.00"
+
+      # ============================================================
+      # 7. CUSTOMER INTERACTION
+      # ============================================================
+
+      - name: total_managed_customers
+        description: "Tổng số khách hàng được AM quản lý"
+        meta:
+          dimension:
+            type: number
+            label: "Khách hàng được quản lý"
+          metrics:
+            total_managed_customer_count:
+              type: sum
+              label: "Tổng khách hàng được quản lý"
+              description: "Tổng số khách hàng được AM quản lý"
+
+      - name: customers_with_interaction
+        description: "Số khách hàng có interaction hợp lệ trong tháng"
+        meta:
+          dimension:
+            type: number
+            label: "Khách hàng có tương tác"
+          metrics:
+            total_customers_with_interaction:
+              type: sum
+              label: "Tổng khách hàng có tương tác"
+              description: "Tổng số khách hàng có tương tác hợp lệ"
+
+      - name: customer_interaction_score
+        description: >
+          Điểm KPI tương tác khách hàng của AM. Điểm tối đa là 40
+        meta:
+          dimension:
+            type: number
+            label: "Điểm tương tác khách hàng"
+          metrics:
+            average_customer_interaction_score:
+              type: average
+              label: "Điểm tương tác khách hàng bình quân"
+              description: "Điểm tương tác khách hàng bình quân"
+              format: "0.00"
+
+      # ============================================================
+      # 8. DEAL
+      # ============================================================
+
+      - name: deal_status_score
+        description: >
+          Điểm KPI trạng thái Deal. Điểm tối đa là 40
+        meta:
+          dimension:
+            type: number
+            label: "Điểm trạng thái Deal"
+          metrics:
+            average_deal_status_score:
+              type: average
+              label: "Điểm trạng thái Deal bình quân"
+              description: "Điểm trạng thái Deal bình quân"
+              format: "0.00"
+
+      # ============================================================
+      # 9. CRM COMPLIANCE
+      # ============================================================
+
+      - name: crm_compliance_score
+        description: >
+          Tổng điểm tuân thủ CRM của AM, bao gồm điểm nhập dữ liệu,
+          điểm tương tác khách hàng và điểm trạng thái Deal.
+          Điểm tối đa là 100
+        meta:
+          dimension:
+            type: number
+            label: "Điểm tuân thủ CRM"
+          metrics:
+            average_crm_compliance_score:
+              type: average
+              label: "Điểm tuân thủ CRM bình quân"
+              description: "Tổng điểm tuân thủ CRM bình quân"
+              format: "0.00"

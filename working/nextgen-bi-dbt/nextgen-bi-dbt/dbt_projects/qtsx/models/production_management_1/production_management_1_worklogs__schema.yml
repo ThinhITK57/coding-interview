@@ -1,0 +1,134 @@
+version: 2
+models:
+- name: production_management_1_worklogs
+  description: "Bảng production_management_1_worklogs (nguồn Power BI: Worklogs)."
+  meta:
+    label: "Worklogs"
+    powerbi_source: "Worklogs"
+    joins:
+    - join: production_management_1_worklog_issue
+      sql_on: "${production_management_1_worklogs.worklog_issue_id} = ${production_management_1_worklog_issue.id}"
+      relationship: many-to-one
+    - join: production_management_1_fix_versions
+      sql_on: "${production_management_1_worklogs.issue_key} = ${production_management_1_fix_versions.fix_version_issue_key}"
+      relationship: many-to-many
+    metrics:
+      max_worklog_worklog_date:
+        type: max
+        sql: worklog_worklog_date
+        label: "Latest WORKLOG_WORKLOG_DATE"
+        description: "Sinh từ Power BI: max(Worklogs.WORKLOG_WORKLOG_DATE)"
+      sum_worklog_logged_time:
+        type: sum
+        sql: worklog_logged_time
+        label: "Sum of WORKLOG_LOGGED_TIME"
+        description: "Sinh từ Power BI: sum(Worklogs.WORKLOG_LOGGED_TIME)"
+      sum_worklog_mm:
+        type: sum
+        sql: worklog_mm
+        label: "Worklog MM"
+        description: "Sinh từ Power BI: sum(Worklogs.Worklog MM)"
+      worklog_time_hours:
+        type: number
+        sql: "${sum_worklog_logged_time} / 3600"
+        label: "WORKLOG_TIME_HOURS"
+        description: "DAX: CALCULATE( SUM('Worklogs'[WORKLOG_LOGGED_TIME])/3600)"
+  columns:
+  - name: id
+    description: "Cột Id trong Worklogs."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: worklog_worklog_date
+    description: "Cột WORKLOG_WORKLOG_DATE trong Worklogs."
+    meta:
+      dimension:
+        type: timestamp
+        label: "WORKLOG_WORKLOG_DATE"
+        hidden: true
+  - name: worklog_logged_time
+    description: "Cột WORKLOG_LOGGED_TIME trong Worklogs."
+    meta:
+      dimension:
+        type: number
+        label: "WORKLOG_LOGGED_TIME"
+        hidden: true
+  - name: worklog_issue_id
+    description: "Cột WORKLOG_ISSUE_ID trong Worklogs."
+    meta:
+      dimension:
+        type: number
+        label: "WORKLOG_ISSUE_ID"
+        hidden: true
+  - name: worklog_username
+    description: "Cột WORKLOG_USERNAME trong Worklogs."
+    meta:
+      dimension:
+        type: string
+        label: "WORKLOG_USERNAME"
+        hidden: true
+  - name: working_days_in_month_worklog
+    description: "Cột WorkingDaysInMonth worklog trong Worklogs. Cột tính toán, DAX gốc: VAR SelectedDate = Worklogs[WORKLOG_WORKLOG_DATE] RETURN IF( ISBLANK(SelectedDate), BLANK(), -- hoặc 0 nếu bạn muốn trả về số 0 khi ngày trống VAR StartDate = DATE(YEAR(SelectedDate), MONTH(SelectedDate), 1) VAR EndDate = EOMONTH(SelectedDate, 0) VAR WorkingDays = COUNTX( FILTER( ADDCOLUMNS( CALENDAR(StartDate, EndDate), \"WeekDay\", WEEKDAY([Date], 2) ), [WeekDay] <= 5 ), [Date] ) VAR holidays = COUNTROWS( FILTER('ngày nghỉ', 'ngày nghỉ'[Holiday] >= StartDate && 'ngày nghỉ'[Holiday] <= EndDate ) ) RETURN WorkingDays - holidays )"
+    meta:
+      dimension:
+        type: number
+        label: "WorkingDaysInMonth worklog"
+        hidden: true
+  - name: worklog_mm
+    description: "Cột Worklog MM trong Worklogs. Cột tính toán, DAX gốc: Worklogs[WORKLOG_LOGGED_TIME]/(Worklogs[WorkingDaysInMonth worklog]*3600*8)"
+    meta:
+      dimension:
+        type: number
+        label: "Worklog MM"
+        hidden: true
+  - name: year_value
+    description: "Cột Năm trong Worklogs. Cột tính toán, DAX gốc: YEAR('Worklogs'[WORKLOG_WORKLOG_DATE])"
+    meta:
+      dimension:
+        type: number
+        label: "Năm"
+        hidden: true
+  - name: date_value
+    description: "Cột Date trong Worklogs. Cột tính toán, DAX gốc: DATE(YEAR('Worklogs'[WORKLOG_WORKLOG_DATE]),MONTH('Worklogs'[WORKLOG_WORKLOG_DATE]), DAY('Worklogs'[WORKLOG_WORKLOG_DATE]))"
+    meta:
+      dimension:
+        type: date
+        label: "Date"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT trong Worklogs. Cột tính toán, DAX gốc: LOOKUPVALUE('worklogIssue'[TTSX_PRODUCT_16800],'worklogIssue'[Id],'Worklogs'[WORKLOG_ISSUE_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Worklogs. Cột tính toán, DAX gốc: LOOKUPVALUE('worklogIssue'[ISSUE_KEY],'worklogIssue'[Id],'Worklogs'[WORKLOG_ISSUE_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: worklog_fix_version
+    description: "Cột WorklogFIX_Version trong Worklogs. Cột tính toán, DAX gốc: 'Worklogs'[WORKLOG_LOGGED_TIME]/3600/8"
+    meta:
+      dimension:
+        type: number
+        label: "WorklogFIX_Version"
+        hidden: true
+  - name: ulnl_fix_version
+    description: "Cột ULNL FIX VERSION trong Worklogs. Cột tính toán, DAX gốc: LOOKUPVALUE('ULNL'[ULNL MM],'ULNL'[ISSUE_KEY],'Worklogs'[ISSUE_KEY])"
+    meta:
+      dimension:
+        type: number
+        label: "ULNL FIX VERSION"
+        hidden: true
+  - name: release_date
+    description: "Cột Release Date trong Worklogs. Cột tính toán, DAX gốc: LOOKUPVALUE('Done charter_FixVersions'[RELEASE_DATE],'Done charter_FixVersions'[FIX_VERSION_ISSUE_KEY],'Worklogs'[ISSUE_KEY])"
+    meta:
+      dimension:
+        type: timestamp
+        label: "Release Date"
+        hidden: true

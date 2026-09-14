@@ -1,0 +1,527 @@
+version: 2
+
+models:
+  - name: crm_business_unit_revenue_kpi_plan
+    description: >
+      Kế hoạch KPI doanh thu theo Sản phẩm dịch vụ (SPDV) và Trung tâm,
+      bao gồm ba mức mục tiêu Must, Should và Nice. Dữ liệu được phân bổ
+      theo loại doanh thu, quý và tổng kế hoạch năm.
+      Semantic: Khi người dùng hỏi kế hoạch và KPI mà không nói rõ cụ thể Must/Should/Nice, thì cần cung cấp cả 3 giá trị kế hoạch đó.
+      Semantic: Nếu người dùng hỏi 'kế hoạch doanh thu' không chỉ rõ mức tập đoàn hay mức trung tâm MSN, thì cứ lấy mặc định theo mức tập đoàn. Các giá trị khác cũng áp dụng tương tự
+      Semantic: Khi đề cập số liệu 'kế hoạch doanh thu' liên quan đến nhiệm vụ kế hoạch của trung tâm/phòng ban
+
+    meta:
+      label: "Kế hoạch KPI doanh thu SPDV theo Trung tâm"
+      synonyms:
+        - "kế hoạch doanh thu"
+        - "KPI doanh thu"
+        - "kế hoạch KPI doanh thu"
+        - "doanh thu kế hoạch"
+        - "kế hoạch doanh thu SPDV"
+        - "KPI doanh thu SPDV"
+        - "kế hoạch doanh thu theo trung tâm"
+        - "kế hoạch doanh thu theo SPDV"
+
+    columns:
+
+      # ============================================================
+      # SPDV
+      # ============================================================
+
+      - name: product_category
+        description: "Tên nhóm Sản phẩm dịch vụ (SPDV)."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm SPDV"
+            synonyms:
+              - "sản phẩm dịch vụ"
+              - "SPDV"
+              - "nhóm sản phẩm"
+              - "product category"
+
+      - name: product_category_code
+        description: "Mã nhóm Sản phẩm dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Mã nhóm SPDV"
+            synonyms:
+              - "mã SPDV"
+              - "mã sản phẩm dịch vụ"
+              - "SPDV code"
+
+      - name: product_category_group
+        description: "Nhóm phân loại của Sản phẩm dịch vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Phân nhóm SPDV"
+            synonyms:
+              - "nhóm SPDV"
+              - "phân nhóm sản phẩm"
+              - "product group"
+
+      # ============================================================
+      # BUSINESS UNIT / TRUNG TÂM
+      # ============================================================
+
+      - name: business_unit_n1
+        description: "Tên Viết tắt Trung tâm/đơn vị kinh doanh cấp N1 phụ trách SPDV."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Trung tâm Viết tắt"
+            synonyms:
+              - "Tên trung tâm"
+              - "trung tâm"
+              - "đơn vị"
+              - "đơn vị kinh doanh"
+              - "business unit"
+              - "Tên phòng ban"
+              - TT PT&CSNC
+              - TT SP Enterprise
+              - TT SP Telco
+              - TT SX&CNTT
+              - TTGS
+              - TT DV ATTT
+              - TT KDMN
+              - SI
+
+      - name: business_unit_n1_full_name
+        description: "Tên đầy đủ của Trung tâm/đơn vị kinh doanh cấp N1."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Trung tâm"
+            synonyms:
+              - "tên trung tâm"
+              - "trung tâm"
+              - "đơn vị"
+              - "đơn vị kinh doanh"
+              - "business unit name"
+              - "Tên phòng ban đầy đủ"
+
+      # ============================================================
+      # TIME
+      # ============================================================
+
+      - name: report_year
+        description: "Năm kế hoạch KPI doanh thu."
+        meta:
+          dimension:
+            type: number
+            label: "Năm kế hoạch"
+            synonyms:
+              - "năm"
+              - "năm kế hoạch"
+              - "năm báo cáo"
+              - "report year"
+
+      # ============================================================
+      # MUST - REVENUE TYPE
+      # ============================================================
+
+      - name: must_internal_revenue
+        description: "Kế hoạch doanh thu Must từ nhóm khách hàng nội bộ."
+        meta:
+          metrics:
+            must_internal_revenue_amount:
+              type: sum
+              label: "Doanh thu Must nội bộ"
+              description: "Tổng kế hoạch doanh thu Must từ nhóm khách hàng nội bộ."
+              synonyms:
+                - "doanh thu Must nội bộ"
+                - "Must nội bộ"
+                - "kế hoạch Must nội bộ"
+                - phân khúc khách hàng
+
+      - name: must_domestic_revenue
+        description: "Kế hoạch doanh thu Must từ thị trường trong nước."
+        meta:
+          metrics:
+            must_domestic_revenue_amount:
+              type: sum
+              label: "Doanh thu Must trong nước"
+              description: "Tổng kế hoạch doanh thu Must trong nước."
+              synonyms:
+                - "doanh thu Must trong nước"
+                - "Must trong nước"
+                - "kế hoạch Must trong nước"
+                - phân khúc khách hàng
+
+      - name: must_international_revenue
+        description: "Kế hoạch doanh thu Must từ thị trường quốc tế."
+        meta:
+          metrics:
+            must_international_revenue_amount:
+              type: sum
+              label: "Doanh thu Must quốc tế"
+              description: "Tổng kế hoạch doanh thu Must quốc tế."
+              synonyms:
+                - "doanh thu Must quốc tế"
+                - "Must quốc tế"
+                - "kế hoạch Must quốc tế"
+                - phân khúc khách hàng
+
+      - name: must_bqp_revenue
+        description: "Kế hoạch doanh thu Must từ khối BQP."
+        meta:
+          metrics:
+            must_bqp_revenue_amount:
+              type: sum
+              label: "Doanh thu Must BQP"
+              description: "Tổng kế hoạch doanh thu Must của khối BQP."
+              synonyms:
+                - "doanh thu Must BQP"
+                - "Must BQP"
+                - "kế hoạch Must BQP"
+                - "Bộ quốc phòng"
+                - phân khúc khách hàng
+
+      - name: must_total_revenue
+        description: "Tổng kế hoạch doanh thu Must theo phân khúc khách hàng."
+        meta:
+          metrics:
+            must_total_revenue_amount:
+              type: sum
+              label: "Tổng doanh thu Must"
+              description: "Tổng kế hoạch doanh thu ở mức Must."
+              synonyms:
+                - "doanh thu Must"
+                - "tổng Must"
+                - "KPI Must"
+                - "kế hoạch Must"
+                - "mục tiêu Must"
+                - phân khúc khách hàng
+
+      # ============================================================
+      # SHOULD - REVENUE TYPE
+      # ============================================================
+
+      - name: should_internal_revenue
+        description: "Kế hoạch doanh thu Should từ nhóm khách hàng nội bộ."
+        meta:
+          metrics:
+            should_internal_revenue_amount:
+              type: sum
+              label: "Doanh thu Should nội bộ"
+              synonyms:
+                - "doanh thu Should nội bộ"
+                - "Should nội bộ"
+                - "kế hoạch Should nội bộ"
+                - phân khúc khách hàng
+
+      - name: should_domestic_revenue
+        description: "Kế hoạch doanh thu Should từ thị trường trong nước."
+        meta:
+          metrics:
+            should_domestic_revenue_amount:
+              type: sum
+              label: "Doanh thu Should trong nước"
+              synonyms:
+                - "doanh thu Should trong nước"
+                - "Should trong nước"
+                - "kế hoạch Should trong nước"
+                - phân khúc khách hàng
+
+      - name: should_international_revenue
+        description: "Kế hoạch doanh thu Should từ thị trường quốc tế."
+        meta:
+          metrics:
+            should_international_revenue_amount:
+              type: sum
+              label: "Doanh thu Should quốc tế"
+              synonyms:
+                - "doanh thu Should quốc tế"
+                - "Should quốc tế"
+                - "kế hoạch Should quốc tế"
+                - phân khúc khách hàng
+
+      - name: should_bqp_revenue
+        description: "Kế hoạch doanh thu Should từ khối BQP."
+        meta:
+          metrics:
+            should_bqp_revenue_amount:
+              type: sum
+              label: "Doanh thu Should BQP"
+              synonyms:
+                - "doanh thu Should BQP"
+                - "Should BQP"
+                - "kế hoạch Should BQP"
+                - phân khúc khách hàng
+                - Bộ quốc phòng
+
+      - name: should_total_revenue
+        description: "Tổng kế hoạch doanh thu Should."
+        meta:
+          metrics:
+            should_total_revenue_amount:
+              type: sum
+              label: "Tổng doanh thu Should"
+              description: "Tổng kế hoạch doanh thu ở mức Should."
+              synonyms:
+                - "doanh thu Should"
+                - "tổng Should"
+                - "KPI Should"
+                - "kế hoạch Should"
+                - "mục tiêu Should"
+                - phân khúc khách hàng
+
+      # ============================================================
+      # NICE - REVENUE TYPE
+      # ============================================================
+
+      - name: nice_internal_revenue
+        description: "Kế hoạch doanh thu Nice từ nhóm khách hàng nội bộ."
+        meta:
+          metrics:
+            nice_internal_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice nội bộ"
+              synonyms:
+                - "doanh thu Nice nội bộ"
+                - "Nice nội bộ"
+                - "kế hoạch Nice nội bộ"
+                - phân khúc khách hàng
+
+      - name: nice_domestic_revenue
+        description: "Kế hoạch doanh thu Nice từ thị trường trong nước."
+        meta:
+          metrics:
+            nice_domestic_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice trong nước"
+              synonyms:
+                - "doanh thu Nice trong nước"
+                - "Nice trong nước"
+                - "kế hoạch Nice trong nước"
+                - phân khúc khách hàng
+
+      - name: nice_international_revenue
+        description: "Kế hoạch doanh thu Nice từ thị trường quốc tế."
+        meta:
+          metrics:
+            nice_international_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice quốc tế"
+              synonyms:
+                - "doanh thu Nice quốc tế"
+                - "Nice quốc tế"
+                - "kế hoạch Nice quốc tế"
+                - phân khúc khách hàng
+
+      - name: nice_bqp_revenue
+        description: "Kế hoạch doanh thu Nice từ khối BQP."
+        meta:
+          metrics:
+            nice_bqp_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice BQP"
+              synonyms:
+                - "doanh thu Nice BQP"
+                - "Nice BQP"
+                - "kế hoạch Nice BQP"
+                - Bộ quốc phòng
+                - phân khúc khách hàng
+
+      - name: nice_total_revenue
+        description: "Tổng kế hoạch doanh thu Nice."
+        meta:
+          metrics:
+            nice_total_revenue_amount:
+              type: sum
+              label: "Tổng doanh thu Nice"
+              description: "Tổng kế hoạch doanh thu ở mức Nice."
+              synonyms:
+                - "doanh thu Nice"
+                - "tổng Nice"
+                - "KPI Nice"
+                - "kế hoạch Nice"
+                - "mục tiêu Nice"
+                - phân khúc khách hàng
+
+      # ============================================================
+      # MUST - QUARTER
+      # ============================================================
+
+      - name: must_q1
+        description: "Kế hoạch doanh thu Must quý 1."
+        meta:
+          metrics:
+            must_q1_revenue_amount:
+              type: sum
+              label: "Doanh thu Must Q1"
+              synonyms:
+                - "Must quý 1"
+                - "Must Q1"
+                - "kế hoạch Must quý 1"
+
+      - name: must_q2
+        description: "Kế hoạch doanh thu Must quý 2."
+        meta:
+          metrics:
+            must_q2_revenue_amount:
+              type: sum
+              label: "Doanh thu Must Q2"
+              synonyms:
+                - "Must quý 2"
+                - "Must Q2"
+                - "kế hoạch Must quý 2"
+
+      - name: must_q3
+        description: "Kế hoạch doanh thu Must quý 3."
+        meta:
+          metrics:
+            must_q3_revenue_amount:
+              type: sum
+              label: "Doanh thu Must Q3"
+              synonyms:
+                - "Must quý 3"
+                - "Must Q3"
+                - "kế hoạch Must quý 3"
+
+      - name: must_q4
+        description: "Kế hoạch doanh thu Must quý 4."
+        meta:
+          metrics:
+            must_q4_revenue_amount:
+              type: sum
+              label: "Doanh thu Must Q4"
+              synonyms:
+                - "Must quý 4"
+                - "Must Q4"
+                - "kế hoạch Must quý 4"
+
+      - name: must_year_total
+        description: "Tổng kế hoạch doanh thu Must cả năm."
+        meta:
+          metrics:
+            must_year_total_revenue_amount:
+              type: sum
+              label: "Doanh thu Must cả năm"
+              synonyms:
+                - "Must cả năm"
+                - "tổng Must năm"
+                - "kế hoạch Must năm"
+                - "mục tiêu Must cả năm"
+
+      # ============================================================
+      # SHOULD - QUARTER
+      # ============================================================
+
+      - name: should_q1
+        description: "Kế hoạch doanh thu Should quý 1."
+        meta:
+          metrics:
+            should_q1_revenue_amount:
+              type: sum
+              label: "Doanh thu Should Q1"
+              synonyms:
+                - "Should quý 1"
+                - "Should Q1"
+
+      - name: should_q2
+        description: "Kế hoạch doanh thu Should quý 2."
+        meta:
+          metrics:
+            should_q2_revenue_amount:
+              type: sum
+              label: "Doanh thu Should Q2"
+              synonyms:
+                - "Should quý 2"
+                - "Should Q2"
+
+      - name: should_q3
+        description: "Kế hoạch doanh thu Should quý 3."
+        meta:
+          metrics:
+            should_q3_revenue_amount:
+              type: sum
+              label: "Doanh thu Should Q3"
+              synonyms:
+                - "Should quý 3"
+                - "Should Q3"
+
+      - name: should_q4
+        description: "Kế hoạch doanh thu Should quý 4."
+        meta:
+          metrics:
+            should_q4_revenue_amount:
+              type: sum
+              label: "Doanh thu Should Q4"
+              synonyms:
+                - "Should quý 4"
+                - "Should Q4"
+
+      - name: should_year_total
+        description: "Tổng kế hoạch doanh thu Should cả năm."
+        meta:
+          metrics:
+            should_year_total_revenue_amount:
+              type: sum
+              label: "Doanh thu Should cả năm"
+              synonyms:
+                - "Should cả năm"
+                - "tổng Should năm"
+                - "kế hoạch Should năm"
+
+      # ============================================================
+      # NICE - QUARTER
+      # ============================================================
+
+      - name: nice_q1
+        description: "Kế hoạch doanh thu Nice quý 1."
+        meta:
+          metrics:
+            nice_q1_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice Q1"
+              synonyms:
+                - "Nice quý 1"
+                - "Nice Q1"
+
+      - name: nice_q2
+        description: "Kế hoạch doanh thu Nice quý 2."
+        meta:
+          metrics:
+            nice_q2_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice Q2"
+              synonyms:
+                - "Nice quý 2"
+                - "Nice Q2"
+
+      - name: nice_q3
+        description: "Kế hoạch doanh thu Nice quý 3."
+        meta:
+          metrics:
+            nice_q3_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice Q3"
+              synonyms:
+                - "Nice quý 3"
+                - "Nice Q3"
+
+      - name: nice_q4
+        description: "Kế hoạch doanh thu Nice quý 4."
+        meta:
+          metrics:
+            nice_q4_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice Q4"
+              synonyms:
+                - "Nice quý 4"
+                - "Nice Q4"
+
+      - name: nice_year_total
+        description: "Tổng kế hoạch doanh thu Nice cả năm."
+        meta:
+          metrics:
+            nice_year_total_revenue_amount:
+              type: sum
+              label: "Doanh thu Nice cả năm"
+              synonyms:
+                - "Nice cả năm"
+                - "tổng Nice năm"
+                - "kế hoạch Nice năm"

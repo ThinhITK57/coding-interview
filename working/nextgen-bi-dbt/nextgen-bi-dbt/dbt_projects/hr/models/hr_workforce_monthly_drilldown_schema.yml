@@ -1,0 +1,552 @@
+version: 2
+
+models:
+  - name: hr_workforce_monthly_drilldown
+    description: >
+      Bảng **hr_workforce_monthly_drilldown** lưu trữ dữ liệu chi tiết nhân sự theo từng tháng báo cáo,
+      được sinh từ dữ liệu snapshot nhân sự onboard, resigned và kết quả đánh giá hiệu suất. Mỗi bản ghi
+      đại diện cho một nhân sự trong một tháng báo cáo, bao gồm thông tin định danh nhân sự, trạng thái
+      hoạt động cuối tháng, tuyển mới, nghỉ việc, nghỉ việc sớm, loại nghỉ việc, cơ cấu tổ chức, loại hợp đồng,
+      nhóm nguồn lực, cấp bậc, vùng năng lực, thâm niên, giới tính và kết quả đánh giá hiệu suất. Bảng được
+      sử dụng để drilldown từ các KPI Workforce tổng hợp xuống danh sách nhân sự chi tiết, đồng thời hỗ trợ
+      phân tích các nhóm hiệu suất gồm Không đánh giá, Không đạt, Đạt và Vượt yêu cầu.
+
+    meta:
+      label: "Workforce Monthly Drilldown"
+      owner: "tranpth"
+
+      metrics:
+        employee_count:
+          type: count_distinct
+          sql: ${TABLE}.employee_code
+          description: "Tổng số nhân sự duy nhất trong dữ liệu drilldown theo phạm vi lọc hiện tại."
+          label: "Employee Count"
+          category: "Workforce"
+          synonyms:
+            - "Số nhân sự"
+            - "Tổng nhân sự drilldown"
+            - "Employee Count"
+
+        active_employee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.is_active_month_end = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự duy nhất đang hoạt động tại thời điểm cuối tháng báo cáo."
+          label: "Số lượng nhân sự Active"
+          category: "Workforce"
+          synonyms:
+            - "Nhân sự active"
+            - "Nhân sự đang làm việc"
+            - "Active Employee Count"
+
+        new_hire_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.is_new_hire_month = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự tuyển mới trong tháng báo cáo."
+          label: "Nhân sự tuyển mới trong tháng"
+          category: "Workforce"
+          synonyms:
+            - "Tuyển mới"
+            - "Nhân sự tuyển mới"
+            - "New Hire Count"
+
+        resigned_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.is_resigned_month = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự nghỉ việc trong tháng báo cáo."
+          label: "Số nhân sự nghỉ việc trong tháng"
+          category: "Workforce"
+          synonyms:
+            - "Nghỉ việc"
+            - "Nhân sự nghỉ việc"
+            - "Resigned Count"
+
+        voluntary_exit_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.is_resigned_month = 1.0
+                AND ${TABLE}.is_voluntary_exit = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự nghỉ việc tự nguyện trong tháng báo cáo."
+          label: "Voluntary Exit Count"
+          category: "Workforce"
+          synonyms:
+            - "Nghỉ việc tự nguyện"
+            - "Voluntary Exit Count"
+
+        company_termination_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.is_resigned_month = 1.0
+                AND ${TABLE}.is_company_termination = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự nghỉ việc theo quyết định của công ty trong tháng báo cáo."
+          label: "Company Termination Count"
+          category: "Workforce"
+          synonyms:
+            - "Nghỉ việc theo quyết định công ty"
+            - "Company Termination Count"
+
+        quick_quit_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.is_quick_quit_month = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự nghỉ việc sớm trong tháng báo cáo."
+          label: "Quick Quit Count"
+          category: "Workforce"
+          synonyms:
+            - "Nghỉ việc sớm"
+            - "Quick Quit Count"
+
+        official_employee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự thuộc nhóm nguồn lực chính."
+          label: "Official Employee Count"
+          category: "Workforce"
+          synonyms:
+            - "Nhân sự chính thức"
+            - "Nguồn lực chính"
+            - "Official Employee Count"
+
+        official_active_employee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.is_active_month_end = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức đang hoạt động tại thời điểm cuối tháng báo cáo."
+          label: "Official Active Employee Count"
+          category: "Workforce"
+
+        official_new_hire_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.is_new_hire_month = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức tuyển mới trong tháng báo cáo."
+          label: "Official New Hire Count"
+          category: "Workforce"
+
+        official_resigned_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.is_resigned_month = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức nghỉ việc trong tháng báo cáo."
+          label: "Official Resigned Count"
+          category: "Workforce"
+
+        performance_employee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.has_performance_evaluation = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự có kết quả đánh giá hiệu suất trong kỳ."
+          label: "Performance Employee Count"
+          category: "Performance"
+          synonyms:
+            - "Số nhân sự được đánh giá"
+            - "Số nhân sự có đánh giá hiệu suất"
+            - "Performance Employee Count"
+
+        performance_not_evaluated_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.performance_result = 'Không đánh giá'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự được phân loại ở trạng thái Không đánh giá trong kỳ."
+          label: "Performance Not Evaluated Count"
+          category: "Performance"
+          synonyms:
+            - "Không đánh giá"
+            - "Nhân sự chưa đánh giá"
+            - "Nhân sự chưa có đánh giá hiệu suất"
+
+        performance_not_pass_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.performance_result = 'Không đạt'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Không đạt."
+          label: "Performance Not Pass Count"
+          category: "Performance"
+          synonyms:
+            - "Số nhân sự không đạt"
+            - "Nhân sự hiệu suất không đạt"
+            - "Performance Not Pass Count"
+
+        performance_pass_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.performance_result = 'Đạt'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Đạt."
+          label: "Performance Pass Count"
+          category: "Performance"
+          synonyms:
+            - "Số nhân sự đạt"
+            - "Nhân sự hiệu suất đạt"
+            - "Performance Pass Count"
+
+        performance_exceed_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.performance_result = 'Vượt yêu cầu'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự có kết quả đánh giá hiệu suất ở mức Vượt yêu cầu."
+          label: "Performance Exceed Count"
+          category: "Performance"
+          synonyms:
+            - "Số nhân sự vượt yêu cầu"
+            - "Nhân sự hiệu suất vượt yêu cầu"
+            - "Performance Exceed Count"
+
+        average_performance_score:
+          type: average
+          sql: ${TABLE}.score
+          description: "Điểm đánh giá hiệu suất trung bình của nhân sự có điểm đánh giá hợp lệ."
+          label: "Average Performance Score"
+          category: "Performance"
+          synonyms:
+            - "Điểm hiệu suất trung bình"
+            - "Điểm PR trung bình"
+            - "Average Performance Score"
+
+        official_performance_employee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.has_performance_evaluation = 1.0
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức có kết quả đánh giá hiệu suất trong kỳ."
+          label: "Official Performance Employee Count"
+          category: "Performance"
+
+        official_performance_not_evaluated_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.performance_result = 'Không đánh giá'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức chưa có kết quả đánh giá hiệu suất trong kỳ."
+          label: "Official Performance Not Evaluated Count"
+          category: "Performance"
+
+        official_performance_not_pass_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.performance_result = 'Không đạt'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức có kết quả đánh giá hiệu suất ở mức Không đạt."
+          label: "Official Performance Not Pass Count"
+          category: "Performance"
+
+        official_performance_pass_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.performance_result = 'Đạt'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức có kết quả đánh giá hiệu suất ở mức Đạt."
+          label: "Official Performance Pass Count"
+          category: "Performance"
+
+        official_performance_exceed_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.performance_result = 'Vượt yêu cầu'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự chính thức có kết quả đánh giá hiệu suất ở mức Vượt yêu cầu."
+          label: "Official Performance Exceed Count"
+          category: "Performance"
+
+    columns:
+      - name: report_year
+        description: Năm báo cáo của dữ liệu Workforce
+        meta:
+          dimension:
+            type: number
+            label: "Năm báo cáo"
+
+      - name: snapshot_year_month
+        description: Tháng báo cáo theo định dạng YYYYMM
+        meta:
+          dimension:
+            type: number
+            label: "Tháng báo cáo"
+
+      - name: snapshot_month
+        description: Ngày đại diện cho tháng snapshot
+        meta:
+          dimension:
+            type: date
+            label: "Snapshot Month"
+
+      - name: snapshot_month_label
+        description: Nhãn hiển thị tháng snapshot theo định dạng năm-tháng
+        meta:
+          dimension:
+            type: string
+            label: "Snapshot Month Label"
+
+      - name: month_start
+        description: Ngày đầu tiên của kỳ báo cáo tháng
+        meta:
+          dimension:
+            type: date
+            label: "Ngày đầu tháng"
+
+      - name: month_end
+        description: Ngày cuối cùng của kỳ báo cáo tháng
+        meta:
+          dimension:
+            type: date
+            label: "Ngày cuối tháng"
+
+      - name: source_snapshot_date
+        description: Ngày snapshot nguồn được sử dụng để tính toán dữ liệu Workforce cho tháng báo cáo
+        meta:
+          dimension:
+            type: date
+            label: "Ngày snapshot nguồn"
+
+      - name: snapshot_fill_type
+        description: Cách thức chọn snapshot cho tháng báo cáo, gồm NORMAL, BACKFILL, CARRY_FORWARD hoặc RESIGNED_ONLY
+        meta:
+          dimension:
+            type: string
+            label: "Loại lấy snapshot"
+
+      - name: employee_code
+        description: Mã định danh của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Mã nhân viên"
+        tests:
+          - not_null
+
+      - name: full_name
+        description: Họ và tên của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Họ tên nhân sự"
+
+      - name: business_email
+        description: Địa chỉ email công việc của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Business Email"
+
+      - name: hire_date_vcs
+        description: Ngày nhân sự bắt đầu làm việc tại VCS
+        meta:
+          dimension:
+            type: date
+            label: "Hire Date VCS"
+
+      - name: resigned_date
+        description: Ngày nghỉ việc của nhân sự, nếu có
+        meta:
+          dimension:
+            type: date
+            label: "Termination Date"
+
+      - name: division_n
+        description: Khối hoặc đơn vị cấp cao của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Khối N"
+
+      - name: department_n_1
+        description: Đơn vị tổ chức cấp 1 của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Trung tâm N-1"
+
+      - name: department_n_2
+        description: Đơn vị tổ chức cấp 2 của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Bộ phận N-2"
+
+      - name: department_n_3
+        description: Đơn vị tổ chức cấp 3 của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban N-3"
+
+      - name: contract_type
+        description: Loại hợp đồng hoặc hình thức ký kết với nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Loại hợp đồng"
+
+      - name: resource_type
+        description: Nhóm nguồn lực nhân sự được chuẩn hóa theo đối tượng nhân sự và cấp bậc vị trí
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm nguồn lực"
+
+      - name: job_level
+        description: Nhóm chức danh hoặc cấp độ công việc của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Job Level"
+
+      - name: position_level
+        description: Cấp bậc vị trí của nhân sự trong cơ cấu tổ chức
+        meta:
+          dimension:
+            type: string
+            label: "Cấp bậc level"
+            order_by: hierarchy_level
+
+      - name: hierarchy_level
+        description: Thứ tự phân cấp của position_level dùng để sắp xếp trong BI; giá trị nhỏ hơn tương ứng cấp bậc cao hơn
+        meta:
+          dimension:
+            type: number
+            label: "Hierarchy Level"
+            hidden: true
+
+      - name: competency_zone
+        description: Vùng năng lực hoặc chuyên môn của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Vùng năng lực"
+
+      - name: tenure_group
+        description: Nhóm thâm niên làm việc của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm thâm niên"
+
+      - name: gender
+        description: Giới tính của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Giới tính"
+
+      - name: employee_type
+        description: Nhóm đối tượng nhân sự theo dữ liệu nguồn
+        meta:
+          dimension:
+            type: string
+            label: "Employee Type"
+
+      - name: snapshot_is_active
+        description: Cờ xác định nhân sự đang active theo trạng thái snapshot nguồn
+
+      - name: is_active_month_end
+        description: Cờ xác định nhân sự đang làm việc tại thời điểm cuối tháng báo cáo
+
+      - name: is_new_hire_month
+        description: Cờ xác định nhân sự được tuyển mới trong tháng báo cáo
+
+      - name: is_resigned_month
+        description: Cờ xác định nhân sự nghỉ việc trong tháng báo cáo
+
+      - name: is_quick_quit_month
+        description: Cờ xác định nhân sự nghỉ việc sớm trong tháng báo cáo
+
+      - name: is_voluntary_exit
+        description: Cờ xác định nhân sự nghỉ việc tự nguyện
+
+      - name: is_company_termination
+        description: Cờ xác định nhân sự nghỉ việc theo quyết định của công ty
+
+      - name: evaluation_date
+        description: Ngày kỳ đánh giá hiệu suất của nhân sự; nếu nhân sự chưa có đánh giá thì lấy ngày cuối quý tương ứng với tháng báo cáo
+        meta:
+          dimension:
+            type: date
+            label: "Evaluation Date"
+
+      - name: score
+        description: Điểm đánh giá hiệu suất của nhân sự trong kỳ đánh giá
+        meta:
+          dimension:
+            type: number
+            label: "Performance Score"
+
+      - name: performance_result
+        description: Kết quả phân loại đánh giá hiệu suất của nhân sự, gồm Không đánh giá, Không đạt, Đạt và Vượt yêu cầu
+        meta:
+          dimension:
+            type: string
+            label: "Performance Result"
+
+      - name: ki
+        description: Thông tin KI hoặc chỉ số đánh giá bổ sung của nhân sự trong kỳ đánh giá
+        meta:
+          dimension:
+            type: string
+            label: "KI"
+      - name: has_performance_evaluation
+        description: Cờ xác định nhân sự có kết quả đánh giá hiệu suất trong kỳ

@@ -1,0 +1,42 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_sprint_report_charts
+    description: "Nguồn Power BI: SprintReportCharts"
+    columns:
+    - name: sprint_report_sprint_name
+      description: "Cột SPRINT_REPORT_SPRINT_NAME"
+    - name: sprint_report_sprint_state
+      description: "Cột SPRINT_REPORT_SPRINT_STATE"
+    - name: sprint_report_sprint_goal
+      description: "Cột SPRINT_REPORT_SPRINT_GOAL"
+    - name: sprint_report_sprint_activated_date
+      description: "Cột SPRINT_REPORT_SPRINT_ACTIVATED_DATE"
+    - name: sprint_report_sprint_start_date
+      description: "Cột SPRINT_REPORT_SPRINT_START_DATE"
+    - name: sprint_report_sprint_end_date
+      description: "Cột SPRINT_REPORT_SPRINT_END_DATE"
+    - name: sprint_report_sprint_complete_date
+      description: "Cột SPRINT_REPORT_SPRINT_COMPLETE_DATE"
+    - name: sprint_report_issue_key
+      description: "Cột SPRINT_REPORT_ISSUE_KEY"
+    - name: sprint_report_issue_report_status
+      description: "Cột SPRINT_REPORT_ISSUE_REPORT_STATUS"
+    - name: sprint_report_issue_summary
+      description: "Cột SPRINT_REPORT_ISSUE_SUMMARY"
+    - name: sprint_report_issue_type
+      description: "Cột SPRINT_REPORT_ISSUE_TYPE"
+    - name: sprint_report_issue_priority
+      description: "Cột SPRINT_REPORT_ISSUE_PRIORITY"
+    - name: sprint_report_issue_status
+      description: "Cột SPRINT_REPORT_ISSUE_STATUS"
+    - name: sprint_report_issue_estimation_value
+      description: "Cột SPRINT_REPORT_ISSUE_ESTIMATION_VALUE"
+    - name: sprint_report_issue_estimation_value_current
+      description: "Cột SPRINT_REPORT_ISSUE_ESTIMATION_VALUE_CURRENT"
+    - name: sprint_report_issue_added_after_start_time
+      description: "Cột SPRINT_REPORT_ISSUE_ADDED_AFTER_START_TIME"

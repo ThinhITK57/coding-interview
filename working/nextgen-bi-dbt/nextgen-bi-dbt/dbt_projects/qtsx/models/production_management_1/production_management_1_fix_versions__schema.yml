@@ -1,0 +1,118 @@
+version: 2
+models:
+- name: production_management_1_fix_versions
+  description: "Bảng production_management_1_fix_versions (nguồn Power BI: FixVersions)."
+  meta:
+    label: "FixVersions"
+    powerbi_source: "FixVersions"
+    joins:
+    - join: production_management_1_issues_fix_versions
+      sql_on: "${production_management_1_fix_versions.fix_version_issue_key} = ${production_management_1_issues_fix_versions.issue_key}"
+      relationship: many-to-one
+    metrics:
+      sum_logworks:
+        type: sum
+        sql: logworks
+        label: "LOGWORKS"
+        description: "Sinh từ Power BI: sum(FixVersions.LOGWORKS)"
+      sum_ulnl_mm_release:
+        type: sum
+        sql: ulnl_mm_release
+        label: "ULNL ĐÃ TRỪ TÁI SD"
+        description: "Sinh từ Power BI: sum(FixVersions.ULNL MM Release)"
+  columns:
+  - name: id
+    description: "Cột Id trong FixVersions."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: fix_version_issue_key
+    description: "Cột FIX_VERSION_ISSUE_KEY trong FixVersions."
+    meta:
+      dimension:
+        type: string
+        label: "FIX_VERSION_ISSUE_KEY"
+        hidden: true
+  - name: fix_version_issue_id
+    description: "Cột FIX_VERSION_ISSUE_ID trong FixVersions."
+    meta:
+      dimension:
+        type: number
+        label: "FIX_VERSION_ISSUE_ID"
+        hidden: true
+  - name: fix_version_name
+    description: "Cột FIX_VERSION_NAME trong FixVersions."
+    meta:
+      dimension:
+        type: string
+        label: "FIX_VERSION_NAME"
+  - name: fix_version_release_date
+    description: "Cột FIX_VERSION_RELEASE_DATE trong FixVersions."
+    meta:
+      dimension:
+        type: timestamp
+        label: "FIX_VERSION_RELEASE_DATE"
+        hidden: true
+  - name: fix_version_start_date
+    description: "Cột FIX_VERSION_START_DATE trong FixVersions."
+    meta:
+      dimension:
+        type: timestamp
+        label: "FIX_VERSION_START_DATE"
+        hidden: true
+  - name: fix_version_released
+    description: "Cột FIX_VERSION_RELEASED trong FixVersions."
+    meta:
+      dimension:
+        type: boolean
+        label: "FIX_VERSION_RELEASED"
+        hidden: true
+  - name: date_release
+    description: "Cột DATE_RELEASE trong FixVersions. Cột tính toán, DAX gốc: DATE(YEAR(FixVersions[FIX_VERSION_RELEASE_DATE]), MONTH(FixVersions[FIX_VERSION_RELEASE_DATE]), DAY(FixVersions[FIX_VERSION_RELEASE_DATE]))"
+    meta:
+      dimension:
+        type: timestamp
+        label: "DATE_RELEASE"
+        hidden: true
+  - name: ulnl_mm_release
+    description: "Cột ULNL MM Release trong FixVersions. Cột tính toán, DAX gốc: (LOOKUPVALUE('Issues_FixVersions'[Tổng_ULNL_đã_trừ_tái_sử_dụng_13370],Issues_FixVersions[ISSUE_KEY],'FixVersions'[FIX_VERSION_ISSUE_KEY]))/8/'FixVersions'[Ngày làm việc trong tháng]"
+    meta:
+      dimension:
+        type: number
+        label: "ULNL MM Release"
+        hidden: true
+  - name: logworks
+    description: "Cột LOGWORKS trong FixVersions. Cột tính toán, DAX gốc: (LOOKUPVALUE('Issues_FixVersions'[ISSUE_TIME_SPENT_WITH_ST],Issues_FixVersions[ISSUE_KEY],'FixVersions'[FIX_VERSION_ISSUE_KEY]))/8/21"
+    meta:
+      dimension:
+        type: number
+        label: "LOGWORKS"
+        hidden: true
+  - name: quarter
+    description: "Cột Quarter trong FixVersions. Cột tính toán, DAX gốc: LOOKUPVALUE('Dim_Date'[QuarterYear],Dim_Date[Date],FixVersions[DATE_RELEASE])"
+    meta:
+      dimension:
+        type: string
+        label: "Quarter"
+        hidden: true
+  - name: project_name
+    description: "Cột Project Name trong FixVersions. Cột tính toán, DAX gốc: LOOKUPVALUE('Issues_FixVersions'[ProJect Name_last],'Issues_FixVersions'[ISSUE_KEY],'FixVersions'[FIX_VERSION_ISSUE_KEY])"
+    meta:
+      dimension:
+        type: string
+        label: "Project Name"
+  - name: division
+    description: "Cột Khối trong FixVersions. Cột tính toán, DAX gốc: LOOKUPVALUE('Project Name'[Khối],'Project Name'[PROJECT_NAME_Last],'FixVersions'[Project Name] )"
+    meta:
+      dimension:
+        type: string
+        label: "Khối"
+  - name: working_days_in_month
+    description: "Cột Ngày làm việc trong tháng trong FixVersions. Cột tính toán, DAX gốc: VAR SelectedDate = FixVersions[DATE_RELEASE] RETURN IF( ISBLANK(SelectedDate), BLANK(), -- hoặc 0 nếu bạn muốn trả về số 0 khi ngày trống VAR StartDate = DATE(YEAR(SelectedDate), MONTH(SelectedDate), 1) VAR EndDate = EOMONTH(SelectedDate, 0) VAR WorkingDays = COUNTX( FILTER( ADDCOLUMNS( CALENDAR(StartDate, EndDate), \"WeekDay\", WEEKDAY([Date], 2) ), [WeekDay] <= 5 ), [Date] ) VAR holidays = COUNTROWS( FILTER('ngày nghỉ', 'ngày nghỉ'[Holiday] >= StartDate && 'ngày nghỉ'[Holiday] <= EndDate ) ) RETURN WorkingDays - holidays )"
+    meta:
+      dimension:
+        type: number
+        label: "Ngày làm việc trong tháng"
+        hidden: true

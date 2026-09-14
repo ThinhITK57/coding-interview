@@ -1,0 +1,137 @@
+version: 2
+models:
+- name: crm_partners
+  description: Bảng crm_partners lưu trữ thông tin các đối tác kinh doanh, bao gồm dữ liệu nhận dạng, liên hệ, địa chỉ và trạng thái hợp đồng. Dữ liệu phục vụ quản lý quan hệ đối tác, phân tích hiệu suất và hỗ trợ chiến lược hợp tác.
+  meta:
+    label: "CRM Partners"
+    owner: "huongnv1"
+    metrics:
+      partner_count:
+        type: count_distinct
+        sql: ${TABLE}.partner_id
+        description: Tổng số đối tác duy nhất.
+        label: "Partner Count"
+        category: "Customer Analytics"
+        synonyms:
+          - "Partner Count"
+          - "Số lượng Partner"
+      active_partner_count:
+        type: count_distinct
+        sql: "CASE\n  WHEN expiration_date >= CURRENT_TIMESTAMP THEN partner_id\nEND"
+        description: Số đối tác còn hiệu lực.
+        label: "Active Partner Count"
+        category: "Customer Analytics"
+        synonyms:
+          - "Active Partner Count"
+          - "Số lượng Active Partner"
+      expired_partner_count:
+        type: count_distinct
+        sql: "CASE\n  WHEN expiration_date < CURRENT_TIMESTAMP THEN partner_id\nEND"
+        description: Số đối tác đã hết hạn.
+        label: "Expired Partner Count"
+        category: "Contract Performance"
+        synonyms:
+          - "Expired Partner Count"
+          - "Số lượng hết hạn Partner"
+      active_partner_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN COUNT(DISTINCT partner_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN expiration_date >= CURRENT_TIMESTAMP THEN partner_id END)\n  / COUNT(DISTINCT partner_id)\nEND, 2)"
+        description: Tỷ lệ đối tác còn hiệu lực.
+        label: "Active Partner Rate"
+        category: "Customer Analytics"
+        synonyms:
+          - "Active Partner Rate"
+          - "Tỷ lệ Active Partner"
+      expired_partner_rate:
+        type: number
+        sql: "ROUND(CASE\n  WHEN COUNT(DISTINCT partner_id) = 0.0 THEN 0.0\n  ELSE 1.0 * COUNT(DISTINCT CASE WHEN expiration_date < CURRENT_TIMESTAMP THEN partner_id END)\n  / COUNT(DISTINCT partner_id)\nEND, 2)"
+        description: Tỷ lệ đối tác đã hết hạn.
+        label: "Expired Partner Rate"
+        category: "Contract Performance"
+        synonyms:
+          - "Expired Partner Rate"
+          - "Tỷ lệ hết hạn Partner"
+  columns:
+  - name: id
+    description: Mã định danh duy nhất của đối tác
+    meta:
+      dimension:
+        type: string
+        label: Định danh bản ghi
+    data_tests:
+    - not_null
+    - unique
+  - name: partner_name
+    description: Tên đối tác (công ty, khách hàng, nhà cung cấp)
+    meta:
+      dimension:
+        type: string
+        label: Tên đối tác
+  - name: document_number
+    description: Số hoặc mã định danh tài liệu/hợp đồng đối tác
+    meta:
+      dimension:
+        type: string
+        label: Số chứng từ
+
+  - name: company_alias
+    description: Tên thay thế của khách hàng hoặc công ty, bao gồm tên viết tắt, tên gọi ngắn hoặc tên thường được sử dụng để nhận diện khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Tên thay thế khách hàng
+        synonyms:
+          - tên thay thế
+          - tên viết tắt
+          - viết tắt
+          - bí danh công ty
+          - biệt danh công ty
+          - tên gọi khác
+          - tên gọi ngắn
+          - alias
+          - company alias
+          - short name
+  - name: country
+    description: Quốc gia nơi đối tác hoạt động
+    meta:
+      dimension:
+        type: string
+        label: Quốc gia
+  - name: contact_name
+    description: Tên người liên hệ chính
+    meta:
+      dimension:
+        type: string
+        label: Tên liên hệ
+  - name: contact_position
+    description: Column contact_position from bi_silver.crm_partners
+  - name: effective_date
+    description: Ngày bắt đầu hiệu lực của đối tác/hợp đồng
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày hiệu lực
+  - name: expiration_date
+    description: Ngày hết hiệu lực của đối tác/hợp đồng
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày hết hạn
+  - name: partner_type
+    description: Loại hình hoặc nhóm mà đối tác thuộc, xác định vai trò kinh doanh của họ.
+    meta:
+      dimension:
+        type: string
+        label: Loại đối tác
+  - name: document_type
+    description: Loại tài liệu hoặc hợp đồng đối tác (PDF, DOCX, Agreement…)
+    meta:
+      dimension:
+        type: string
+        label: Định dạng tài liệu
+  - name: partner_status
+    description: Trạng thái hợp tác hiện tại của đối tác (Active, Expired…)
+    meta:
+      dimension:
+        type: string
+        label: Trạng thái

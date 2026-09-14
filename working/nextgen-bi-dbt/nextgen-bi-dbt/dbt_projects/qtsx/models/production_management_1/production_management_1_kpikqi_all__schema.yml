@@ -1,0 +1,118 @@
+version: 2
+models:
+- name: production_management_1_kpikqi_all
+  description: "Bảng production_management_1_kpikqi_all (nguồn Power BI: KPIKQI_ALL)."
+  meta:
+    label: "KPIKQI_ALL"
+    powerbi_source: "KPIKQI_ALL"
+    metrics:
+      tong_count_dv_fixed:
+        type: count_distinct
+        sql: "CASE WHEN kpi_type <> 'Sản phẩm' THEN metric_name END"
+        label: "Tổng số DV_Fixed"
+        description: "DAX: COALESCE(CALCULATE(DISTINCTCOUNT('KPIKQI_ALL'[Metric name]), 'KPIKQI_New'[KPITYPE] <> \"Sản phẩm\"), 0). KHÁC BẢN GỐC: bộ lọc gốc đặt trên bảng 'KPIKQI_New' nhưng hai bảng không có quan hệ nào trong DataModel, nên chuyển sang cột `kpi_type` của chính 'KPIKQI_ALL' — cùng ngữ nghĩa \"loại KPI không phải Sản phẩm\"."
+      tong_count_dv_khong_passed_all:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN kpi_type <> 'Sản phẩm' THEN metric_name END) - COUNT(DISTINCT CASE WHEN kpi_type = 'Dịch vụ' AND evaluation = '1. Đạt' THEN metric_name END)"
+        label: "Tổng số DV không đạt_all"
+        description: "DAX: 'KPIKQI_ALL'[Tổng số DV_Fixed] - 'KPIKQI_ALL'[Tổng số DV Đạt_all]"
+      tong_count_dv_passed_all:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN kpi_type = 'Dịch vụ' AND evaluation = '1. Đạt' THEN metric_name END)"
+        label: "Tổng số DV Đạt_all"
+        description: "DAX: đếm [Metric name] có FailRate > 0, với FailRate = DIVIDE(số dòng Loại KPI=\"Dịch vụ\" & Đánh giá=\"1. Đạt\", số dòng Loại KPI=\"Dịch vụ\", 0). Biến trong DAX đặt tên \"FailDV\" nhưng điều kiện lọc là \"1. Đạt\" nên thực chất đây là \"dịch vụ ĐẠT\" — giữ đúng ngữ nghĩa của công thức, không sửa theo tên biến."
+  columns:
+  - name: report_date
+    description: "Dựng lại từ UNION 3 nhánh (KPIKQI_TKCG_Report / KPIKQI_NEW TickKPI=1 / KPI_BoLotTanCong) — xem create_views_trino.sql."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo"
+  - name: kpi_type
+    description: "Cột Loại KPI trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Loại KPI"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+  - name: result
+    description: "Cột Kết quả trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+  - name: evaluation
+    description: "Cột Đánh giá trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+  - name: target
+    description: "Cột Target trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+  - name: spdv
+    description: "Cột SPDV trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: group_value
+    description: "Cột Nhóm trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: report_month_date
+    description: "Cột Ngày báo cáo tháng trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo tháng"
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 1 kỳ trước"
+  - name: result_prev_2_periods
+    description: "Cột Kết quả 2 kỳ trước trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả 2 kỳ trước"
+        hidden: true
+  - name: kpi_trend
+    description: "Cột Xu hướng KPI trong KPIKQI_ALL."
+    meta:
+      dimension:
+        type: string
+        label: "Xu hướng KPI"

@@ -1,0 +1,140 @@
+version: 2
+models:
+- name: hr_ld_fresher_conversion
+  description: >
+    Bảng **hr_ld_fresher_conversion** lưu trữ thông tin chuyển đổi của nhân sự Fresher
+    sau khi hoàn thành chương trình đào tạo, bao gồm thông tin cá nhân, thời gian chuyển đổi,
+    vị trí công việc, đơn vị công tác, địa điểm làm việc và kết quả đánh giá phỏng vấn.
+    Dữ liệu được sử dụng để theo dõi số lượng Fresher được chuyển đổi thành nhân viên chính thức,
+    đánh giá hiệu quả chương trình đào tạo và hỗ trợ công tác phát triển nguồn nhân lực.
+
+  meta:
+    label: "Fresher Conversion"
+    owner: "tranpth"
+    metrics:
+      fresher_conversion_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi chuyển đổi Fresher."
+        label: "Fresher Conversion Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi chuyển đổi Fresher"
+          - "Fresher Conversion Record Count"
+
+      fresher_converted_employee_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng Fresher được chuyển đổi sang vị trí hoặc trạng thái làm việc chính thức."
+        label: "Fresher Converted Employee Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher chuyển đổi"
+          - "Số Fresher chuyển diện"
+          - "Fresher Converted Employee Count"
+
+      converted_fresher_with_interview_result_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN ${TABLE}.interview_result IS NOT NULL
+              AND TRIM(${TABLE}.interview_result) <> ''
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng Fresher chuyển đổi có ghi nhận kết quả phỏng vấn."
+        label: "Converted Fresher with Interview Result Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số Fresher có kết quả phỏng vấn"
+          - "Converted Fresher with Interview Result Count"
+
+      avg_days_to_conversion:
+        type: average
+        sql: date_diff('day', CAST(${TABLE}.onboard_date AS date), CAST(${TABLE}.conversion_date AS date))
+        description: "Số ngày trung bình từ ngày Fresher onboard đến ngày chuyển đổi chính thức."
+        label: "Average Days to Conversion"
+        category: "Learning & Development"
+        synonyms:
+          - "Thời gian chuyển đổi trung bình"
+          - "Average Days to Conversion"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi chuyển đổi Fresher
+      meta:
+        dimension:
+          type: number
+          label: "Fresher Conversion Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: employee_code
+      description: Mã định danh của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: onboard_date
+      description: Ngày nhân sự Fresher bắt đầu tham gia chương trình đào tạo hoặc gia nhập công ty
+      meta:
+        dimension:
+          type: timestamp
+          label: "Onboard Date"
+
+    - name: conversion_date
+      description: Ngày nhân sự được chuyển đổi sang vị trí hoặc trạng thái làm việc chính thức
+      meta:
+        dimension:
+          type: timestamp
+          label: "Conversion Date"
+
+    - name: role_base
+      description: Nhóm vai trò hoặc chức danh cơ sở của nhân sự sau khi chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Role Base"
+
+    - name: level_region
+      description: Cấp bậc hoặc nhóm level được áp dụng cho nhân sự sau khi chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Level Region"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 tiếp nhận nhân sự sau khi chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: current_work_location
+      description: Địa điểm hoặc khu vực làm việc hiện tại của nhân sự
+      meta:
+        dimension:
+          type: string
+          label: "Current Work Location"
+
+    - name: interview_result
+      description: Kết quả đánh giá hoặc phỏng vấn chuyển đổi của nhân sự Fresher
+      meta:
+        dimension:
+          type: string
+          label: "Interview Result"
+
+    - name: interview_result_file
+      description: Đường dẫn hoặc tài liệu lưu trữ kết quả đánh giá/phỏng vấn chuyển đổi
+      meta:
+        dimension:
+          type: string
+          label: "Interview Result File"

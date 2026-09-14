@@ -1,0 +1,133 @@
+version: 2
+models:
+- name: production_management_1_n_5_vvip_prm_incident_management
+  description: "Bảng production_management_1_n_5_vvip_prm_incident_management (nguồn Power BI: 5VVIP_PRM_Điều hành sự cố)."
+  meta:
+    label: "5VVIP_PRM_Điều hành sự cố"
+    powerbi_source: "5VVIP_PRM_Điều hành sự cố"
+    joins:
+    - join: production_management_1_vvip
+      sql_on: "${production_management_1_n_5_vvip_prm_incident_management.customer_jmcf} = ${production_management_1_vvip.org_name}"
+      relationship: many-to-many
+    metrics:
+      count_distinct_id:
+        type: count_distinct
+        sql: id
+        label: "Số lượng sự cố"
+        description: "Sinh từ Power BI: count_distinct(5VVIP_PRM_Điều hành sự cố.Id)"
+      count_id:
+        type: count
+        sql: id
+        label: "Số sự cố"
+        description: "Sinh từ Power BI: count(5VVIP_PRM_Điều hành sự cố.Id)"
+  columns:
+  - name: id
+    description: "Cột Id trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: end_date
+    description: "Cột End_Date_11610 trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: timestamp
+        label: "End_Date_11610"
+        hidden: true
+  - name: customer_jmcf
+    description: "Cột Customer_JMCF_12010 trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "Customer_JMCF_12010"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_reporter_name
+    description: "Cột ISSUE_REPORTER_NAME trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_REPORTER_NAME"
+        hidden: true
+  - name: issue_priority
+    description: "Cột ISSUE_PRIORITY trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_PRIORITY"
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: product_jmcf
+    description: "Cột Sản_Phẩm_JMCF_12011 trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "Sản_Phẩm_JMCF_12011"
+        hidden: true
+  - name: sla_auto
+    description: "Cột SLA_AUTO_11612 trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "SLA_AUTO_11612"
+        hidden: true
+  - name: start_date
+    description: "Cột Start_Date_11317 trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Start_Date_11317"
+        hidden: true
+  - name: ticket_id
+    description: "Cột Ticket_ID_11604 trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: string
+        label: "Ticket_ID_11604"
+        hidden: true
+  - name: handling_time
+    description: "Cột Thời gian xử lý trong 5VVIP_PRM_Điều hành sự cố."
+    meta:
+      dimension:
+        type: number
+        label: "Thời gian xử lý"
+        hidden: true
+  - name: execution_date
+    description: "Cột Ngày thực hiện trong 5VVIP_PRM_Điều hành sự cố. Cột tính toán, DAX gốc: DATE(YEAR('5VVIP_PRM_Điều hành sự cố'[Start_Date_11317]),MONTH('5VVIP_PRM_Điều hành sự cố'[Start_Date_11317]),DAY('5VVIP_PRM_Điều hành sự cố'[Start_Date_11317].[Date]))"
+    meta:
+      dimension:
+        type: date
+        label: "Ngày thực hiện"
+        hidden: true

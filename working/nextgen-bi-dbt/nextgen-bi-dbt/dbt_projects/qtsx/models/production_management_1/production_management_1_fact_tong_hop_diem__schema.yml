@@ -1,0 +1,350 @@
+version: 2
+models:
+- name: production_management_1_fact_tong_hop_diem
+  description: "Bảng production_management_1_fact_tong_hop_diem (nguồn Power BI: fact_tong_hop_diem)."
+  meta:
+    label: "fact_tong_hop_diem"
+    powerbi_source: "fact_tong_hop_diem"
+    joins:
+    - join: production_management_1_contact
+      sql_on: "${production_management_1_fact_tong_hop_diem.email} = ${production_management_1_contact.email}"
+      relationship: many-to-one
+    - join: production_management_1_n_5_vvipkpicx
+      sql_on: "${production_management_1_fact_tong_hop_diem.spdv} = ${production_management_1_n_5_vvipkpicx.spdv}"
+      relationship: many-to-one
+    metrics:
+      average_csat_product_quality:
+        type: average
+        sql: csat_product_quality
+        label: "CSAT CLDV"
+        description: "Sinh từ Power BI: average(fact_tong_hop_diem.CSAT chất lượng SPDV)"
+      average_nps_score:
+        type: average
+        sql: nps_score
+        label: "Average of NPS Score"
+        description: "Sinh từ Power BI: average(fact_tong_hop_diem.NPS Score)"
+      stddev_csat_avg:
+        type: number
+        sql: "STDDEV(${TABLE}.csat_avg)"
+        label: "Standard deviation of CSAT Avg"
+        description: "Sinh từ Power BI: stddev(fact_tong_hop_diem.CSAT Avg)"
+      sum_csat_score:
+        type: sum
+        sql: csat_score
+        label: "Sum of CSAT Score (%)"
+        description: "Sinh từ Power BI: sum(fact_tong_hop_diem.CSAT Score (%))"
+  columns:
+  - name: n_1_nps_change_duplicate_customer
+    description: "Cột 1 % Thay đổi NPS (Khách hàng trùng) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "1 % Thay đổi NPS (Khách hàng trùng)"
+        hidden: true
+  - name: n_1_csat_score_duplicate_customer_previous_period
+    description: "Cột 1 CSAT Score (Khách hàng trùng - Kỳ trước) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "1 CSAT Score (Khách hàng trùng - Kỳ trước)"
+        hidden: true
+  - name: n_1_csat_score_duplicate_customer
+    description: "Cột 1 CSAT Score (Khách hàng trùng) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "1 CSAT Score (Khách hàng trùng)"
+        hidden: true
+  - name: n_1_csat_change_duplicate_customer_ko_cthd
+    description: "Cột 1 Thay đổi CSAT (Khách hàng trùng ko CTHĐ) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "1 Thay đổi CSAT (Khách hàng trùng ko CTHĐ)"
+        hidden: true
+  - name: n_1_nps_score_duplicate_customer_previous_period
+    description: "Cột 1 NPS Score (Khách hàng trùng - Kỳ trước) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "1 NPS Score (Khách hàng trùng - Kỳ trước)"
+        hidden: true
+  - name: n_1_nps_score_duplicate_customer
+    description: "Cột 1 NPS Score (Khách hàng trùng) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "1 NPS Score (Khách hàng trùng)"
+        hidden: true
+  - name: ces
+    description: "Cột CES trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CES"
+        hidden: true
+  - name: ces_score
+    description: "Cột CES Score (%) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CES Score (%)"
+        hidden: true
+  - name: expert
+    description: "Cột Chuyên gia trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Chuyên gia"
+        hidden: true
+  - name: csat_avg
+    description: "Cột CSAT Avg trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT Avg"
+        hidden: true
+  - name: csat_avg_company
+    description: "Cột CSAT Avg công ty trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT Avg công ty"
+        hidden: true
+  - name: csat_product_quality
+    description: "Cột CSAT chất lượng SPDV trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT chất lượng SPDV"
+        hidden: true
+  - name: csat_personnel
+    description: "Cột CSAT nhân sự trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT nhân sự"
+        hidden: true
+  - name: csat_personnel_2
+    description: "Cột CSAT nhan su (%) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT nhan su (%)"
+        hidden: true
+  - name: csat_process
+    description: "Cột CSAT quy trình trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT quy trình"
+        hidden: true
+  - name: csat_process_2
+    description: "Cột CSAT quy trinh (%) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT quy trinh (%)"
+        hidden: true
+  - name: csat_score
+    description: "Cột CSAT Score (%) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT Score (%)"
+        hidden: true
+  - name: csat_score_duplicate_customer
+    description: "Cột CSAT Score (Khách hàng trùng) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT Score (Khách hàng trùng)"
+        hidden: true
+  - name: csat_score_duplicate_customer_previous_period
+    description: "Cột CSAT Score (Khách hàng trùng - Kỳ trước) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "CSAT Score (Khách hàng trùng - Kỳ trước)"
+        hidden: true
+  - name: distinct_ten_cong_ty
+    description: "Cột Distinct_Ten_Cong_Ty trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Distinct_Ten_Cong_Ty"
+        hidden: true
+  - name: companion
+    description: "Cột Đồng hành trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Đồng hành"
+        hidden: true
+  - name: email
+    description: "Cột Email trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "Email"
+        hidden: true
+  - name: email_trung_2_quy_lien_tiep
+    description: "Cột Email_trung 2 quy lien tiep trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Email_trung 2 quy lien tiep"
+        hidden: true
+  - name: is_email_spdvin_cthd
+    description: "Cột IsEmailSPDVInCTHD trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "IsEmailSPDVInCTHD"
+        hidden: true
+  - name: id
+    description: "Cột id trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "id"
+        hidden: true
+  - name: khach_hang_npsthap_nhat
+    description: "Cột KhachHangNPSThapNhat trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "KhachHangNPSThapNhat"
+        hidden: true
+  - name: khach_hang_npsthap_nhat_2_qgan_nhat
+    description: "Cột KhachHangNPSThapNhat_2QGanNhat trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "KhachHangNPSThapNhat_2QGanNhat"
+        hidden: true
+  - name: nhom_cong_ty
+    description: "Cột Nhom_CongTy trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "Nhom_CongTy"
+        hidden: true
+  - name: survey_period
+    description: "Cột Kỳ survey trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "Kỳ survey"
+        hidden: true
+  - name: nps
+    description: "Cột NPS trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "NPS"
+        hidden: true
+  - name: nps_company
+    description: "Cột NPS công ty trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "NPS công ty"
+        hidden: true
+  - name: nps_score
+    description: "Cột NPS Score trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "NPS Score"
+        hidden: true
+  - name: nps_score_duplicate_customer_previous_period
+    description: "Cột NPS Score (Khách hàng trùng - Kỳ trước) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "NPS Score (Khách hàng trùng - Kỳ trước)"
+        hidden: true
+  - name: nps_score_duplicate_customer
+    description: "Cột NPS Score (Khách hàng trùng) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "NPS Score (Khách hàng trùng)"
+        hidden: true
+  - name: nps_score_v1
+    description: "Cột NPS Score v1 trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "NPS Score v1"
+        hidden: true
+  - name: previous_year_quarter_numeric
+    description: "Cột PreviousYearQuarterNumeric trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "PreviousYearQuarterNumeric"
+        hidden: true
+  - name: nps_class_by_customer
+    description: "Cột Phân loại NPS theo KH trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "Phân loại NPS theo KH"
+        hidden: true
+  - name: quarter
+    description: "Cột Quarter trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "Quarter"
+        hidden: true
+  - name: quarter_number
+    description: "Cột Quarter_Number trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Quarter_Number"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+  - name: csat_change_duplicate_customer
+    description: "Cột Thay đổi CSAT (Khách hàng trùng) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Thay đổi CSAT (Khách hàng trùng)"
+        hidden: true
+  - name: nps_change_duplicate_customer
+    description: "Cột Thay đổi NPS (Khách hàng trùng) trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Thay đổi NPS (Khách hàng trùng)"
+        hidden: true
+  - name: response_rate
+    description: "Cột Tỷ lệ phản hồi trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Tỷ lệ phản hồi"
+        hidden: true
+  - name: year_value
+    description: "Cột Year trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: number
+        label: "Year"
+        hidden: true
+  - name: year_quarter_numeric
+    description: "Cột YearQuarterNumeric trong fact_tong_hop_diem."
+    meta:
+      dimension:
+        type: string
+        label: "YearQuarterNumeric"
+        hidden: true

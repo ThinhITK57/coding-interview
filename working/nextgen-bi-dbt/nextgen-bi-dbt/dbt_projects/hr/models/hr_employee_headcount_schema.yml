@@ -1,0 +1,694 @@
+version: 2
+
+models:
+  - name: hr_employee_headcount
+    description: >
+      Bảng **hr_employee_headcount** lưu trữ thông tin kế hoạch và trạng thái headcount nhân sự
+      theo cơ cấu tổ chức, vị trí công việc, nhân sự đảm nhiệm và các nhóm phân loại phục vụ quản trị
+      nguồn lực. Bảng được sử dụng để theo dõi định biên, tình trạng lấp đầy vị trí, vị trí còn trống,
+      nhân sự hiện có theo định biên, ngoài định biên và các nhóm chức năng như AI, R&D, kinh doanh,
+      hỗ trợ kinh doanh, gián tiếp và thị trường Philippines/Japan. Khi người dùng hỏi về nhân sự
+      hiện tại hoặc hiện có mà không mô tả thêm, chỉ số mặc định được hiểu là nhóm Định biên (ĐB).
+
+    meta:
+      label: "Employee Headcount"
+      owner: "tranpth"
+
+      metrics:
+
+        # =========================
+        # DEFAULT HEADCOUNT METRICS
+        # Default scope: ĐB
+        # =========================
+
+        current_headcount_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự hiện tại thuộc nhóm Định biên (ĐB). Đây là chỉ số mặc định khi người dùng hỏi về nhân sự hiện tại hoặc nhân sự hiện có mà không mô tả thêm."
+          label: "Current Headcount Count"
+          category: "Workforce"
+          synonyms:
+            - "nhân sự hiện tại"
+            - "số nhân sự hiện tại"
+            - "số nhân sự hiện có"
+            - "active headcount"
+            - "current headcount"
+            - "nhân sự định biên hiện tại"
+
+        active_employee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Tổng số nhân sự hiện tại thuộc nhóm Định biên (ĐB) trong phạm vi lọc hiện tại."
+          label: "Active Employee Count"
+          category: "Workforce"
+          synonyms:
+            - "nhân sự active"
+            - "nhân sự đang làm việc"
+            - "nhân sự hiện có"
+            - "Active Employee Count"
+
+        headcount_plan_count:
+          type: count
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+              THEN 1.0
+            END
+          description: "Tổng số vị trí kế hoạch thuộc nhóm Định biên (ĐB)."
+          label: "Headcount Plan Count"
+          category: "Workforce"
+          synonyms:
+            - "định biên"
+            - "tổng định biên"
+            - "số lượng định biên"
+            - "headcount plan"
+            - "biên chế"
+
+        headcount_position_count:
+          type: count
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+              THEN 1.0
+            END
+          description: "Tổng số vị trí headcount thuộc nhóm Định biên (ĐB) trong dữ liệu hiện tại."
+          label: "Headcount Position Count"
+          category: "Workforce"
+          synonyms:
+            - "số vị trí định biên"
+            - "tổng vị trí định biên"
+            - "Headcount Position Count"
+
+        occupied_headcount_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng vị trí Định biên (ĐB) đã có nhân sự đảm nhiệm."
+          label: "Occupied Headcount Count"
+          category: "Workforce"
+          synonyms:
+            - "vị trí đã lấp đầy"
+            - "định biên đã có người"
+            - "Occupied Headcount Count"
+
+        vacant_headcount_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.employee_code IS NULL
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng vị trí Định biên (ĐB) chưa có nhân sự đảm nhiệm."
+          label: "Vacant Headcount Count"
+          category: "Workforce"
+          synonyms:
+            - "vị trí trống"
+            - "định biên trống"
+            - "chưa có nhân sự"
+            - "Vacant Headcount Count"
+
+        vacancy_rate:
+          type: number
+          sql: >
+            100.0 * ${vacant_headcount_count}
+            / NULLIF(${headcount_plan_count}, 0.0)
+          description: "Tỷ lệ vị trí Định biên (ĐB) chưa được lấp đầy, được tính bằng vacant_headcount_count / headcount_plan_count."
+          label: "Vacancy Rate (%)"
+          category: "Workforce"
+          synonyms:
+            - "tỷ lệ trống"
+            - "tỷ lệ vị trí trống"
+            - "Vacancy Rate"
+
+        occupancy_rate:
+          type: number
+          sql: >
+            100.0 * ${occupied_headcount_count}
+            / NULLIF(${headcount_plan_count}, 0.0)
+          description: "Tỷ lệ vị trí Định biên (ĐB) đã có nhân sự đảm nhiệm, được tính bằng occupied_headcount_count / headcount_plan_count."
+          label: "Occupancy Rate (%)"
+          category: "Workforce"
+          synonyms:
+            - "tỷ lệ lấp đầy"
+            - "tỷ lệ định biên đã có người"
+            - "Occupancy Rate"
+
+        avg_tenure_years:
+          type: average
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.employee_code IS NOT NULL
+                AND ${TABLE}.hire_date_vcs IS NOT NULL
+              THEN date_diff(
+                'day',
+                CAST(${TABLE}.hire_date_vcs AS date),
+                current_date
+              ) / 365.0
+            END
+          description: "Thâm niên trung bình của nhân sự thuộc nhóm Định biên (ĐB), tính từ ngày gia nhập VCS."
+          label: "Average Tenure (Years)"
+          category: "Workforce"
+          synonyms:
+            - "thâm niên trung bình"
+            - "Average Tenure"
+
+        # =========================
+        # NON-HEADCOUNT PLAN TYPE
+        # NĐB
+        # =========================
+
+        non_db_headcount_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'NĐB'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự hiện tại thuộc nhóm Ngoài định biên (NĐB)."
+          label: "Non-DB Headcount Count"
+          category: "Workforce"
+          synonyms:
+            - "ngoài định biên"
+            - "nhân sự ngoài định biên"
+            - "NĐB"
+            - "Non-DB Headcount Count"
+
+        non_db_position_count:
+          type: count
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'NĐB'
+              THEN 1.0
+            END
+          description: "Tổng số vị trí hoặc bản ghi thuộc nhóm Ngoài định biên (NĐB)."
+          label: "Non-DB Position Count"
+          category: "Workforce"
+          synonyms:
+            - "số vị trí ngoài định biên"
+            - "vị trí NĐB"
+            - "Non-DB Position Count"
+
+        total_headcount_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Tổng số nhân sự hiện diện trong dữ liệu headcount, bao gồm cả Định biên (ĐB) và Ngoài định biên (NĐB)."
+          label: "Total Headcount Count"
+          category: "Workforce"
+          synonyms:
+            - "tổng nhân sự headcount"
+            - "tổng headcount"
+            - "Total Headcount Count"
+
+        total_position_count:
+          type: count
+          sql: ${TABLE}.employee_code
+          description: "Tổng số bản ghi headcount trong dữ liệu, bao gồm cả ĐB và NĐB."
+          label: "Total Position Count"
+          category: "Workforce"
+          synonyms:
+            - "tổng số vị trí"
+            - "tổng bản ghi headcount"
+            - "Total Position Count"
+
+        # =========================
+        # FUNCTIONAL GROUP METRICS
+        # Default scope: ĐB
+        # =========================
+
+        ai_employee_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_ai_group = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự thuộc nhóm AI trong phạm vi Định biên (ĐB)."
+          label: "AI Employee Count"
+          category: "Workforce"
+          synonyms:
+            - "nhân sự AI"
+            - "AI Employee Count"
+
+        ai_employee_rate:
+          type: number
+          sql: >
+            100.0 * ${ai_employee_count}
+            / NULLIF(${active_employee_count}, 0.0)
+          description: "Tỷ trọng nhân sự AI trên tổng nhân sự Định biên (ĐB) hiện tại, được tính bằng ai_employee_count / active_employee_count."
+          label: "AI Employee Rate (%)"
+          category: "Workforce"
+          synonyms:
+            - "tỷ trọng AI"
+            - "AI Employee Rate"
+
+        ai_org_employee_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_ai_org = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự thuộc đơn vị AI trong phạm vi Định biên (ĐB)."
+          label: "AI Org Employee Count"
+          category: "Workforce"
+
+        domestic_business_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_domestic_business = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự thuộc nhóm kinh doanh trong nước trong phạm vi Định biên (ĐB)."
+          label: "Domestic Business Count"
+          category: "Workforce"
+          synonyms:
+            - "kinh doanh trong nước"
+            - "Domestic Business Count"
+
+        international_business_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_international_business = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự thuộc nhóm kinh doanh quốc tế trong phạm vi Định biên (ĐB)."
+          label: "International Business Count"
+          category: "Workforce"
+          synonyms:
+            - "kinh doanh quốc tế"
+            - "International Business Count"
+
+        rnd_employee_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_rnd = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự thuộc nhóm nghiên cứu và phát triển trong phạm vi Định biên (ĐB)."
+          label: "R&D Employee Count"
+          category: "Workforce"
+          synonyms:
+            - "nhân sự R&D"
+            - "nghiên cứu phát triển"
+            - "R&D Employee Count"
+
+        business_support_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_business_support = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự thuộc nhóm hỗ trợ kinh doanh trong phạm vi Định biên (ĐB)."
+          label: "Business Support Count"
+          category: "Workforce"
+          synonyms:
+            - "hỗ trợ kinh doanh"
+            - "Business Support Count"
+
+        indirect_employee_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_indirect_group = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự thuộc nhóm gián tiếp trong phạm vi Định biên (ĐB)."
+          label: "Indirect Employee Count"
+          category: "Workforce"
+          synonyms:
+            - "nhân sự gián tiếp"
+            - "Indirect Employee Count"
+
+        philippines_japan_market_count:
+          type: sum
+          sql: >
+            CASE
+              WHEN ${TABLE}.headcount_plan_type = 'ĐB'
+                AND ${TABLE}.is_philippines_japan_market = 1.0
+              THEN 1.0
+              ELSE 0.0
+            END
+          description: "Số lượng nhân sự phục vụ thị trường Philippines/Japan trong phạm vi Định biên (ĐB)."
+          label: "Philippines/Japan Market Count"
+          category: "Workforce"
+          synonyms:
+            - "nhân sự Philippines Japan"
+            - "Philippines/Japan Market Count"
+
+        # =========================
+        # RESOURCE TYPE METRICS
+        # Explicit metrics only
+        # =========================
+
+        official_resource_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'TDS-NDS-HDDV'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự thuộc nhóm nguồn lực chính TDS-NDS-HDDV."
+          label: "Official Resource Count"
+          category: "Workforce"
+          synonyms:
+            - "nguồn lực chính"
+            - "TDS NDS HDDV"
+            - "Official Resource Count"
+
+        outsourcing_resource_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'IS/OS'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự thuộc nhóm thuê ngoài IS/OS."
+          label: "Outsourcing Resource Count"
+          category: "Workforce"
+          synonyms:
+            - "nhân sự thuê ngoài"
+            - "IS OS"
+            - "Outsourcing Resource Count"
+
+        collaborator_resource_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'CTV'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự thuộc nhóm cộng tác viên CTV."
+          label: "Collaborator Resource Count"
+          category: "Workforce"
+          synonyms:
+            - "CTV"
+            - "cộng tác viên"
+            - "Collaborator Resource Count"
+
+        trainee_resource_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.resource_type = 'SV+Fresher'
+                AND ${TABLE}.employee_code IS NOT NULL
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng nhân sự thuộc nhóm đào tạo SV+Fresher."
+          label: "Trainee Resource Count"
+          category: "Workforce"
+          synonyms:
+            - "SV Fresher"
+            - "sinh viên fresher"
+            - "Trainee Resource Count"
+
+    columns:
+
+      - name: plan_year
+        description: Năm kế hoạch nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Năm nhu cầu"
+
+      - name: headcount_plan_type
+        description: "Phân loại kế hoạch headcount. ĐB là nhóm Định biên chính; NĐB là nhóm Ngoài định biên, có thể bao gồm CTV hoặc IS/OS."
+        meta:
+          dimension:
+            type: string
+            label: "Phân loại Nhu cầu"
+
+      - name: headcount_status
+        description: Trạng thái hiện tại của headcount trong kế hoạch nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái hiện có"
+
+      - name: division_n
+        description: Khối chức năng mà headcount hoặc nhân viên trực thuộc
+        meta:
+          dimension:
+            type: string
+            label: "Khối N"
+
+      - name: department_n_1
+        description: Đơn vị tổ chức cấp 1 của headcount hoặc nhân viên
+        meta:
+          dimension:
+            type: string
+            label: "Trung tâm N-1"
+
+      - name: department_n_2
+        description: Phòng ban cấp 2 của headcount hoặc nhân viên
+        meta:
+          dimension:
+            type: string
+            label: "Bộ phận N-2"
+
+      - name: department_n_3
+        description: Phòng ban cấp 3 của headcount hoặc nhân viên
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban N-3"
+
+      - name: role_base
+        description: Nhóm vai trò hoặc chức danh cơ sở của vị trí
+        meta:
+          dimension:
+            type: string
+            label: "Vị trí công việc"
+
+      - name: specialization
+        description: Chuyên môn hoặc lĩnh vực chuyên trách của vị trí
+        meta:
+          dimension:
+            type: string
+            label: "Chuyên môn"
+
+      - name: required_level
+        description: Cấp độ năng lực hoặc cấp bậc yêu cầu cho vị trí
+        meta:
+          dimension:
+            type: string
+            label: "Level nhu cầu"
+
+      - name: position_status
+        description: Trạng thái của vị trí trong kế hoạch headcount
+        meta:
+          dimension:
+            type: string
+            label: "Phân cấp Level"
+
+      - name: full_name
+        description: Họ và tên nhân viên đang đảm nhiệm vị trí, nếu có
+        meta:
+          dimension:
+            type: string
+            label: "Họ tên nhân sự"
+
+      - name: employee_code
+        description: Mã định danh của nhân viên đang đảm nhiệm vị trí
+        meta:
+          dimension:
+            type: string
+            label: "Mã nhân viên"
+
+      - name: employee_type
+        description: Nhóm đối tượng nhân sự theo phân loại quản trị nội bộ
+        meta:
+          dimension:
+            type: string
+            label: "Diện đối tượng"
+
+      - name: contract_type
+        description: Loại hợp đồng hoặc hình thức ký kết với nhân viên
+        meta:
+          dimension:
+            type: string
+            label: "Diện hợp đồng"
+
+      - name: hire_date_vcs
+        description: Ngày nhân viên bắt đầu làm việc tại VCS
+        meta:
+          dimension:
+            type: timestamp
+            label: "Hire Date VCS"
+
+      - name: job_level
+        description: Cấp bậc hoặc level hiện tại của nhân viên
+        meta:
+          dimension:
+            type: string
+            label: "Level nhân sự"
+
+      - name: branch
+        description: Chi nhánh hoặc khu vực làm việc của nhân viên/vị trí
+        meta:
+          dimension:
+            type: string
+            label: "Chi nhánh"
+
+      - name: management_level
+        description: Cấp quản lý của nhân viên hoặc vị trí trong cơ cấu tổ chức
+        meta:
+          dimension:
+            type: string
+            label: "Cấp quản lý"
+
+      - name: business_email
+        description: Địa chỉ email công việc của nhân viên
+        meta:
+          dimension:
+            type: string
+            label: "Business Email"
+
+      - name: job_framework_position
+        description: Vị trí công việc theo khung nghề nghiệp
+        meta:
+          dimension:
+            type: string
+            label: "Job Framework Position"
+
+      - name: job_framework_position_2
+        description: Vị trí công việc chi tiết theo khung nghề nghiệp
+        meta:
+          dimension:
+            type: string
+            label: "Job Framework Position 2"
+
+      - name: service_group
+        description: Nhóm dịch vụ hoặc nhóm sản phẩm dịch vụ
+        meta:
+          dimension:
+            type: string
+            label: "Service Group"
+
+      - name: service_group_new
+        description: Nhóm dịch vụ sau chuẩn hóa
+        meta:
+          dimension:
+            type: string
+            label: "Service Group New"
+
+      - name: is_ai_group
+        description: Cờ xác định nhân sự thuộc nhóm AI
+        meta:
+          dimension:
+            type: number
+            label: "Is AI Group"
+
+      - name: is_ai_org
+        description: Cờ xác định nhân sự thuộc đơn vị AI
+        meta:
+          dimension:
+            type: number
+            label: "Is AI Org"
+
+      - name: is_philippines_japan_market
+        description: Cờ xác định nhân sự phục vụ thị trường Philippines/Japan
+        meta:
+          dimension:
+            type: number
+            label: "Is Philippines/Japan Market"
+
+      - name: is_domestic_business
+        description: Cờ xác định nhân sự thuộc nhóm kinh doanh trong nước
+        meta:
+          dimension:
+            type: number
+            label: "Is Domestic Business"
+
+      - name: is_international_business
+        description: Cờ xác định nhân sự thuộc nhóm kinh doanh quốc tế
+        meta:
+          dimension:
+            type: number
+            label: "Is International Business"
+
+      - name: is_rnd
+        description: Cờ xác định nhân sự thuộc nhóm nghiên cứu và phát triển
+        meta:
+          dimension:
+            type: number
+            label: "Is R&D"
+
+      - name: is_indirect_group
+        description: Cờ xác định nhân sự thuộc nhóm gián tiếp
+        meta:
+          dimension:
+            type: number
+            label: "Is Indirect Group"
+
+      - name: is_business_support
+        description: Cờ xác định nhân sự thuộc nhóm hỗ trợ kinh doanh
+        meta:
+          dimension:
+            type: number
+            label: "Is Business Support"
+
+      - name: resource_type
+        description: Nhóm nguồn lực nhân sự được chuẩn hóa từ employee_type và position_level
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm nguồn lực"
+
+      - name: position_level
+        description: Cấp bậc nhân sự, ưu tiên management_level, nếu không có thì sử dụng employee_level
+        meta:
+          dimension:
+            type: string
+            label: "Cấp bậc level"
+            order_by: hierarchy_level
+
+      - name: hierarchy_level
+        description: Thứ tự phân cấp của position_level dùng để sắp xếp trong BI. Giá trị nhỏ hơn tương ứng cấp bậc cao hơn.
+        meta:
+          dimension:
+            type: number
+            label: "Hierarchy Level"
+            hidden: true

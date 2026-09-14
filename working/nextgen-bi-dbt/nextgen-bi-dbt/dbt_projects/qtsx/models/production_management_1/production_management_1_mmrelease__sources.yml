@@ -1,0 +1,58 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_mmrelease
+    description: "Nguồn Power BI: MMRelease"
+    columns:
+    - name: project_key
+      description: "Cột project_key"
+    - name: project_name
+      description: "Cột project_name"
+    - name: issue_id
+      description: "Cột issue_id"
+    - name: issue_num
+      description: "Cột issue_num"
+    - name: summary
+      description: "Cột summary"
+    - name: issue_type
+      description: "Cột issue_type"
+    - name: parent_project_key
+      description: "Cột parent_project_key"
+    - name: parent_issue_num
+      description: "Cột parent_issue_num"
+    - name: worklog_id
+      description: "Cột worklog_id"
+    - name: author
+      description: "Cột author"
+    - name: timeworked
+      description: "Cột timeworked"
+    - name: startdate
+      description: "Cột startdate"
+    - name: version_name
+      description: "Cột version_name"
+    - name: released
+      description: "Cột released"
+    - name: archived
+      description: "Cột archived"
+    - name: release_date
+      description: "Cột release_date"
+    - name: category_name
+      description: "Cột category_name"
+    - name: hours
+      description: "Cột hours"
+    - name: end_of_month
+      description: "Cột EndOfMonth"
+    - name: working_days
+      description: "Cột Số ngày làm việc"
+    - name: mm_release
+      description: "Cột MM RELEASE"
+    - name: issue_parent_type
+      description: "Cột ISSUE_PARENT_TYPE"
+    - name: issue_type_final
+      description: "Cột issue_type_final"
+    - name: cso_ticket_link
+      description: "Cột CSO Ticket Link"

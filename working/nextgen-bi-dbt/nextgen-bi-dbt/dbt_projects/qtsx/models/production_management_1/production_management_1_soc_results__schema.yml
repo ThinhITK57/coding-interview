@@ -1,0 +1,210 @@
+version: 2
+models:
+- name: production_management_1_soc_results
+  description: "Bảng production_management_1_soc_results (nguồn Power BI: SOC_Results)."
+  meta:
+    label: "SOC_Results"
+    powerbi_source: "SOC_Results"
+    metrics:
+      can_chu_y_soc:
+        type: count_distinct
+        sql: "CASE WHEN tick_kpi = 1 AND evaluation = 'Cần chú ý!' THEN customer END"
+        label: "Cần chú ý_SOC"
+        description: "DAX: COUNTROWS(FILTER(VALUES(SOC_Results[Khách hàng]), CALCULATE(COUNTROWS(SOC_Results), SOC_Results[TickKPI]=1, SOC_Results[ĐÁNH GIÁ]=\"Cần chú ý!\") > 0))"
+      count_metric_kh:
+        type: count_distinct
+        sql: key_target
+        label: "Số Metric-KH"
+        description: "DAX: CALCULATE(DISTINCTCOUNT('SOC_Results'[Key_target]))"
+      sum_result:
+        type: sum
+        sql: result
+        label: "Sum of Kết quả"
+        description: "Sinh từ Power BI: sum(SOC_Results.Kết quả)"
+      tong_customer_soc:
+        type: count_distinct
+        sql: customer
+        label: "Tổng khách hàng_SOC"
+        description: "DAX: CALCULATE( DISTINCTCOUNT('SOC_Results'[Khách hàng]))"
+      tong_khach_khong_passed_soc:
+        type: number
+        sql: "COUNT(DISTINCT CASE WHEN tick_kpi = 1
+                     AND NOT (evaluation = '1. Đạt' OR evaluation IS NULL OR TRIM(evaluation) = '')
+                    THEN customer END)
+- COUNT(DISTINCT CASE WHEN tick_kpi = 1 AND evaluation = 'Cần chú ý!' THEN customer END)"
+        label: "Tổng khách Không Đạt_SOC"
+        description: "DAX: 'SOC_Results'[Tổng khách hàng_SOC] - [Tổng khách Đạt_SOC] - [Cần chú ý_SOC]. Rút gọn đại số: (tổng - đạt) chính là tập khách có dòng \"không đạt\", nên chỉ còn (khách không đạt) - (khách cần chú ý)."
+      tong_khach_passed_soc:
+        type: number
+        sql: "COUNT(DISTINCT customer) - COUNT(DISTINCT CASE WHEN tick_kpi = 1
+                       AND NOT (evaluation = '1. Đạt' OR evaluation IS NULL OR TRIM(evaluation) = '')
+                      THEN customer END)"
+        label: "Tổng khách Đạt_SOC"
+        description: "DAX: COUNTROWS(FILTER(VALUES(SOC_Results[Khách hàng]), CALCULATE(COUNTROWS(SOC_Results), SOC_Results[TickKPI]=1, NOT(SOC_Results[ĐÁNH GIÁ]=\"1. Đạt\" || ISBLANK(...) || TRIM(...)=\"\")) = 0))"
+  columns:
+  - name: source_sheet
+    description: "Cột Source sheet trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Source sheet"
+        hidden: true
+  - name: issue_type
+    description: "Cột Issue type trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Issue type"
+        hidden: true
+  - name: quarter
+    description: "Cột Quý trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Quý"
+        hidden: true
+  - name: month_value
+    description: "Cột Tháng trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Tháng"
+        hidden: true
+  - name: week
+    description: "Cột Tuần trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Tuần"
+        hidden: true
+  - name: year_value
+    description: "Cột Năm trong SOC_Results."
+    meta:
+      dimension:
+        type: number
+        label: "Năm"
+        hidden: true
+  - name: start_date
+    description: "Cột Start date trong SOC_Results."
+    meta:
+      dimension:
+        type: date
+        label: "Start date"
+        hidden: true
+  - name: report_date
+    description: "Cột Ngày báo cáo trong SOC_Results."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày báo cáo1"
+  - name: summary
+    description: "Cột Summary trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Summary"
+        hidden: true
+  - name: customers
+    description: "Cột Customers trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Customers"
+        hidden: true
+  - name: metric_name
+    description: "Cột Metric name trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+  - name: result_input
+    description: "Cột Kết quả_input trong SOC_Results."
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả_input"
+        hidden: true
+  - name: key_target
+    description: "Cột Key_target trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Key_target"
+        hidden: true
+  - name: target
+    description: "Cột Target trong SOC_Results."
+    meta:
+      dimension:
+        type: number
+        label: "Target"
+  - name: condition
+    description: "Cột Điều kiện trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+  - name: unit_of_measure
+    description: "Cột Đơn vị tính trong SOC_Results."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị tính"
+  - name: customer
+    description: "Cột Khách hàng trong SOC_Results. Cột tính toán, DAX gốc: LOOKUPVALUE('SOC_Target'[Khách hàng],'SOC_Target'[Summary],'SOC_Results'[Summary])"
+    meta:
+      dimension:
+        type: string
+        label: "Khách hàng"
+  - name: evaluation_passed
+    description: "Cột Đánh giá đạt trong SOC_Results. Cột tính toán, DAX gốc: SWITCH ( TRUE(), NOT ISBLANK ( 'SOC_Results'[Kết quả] ) && 'SOC_Results'[So với target] <= 0, \"Đạt\", NOT ISBLANK ( 'SOC_Results'[Kết quả] ) && 'SOC_Results'[So với target] = 'SOC_Results'[Kết quả], \"Đạt\", ISBLANK ( 'SOC_Results'[So với target] ), BLANK(), \"Không đạt\" )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá đạt"
+        hidden: true
+  - name: alert
+    description: "Cột Cảnh báo trong SOC_Results. Cột tính toán, DAX gốc: IF( 'SOC_Results'[Metric name] = \"MTTD\", IF('SOC_Results'[Kết quả_input]>=60, \"Cần chú ý!\",\"\"), IF('SOC_Results'[Metric name]=\"MTTR\", IF('SOC_Results'[Kết quả_input]>20,\"Cần chú ý!\",\"\"),\"\" ))"
+    meta:
+      dimension:
+        type: string
+        label: "Cảnh báo"
+        hidden: true
+  - name: vs_target
+    description: "Cột So với target trong SOC_Results. Cột tính toán, DAX gốc: IF('SOC_Results'[Metric name] = \"MTTD VCS (giờ)\",-1, VAR _Target = 'SOC_Results'[Target] VAR _Result = ROUND('SOC_Results'[Kết quả],2) VAR _Condition= UPPER(TRIM('SOC_Results'[Điều kiện])) -- chuẩn hóa RETURN IF ( NOT ISBLANK(_Result), SWITCH( TRUE(), -- Case 1: Target = 0 và cần đúng bằng 0 _Target = 0 && _Condition = \"<=\" && _Result = _Target , -1, _Condition = \">=\", IF(_Condition = \">=\"&&(_Result - _Target=0) , -1, DIVIDE(_Target - _Result, 100 - _Target, 0)), -- thêm 0 nếu chia cho 0 -- Case 3: <= _Condition = \"<=\", DIVIDE(_Result - _Target, _Target, 0), -- Case 4: = nhưng khác Target _Condition = \"=\" && _Result <> _Target , 0.9, -- Case 5: = và đúng bằng Target _Condition = \"=\" && _Result = _Target , -1, -- Nếu không match gì thì ra 0 thay vì BLANK 0 ) ) )"
+    meta:
+      dimension:
+        type: number
+        label: "So với target"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong SOC_Results. Cột tính toán, DAX gốc: IF( 'SOC_Results'[Đơn vị tính]=\"%\",('SOC_Results'[Kết quả_input])*100,'SOC_Results'[Kết quả_input])"
+    meta:
+      dimension:
+        type: number
+        label: "Kết quả"
+  - name: evaluation_target
+    description: "Cột ĐÁNH GIÁ_target trong SOC_Results. Cột tính toán, DAX gốc: IF( 'SOC_Results'[Kết quả]='SOC_Results'[Target],\"1. Đạt\", IF( 'SOC_Results'[So với Target]<> BLANK(), SWITCH( TRUE(), 'SOC_Results'[So với Target] = 0, \"1. Đạt\", 'SOC_Results'[So với Target] >= 0.6, \"4. Fail vượt Target >=60%\", 'SOC_Results'[So với Target] >= 0.3 && 'SOC_Results'[So với Target] < 0.6,\"3. Fail vượt Target >=30% & <60%\", 'SOC_Results'[So với Target] > 0 && 'SOC_Results'[So với Target] < 0.3, \"2. Fail vượt Target 0-30%\", 'SOC_Results'[So với Target] < 0, \"1. Đạt\", \"CHƯA CÓ KẾT QUẢ\")))"
+    meta:
+      dimension:
+        type: string
+        label: "ĐÁNH GIÁ_target"
+        hidden: true
+  - name: evaluation
+    description: "Cột ĐÁNH GIÁ trong SOC_Results. Cột tính toán, DAX gốc: IF( 'SOC_Results'[Cảnh báo]=\"Cần chú ý!\",'SOC_Results'[Cảnh báo],'SOC_Results'[ĐÁNH GIÁ_target])"
+    meta:
+      dimension:
+        type: string
+        label: "ĐÁNH GIÁ"
+  - name: report_period
+    description: "Cột Kỳ báo cáo trong SOC_Results. Cột tính toán, DAX gốc: CALCULATE( MAX('Dim_Date'[Tuần]), FILTER('Dim_Date', 'Dim_Date'[Date] = 'SOC_Results'[Ngày báo cáo]) )"
+    meta:
+      dimension:
+        type: string
+        label: "Kỳ báo cáo"
+  - name: tick_kpi
+    description: "Cột TickKPI trong SOC_Results. Cột tính toán, DAX gốc: IF('SOC_Results'[Đơn vị tính]=\"No count\",0,1)"
+    meta:
+      dimension:
+        type: number
+        label: "TickKPI"
+        hidden: true

@@ -1,0 +1,72 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_trainee
+    description: >
+      Bảng **hr_ld_trainee** lưu trữ thông tin sinh viên thực tập hoặc sinh viên
+      tham gia các chương trình đào tạo nguồn nhân lực, bao gồm thông tin cá nhân,
+      chương trình đào tạo, tiến độ đào tạo thực tế (OJT), kết quả học tập và trạng thái
+      tham gia chương trình. Dữ liệu được sử dụng để theo dõi quá trình đào tạo,
+      đánh giá kết quả học tập, quản lý nguồn nhân lực tiềm năng và hỗ trợ công tác
+      chuyển đổi sinh viên sang nhân viên chính thức.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi sinh viên
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên sinh viên
+
+    - name: employee_code
+      description: Mã định danh của sinh viên hoặc mã nhân sự được cấp trong chương trình đào tạo
+
+    - name: training_program
+      description: Tên chương trình đào tạo hoặc chương trình thực tập mà sinh viên tham gia
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của sinh viên
+
+    - name: training_phase
+      description: Giai đoạn đào tạo hiện tại hoặc đã hoàn thành của sinh viên
+
+    - name: ojt_start_date
+      description: Ngày bắt đầu chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+
+    - name: ojt_end_date
+      description: Ngày kết thúc chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+
+    - name: ojt_progress
+      description: Tiến độ thực hiện chương trình đào tạo thực tế tại công việc của sinh viên
+
+    - name: average_score
+      description: Điểm trung bình đánh giá kết quả học tập và đào tạo của sinh viên
+
+    - name: classification
+      description: Xếp loại kết quả đào tạo của sinh viên
+
+    - name: current_status
+      description: Trạng thái hiện tại của sinh viên trong chương trình đào tạo hoặc thực tập
+
+    - name: training_result_link
+      description: Đường dẫn đến tài liệu hoặc hệ thống lưu trữ kết quả đào tạo của sinh viên
+
+    - name: employment_type
+      description: Loại hình tham gia chương trình của sinh viên, ví dụ thực tập sinh hoặc trainee
+
+    - name: work_location
+      description: Địa điểm hoặc khu vực thực tập, đào tạo hoặc làm việc của sinh viên
+
+    - name: business_email
+      description: Địa chỉ email công việc được cấp cho sinh viên
+
+    - name: mentor_email
+      description: Địa chỉ email của mentor hoặc người hướng dẫn sinh viên

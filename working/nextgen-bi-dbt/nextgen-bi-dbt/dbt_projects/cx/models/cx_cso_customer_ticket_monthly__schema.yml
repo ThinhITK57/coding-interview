@@ -1,0 +1,210 @@
+version: 2
+models:
+- name: cx_cso_customer_ticket_monthly
+  description: '[CX_CSO] Bảng tổng hợp số lượng ticket theo khách hàng và sản phẩm theo tháng, phục vụ phân tích hành vi như tần suất ticket và tỷ lệ tái diễn.'
+  meta:
+    label: "Monthly Customer Ticket Report"
+    owner: "lyttt3"
+    dimensions:
+      product_category:
+        type: string
+        sql: ${TABLE}.product_category
+        label: Nhóm sản phẩm/dịch vụ
+        description: Nhóm sản phẩm hoặc dịch vụ mà khách hàng đang sử dụng. Dùng để phân tích hành vi ticket theo từng dòng sản phẩm.
+        synonyms:
+          - "Product Category"
+          - "Sản phẩm danh mục"
+      company_name:
+        type: string
+        sql: ${TABLE}.company_name
+        label: Tên khách hàng
+        description: Tên công ty hoặc khách hàng. Là định danh chính để tính toán số lượng ticket và hành vi theo từng khách hàng.
+        synonyms:
+          - "Company Name"
+          - "Tên công ty"
+      report_month:
+        type: date
+        sql: ${TABLE}.report_month
+        label: Tháng
+        description: Mốc thời gian theo tháng (được truncate từ created_at). Là trục thời gian chính để phân tích xu hướng và hành vi khách hàng theo tháng.
+        synonyms:
+          - "Report Month"
+          - "Báo cáo tháng"
+      customer_group:
+        type: string
+        sql: ${TABLE}.customer_group
+        label: Nhóm khách hàng
+        description: Phân loại khách hàng theo cấp độ (ví dụ VVIP, VIP, Growth, Standard). Giá trị được lấy đại diện trong tháng cho mỗi khách hàng.
+        synonyms:
+          - "Customer Group"
+          - "Khách hàng nhóm"
+      customer_segment_l1:
+        type: string
+        sql: ${TABLE}.customer_segment_l1
+        label: Phân khúc khách hàng cấp 1
+        description: Phân khúc khách hàng cấp cao (ví dụ Nội bộ, Khách hàng ngoài, Bộ Quốc phòng, Quốc tế). Dùng để phân tích hành vi theo nhóm khách hàng chiến lược.
+        synonyms:
+          - "Customer Segment L1"
+          - "Khách hàng phân khúc l1"
+      ticket_count:
+        type: number
+        sql: ${TABLE}.ticket_count
+        label: Số lượng ticket trong tháng
+        description: Tổng số ticket của một khách hàng trong một tháng. Là chỉ số nền tảng để tính toán tần suất và hành vi sử dụng dịch vụ.
+        synonyms:
+          - "Ticket Count"
+          - "Số lượng ticket"
+      is_repeat_customer:
+        type: boolean
+        sql: ${TABLE}.ticket_count >= 2.0
+        label: Khách hàng tái diễn
+        description: TRUE nếu khách hàng có từ 2 ticket trở lên trong cùng một tháng. Dùng để xác định khách hàng có nhu cầu hỗ trợ lặp lại hoặc gặp vấn đề nhiều lần.
+        synonyms:
+          - "Is Repeat Customer"
+          - "Is lặp lại khách hàng"
+    metrics:
+      total_customer_count:
+        type: count_distinct
+        sql: ${TABLE}.company_name
+        description: Số lượng khách hàng duy nhất trong kỳ. Dùng làm mẫu số cho các chỉ số hành vi như tỷ lệ tái diễn.
+        label: "Total Customer Count"
+        category: "Customer Analytics"
+        synonyms:
+          - "Total Customer Count"
+          - "Tổng khách hàng số lượng"
+      repeat_customer_count:
+        type: count_distinct
+        sql: ${TABLE}.company_name
+        description: Số khách hàng có từ 2 ticket trở lên trong cùng một tháng. Phản ánh nhóm khách hàng có nhu cầu hỗ trợ lặp lại.
+        label: "Repeat Customer Count"
+        category: "Support Operations"
+        synonyms:
+          - "Repeat Customer Count"
+          - "Số lượng lặp lại khách hàng"
+      repeat_customer_rate:
+        type: number
+        sql: 1.0 * ${repeat_customer_count} / NULLIF(${total_customer_count}, 0.0)
+        description: Tỷ lệ khách hàng có từ 2 ticket trở lên trên tổng số khách hàng. Dùng để đánh giá mức độ lặp lại vấn đề hoặc tần suất sử dụng dịch vụ.
+        label: "Repeat Customer Rate"
+        category: "Support Operations"
+        synonyms:
+          - "Repeat Customer Rate"
+          - "Tỷ lệ lặp lại khách hàng"
+      total_ticket_count:
+        type: sum
+        sql: ${TABLE}.ticket_count
+        description: Tổng số ticket của tất cả khách hàng trong kỳ. Là chỉ số khối lượng công việc cơ bản.
+        label: "Total Ticket Count"
+        category: "Support Operations"
+        synonyms:
+          - "Total Ticket Count"
+          - "Tổng ticket số lượng"
+      avg_ticket_per_customer:
+        type: average
+        sql: ${TABLE}.ticket_count
+        description: Số lượng ticket trung bình trên mỗi khách hàng. Dùng để đo tần suất sử dụng dịch vụ hoặc mức độ phát sinh vấn đề.
+        label: "Avg Ticket Per Customer"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Ticket Per Customer"
+          - "Trung bình ticket khách hàng"
+      total_agent_reply_count:
+        type: sum
+        sql: ${TABLE}.total_agent_reply_count
+        description: Tổng số lần phản hồi/trao đổi của agent trên toàn bộ ticket. Phản ánh tổng khối lượng công việc hỗ trợ.
+        label: "Total Agent Reply Count"
+        category: "Support Operations"
+        synonyms:
+          - "Total Agent Reply Count"
+          - "Tổng số lượng phản hồi của agent"
+      avg_agent_reply_per_ticket:
+        type: number
+        sql: 1.0 * ${total_agent_reply_count} / NULLIF(${total_ticket_count}, 0.0)
+        description: Số lần phản hồi trung bình của agent trên mỗi ticket. Dùng để đánh giá độ phức tạp và mức độ tương tác trong xử lý.
+        label: "Avg Agent Reply Per Ticket"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Agent Reply Per Ticket"
+          - "Trung bình Agent phản hồi ticket"
+      overdue_ticket_count:
+        type: sum
+        sql: ${TABLE}.overdue_ticket_count
+        description: Số lượng ticket bị quá hạn SLA trong kỳ. Dùng để theo dõi hiệu suất xử lý và tuân thủ SLA.
+        label: "Overdue Ticket Count"
+        category: "Service Quality"
+        synonyms:
+          - "Overdue Ticket Count"
+          - "Số lượng ticket quá hạn"
+      sla_violated_ticket_count:
+        type: sum
+        sql: ${TABLE}.sla_violated_ticket_count
+        description: Số lượng ticket có vi phạm SLA (ở bất kỳ mức nào). Phản ánh mức độ không tuân thủ SLA tổng thể.
+        label: "SLA Violated Ticket Count"
+        category: "Service Quality"
+        synonyms:
+          - "SLA Violated Ticket Count"
+          - "Số lượng vi phạm SLA ticket"
+      overdue_rate:
+        type: number
+        sql: 1.0 * ${overdue_ticket_count} / NULLIF(${total_ticket_count}, 0.0)
+        description: Tỷ lệ ticket bị quá hạn trên tổng số ticket. Là chỉ số quan trọng để đánh giá hiệu suất vận hành.
+        label: "Overdue Rate"
+        category: "Service Quality"
+        synonyms:
+          - "Overdue Rate"
+          - "Tỷ lệ quá hạn"
+      sla_violation_rate:
+        type: number
+        sql: 1.0 * ${sla_violated_ticket_count} / NULLIF(${total_ticket_count}, 0.0)
+        description: Tỷ lệ ticket có vi phạm SLA trên tổng số ticket. Dùng để theo dõi chất lượng dịch vụ và độ ổn định hệ thống.
+        label: "SLA Violation Rate"
+        category: "Service Quality"
+        synonyms:
+          - "SLA Violation Rate"
+          - "Tỷ lệ vi phạm SLA"
+      avg_resolve_time_minutes:
+        type: average
+        sql: ${TABLE}.avg_resolve_time_minutes
+        description: Thời gian trung bình để xử lý ticket (từ tạo đến resolve), tính bằng phút. Chỉ tính trên các ticket đã được resolve. Dùng để đánh giá tốc độ xử lý và hiệu quả vận hành.
+        label: "Avg Resolve Time Minutes"
+        category: "Support Operations"
+        synonyms:
+          - "Avg Resolve Time Minutes"
+          - "Trung bình thời gian xử lý (phút)"
+  columns:
+  - name: product_category
+    description: Nhóm sản phẩm hoặc dịch vụ mà khách hàng đang sử dụng. Dùng để phân tích hành vi ticket theo từng dòng sản phẩm.
+    meta:
+      dimension:
+        type: string
+        label: Nhóm sản phẩm/dịch vụ
+  - name: company_name
+    description: Tên công ty hoặc khách hàng. Là định danh chính để tính toán số lượng ticket và hành vi theo từng khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Tên khách hàng
+  - name: report_month
+    description: Mốc thời gian theo tháng (được truncate từ created_at). Là trục thời gian chính để phân tích xu hướng và hành vi khách hàng theo tháng.
+    meta:
+      dimension:
+        type: timestamp
+        label: Tháng
+  - name: customer_group
+    description: Phân loại khách hàng theo cấp độ (ví dụ VVIP, VIP, Growth, Standard). Giá trị được lấy đại diện trong tháng cho mỗi khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: Nhóm khách hàng
+  - name: customer_segment_l1
+    description: Phân khúc khách hàng cấp cao (ví dụ Nội bộ, Khách hàng ngoài, Bộ Quốc phòng, Quốc tế). Dùng để phân tích hành vi theo nhóm khách hàng chiến lược.
+    meta:
+      dimension:
+        type: string
+        label: Phân khúc khách hàng cấp 1
+  - name: ticket_count
+    description: Tổng số ticket của một khách hàng trong một tháng. Là chỉ số nền tảng để tính toán tần suất và hành vi sử dụng dịch vụ.
+    meta:
+      dimension:
+        label: Số lượng ticket trong tháng
+        type: number

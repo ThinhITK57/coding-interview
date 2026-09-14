@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: "Silver layer sources for domain: hr"
+  tables:
+  - name: hr_ld_budget_quarterly
+    description: >
+      Bảng **hr_ld_budget_quarterly** lưu trữ thông tin tổng hợp ngân sách đào tạo (L&D)
+      theo từng quý trong năm 2026. Dữ liệu được lấy từ snapshot mới nhất của nguồn ngân sách
+      đào tạo theo quý, bao gồm tổng ngân sách được phân bổ, giá trị đã đề nghị phê duyệt,
+      giá trị đã sử dụng và ngân sách còn lại. Bảng được sử dụng để theo dõi tình hình sử dụng
+      ngân sách đào tạo theo quý, đánh giá tiến độ giải ngân và hỗ trợ báo cáo quản trị chi phí đào tạo.
+
+    columns:
+    - name: year
+      description: Năm ngân sách đào tạo, hiện được gán cố định là 2026.
+
+    - name: quarter
+      description: Quý ngân sách đào tạo, được chuẩn hóa về kiểu số nguyên.
+
+    - name: budget_amount
+      description: Tổng ngân sách đào tạo được phân bổ trong quý.
+
+    - name: approval_request_amount
+      description: Tổng giá trị ngân sách đã được đề nghị phê duyệt trong quý.
+
+    - name: spent_amount
+      description: Tổng giá trị ngân sách đào tạo đã sử dụng trong quý.
+
+    - name: remaining_amount
+      description: Giá trị ngân sách đào tạo còn lại trong quý.

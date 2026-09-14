@@ -1,0 +1,243 @@
+version: 2
+
+models:
+- name: hr_ld_learner
+  description: >
+    Bảng **hr_ld_learner** lưu trữ thông tin nhân viên tham gia các chương trình
+    đào tạo, bao gồm thông tin học viên, khóa học, lớp học, kết quả học tập,
+    thời lượng đào tạo và trạng thái tham gia học tập. Dữ liệu được sử dụng để
+    theo dõi tình hình tham gia đào tạo, đánh giá kết quả học tập và hỗ trợ
+    phân tích hiệu quả các chương trình đào tạo trong tổ chức.
+
+  meta:
+    label: "Learner"
+    owner: "tranpth"
+
+    metrics:
+      learner_count:
+        type: count_distinct
+        sql: ${TABLE}.employee_code
+        description: "Số lượng học viên tham gia đào tạo."
+        label: "Learner Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng số học viên"
+          - "Số học viên"
+          - "Learner Count"
+
+      learning_record_count:
+        type: count_distinct
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi tham gia đào tạo."
+        label: "Learning Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số bản ghi đào tạo"
+          - "Learning Record Count"
+
+      class_count:
+        type: count_distinct
+        sql: ${TABLE}.class_code
+        description: "Số lượng lớp đào tạo có học viên tham gia."
+        label: "Class Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số lớp học"
+          - "Class Count"
+
+      course_count:
+        type: count_distinct
+        sql: ${TABLE}.course_name
+        description: "Số lượng khóa học có học viên tham gia."
+        label: "Course Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số khóa học"
+          - "Course Count"
+
+      total_learning_hours:
+        type: sum
+        sql: ${TABLE}.learning_duration_hours
+        description: "Tổng số giờ đào tạo của học viên."
+        label: "Total Learning Hours"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng giờ học"
+          - "Tổng số giờ học"
+          - "Learning Hours"
+
+      avg_learning_hours:
+        type: average
+        sql: ${TABLE}.learning_duration_hours
+        description: "Số giờ học trung bình trên mỗi lượt tham gia đào tạo."
+        label: "Average Learning Hours"
+        category: "Learning & Development"
+        synonyms:
+          - "Giờ học trung bình"
+          - "Average Learning Hours"
+
+      learning_hours_per_learner:
+        type: number
+        sql: ${total_learning_hours} / NULLIF(${learner_count}, 0.0)
+        description: "Số giờ học trung bình trên mỗi học viên."
+        label: "Learning Hours Per Learner"
+        category: "Learning & Development"
+        synonyms:
+          - "Giờ học trung bình mỗi học viên"
+          - "Learning Hours Per Learner"
+
+      completed_learner_count:
+        type: count_distinct
+        sql: >
+          CASE
+            WHEN UPPER(${TABLE}.learning_result) IN (
+              'COMPLETED',
+              'PASS',
+              'PASSED',
+              'HOÀN THÀNH',
+              'ĐẠT'
+            )
+            THEN ${TABLE}.employee_code
+          END
+        description: "Số lượng học viên hoàn thành hoặc đạt yêu cầu khóa đào tạo."
+        label: "Completed Learner Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số học viên hoàn thành"
+          - "Completed Learner Count"
+
+      learning_completion_rate:
+        type: number
+        sql: ROUND(100.0 * ${completed_learner_count} / NULLIF(${learner_count}, 0.0), 2)
+        description: "Tỷ lệ học viên hoàn thành hoặc đạt yêu cầu khóa đào tạo."
+        label: "Learning Completion Rate (%)"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ hoàn thành học tập"
+          - "Learning Completion Rate"
+
+      avg_training_days:
+        type: average
+        sql: date_diff('day', CAST(${TABLE}.start_date AS date), CAST(${TABLE}.end_date AS date))
+        description: "Thời lượng đào tạo trung bình tính theo ngày."
+        label: "Average Training Days"
+        category: "Learning & Development"
+        synonyms:
+          - "Số ngày đào tạo trung bình"
+          - "Average Training Days"
+
+  columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi tham gia đào tạo
+      meta:
+        dimension:
+          type: number
+          label: "Learning Record ID"
+      tests:
+        - not_null
+        - unique
+
+    - name: employee_code
+      description: Mã định danh duy nhất của nhân viên tham gia đào tạo
+      meta:
+        dimension:
+          type: string
+          label: "Employee Code"
+
+    - name: full_name
+      description: Họ và tên học viên
+      meta:
+        dimension:
+          type: string
+          label: "Full Name"
+
+    - name: employee_object
+      description: Nhóm đối tượng nhân sự theo phân loại quản trị nội bộ
+      meta:
+        dimension:
+          type: string
+          label: "Employee Object"
+
+    - name: division_n
+      description: Khối chức năng mà học viên trực thuộc
+      meta:
+        dimension:
+          type: string
+          label: "Division"
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 của học viên
+      meta:
+        dimension:
+          type: string
+          label: "Department Level 2"
+
+    - name: class_code
+      description: Mã lớp đào tạo mà học viên tham gia
+      meta:
+        dimension:
+          type: string
+          label: "Class Code"
+
+    - name: class_name
+      description: Tên lớp đào tạo mà học viên tham gia
+      meta:
+        dimension:
+          type: string
+          label: "Class Name"
+
+    - name: course_name
+      description: Tên khóa học mà học viên tham gia
+      meta:
+        dimension:
+          type: string
+          label: "Course Name"
+
+    - name: learning_result
+      description: Kết quả học tập hoặc kết quả hoàn thành khóa đào tạo của học viên
+      meta:
+        dimension:
+          type: string
+          label: "Learning Result"
+
+    - name: learning_duration_hours
+      description: Tổng thời lượng đào tạo của khóa học mà học viên tham gia (đơn vị giờ)
+      meta:
+        dimension:
+          type: number
+          label: "Learning Duration Hours"
+
+    - name: start_date
+      description: Ngày bắt đầu khóa học hoặc lớp đào tạo
+      meta:
+        dimension:
+          type: timestamp
+          label: "Start Date"
+
+    - name: end_date
+      description: Ngày kết thúc khóa học hoặc lớp đào tạo
+      meta:
+        dimension:
+          type: timestamp
+          label: "End Date"
+
+    - name: month
+      description: Tháng ghi nhận hoạt động đào tạo
+      meta:
+        dimension:
+          type: number
+          label: "Month"
+
+    - name: year
+      description: Năm ghi nhận hoạt động đào tạo
+      meta:
+        dimension:
+          type: number
+          label: "Year"
+
+    - name: lxp_status_note
+      description: Ghi chú trạng thái học tập hoặc trạng thái xử lý trên hệ thống LXP
+      meta:
+        dimension:
+          type: string
+          label: "LXP Status Note"

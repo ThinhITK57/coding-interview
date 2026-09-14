@@ -1,0 +1,28 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_nocodb_jira
+    description: "Nguồn Power BI: nocodb jira"
+    columns:
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: result
+      description: "Cột Kết quả"
+    - name: end_time
+      description: "Cột EndTime"
+    - name: spdv
+      description: "Cột SPDV"
+    - name: target
+      description: "Cột Target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: unit
+      description: "Cột Đơn vị"
+    - name: criteria_period_type
+      description: "Cột CriteriaPeriodType"
+    - name: result_prev_1_period
+      description: "Cột Kết quả 1 kỳ trước'"

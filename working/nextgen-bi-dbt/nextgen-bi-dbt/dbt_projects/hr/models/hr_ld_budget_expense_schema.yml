@@ -1,0 +1,143 @@
+version: 2
+
+models:
+- name: hr_ld_budget_expense
+  description: >
+    Bảng **hr_ld_budget_expense** lưu trữ thông tin chi tiết các khoản chi phí đào tạo
+    trong năm 2026, được lấy từ snapshot mới nhất của nguồn dữ liệu chi phí ngân sách đào tạo.
+    Bảng bao gồm thông tin mô tả khoản chi, nhóm chi phí, quý ghi nhận, giá trị đề xuất,
+    giá trị đã hạch toán, chênh lệch giữa đề xuất và hạch toán, ngày quyết toán và ghi chú.
+    Dữ liệu được sử dụng để theo dõi chi tiết tình hình sử dụng ngân sách L&D, kiểm soát
+    các khoản chi đào tạo, đánh giá mức độ quyết toán và hỗ trợ báo cáo quản trị chi phí đào tạo.
+
+  meta:
+    label: "L&D Budget Expense"
+    owner: "tranpth"
+
+    metrics:
+      expense_record_count:
+        type: count
+        sql: ${TABLE}.id
+        description: "Tổng số bản ghi chi phí đào tạo."
+        label: "Expense Record Count"
+        category: "Learning & Development"
+        synonyms:
+          - "Số khoản chi đào tạo"
+          - "Số bản ghi chi phí đào tạo"
+          - "Expense Record Count"
+
+      total_proposal_amount:
+        type: sum
+        sql: ${TABLE}.proposal_amount
+        description: "Tổng giá trị chi phí đào tạo theo đề xuất."
+        label: "Total Proposal Amount"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng giá trị đề xuất"
+          - "Chi phí đề xuất"
+          - "Total Proposal Amount"
+
+      total_accounted_amount:
+        type: sum
+        sql: ${TABLE}.accounted_amount
+        description: "Tổng giá trị chi phí đào tạo đã hạch toán."
+        label: "Tổng chi phí đã hạch toán"
+        category: "Learning & Development"
+        synonyms:
+          - "Tổng giá trị hạch toán"
+          - "Chi phí đã hạch toán"
+          - "Total Accounted Amount"
+
+      total_amount_difference:
+        type: sum
+        sql: ${TABLE}.amount_difference
+        description: "Tổng chênh lệch giữa giá trị đề xuất và giá trị đã hạch toán."
+        label: "Tổng chênh lệch ngân sách"
+        category: "Learning & Development"
+        synonyms:
+          - "Chênh lệch ngân sách"
+          - "Chênh lệch chi phí"
+          - "Total Amount Difference"
+
+      accounted_rate:
+        type: number
+        sql: >
+          100.0 * ${total_accounted_amount}
+          / NULLIF(${total_proposal_amount}, 0.0)
+        description: "Tỷ lệ giá trị chi phí đào tạo đã hạch toán, được tính bằng total_accounted_amount / total_proposal_amount."
+        label: "Tỷ lệ hạch toán"
+        category: "Learning & Development"
+        synonyms:
+          - "Tỷ lệ hạch toán"
+          - "Accounted Rate"
+          - "Accounted Rate (%)"
+
+      amount_difference_rate:
+        type: number
+        sql: >
+          100.0 * ${total_amount_difference}
+          / NULLIF(${total_proposal_amount}, 0.0)
+        description: "Tỷ lệ chênh lệch giữa đề xuất và hạch toán, được tính bằng total_amount_difference / total_proposal_amount."
+        label: "Amount Difference Rate (%)"
+        category: "Learning & Development"
+
+  columns:
+  - name: id
+    description: Khóa định danh của bản ghi chi phí đào tạo, được lấy từ số thứ tự nguồn
+    meta:
+      dimension:
+        type: number
+        label: "Expense ID"
+    tests:
+      - not_null
+
+  - name: year
+    description: Năm ngân sách đào tạo, hiện được gán cố định là 2026
+    meta:
+      dimension:
+        type: string
+        label: "Năm ngân sách"
+
+  - name: expense_description
+    description: Mô tả chi tiết khoản chi phí đào tạo
+    meta:
+      dimension:
+        type: string
+        label: "Mô tả khoản chi"
+
+  - name: expense_category
+    description: Nhóm hoặc loại chi phí đào tạo
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm chi phí"
+
+  - name: quarter
+    description: Quý ghi nhận hoặc quyết toán khoản chi phí đào tạo
+    meta:
+      dimension:
+        type: number
+        label: "Quý"
+
+  - name: proposal_amount
+    description: Giá trị chi phí đào tạo được đề xuất
+
+  - name: accounted_amount
+    description: Giá trị chi phí đào tạo đã hạch toán
+
+  - name: amount_difference
+    description: Chênh lệch giữa giá trị đề xuất và giá trị đã hạch toán
+
+  - name: settlement_date
+    description: Ngày quyết toán hoặc thời điểm ghi nhận quyết toán khoản chi phí đào tạo
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày quyết toán"
+
+  - name: note
+    description: Ghi chú bổ sung cho khoản chi phí đào tạo
+    meta:
+      dimension:
+        type: string
+        label: "Ghi chú"

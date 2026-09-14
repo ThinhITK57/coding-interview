@@ -1,0 +1,71 @@
+version: 2
+models:
+- name: qtsx_v2_nocodb_jira
+  description: "Bảng qtsx_v2_nocodb_jira (nguồn Power BI: nocodb jira)."
+  meta:
+    label: "nocodb jira"
+    powerbi_source: "nocodb jira"
+  columns:
+  - name: metric_name
+    description: "Cột Metric name trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "Metric name"
+        hidden: true
+  - name: result
+    description: "Cột Kết quả trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả"
+        hidden: true
+  - name: end_time
+    description: "Cột EndTime trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "EndTime"
+        hidden: true
+  - name: spdv
+    description: "Cột SPDV trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "SPDV"
+        hidden: true
+  - name: target
+    description: "Cột Target trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "Target"
+        hidden: true
+  - name: condition
+    description: "Cột Điều kiện trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "Điều kiện"
+        hidden: true
+  - name: unit
+    description: "Cột Đơn vị trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn vị"
+        hidden: true
+  - name: criteria_period_type
+    description: "Cột CriteriaPeriodType trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "CriteriaPeriodType"
+        hidden: true
+  - name: result_prev_1_period
+    description: "Cột Kết quả 1 kỳ trước' trong nocodb jira."
+    meta:
+      dimension:
+        type: string
+        label: "Kết quả 1 kỳ trước'"
+        hidden: true

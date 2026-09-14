@@ -1,0 +1,15 @@
+version: 2
+models:
+- name: crm_product_tree_item_code
+  description: Staging model selecting data from source bi_silver.crm_product_tree_item_code
+  meta:
+    label: "Product Item Code Mapping"
+    owner: "huongnv1"
+  columns:
+  - name: idd
+    description: idd
+    data_tests:
+    - not_null
+    - unique
+  - name: item_code
+    description: item_code

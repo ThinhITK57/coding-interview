@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: crm_product_tree
+    description: >
+      [CRM] SKU Product Catalog Hierarchy (SKU Product Tree) dùng để chuẩn hóa và quản lý danh sách SKU của các sản phẩm/dịch vụ theo cấu trúc phân cấp,
+      từ nhóm sản phẩm cấp cao đến đơn vị bán hàng nhỏ nhất (SKU / item_code). 
+      Bảng này phục vụ mapping giữa các tầng Product Group → Product Sub Group → Product Category → SKU,
+      nhằm hỗ trợ phân tích doanh thu, pipeline, pricing và chuẩn hóa dữ liệu sản phẩm trong toàn hệ thống CRM.
+      Mỗi SKU (item) là đơn vị bán hàng nhỏ nhất (sellable item) được sử dụng trong các giao dịch và báo cáo doanh thu.
+    meta:
+      label: SKU Product Hierarchy
+      group_label: CRM Master Data
+      owner: "huongnv1"
+      
+      item_type_definition:
+        product: "Danh mục sản phẩm / Danh sách sản phẩm (Product)"
+        service: "Danh mục dịch vụ / Danh sách dịch vụ (Service)"
+    
+      metrics:
+        - name: total_sku_count
+          label: Tổng số SKU
+          description: Tổng số SKU duy nhất trong hệ thống.
+          type: count_distinct
+          sql: sku
+
+        - name: active_sku_product_count
+          label: Số lượng SKU của nhóm sản phẩm (Product)
+          description: Số lượng SKU được phân loại là Product.
+          type: sum
+          sql: CASE WHEN item_type = 'Product' THEN 1.0 ELSE 0.0 END
+
+        - name: active_sku_service_count
+          label: Số lượng SKU của nhóm dịch vụ (Service)
+          description: Số lượng SKU được phân loại là Service.
+          type: sum
+          sql: CASE WHEN item_type = 'Service' THEN 1.0 ELSE 0.0 END
+
+    columns:
+
+      - name: product_group
+        description: Nhóm sản phẩm cấp cao (Top-level product grouping)
+        meta:
+          dimension_type: hierarchy_level_1
+
+      - name: product_sub_group
+        description: Nhóm sản phẩm cấp trung (Sub-group mapping trong product hierarchy)
+        meta:
+          dimension_type: hierarchy_level_2
+
+      - name: category_code
+        description: Mã phân loại danh mục sản phẩm (Category code mapping)
+
+      - name: product_category
+        description: Danh mục sản phẩm chính (Product Category dùng trong CRM & Revenue mapping)
+
+      - name: sku
+        description: Mã SKU sản phẩm/dịch vụ (Stock Keeping Unit)
+
+      - name: version
+        description: Phiên bản sản phẩm hoặc versioning của catalog item
+
+      - name: item_type
+        description: >
+          Loại item trong catalog:
+          - Product: danh mục sản phẩm / danh sách sản phẩm
+          - Service: danh mục dịch vụ / danh sách dịch vụ
+        meta:
+          allowed_values:
+            - Product
+            - Service
+
+      - name: license
+        description: Thông tin license áp dụng cho sản phẩm/dịch vụ (nếu có)
+
+      - name: price_type
+        description: Loại giá áp dụng (one-time / recurring / subscription tùy hệ thống)
+
+      - name: unit
+        description: Đơn vị tính của sản phẩm/dịch vụ
+
+      - name: item_code
+        description: Mã định danh item dùng trong mapping hệ thống CRM và billing
+
+      - name: idd
+        description: >
+          Internal Item Definition ID - mã định danh nội bộ duy nhất cho từng catalog item.
+          Dùng để đảm bảo uniqueness trong product tree mapping.
+
+        data_tests:
+          - not_null
+          - unique

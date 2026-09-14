@@ -1,0 +1,43 @@
+version: 2
+models:
+- name: qtsx_v2_version_issue
+  description: "Bảng qtsx_v2_version_issue (nguồn Power BI: version issue)."
+  meta:
+    label: "version issue"
+    powerbi_source: "version issue"
+    joins:
+    - join: qtsx_v2_lead_time
+      sql_on: "${qtsx_v2_version_issue.issue_key} = ${qtsx_v2_lead_time.issuekey}"
+      relationship: one-to-one
+    - join: qtsx_v2_version
+      sql_on: "${qtsx_v2_version_issue.version_id} = ${qtsx_v2_version.id}"
+      relationship: many-to-one
+  columns:
+  - name: issue_id
+    description: "Cột issueId trong version issue."
+    meta:
+      dimension:
+        type: string
+        label: "issueId"
+        hidden: true
+  - name: issue_key
+    description: "Cột issueKey trong version issue."
+    meta:
+      dimension:
+        type: string
+        label: "issueKey"
+        hidden: true
+  - name: version_id
+    description: "Cột versionId trong version issue."
+    meta:
+      dimension:
+        type: string
+        label: "versionId"
+        hidden: true
+  - name: version_name
+    description: "Cột versionName trong version issue."
+    meta:
+      dimension:
+        type: string
+        label: "versionName"
+        hidden: true

@@ -1,0 +1,33 @@
+version: 2
+models:
+- name: production_management_1_mm_os_qi_2026
+  description: "Bảng production_management_1_mm_os_qi_2026 (nguồn Power BI: MM OS QI-2026)."
+  meta:
+    label: "MM OS QI-2026"
+    powerbi_source: "MM OS QI-2026"
+    joins:
+    - join: production_management_1_mmrelease
+      sql_on: "${production_management_1_mm_os_qi_2026.date_value} = ${production_management_1_mmrelease.end_of_month}"
+      relationship: many-to-many
+  columns:
+  - name: project
+    description: "Cột Project trong MM OS QI-2026."
+    meta:
+      dimension:
+        type: string
+        label: "Project"
+        hidden: true
+  - name: mm_os
+    description: "Cột MM OS trong MM OS QI-2026."
+    meta:
+      dimension:
+        type: number
+        label: "MM OS"
+        hidden: true
+  - name: date_value
+    description: "Cột Ngày tháng trong MM OS QI-2026."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày tháng"
+        hidden: true

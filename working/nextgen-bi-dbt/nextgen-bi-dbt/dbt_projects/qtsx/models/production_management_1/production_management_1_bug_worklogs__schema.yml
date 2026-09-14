@@ -1,0 +1,50 @@
+version: 2
+models:
+- name: production_management_1_bug_worklogs
+  description: "Bảng production_management_1_bug_worklogs (nguồn Power BI: Bug - Worklogs)."
+  meta:
+    label: "Bug - Worklogs"
+    powerbi_source: "Bug - Worklogs"
+  columns:
+  - name: id
+    description: "Cột Id trong Bug - Worklogs."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: worklog_key
+    description: "Cột WORKLOG_KEY trong Bug - Worklogs."
+    meta:
+      dimension:
+        type: string
+        label: "WORKLOG_KEY"
+        hidden: true
+  - name: worklog_user_id
+    description: "Cột WORKLOG_USER_ID trong Bug - Worklogs."
+    meta:
+      dimension:
+        type: number
+        label: "WORKLOG_USER_ID"
+        hidden: true
+  - name: worklog_worklog_date
+    description: "Cột WORKLOG_WORKLOG_DATE trong Bug - Worklogs."
+    meta:
+      dimension:
+        type: timestamp
+        label: "WORKLOG_WORKLOG_DATE"
+        hidden: true
+  - name: worklog_logged_time
+    description: "Cột WORKLOG_LOGGED_TIME trong Bug - Worklogs."
+    meta:
+      dimension:
+        type: number
+        label: "WORKLOG_LOGGED_TIME"
+        hidden: true
+  - name: worklog_username
+    description: "Cột WORKLOG_USERNAME trong Bug - Worklogs."
+    meta:
+      dimension:
+        type: string
+        label: "WORKLOG_USERNAME"
+        hidden: true

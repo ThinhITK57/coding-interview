@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: vw_crm_am_object_activity
+    description: |
+      Unified object-level CRM statistics for Account Managers.
+
+      Grain:
+        1 row = 1 CRM object × 1 activity date × 1 AM.
+
+      Supported object types include:
+        - CONTACT
+        - OPPORTUNITY
+        - QUOTATION
+        - CONTRACT
+        - SALES_ACCOUNT
+
+      This model is intended for drill-down from AM KPI into
+      individual CRM objects.
+
+      IMPORTANT:
+      This is state-based object statistics derived from CRM tables.
+      It is NOT a complete audit/event log.
+
+    meta:
+      semantic_type: crm_am_object_statistics
+      group_label: AM Dashboard
+      owner: huongnv1
+
+    columns:
+
+      - name: activity_date
+        description: Date associated with the object statistic.
+
+      - name: am_user_id
+        description: CRM user ID of the Account Manager associated with the object.
+
+      - name: am_user_name
+        description: Name of the Account Manager associated with the object.
+
+      - name: object_type
+        description: |
+          Type of CRM object.
+
+          Possible values:
+            CONTACT
+            OPPORTUNITY
+            QUOTATION
+            CONTRACT
+            SALES_ACCOUNT
+
+      - name: object_id
+        description: |
+          Unique identifier of the CRM object.
+
+          Use together with object_type to uniquely identify an object.
+
+      - name: is_created
+        description: |
+          Indicates whether the object is classified as created
+          for the corresponding activity date.
+
+        meta:
+          semantic_role: object_created_flag
+
+      - name: is_updated
+        description: |
+          Indicates whether the object has an update recorded.
+
+          This does not necessarily represent a meaningful business action.
+
+        meta:
+          semantic_role: object_updated_flag
+
+      - name: is_progressed
+        description: |
+          Indicates whether the object represents a sales progression event,
+          primarily opportunity stage progression.
+
+      - name: is_contacted
+        description: |
+          Indicates whether customer contact information is recorded
+          for the object.
+
+      - name: is_signed
+        description: |
+          Indicates whether the object represents a signed contract.
+
+      - name: is_business_outcome
+        description: |
+          Indicates whether the object represents a business outcome,
+          such as a first contract.

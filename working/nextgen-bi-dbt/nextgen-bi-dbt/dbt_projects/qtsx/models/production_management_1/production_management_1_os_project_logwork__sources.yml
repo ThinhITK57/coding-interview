@@ -1,0 +1,14 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_os_project_logwork
+    description: "Nguồn Power BI: OS-Project Logwork"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: project_name
+      description: "Cột PROJECT_NAME"

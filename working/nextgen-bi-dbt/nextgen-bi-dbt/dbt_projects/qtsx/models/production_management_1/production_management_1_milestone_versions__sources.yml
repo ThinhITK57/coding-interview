@@ -1,0 +1,26 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_milestone_versions
+    description: "Nguồn Power BI: Milestone Versions"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: version_project_key
+      description: "Cột VERSION_PROJECT_KEY"
+    - name: version_release_date
+      description: "Cột VERSION_RELEASE_DATE"
+    - name: version_start_date
+      description: "Cột VERSION_START_DATE"
+    - name: version_released
+      description: "Cột VERSION_RELEASED"
+    - name: version_name
+      description: "Cột VERSION_NAME"
+    - name: version_description
+      description: "Cột VERSION_DESCRIPTION"
+    - name: version_des_change
+      description: "Cột Version_DES_Change"

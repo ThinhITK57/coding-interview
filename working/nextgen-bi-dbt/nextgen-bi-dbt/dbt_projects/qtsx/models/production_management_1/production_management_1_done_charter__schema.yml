@@ -1,0 +1,129 @@
+version: 2
+models:
+- name: production_management_1_done_charter
+  description: "Bảng production_management_1_done_charter (nguồn Power BI: Done charter)."
+  meta:
+    label: "Done charter"
+    powerbi_source: "Done charter"
+    joins:
+    - join: production_management_1_division
+      sql_on: "${production_management_1_done_charter.center} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_done_charter.issue_project_id} = ${production_management_1_project_name.id}"
+      relationship: many-to-many
+    metrics:
+      count_distinct_issue_key:
+        type: count_distinct
+        sql: issue_key
+        label: "count_distinct issue_key"
+        description: "Metric phụ sinh từ DAX: COUNT_DISTINCT(issue_key)"
+      count_ticket_chua_done:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_category_name <> 'Done' THEN issue_key END"
+        label: "số ticket chưa done"
+        description: "DAX: CALCULATE(DISTINCTCOUNT('Done charter'[ISSUE_KEY]), FILTER('Done charter', 'Done charter'[ISSUE_CURRENT_STATUS_CATEGORY_NAME] <> \"Done\" ))"
+      count_ticket_done:
+        type: count_distinct
+        sql: "CASE WHEN issue_current_status_category_name = 'Done' THEN issue_key END"
+        label: "số ticket done"
+        description: "DAX: CALCULATE(DISTINCTCOUNT('Done charter'[ISSUE_KEY]), FILTER('Done charter', 'Done charter'[ISSUE_CURRENT_STATUS_CATEGORY_NAME] = \"Done\"))"
+      pct_hoan_thanh_ticket:
+        type: number
+        sql: "${count_ticket_done} / NULLIF(${count_distinct_issue_key}, 0)"
+        label: "%Hoàn thành Ticket"
+        format: percent
+        round: 2
+        description: "DAX: DIVIDE([số ticket done], DISTINCTCOUNT('Done charter'[ISSUE_KEY]))"
+  columns:
+  - name: id
+    description: "Cột Id trong Done charter."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong Done charter."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_resolved
+    description: "Cột ISSUE_RESOLVED trong Done charter."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_RESOLVED"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong Done charter."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong Done charter."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+        hidden: true
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong Done charter."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_NAME"
+        hidden: true
+  - name: issue_current_status_category_name
+    description: "Cột ISSUE_CURRENT_STATUS_CATEGORY_NAME trong Done charter."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_STATUS_CATEGORY_NAME"
+        hidden: true
+  - name: issue_project_id
+    description: "Cột ISSUE_PROJECT_ID trong Done charter."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_PROJECT_ID"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong Done charter. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[Khối],'milestone Versions_Projects'[Id],'Done charter'[ISSUE_PROJECT_ID])"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true
+  - name: date_value
+    description: "Cột Date trong Done charter. Cột tính toán, DAX gốc: DATE(YEAR('Done charter'[ISSUE_CREATED]), MONTH('Done charter'[ISSUE_CREATED]), DAY('Done charter'[ISSUE_CREATED]))"
+    meta:
+      dimension:
+        type: date
+        label: "Date"
+        hidden: true
+  - name: issue_key_prefix
+    description: "Cột ISSUE_KEY_PREFIX trong Done charter. Cột tính toán, DAX gốc: VAR dashPos = SEARCH(\"-\", 'Done charter'[ISSUE_KEY], 1, BLANK()) RETURN IF( NOT ISBLANK(dashPos), LEFT('Done charter'[ISSUE_KEY], dashPos - 1), 'Done charter'[ISSUE_KEY] -- nếu không có dấu \"-\" thì trả lại toàn bộ )"
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY_PREFIX"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT NAME trong Done charter. Cột tính toán, DAX gốc: LOOKUPVALUE('milestone Versions_Projects'[PROJECT_NAME],'milestone Versions_Projects'[PROJECT_KEY],'Done charter'[ISSUE_KEY_PREFIX])"
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT NAME"
+        hidden: true
+  - name: issue_time_spent_with_st
+    description: "Cột ISSUE_TIME_SPENT_WITH_ST trong Done charter."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_TIME_SPENT_WITH_ST"
+        hidden: true

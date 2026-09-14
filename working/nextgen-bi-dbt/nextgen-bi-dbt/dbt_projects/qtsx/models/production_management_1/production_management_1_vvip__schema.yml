@@ -1,0 +1,25 @@
+version: 2
+models:
+- name: production_management_1_vvip
+  description: "Bảng production_management_1_vvip (nguồn Power BI: VVIP)."
+  meta:
+    label: "VVIP"
+    powerbi_source: "VVIP"
+    joins:
+    - join: production_management_1_rpm_customer
+      sql_on: "${production_management_1_vvip.org_name} = ${production_management_1_rpm_customer.issue_summary}"
+      relationship: many-to-one
+  columns:
+  - name: code
+    description: "Cột MÃ trong VVIP."
+    meta:
+      dimension:
+        type: string
+        label: "MÃ"
+  - name: org_name
+    description: "Cột Tên tổ chức trong VVIP."
+    meta:
+      dimension:
+        type: string
+        label: "Tên tổ chức"
+        hidden: true

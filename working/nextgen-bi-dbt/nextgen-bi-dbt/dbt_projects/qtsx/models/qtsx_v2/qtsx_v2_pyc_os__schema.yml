@@ -1,0 +1,376 @@
+version: 2
+models:
+- name: qtsx_v2_pyc_os
+  description: "Bảng qtsx_v2_pyc_os (nguồn Power BI: PYC OS)."
+  meta:
+    label: "PYC OS"
+    powerbi_source: "PYC OS"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_pyc_os.project_2} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      average_so_ngay_create_ngay_ttsx_commit:
+        type: average
+        sql: so_ngay_create_ngay_ttsx_commit
+        label: "Cycle time TTSX commit"
+        description: "Sinh từ Power BI: average(PYC OS.So_ngay_create_ngay_TTSX_commit)"
+      count_issue_key:
+        type: count
+        sql: issue_key
+        label: "Số PYC"
+        description: "Sinh từ Power BI: count(PYC OS.ISSUE_KEY)"
+      count_pyc_released:
+        type: count
+        sql: "CASE WHEN issue_current_status_name = 'Released' THEN issue_key END"
+        label: "Số PYC released"
+        description: "DAX: CALCULATE( COUNT('PYC OS'[ISSUE_KEY]), 'PYC OS'[ISSUE_CURRENT_STATUS_NAME] = \"Released\" )"
+      count_rows_filtered:
+        type: count
+        sql: "CASE WHEN evaluation = 'Pass' THEN 1 END"
+        label: "Số dòng (có điều kiện)"
+        description: "Metric phụ sinh từ DAX: COUNT(*) kèm điều kiện của CALCULATE | DAX measure: Số Pass"
+      mm_released:
+        type: sum
+        sql: "CASE WHEN issue_current_status_name = 'Released' THEN mm_pyc_thuc_te END"
+        label: "MM released"
+        description: "DAX: CALCULATE( SUM('PYC OS'[MM_PYC_Thực_tế_10823]), 'PYC OS'[ISSUE_CURRENT_STATUS_NAME] = \"Released\" )"
+      mm_thuc_te:
+        type: sum
+        sql: "CASE WHEN issue_current_status_name IN ('Bàn giao TT Sản phẩm', 'Released', 'ĐG TTK', 'Nghiệm thu thành công') THEN mm_pyc_thuc_te END"
+        label: "MM_Thuc_Te"
+        description: "DAX: CALCULATE( SUM('PYC OS'[MM_PYC_Thực_tế_10823]), 'PYC OS'[ISSUE_CURRENT_STATUS_NAME] in {\"Bàn giao TT Sản phẩm\", \"Released\",\"ĐG TTK\",\"Nghiệm thu thành công\"} )"
+      mm_thuc_te_tinh_release:
+        type: sum
+        sql: "CASE WHEN issue_current_status_name IN ('Released', 'Bàn giao TT Sản phẩm', 'ĐG TTK') THEN mm_pyc_thuc_te END"
+        label: "MM Thực tế tính release"
+        description: "DAX: CALCULATE(SUM('PYC OS'[MM_PYC_Thực_tế_10823]), FILTER('PYC OS','PYC OS'[ISSUE_CURRENT_STATUS_NAME] in{\"Released\",\"Bàn giao TT Sản phẩm\",\"ĐG TTK\"}))"
+      pct_hieu_su_dung_os:
+        type: number
+        sql: "SUM(CASE WHEN release_date IS NOT NULL THEN mm_pyc_thuc_te END) / NULLIF(SUM(mm_pyc_thuc_te), 0)"
+        label: "Hiệu quả sử dụng OS"
+        format: percent
+        round: 0
+        description: "DAX: DIVIDE(SUM('PYC OS done release'[MM_PYC_Thực_tế_10823]), [TT MM PYC], 0). Thay cho measure text 'Hiệu quả sử dụng OS' (\"n% / KPI > 50%\") — phần chữ dựng bằng Subtitle của Big value."
+      pct_hieu_suat:
+        type: number
+        sql: "${sum_mm_pyc_thuc_te} / NULLIF(${sum_mm_ttsx_du_kien}, 0)"
+        label: "% Hiệu suất"
+        format: percent
+        round: 0
+        description: "DAX: DIVIDE(SUM('PYC OS'[MM_PYC_Thực_tế_10823]) , SUM('PYC OS'[MM_TTSX_Dự_kiến_10840]) ,0)"
+      pct_on_time:
+        type: number
+        sql: "CAST(COUNT(CASE WHEN evaluation = 'Pass' THEN 1 END) AS DOUBLE) / NULLIF(COUNT(DISTINCT issue_key), 0)"
+        label: "% Đúng hạn"
+        format: percent
+        round: 0
+        description: "DAX: VAR TotalIssue = DISTINCTCOUNT('PYC OS'[ISSUE_KEY]) VAR PassCount = [Số Pass] + 0 RETURN IF(TotalIssue = 0, BLANK(), DIVIDE(PassCount, TotalIssue, 0)). Measure '% Pass Rate' và 'Pass Rate Display' cùng công thức — dùng chung metric này; phần chữ \"% / KPI > 95%\" và ▲/▼ dựng bằng Subtitle + Comparison của Big value."
+      pct_pass_rate_display:
+        type: number
+        sql: "${count_rows_filtered} / NULLIF(${total_pyc}, 0)"
+        label: "% Pass Rate Display"
+        description: "DAX: VAR PassCount = CALCULATE(COUNTROWS('PYC OS'), 'PYC OS'[Đánh giá] = \"Pass\") VAR TotalCount = COUNTROWS('PYC OS') VAR PassRate = DIVIDE(PassCount, TotalCount, 0) RETURN PassRate"
+      pct_release:
+        type: number
+        sql: "SUM(CASE WHEN release_date IS NOT NULL THEN mm_pyc_thuc_te END) / NULLIF(SUM(CASE WHEN issue_current_status_name IN ('Released', 'Bàn giao TT Sản phẩm', 'ĐG TTK')
+                  THEN mm_pyc_thuc_te END), 0)"
+        label: "% release"
+        format: percent
+        round: 2
+        description: "DAX: VAR Tu = SUM('PYC OS done release'[MM_PYC_Thực_tế_10823]) VAR Mau = CALCULATE(SUM('PYC OS'[MM_PYC_Thực_tế_10823]), FILTER('PYC OS', [ISSUE_CURRENT_STATUS_NAME] IN {\"Released\",\"Bàn giao TT Sản phẩm\",\"ĐG TTK\"})). KHÁC BẢN GỐC: tử số lấy ngay trên 'PYC OS' với điều kiện đã có ngày release, thay vì cộng trên bảng con 'PYC OS done release'."
+      rate_released_pyc:
+        type: number
+        sql: "${mm_released} / NULLIF(${sum_mm_pyc_thuc_te}, 0)"
+        label: "Tỉ lệ released PYC"
+        description: "DAX: DIVIDE([MM released], [TT MM PYC], 0)"
+      so_pass:
+        type: count
+        sql: "CASE WHEN evaluation = 'Pass' THEN 1 END"
+        label: "Số Pass"
+        description: "DAX: CALCULATE(COUNTROWS('PYC OS'), 'PYC OS'[Đánh giá] = \"Pass\")"
+      sum_mm_pyc_thuc_te:
+        type: sum
+        sql: mm_pyc_thuc_te
+        label: "MM TTSX THỰC TẾ"
+        description: "Sinh từ Power BI: sum(PYC OS.MM_PYC_Thực_tế_10823) | DAX measure: TT MM PYC"
+      sum_mm_ttsx_du_kien:
+        type: sum
+        sql: mm_ttsx_du_kien
+        label: "MM TTSX COMMIT"
+        description: "Sinh từ Power BI: sum(PYC OS.MM_TTSX_Dự_kiến_10840)"
+      sum_so_ngay_tu_nghiem_thu_den_release:
+        type: sum
+        sql: so_ngay_tu_nghiem_thu_den_release
+        label: "Cycle time"
+        description: "Sinh từ Power BI: sum(PYC OS.So_ngay_tu_Nghiem_thu_den_Release)"
+      total_pyc:
+        type: count
+        sql: "*"
+        label: "Total PYC"
+        description: "DAX: COUNTROWS('PYC OS')"
+  columns:
+  - name: id
+    description: "Cột Id trong PYC OS."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+  - name: issue_current_type_name
+    description: "Cột ISSUE_CURRENT_TYPE_NAME trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_TYPE_NAME"
+        hidden: true
+  - name: issue_created
+    description: "Cột ISSUE_CREATED trong PYC OS."
+    meta:
+      dimension:
+        type: timestamp
+        label: "ISSUE_CREATED"
+        hidden: true
+  - name: issue_summary
+    description: "Cột ISSUE_SUMMARY trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_SUMMARY"
+  - name: issue_current_status_name
+    description: "Cột ISSUE_CURRENT_STATUS_NAME trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Status"
+  - name: on_time_check
+    description: "Cột Check_đúng_hạn_10804 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Check_đúng_hạn_10804"
+        hidden: true
+  - name: internal_due_date
+    description: "Cột Due_date_nội_bộ_10613 trong PYC OS."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Due_date_nội_bộ_10613"
+        hidden: true
+  - name: project
+    description: "Cột Dự_án_10706 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Dự_án_10706"
+        hidden: true
+  - name: expected_ttsx_handover_date
+    description: "Cột Ngày_kỳ_vọng_TTSX_bàn_giao_10151 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_kỳ_vọng_TTSX_bàn_giao_10151"
+        hidden: true
+  - name: ttsx_pm_commit_date
+    description: "Cột Ngày_PM_TTSX_commit_10808 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_PM_TTSX_commit_10808"
+        hidden: true
+  - name: mm_pyc
+    description: "Cột MM_PYC_10705 trong PYC OS."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_10705"
+        hidden: true
+  - name: request_created_date
+    description: "Cột Ngày_tạo_PYC_10708 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_tạo_PYC_10708"
+        hidden: true
+  - name: order_value
+    description: "Cột Đơn_hàng_10707 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Đơn_hàng_10707"
+        hidden: true
+  - name: partner
+    description: "Cột Đối_tác_10801 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Đối_tác_10801"
+  - name: payment_status
+    description: "Cột Trạng_thái_thanh_toán_10810 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Trạng_thái_thanh_toán_10810"
+        hidden: true
+  - name: issue_current_assignee_name
+    description: "Cột ISSUE_CURRENT_ASSIGNEE_NAME trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_CURRENT_ASSIGNEE_NAME"
+        hidden: true
+  - name: mm_pyc_thuc_te
+    description: "Cột MM_PYC_Thực_tế_10823 trong PYC OS."
+    meta:
+      dimension:
+        type: number
+        label: "MM_PYC_Thực_tế_10823"
+        hidden: true
+  - name: mm_ttsx_estimate
+    description: "Cột MM_TTSX_Estimate_10830 trong PYC OS."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Estimate_10830"
+        hidden: true
+  - name: acceptance_completion_date
+    description: "Cột Ngày_hoàn_thành_nghiệm_thu_10805 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày HT Nghiệm thu"
+  - name: expected_release_date
+    description: "Cột Ngày_kỳ_vọng_release_10817 trong PYC OS."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày_kỳ_vọng_release_10817"
+        hidden: true
+  - name: year_month
+    description: "Cột YearMonth trong PYC OS. Cột tính toán, DAX gốc: FORMAT('PYC OS'[Ngày_TTSX_commit_10845], \"YYYY - MM\")"
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong PYC OS. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'PYC OS'[Dự_án_10706] in {\"aJiant\",\"EDR-Linux\",\"EDR-PM\",\"EDR-PM_onsite\",\"NSM - NDR\",\"NDR\",\"Server Endpoint\",\"SOC PLATFORM\",\"Soc Platform_consolidate\",\"Soc Platform_onsite\",\"VCS_ Consolidate Platform\",\"Cycir\",\"Cycir_Onsite\",\"CyM\",\"CyM_Onsite\",\"InT\",\"VCS-SecAGI\",\"Automation Test EDR\"} , \"TT.Enterprise\", 'PYC OS'[Dự_án_10706] in {\"SOC AI Transfrom\",\"MSS Tool\",\"X-IR\",\"Threat Hunting\"} , \"TT.SOC\", 'PYC OS'[Dự_án_10706] in {\"Maintain Project TTSX\",\"M-Suite\",\"Security Chatbot\",\"Software Development Framework\",\"TTSX_Sản phẩm nội bộ\",\"VCS Paygate\",\"KIAN\",\"AI Chatbot\",\"VHKT\"}, \"TT.SX\", 'PYC OS'[Dự_án_10706] in {\"Anti Ddos\",\"Automation Test Cloudrity\",\"Cloudrity\",\"BRG\",\"F2DR\",\"LIG\",\"Viettel Safe Platform\",\"TML\",\"TNXH\",\"V-AntiDDoS\",\"TAS\"},\"TT.Telco\", 'PYC OS'[Dự_án_10706] in {\"Pentest Platform\"},\"TT.DVATTT\", 'PYC OS'[Dự_án_10706] in {\"Threat Intelligence\",\"Threat Radar\",\"Threat Hunting\",\"TI\",\"Viettel Software Bill of Materials Platform\"},\"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true
+  - name: ttsx_product
+    description: "Cột TTSX_PRODUCT_10803 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "TTSX_PRODUCT_10803"
+        hidden: true
+  - name: type_os
+    description: "Cột Loại_OS_10843 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Loại_OS_10843"
+        hidden: true
+  - name: mm_ttsx_du_kien
+    description: "Cột MM_TTSX_Dự_kiến_10840 trong PYC OS."
+    meta:
+      dimension:
+        type: number
+        label: "MM_TTSX_Dự_kiến_10840"
+        hidden: true
+  - name: ttsx_planned_date
+    description: "Cột Ngày_TTSX_Dự_kiến_10841 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_TTSX_Dự_kiến_10841"
+        hidden: true
+  - name: payment_date
+    description: "Cột Ngày_thanh_toán_10839 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_thanh_toán_10839"
+        hidden: true
+  - name: partner_by_contract
+    description: "Cột Đối_tác_theo_HĐ_10842 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Đối_tác_theo_HĐ_10842"
+        hidden: true
+  - name: ttsx_commit_date
+    description: "Cột Ngày_TTSX_commit_10845 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày TTSX Commit"
+  - name: ttsx_commit_jmcf_date
+    description: "Cột Ngày_TTSX_commit_JMCF_10838 trong PYC OS."
+    meta:
+      dimension:
+        type: string
+        label: "Ngày_TTSX_commit_JMCF_10838"
+        hidden: true
+  - name: acceptance_success_date
+    description: "Cột Ngày_nghiệm_thu_thành_công_10847 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày_nghiệm_thu_thành_công_10847"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong PYC OS. Cột tính toán, DAX gốc: IF( ISBLANK('PYC OS'[Ngày_nghiệm_thu_thành_công_10847]), IF( 'PYC OS'[Ngày_TTSX_commit_10845] < TODAY(), \"Fail\", \"Đang thực hiện\" ), IF( 'PYC OS'[Ngày_nghiệm_thu_thành_công_10847] <= 'PYC OS'[Ngày_TTSX_commit_10845], \"Pass\", \"Fail\" ) )"
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+  - name: project_2
+    description: "Cột project trong PYC OS. Cột tính toán, DAX gốc: SWITCH( TRUE(), 'PYC OS'[TTSX_PRODUCT_10803] = \"Pentest Platform\", \"VAPT (Pentest)\", 'PYC OS'[TTSX_PRODUCT_10803] )"
+    meta:
+      dimension:
+        type: string
+        label: "project"
+  - name: handover_date
+    description: "Cột Ngày_bàn_giao_10849 trong PYC OS."
+    meta:
+      dimension:
+        type: timestamp
+        label: "Ngày_bàn_giao_10849"
+        hidden: true
+  - name: release_date
+    description: "Cột Ngày_Release_10806 trong PYC OS."
+    meta:
+      dimension:
+        type: date
+        label: "Ngày release"
+  - name: so_ngay_tu_nghiem_thu_den_release
+    description: "Cột So_ngay_tu_Nghiem_thu_den_Release trong PYC OS. Cột tính toán, DAX gốc: DATEDIFF( 'PYC OS'[Ngày_hoàn_thành_nghiệm_thu_10805], 'PYC OS'[Ngày_Release_10806], DAY )"
+    meta:
+      dimension:
+        type: number
+        label: "So_ngay_tu_Nghiem_thu_den_Release"
+        hidden: true
+  - name: mm_backlog
+    description: "Cột MM Tồn trong PYC OS. Cột tính toán, DAX gốc: SWITCH( TRUE(), NOT ( 'PYC OS'[ISSUE_CURRENT_STATUS_NAME] IN { \"Bàn giao TT Sản phẩm\", \"Released\", \"Nghiệm thu thành công\", \"ĐG TTK\" } ), 'PYC OS'[MM_PYC_Thực_tế_10823], BLANK() )"
+    meta:
+      dimension:
+        type: number
+        label: "MM Tồn"
+        hidden: true
+  - name: so_ngay_create_ngay_ttsx_commit
+    description: "Cột So_ngay_create_ngay_TTSX_commit trong PYC OS. Cột tính toán, DAX gốc: DATEDIFF( 'PYC OS'[ISSUE_CREATED], 'PYC OS'[Ngày_TTSX_commit_10845], DAY )"
+    meta:
+      dimension:
+        type: number
+        label: "So_ngay_create_ngay_TTSX_commit"
+        hidden: true

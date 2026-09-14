@@ -1,0 +1,29 @@
+version: 2
+models:
+- name: production_management_1_n_5_vvip_prm_components
+  description: "Bảng production_management_1_n_5_vvip_prm_components (nguồn Power BI: 5VVIP_PRM_COMPONENTs)."
+  meta:
+    label: "5VVIP_PRM_COMPONENTs"
+    powerbi_source: "5VVIP_PRM_COMPONENTs"
+  columns:
+  - name: id
+    description: "Cột Id trong 5VVIP_PRM_COMPONENTs."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: component_issue_id
+    description: "Cột COMPONENT_ISSUE_ID trong 5VVIP_PRM_COMPONENTs."
+    meta:
+      dimension:
+        type: number
+        label: "COMPONENT_ISSUE_ID"
+        hidden: true
+  - name: component_name
+    description: "Cột COMPONENT_NAME trong 5VVIP_PRM_COMPONENTs."
+    meta:
+      dimension:
+        type: string
+        label: "COMPONENT_NAME"
+        hidden: true

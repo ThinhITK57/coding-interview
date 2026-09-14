@@ -1,0 +1,39 @@
+version: 2
+models:
+- name: qtsx_v2_project
+  description: "Bảng qtsx_v2_project (nguồn Power BI: Project)."
+  meta:
+    label: "Project"
+    powerbi_source: "Project"
+    metrics:
+      total_projects:
+        type: count
+        sql: "*"
+        label: "Total Projects"
+        description: "DAX: COUNTROWS('Project')"
+  columns:
+  - name: project_key
+    description: "Cột Project Key trong Project."
+    meta:
+      dimension:
+        type: string
+        label: "Project Key"
+        hidden: true
+  - name: project_name
+    description: "Cột Project Name trong Project."
+    meta:
+      dimension:
+        type: string
+        label: "Project Name"
+  - name: center
+    description: "Cột Trung tâm trong Project. Cột tính toán, DAX gốc: SWITCH( TRUE(), Project[Project Name] in {\"aJiant\",\"NSM - NDR\",\"Server Endpoint\",\"SOC PLATFORM\",\"VCS_ Consolidate Platform\",\"VCS-CyCir\",\"VCS-CyM\",\"VCS-InT INSIDER THREAT\"} , \"TT.Enterprise\", Project[Project Name] in {\"SOC AI Transform\",\"Threat Hunting\",\"X-IR\"} , \"TT.SOC\", Project[Project Name] in {\"Maintain Project TTSX\",\"M-Suite\",\"Security Chatbot\",\"Software Development Framework\",\"TTSX_Sản phẩm nội bộ\",\"VCS Paygate\",\"VCS-KIAN\",\"AI Chatbot\",\"VCS - Data governance\",\"TTSX_VHKT\",\"VAPT (Pentest)\"}, \"TT.SX\", Project[Project Name] in {\"BRG\",\"Cloudrity Self Service\",\"F2DR\",\"LIG\",\"My Safe\",\"TML\",\"Trách Nhiệm Xã Hội\",\"V-AntiDDoS\",\"VCS TAS\"},\"TT.Telco\", Project[Project Name] in {\"Threat Intelligence\",\"Threat Radar\",\"Viettel Software Bill of Materials Platform\",\"SBOM\",\"VCS - TI\"},\"TT.TI\", BLANK() )"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+  - name: project_group
+    description: "Cột Nhóm project trong Project. Cột tính toán, DAX gốc: SWITCH( TRUE(), Project[Project Name] in{\"VCS-CyCir\",\"VCS-CyM\",\"NSM - NDR\"}, \"SOCv1\", Project[Project Name] in{\"Cloudrity Self Service\",\"V-AntiDDoS\"},\"WAAP\", Project[Project Name] )"
+    meta:
+      dimension:
+        type: string
+        label: "Nhóm project"

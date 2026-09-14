@@ -1,0 +1,23 @@
+name: 'crm'
+version: '1.0.0'
+profile: 'crm'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  crm:
+    +materialized: "{{ env_var('DBT_MATERIALIZED', 'ephemeral') }}"
+    +schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_gold') }}"
+    +tags: ['crm']
+    +meta:
+      openmetadata:
+        service: crm-gold

@@ -1,0 +1,9 @@
+version: 2
+sources:
+- name: bi_silver__finance
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: finance'
+  tables:
+  - name: finance_daily_business_metrics
+  - name: finance_sales_revenue

@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_fresher_conversion
+    description: >
+      Bảng **hr_ld_fresher_conversion** lưu trữ thông tin chuyển đổi của nhân sự Fresher
+      sau khi hoàn thành chương trình đào tạo, bao gồm thông tin cá nhân, thời gian chuyển đổi,
+      vị trí công việc, đơn vị công tác, địa điểm làm việc và kết quả đánh giá phỏng vấn.
+      Dữ liệu được sử dụng để theo dõi tỷ lệ chuyển đổi Fresher thành nhân viên chính thức,
+      đánh giá hiệu quả chương trình đào tạo và hỗ trợ công tác phát triển nguồn nhân lực.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi chuyển đổi Fresher
+      tests:
+        - not_null
+
+    - name: full_name
+      description: Họ và tên của nhân sự Fresher
+
+    - name: employee_code
+      description: Mã định danh của nhân sự Fresher
+
+    - name: onboard_date
+      description: Ngày nhân sự Fresher bắt đầu tham gia chương trình đào tạo hoặc gia nhập công ty
+
+    - name: conversion_date
+      description: Ngày nhân sự được chuyển đổi sang vị trí hoặc trạng thái làm việc chính thức
+
+    - name: role_base
+      description: Nhóm vai trò hoặc chức danh cơ sở của nhân sự sau khi chuyển đổi
+
+    - name: level_region
+      description: Cấp bậc hoặc nhóm level được áp dụng cho nhân sự sau khi chuyển đổi
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 tiếp nhận nhân sự sau khi chuyển đổi
+
+    - name: current_work_location
+      description: Địa điểm hoặc khu vực làm việc hiện tại của nhân sự
+
+    - name: interview_result
+      description: Kết quả đánh giá hoặc phỏng vấn chuyển đổi của nhân sự Fresher
+
+    - name: interview_result_file
+      description: Đường dẫn hoặc tài liệu lưu trữ kết quả đánh giá/phỏng vấn chuyển đổi

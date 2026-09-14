@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: br02_dieu_hanh_cvct_klcd
+    description: >
+      Báo cáo điều hành Công việc trọng tâm / Khối lượng công việc (CVCT/KLCĐ - BR-02).
+      Theo dõi tiến độ cam kết và rủi ro chậm hạn của các đầu việc quan trọng.
+      Bảng vật lý chỉ chứa 8 cột chuẩn hóa của nghiệp vụ.
+      Mọi suy luận về hạn chót, quá hạn, mức độ cấp bách thuộc về tầng Semantic Layer.
+
+      Grain: Một dòng tương ứng với một hạng mục công việc/chỉ tiêu trọng tâm.
+
+    meta:
+      label: "Báo cáo Điều hành CVCT/KLCĐ (BR-02)"
+      group_label: "Executive EPM Reports"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Targets / Task Execution"
+        grain: "One row per key work item"
+        primary_assignee_dimension: "assignee"
+
+        restrictions:
+          - "Bảng vật lý không chứa cờ quá hạn hay khoảng cách ngày."
+          - "Các chỉ số dưới đây được sinh tự động khi truy vấn qua GenBI hoặc semantic layer."
+
+        derived_measures:
+          - name: "is_overdue"
+            label: "Quá Hạn (Overdue)"
+            formula: "CASE WHEN due_date < CURRENT_DATE AND percent_completed < 100.0 THEN 1 ELSE 0 END"
+            description: "Cờ xác định công việc đã quá hạn chốt mà chưa đạt 100% tiến độ."
+            format: "boolean"
+
+          - name: "days_to_due"
+            label: "Số Ngày Còn Lại"
+            formula: "DATE_DIFF('day', CURRENT_DATE, due_date)"
+            description: "Số ngày từ hôm nay đến hạn chốt (âm nghĩa là đã quá hạn N ngày)."
+            format: "integer"
+
+          - name: "progress_gap"
+            label: "Khoảng Cách Tiến Độ (%)"
+            formula: "100.0 - percent_completed"
+            description: "Khối lượng công việc còn lại cần hoàn thành để đạt mốc 100%."
+            format: "percentage"
+
+          - name: "is_completed"
+            label: "Đã Hoàn Thành"
+            formula: "CASE WHEN percent_completed >= 100.0 THEN 1 ELSE 0 END"
+            description: "Cờ xác nhận công việc đã kết thúc 100%."
+            format: "boolean"
+
+    columns:
+      - name: assignee
+        description: "Cán bộ / Nhân sự chịu trách nhiệm chính về đầu việc."
+        meta:
+          dimension:
+            type: string
+            label: "Người Thực Hiện"
+
+      - name: resources
+        description: "Tổng số nhân sự phối hợp và vị trí giữ chỗ."
+        meta:
+          dimension:
+            type: string
+            label: "Nhân Lực"
+
+      - name: name
+        description: "Tiêu đề công việc trọng tâm / chỉ tiêu cam kết."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Công Việc"
+
+      - name: status
+        description: "Trạng thái đánh giá hiện tại (Đang thực hiện, Tạm hoãn, Hoàn thành)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng Thái"
+
+      - name: due_date
+        description: "Hạn chót hoàn thành công việc theo kế hoạch phê duyệt."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Hoàn Thành"
+
+      - name: percent_completed
+        description: "Tỷ lệ % khối lượng công việc đã thực hiện được."
+        meta:
+          measure:
+            type: average
+            label: "Tiến Độ Hoàn Thành (%)"
+
+      - name: target_value_m
+        description: "Mục tiêu định lượng bắt buộc (Must-have)."
+        meta:
+          measure:
+            type: sum
+            label: "Mục Tiêu M"
+
+      - name: target_date_m
+        description: "Hạn chốt cam kết theo mốc M."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Chốt M"

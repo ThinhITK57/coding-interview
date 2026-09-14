@@ -1,0 +1,221 @@
+version: 2
+
+models:
+  - name: jira_msn
+    description: "Lưu trữ dữ liệu chi tiết về các phiếu công việc (Issues/Tasks/Nhiệm vụ) từ hệ thống quản lý dự án Jira. Bảng theo dõi toàn bộ vòng đời của một nhiệm vụ từ khi khởi tạo, phân công người thực hiện, đến khi thay đổi trạng thái và hoàn thành, phục vụ phân tích năng suất nhân sự và tiến độ dự án."
+    meta:
+      label: "Jira MSN"
+      owner: "lyttt3"
+
+
+    columns:
+      - name: key
+        description: "(Primary Key) Mã định danh duy nhất của ticket (Ví dụ: IT-123)."
+
+        meta:
+          dimension:
+            label: "mã công việc"
+
+
+        tests:
+          - not_null
+          - unique
+      - name: start_date
+        description: "Ngày bắt đầu thực hiện nhiệm vụ thực tế."
+
+        meta:
+          dimension:
+            label: "ngày bắt đầu"
+
+
+      - name: summary
+        description: "Tiêu đề hoặc tóm tắt nội dung chính của nhiệm vụ."
+
+        meta:
+          dimension:
+            label: "tiêu đề"
+
+
+      - name: issuetype
+        description: "Column issuetype from bi_silver.jira_msn"
+
+
+      - name: status
+        description: "Trạng thái hiện tại của quy trình (TODO, In Progress, Done, Hủy, ...)."
+
+        meta:
+          dimension:
+            label: "trạng thái"
+
+
+      - name: assignee
+        description: "Tên đăng nhập (username) của người chịu trách nhiệm thực hiện."
+
+        meta:
+          dimension:
+            label: "người được giao việc"
+
+
+      - name: projectkey
+        description: "Mã dự án chứa ticket này (Ví dụ: MASS09, TI18)."
+
+        meta:
+          dimension:
+            label: "mã dự án"
+
+
+      - name: department_center
+        description: "Trung tâm hoặc phòng ban quản lý công việc này."
+
+        meta:
+          dimension:
+            label: "phòng ban"
+
+
+      - name: task_type
+        description: "Phân loại nhiệm vụ theo mục tiêu (BSC, Chỉ tiêu điều hành, Team)."
+
+        meta:
+          dimension:
+            label: "loại công việc"
+
+
+      - name: duedate
+        description: "Hạn chót (Deadline) phải hoàn thành công việc."
+
+        meta:
+          dimension:
+            label: "ngày hết hạn"
+
+
+      - name: created
+        description: "Ngày tạo phiếu yêu cầu trên hệ thống."
+
+        meta:
+          dimension:
+            label: "ngày tạo"
+
+
+      - name: updated
+        description: "Ngày có sự thay đổi thông tin cuối cùng trên ticket."
+
+        meta:
+          dimension:
+            label: "ngày cập nhật"
+
+
+  - name: jira_task_operation
+    description: "Lưu trữ dữ liệu vận hành chi tiết các nhiệm vụ (Tasks/Issues) trên hệ thống Jira. Bảng tập trung vào việc quản lý quy trình giao việc, mức độ ưu tiên và thời hạn hoàn thành, phục vụ mục tiêu phân tích tải công việc (Workload), đo lường KPI hoàn thành đúng hạn và tối ưu hóa nguồn lực nhân sự trong các đơn vị vận hành."
+    meta:
+      label: "Jira Task Operations"
+      owner: "lyttt3"
+
+
+    columns:
+      - name: key
+        description: "(Primary Key) Mã định danh duy nhất của ticket công việc."
+
+        meta:
+          dimension:
+            label: "mã công việc"
+
+
+        tests:
+          - not_null
+          - unique
+      - name: start_date
+        description: "Ngày thực tế bắt đầu triển khai nhiệm vụ."
+
+        meta:
+          dimension:
+            label: "ngày bắt đầu"
+
+
+      - name: due_date
+        description: "Hạn chót phải hoàn thành nhiệm vụ theo kế hoạch."
+
+        meta:
+          dimension:
+            label: "ngày hết hạn"
+
+
+      - name: summary
+        description: "Tiêu đề ngắn mô tả nội dung nhiệm vụ."
+
+        meta:
+          dimension:
+            label: "tóm tắt"
+
+
+      - name: issue_type
+        description: "Loại issue (ví dụ: Bug, Task, Story) trong hệ thống Jira."
+
+        meta:
+          dimension:
+            label: "loại issue"
+
+
+      - name: priority
+        description: "Mức độ ưu tiên (Critical, High, Medium, Low)."
+
+        meta:
+          dimension:
+            label: "độ ưu tiên"
+
+
+      - name: status
+        description: "Trạng thái hiện tại của công việc trong Jira."
+
+        meta:
+          dimension:
+            label: "trạng thái"
+
+
+      - name: assignor
+        description: "Người chịu trách nhiệm giao nhiệm vụ trong hệ thống JIRA."
+
+        meta:
+          dimension:
+            label: "người giao"
+
+
+      - name: work_group
+        description: "Nhóm nghiệp vụ cụ thể xử lý task (KLGB, CVCT, EAT...)."
+
+        meta:
+          dimension:
+            label: "nhóm công việc"
+
+
+      - name: department_center
+        description: "Trung tâm hoặc bộ phận chịu trách nhiệm thực hiện công việc trong Jira."
+
+        meta:
+          dimension:
+            label: "phòng ban"
+
+
+      - name: assignee
+        description: "Username của người nhận và chịu trách nhiệm thực hiện."
+
+        meta:
+          dimension:
+            label: "người được giao"
+
+
+      - name: created
+        description: "Ngày khởi tạo nhiệm vụ trên hệ thống."
+
+        meta:
+          dimension:
+            label: "ngày tạo"
+
+
+      - name: updated
+        description: "Ngày cập nhật trạng thái hoặc nội dung cuối cùng."
+
+        meta:
+          dimension:
+            label: "ngày cập nhật"
+
+

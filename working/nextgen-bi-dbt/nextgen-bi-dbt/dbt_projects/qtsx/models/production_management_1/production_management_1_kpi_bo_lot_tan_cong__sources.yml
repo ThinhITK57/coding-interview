@@ -1,0 +1,46 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_kpi_bo_lot_tan_cong
+    description: "Nguồn Power BI: KPI_BoLotTanCong"
+    columns:
+    - name: report_date
+      description: "Cột Ngày báo cáo"
+    - name: period
+      description: "Cột period"
+    - name: metric_name
+      description: "Cột Metric name"
+    - name: target
+      description: "Cột target"
+    - name: condition
+      description: "Cột Điều kiện"
+    - name: spdv
+      description: "Cột spdv"
+    - name: subtype
+      description: "Cột subtype"
+    - name: result
+      description: "Cột Kết quả"
+    - name: ticket_detail
+      description: "Cột ticket_detail"
+    - name: so_target
+      description: "Cột so_target"
+    - name: evaluation
+      description: "Cột ĐÁNH GIÁ"
+    - name: report_month
+      description: "Cột _report_month"
+    - name: unit_of_measure
+      description: "Cột Đơn vị tính"
+    - name: loai_kpi
+      description: "Cột loai_kpi"
+    - name: nhom
+      description: "Cột nhom"
+    - name: results_1_pre_period
+      description: "Cột results_1_pre_period"
+    - name: results_2_pre_period
+      description: "Cột results_2_pre_period"
+    - name: trend
+      description: "Cột Xu hướng"

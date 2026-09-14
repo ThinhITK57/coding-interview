@@ -1,0 +1,70 @@
+version: 2
+models:
+- name: qtsx_v2_done_charter
+  description: "Bảng qtsx_v2_done_charter (nguồn Power BI: done charter)."
+  meta:
+    label: "done charter"
+    powerbi_source: "done charter"
+    joins:
+    - join: qtsx_v2_project
+      sql_on: "${qtsx_v2_done_charter.projectname} = ${qtsx_v2_project.project_name}"
+      relationship: many-to-one
+    metrics:
+      count_charter_done:
+        type: count
+        sql: "CASE WHEN status IN ('TRIỂN KHAI THÀNH CÔNG', 'Done', 'Done ĐGTK', 'NGHIỆM THU THÀNH CÔNG') THEN issuekey END"
+        label: "Số charter done"
+        description: "DAX: CALCULATE(COUNT('done charter'[issuekey]), FILTER('done charter', 'done charter'[status] in {\"TRIỂN KHAI THÀNH CÔNG\", \"Done\", \"Done ĐGTK\",\"NGHIỆM THU THÀNH CÔNG\"}))"
+      count_issuekey:
+        type: count
+        sql: issuekey
+        label: "count issuekey"
+        description: "Metric phụ sinh từ DAX: COUNT(issuekey)"
+      pct_done_charter:
+        type: number
+        sql: "(${count_charter_done} / NULLIF(${count_issuekey}, 0)) + 0"
+        label: "% Done charter"
+        description: "DAX: DIVIDE( [Số charter done], COUNT('done charter'[issuekey]) ) + 0"
+  columns:
+  - name: issuekey
+    description: "Cột issuekey trong done charter."
+    meta:
+      dimension:
+        type: string
+        label: "issuekey"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong done charter."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: projectname
+    description: "Cột projectname trong done charter."
+    meta:
+      dimension:
+        type: string
+        label: "projectname"
+        hidden: true
+  - name: status
+    description: "Cột status trong done charter."
+    meta:
+      dimension:
+        type: string
+        label: "status"
+        hidden: true
+  - name: created
+    description: "Cột created trong done charter."
+    meta:
+      dimension:
+        type: date
+        label: "created"
+        hidden: true
+  - name: duedate
+    description: "Cột duedate trong done charter."
+    meta:
+      dimension:
+        type: date
+        label: "duedate"
+        hidden: true

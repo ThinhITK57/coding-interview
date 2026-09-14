@@ -1,0 +1,1 @@
+"""OpenMetadata DBT trigger package."""

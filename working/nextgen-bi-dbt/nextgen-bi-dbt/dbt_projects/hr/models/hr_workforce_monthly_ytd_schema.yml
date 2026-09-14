@@ -1,0 +1,342 @@
+version: 2
+
+models:
+  - name: hr_workforce_monthly_ytd
+    description: >
+      Bảng **hr_workforce_monthly_ytd** lưu trữ dữ liệu Workforce lũy kế từ ngày 01/01
+      của năm báo cáo tới từng tháng báo cáo. Bảng giữ nguyên các chiều phân tích của
+      hr_workforce_monthly như đơn vị tổ chức, loại hợp đồng, nhóm nguồn lực, cấp bậc công việc,
+      vị trí, vùng năng lực, thâm niên và giới tính. Dữ liệu được sử dụng để theo dõi các chỉ số
+      tuyển mới, nghỉ việc, luân chuyển, thăng chức, hiệu suất và tỷ lệ quản trị nhân sự theo YTD.
+
+    meta:
+      label: "Workforce Monthly YTD"
+      owner: "tranpth"
+
+      metrics:
+        opening_headcount_ytd:
+          type: sum
+          sql: ${TABLE}.opening_headcount_ytd
+          description: "Tổng số nhân sự đầu kỳ lũy kế, lấy theo nhân sự đầu kỳ của tháng đầu tiên trong năm báo cáo."
+          label: "YTD Opening Headcount"
+          category: "Workforce"
+
+        closing_headcount_ytd:
+          type: sum
+          sql: ${TABLE}.closing_headcount_ytd
+          description: "Tổng số nhân sự cuối kỳ tại tháng báo cáo trong phạm vi lọc hiện tại."
+          label: "YTD Closing Headcount"
+          category: "Workforce"
+
+        avg_headcount_ytd:
+          type: sum
+          sql: ${TABLE}.avg_headcount_ytd
+          description: "Tổng nhân sự bình quân lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Average Headcount"
+          category: "Workforce"
+
+        new_hire_count_ytd:
+          type: sum
+          sql: ${TABLE}.new_hire_count_ytd
+          description: "Tổng số nhân sự tuyển mới lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD New Hire Count"
+          category: "Workforce"
+
+        resigned_count_ytd:
+          type: sum
+          sql: ${TABLE}.resigned_count_ytd
+          description: "Tổng số nhân sự nghỉ việc lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Resigned Count"
+          category: "Workforce"
+
+        voluntary_exit_count_ytd:
+          type: sum
+          sql: ${TABLE}.voluntary_exit_count_ytd
+          description: "Tổng số nhân sự nghỉ việc tự nguyện lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Voluntary Exit Count"
+          category: "Workforce"
+
+        company_termination_count_ytd:
+          type: sum
+          sql: ${TABLE}.company_termination_count_ytd
+          description: "Tổng số nhân sự nghỉ việc theo quyết định công ty lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Company Termination Count"
+          category: "Workforce"
+
+        quick_quit_count_ytd:
+          type: sum
+          sql: ${TABLE}.quick_quit_count_ytd
+          description: "Tổng số nhân sự nghỉ việc sớm lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Quick Quit Count"
+          category: "Workforce"
+
+        promotion_count_ytd:
+          type: sum
+          sql: ${TABLE}.promotion_count_ytd
+          description: "Tổng số nhân sự được thăng chức hoặc thay đổi cấp bậc/vùng năng lực lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Promotion Count"
+          category: "Workforce"
+
+        position_level_change_count_ytd:
+          type: sum
+          sql: ${TABLE}.position_level_change_count_ytd
+          description: "Tổng số nhân sự thay đổi cấp bậc vị trí lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Position Level Change Count"
+          category: "Workforce"
+
+        competency_zone_change_count_ytd:
+          type: sum
+          sql: ${TABLE}.competency_zone_change_count_ytd
+          description: "Tổng số nhân sự thay đổi vùng năng lực lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Competency Zone Change Count"
+          category: "Workforce"
+
+        internal_transfer_in_ytd:
+          type: sum
+          sql: ${TABLE}.internal_transfer_in_ytd
+          description: "Tổng số nhân sự luân chuyển nội bộ vào lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Internal Transfer In"
+          category: "Workforce"
+
+        internal_transfer_out_ytd:
+          type: sum
+          sql: ${TABLE}.internal_transfer_out_ytd
+          description: "Tổng số nhân sự luân chuyển nội bộ ra lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Internal Transfer Out"
+          category: "Workforce"
+
+        internal_transfer_net_ytd:
+          type: sum
+          sql: ${TABLE}.internal_transfer_net_ytd
+          description: "Chênh lệch luân chuyển nội bộ lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Internal Transfer Net"
+          category: "Workforce"
+
+        net_change_ytd:
+          type: sum
+          sql: ${TABLE}.net_change_ytd
+          description: "Biến động nhân sự thuần lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Net Headcount Change"
+          category: "Workforce"
+
+        attrition_rate_ytd:
+          type: number
+          sql: >
+            100.0 * ${resigned_count_ytd}
+            / NULLIF(${avg_headcount_ytd}, 0.0)
+          description: "Tỷ lệ nghỉ việc lũy kế từ đầu năm tới tháng báo cáo, được tính bằng resigned_count_ytd / avg_headcount_ytd."
+          label: "YTD Attrition Rate (%)"
+          category: "Workforce"
+
+        turnover_rate_ytd:
+          type: number
+          sql: >
+            100.0 * ${resigned_count_ytd}
+            / NULLIF(${avg_headcount_ytd}, 0.0)
+          description: "Tỷ lệ biến động nghỉ việc lũy kế; hiện dùng cùng công thức với YTD Attrition Rate (resigned_count_ytd / avg_headcount_ytd)."
+          label: "YTD Turnover Rate (%)"
+          category: "Workforce"
+
+        hiring_rate_ytd:
+          type: number
+          sql: >
+            100.0 * ${new_hire_count_ytd}
+            / NULLIF(${avg_headcount_ytd}, 0.0)
+          description: "Tỷ lệ tuyển mới lũy kế từ đầu năm tới tháng báo cáo, được tính bằng new_hire_count_ytd / avg_headcount_ytd."
+          label: "YTD Hiring Rate (%)"
+          category: "Workforce"
+
+        promotion_rate_ytd:
+          type: number
+          sql: >
+            100.0 * ${promotion_count_ytd}
+            / NULLIF(${avg_headcount_ytd}, 0.0)
+          description: "Tỷ lệ thăng chức hoặc thay đổi cấp bậc/vùng năng lực lũy kế, được tính bằng promotion_count_ytd / avg_headcount_ytd."
+          label: "YTD Promotion Rate (%)"
+          category: "Workforce"
+
+        performance_employee_count_ytd:
+          type: sum
+          sql: ${TABLE}.performance_employee_count_ytd
+          description: "Tổng số nhân sự có kết quả đánh giá hiệu suất lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Performance Employee Count"
+          category: "Performance"
+
+        performance_not_evaluated_count_ytd:
+          type: sum
+          sql: ${TABLE}.performance_not_evaluated_count_ytd
+          description: "Tổng số nhân sự chưa có kết quả đánh giá hiệu suất lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Performance Not Evaluated Count"
+          category: "Performance"
+
+        performance_not_pass_count_ytd:
+          type: sum
+          sql: ${TABLE}.performance_not_pass_count_ytd
+          description: "Tổng số nhân sự có kết quả đánh giá hiệu suất Không đạt lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Performance Not Pass Count"
+          category: "Performance"
+
+        performance_pass_count_ytd:
+          type: sum
+          sql: ${TABLE}.performance_pass_count_ytd
+          description: "Tổng số nhân sự có kết quả đánh giá hiệu suất Đạt lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Performance Pass Count"
+          category: "Performance"
+
+        performance_exceed_count_ytd:
+          type: sum
+          sql: ${TABLE}.performance_exceed_count_ytd
+          description: "Tổng số nhân sự có kết quả đánh giá hiệu suất Vượt yêu cầu lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Performance Exceed Count"
+          category: "Performance"
+
+        official_headcount_ytd:
+          type: sum
+          sql: ${TABLE}.official_headcount_ytd
+          description: "Tổng số nhân sự chính thức thuộc nhóm nguồn lực chính lũy kế tới tháng báo cáo."
+          label: "YTD Official Headcount"
+          category: "Workforce"
+
+        official_new_hire_count_ytd:
+          type: sum
+          sql: ${TABLE}.official_new_hire_count_ytd
+          description: "Tổng số nhân sự chính thức tuyển mới lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Official New Hire Count"
+          category: "Workforce"
+
+        official_resigned_count_ytd:
+          type: sum
+          sql: ${TABLE}.official_resigned_count_ytd
+          description: "Tổng số nhân sự chính thức nghỉ việc lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Official Resigned Count"
+          category: "Workforce"
+
+        official_performance_not_evaluated_count_ytd:
+          type: sum
+          sql: ${TABLE}.official_performance_not_evaluated_count_ytd
+          description: "Tổng số nhân sự chính thức chưa có kết quả đánh giá hiệu suất lũy kế từ đầu năm tới tháng báo cáo."
+          label: "YTD Official Performance Not Evaluated Count"
+          category: "Performance"
+
+    columns:
+      - name: report_year
+        description: Năm báo cáo của dữ liệu Workforce
+        meta:
+          dimension:
+            type: number
+            label: "Năm báo cáo"
+
+      - name: snapshot_year_month
+        description: Tháng báo cáo theo định dạng YYYYMM
+        meta:
+          dimension:
+            type: number
+            label: "Tháng báo cáo"
+
+      - name: snapshot_month_label
+        description: TNhãn hiển thị của tháng báo cáo theo định dạng yyyy-MMM, ví dụ 2025-Jan.
+        meta:
+          dimension:
+            type: string
+            label: "Tháng báo cáo theo chu kỳ"
+            order_by: snapshot_year_month
+
+      - name: division_n
+        description: Khối hoặc đơn vị cấp cao của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Khối N"
+
+      - name: department_n_1
+        description: Đơn vị tổ chức cấp 1 của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Trung tâm N-1"
+
+      - name: department_n_2
+        description: Đơn vị tổ chức cấp 2 của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Bộ phận N-2"
+
+      - name: department_n_3
+        description: Đơn vị tổ chức cấp 3 của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Phòng ban N-3"
+
+      - name: contract_type
+        description: Loại hợp đồng hoặc hình thức ký kết với nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Loại hợp đồng"
+
+      - name: resource_type
+        description: Nhóm nguồn lực nhân sự được chuẩn hóa theo đối tượng nhân sự và cấp bậc vị trí
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm nguồn lực"
+
+      - name: job_level
+        description: Nhóm chức danh hoặc cấp độ công việc của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Job Level"
+
+      - name: position_level
+        description: Cấp bậc vị trí của nhân sự trong cơ cấu tổ chức
+        meta:
+          dimension:
+            type: string
+            label: "Cấp bậc level"
+            order_by: hierarchy_level
+
+      - name: hierarchy_level
+        description: Thứ tự phân cấp của position_level dùng để sắp xếp trong BI
+        meta:
+          dimension:
+            type: number
+            label: "Hierarchy Level"
+            hidden: true
+
+      - name: competency_zone
+        description: Vùng năng lực hoặc chuyên môn của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Vùng năng lực"
+
+      - name: tenure_group
+        description: Nhóm thâm niên làm việc của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm thâm niên"
+
+      - name: gender
+        description: Giới tính của nhân sự
+        meta:
+          dimension:
+            type: string
+            label: "Giới tính"
+
+      - name: source_snapshot_date
+        description: Ngày snapshot nguồn được sử dụng để tính toán dữ liệu Workforce cho tháng báo cáo
+        meta:
+          dimension:
+            type: date
+            label: "Ngày snapshot dữ liệu nguồn"
+
+      - name: snapshot_fill_type
+        description: Cách thức chọn snapshot cho tháng báo cáo
+        meta:
+          dimension:
+            type: string
+            label: "Loại lấy snapshot"

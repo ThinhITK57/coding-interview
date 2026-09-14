@@ -1,0 +1,43 @@
+version: 2
+models:
+- name: production_management_1_n_5_vvip_prm_companies
+  description: "Bảng production_management_1_n_5_vvip_prm_companies (nguồn Power BI: 5VVIP_PRM_Companies)."
+  meta:
+    label: "5VVIP_PRM_Companies"
+    powerbi_source: "5VVIP_PRM_Companies"
+  columns:
+  - name: issue_key
+    description: "Cột ISSUE_KEY trong 5VVIP_PRM_Companies."
+    meta:
+      dimension:
+        type: string
+        label: "ISSUE_KEY"
+        hidden: true
+  - name: issue_id
+    description: "Cột ISSUE_ID trong 5VVIP_PRM_Companies."
+    meta:
+      dimension:
+        type: number
+        label: "ISSUE_ID"
+        hidden: true
+  - name: custom_field_id
+    description: "Cột CUSTOM_FIELD_ID trong 5VVIP_PRM_Companies."
+    meta:
+      dimension:
+        type: number
+        label: "CUSTOM_FIELD_ID"
+        hidden: true
+  - name: company
+    description: "Cột Company_10557 trong 5VVIP_PRM_Companies."
+    meta:
+      dimension:
+        type: string
+        label: "Company_10557"
+        hidden: true
+  - name: vvip
+    description: "Cột VVIP trong 5VVIP_PRM_Companies. Cột tính toán, DAX gốc: LOOKUPVALUE('VVIP'[MÃ],VVIP[Tên tổ chức],'5VVIP_PRM_Companies'[Company_10557])"
+    meta:
+      dimension:
+        type: string
+        label: "VVIP"
+        hidden: true

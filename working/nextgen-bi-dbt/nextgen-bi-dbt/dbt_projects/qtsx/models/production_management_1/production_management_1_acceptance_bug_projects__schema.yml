@@ -1,0 +1,33 @@
+version: 2
+models:
+- name: production_management_1_acceptance_bug_projects
+  description: "Bảng production_management_1_acceptance_bug_projects (nguồn Power BI: Bug nghiệm thu_Projects)."
+  meta:
+    label: "Bug nghiệm thu_Projects"
+    powerbi_source: "Bug nghiệm thu_Projects"
+    joins:
+    - join: production_management_1_os_project_logwork
+      sql_on: "${production_management_1_acceptance_bug_projects.project_name} = ${production_management_1_os_project_logwork.project_name}"
+      relationship: one-to-one
+  columns:
+  - name: id
+    description: "Cột Id trong Bug nghiệm thu_Projects."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT_NAME trong Bug nghiệm thu_Projects."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+        hidden: true
+  - name: project_sp
+    description: "Cột Project_SP trong Bug nghiệm thu_Projects. Cột tính toán, DAX gốc: VAR TextWithoutOS = SUBSTITUTE(SUBSTITUTE([PROJECT_NAME], \"_OS\", \" \"), \" OS\", \" \") RETURN LEFT(TextWithoutOS, FIND(\" \", TextWithoutOS & \" \") - 1)"
+    meta:
+      dimension:
+        type: string
+        label: "Project_SP"
+        hidden: true

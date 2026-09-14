@@ -1,0 +1,50 @@
+version: 2
+models:
+- name: production_management_1_mamday_hr
+  description: "Bảng production_management_1_mamday_hr (nguồn Power BI: mamday hr)."
+  meta:
+    label: "mamday hr"
+    powerbi_source: "mamday hr"
+    joins:
+    - join: production_management_1_division
+      sql_on: "${production_management_1_mamday_hr.center} = ${production_management_1_division.division}"
+      relationship: many-to-one
+    - join: production_management_1_project_name
+      sql_on: "${production_management_1_mamday_hr.product_service} = ${production_management_1_project_name.project_name_last}"
+      relationship: many-to-many
+    metrics:
+      sum_man_month:
+        type: sum
+        sql: man_month
+        label: "MM"
+        round: 2
+        description: "Sinh từ Power BI: sum(mamday hr.man month)"
+  columns:
+  - name: product_service
+    description: "Cột Sản phẩm/dịch vụ trong mamday hr."
+    meta:
+      dimension:
+        type: string
+        label: "Sản phẩm/dịch vụ"
+        hidden: true
+  - name: man_month
+    description: "Cột man month trong mamday hr."
+    meta:
+      dimension:
+        type: number
+        label: "man month"
+        hidden: true
+  - name: date_value
+    description: "Cột ngày tháng trong mamday hr."
+    meta:
+      dimension:
+        type: date
+        label: "ngày tháng"
+        hidden: true
+  - name: center
+    description: "Cột Trung tâm trong mamday hr. Cột tính toán, DAX gốc: Lookupvalue('Project Name'[Khối],'Project Name'[PROJECT_NAME_Last],'mamday hr'[Sản phẩm/dịch vụ])"
+    meta:
+      dimension:
+        type: string
+        label: "Trung tâm"
+        hidden: true

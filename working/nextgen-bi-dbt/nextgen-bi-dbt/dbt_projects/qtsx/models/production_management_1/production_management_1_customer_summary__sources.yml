@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_customer_summary
+    description: "Nguồn Power BI: Customer_Summary"
+    columns:
+    - name: total_services
+      description: "Cột Tổng số dịch vụ"
+    - name: total_fail
+      description: "Cột Tổng số FAIL"
+    - name: failed_metric_and_result
+      description: "Cột Chỉ số không đạt & Kết quả"
+    - name: customer_evaluation
+      description: "Cột Đánh giá Khách hàng"
+    - name: khong_passed
+      description: "Cột Không đạt"

@@ -1,0 +1,9 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_deal_interested_product_stats
+    description: '[CRM] Dữ liệu thống kê số lượng deal theo nhóm sản phẩm quan tâm. Phù hợp để phân tích danh sách sản phẩm/dịch vụ được quan tâm và xếp hạng mức độ quan tâm theo sản phẩm.'

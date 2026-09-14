@@ -1,0 +1,137 @@
+version: 2
+
+sources:
+  - name: bi_silver__hr
+    database: hive
+    schema: bi_silver
+    description: "Silver layer sources for domain: hr"
+    tables:
+      - name: hr_workforce_monthly_drilldown
+        description: >
+          Bảng **hr_workforce_monthly_drilldown** lưu trữ dữ liệu Workforce chi tiết theo từng nhân sự
+          và từng tháng báo cáo. Dữ liệu được sinh đầy đủ theo tháng từ dim_date, kết hợp snapshot nhân sự
+          đang làm việc, dữ liệu nhân sự đã nghỉ việc và kết quả đánh giá hiệu suất. Bảng hỗ trợ phân tích
+          drilldown từ chỉ số Workforce tổng hợp xuống từng nhân sự, bao gồm trạng thái active cuối tháng,
+          tuyển mới, nghỉ việc, nghỉ việc sớm, nghỉ việc tự nguyện, nghỉ việc theo quyết định công ty,
+          thông tin tổ chức, hợp đồng, nhóm nguồn lực, cấp bậc, vùng năng lực, thâm niên và kết quả đánh giá
+          hiệu suất theo kỳ tương ứng.
+
+        columns:
+          - name: report_year
+            description: Năm báo cáo của dữ liệu Workforce.
+
+          - name: snapshot_year_month
+            description: Tháng báo cáo của dữ liệu Workforce theo định dạng YYYYMM.
+
+          - name: snapshot_month
+            description: Ngày đầu tháng của kỳ báo cáo, được dùng làm mốc thời gian snapshot theo tháng.
+
+          - name: snapshot_month_label
+            description: Nhãn hiển thị của tháng báo cáo theo định dạng yyyy-MMM, ví dụ 2025-Jan.
+
+          - name: month_start
+            description: Ngày đầu tiên của kỳ báo cáo tháng.
+
+          - name: month_end
+            description: Ngày cuối cùng của kỳ báo cáo tháng.
+
+          - name: source_snapshot_date
+            description: Ngày snapshot nguồn được chọn để đại diện cho tháng báo cáo.
+
+          - name: snapshot_fill_type
+            description: Loại phương pháp lấy snapshot cho tháng báo cáo. NORMAL là snapshot đúng tháng; BACKFILL là dùng snapshot tương lai gần nhất để lấp dữ liệu cho tháng trước đó; CARRY_FORWARD là dùng snapshot gần nhất trước đó cho các tháng sau; RESIGNED_ONLY là bản ghi chỉ có trong nguồn nghỉ việc.
+
+          - name: employee_code
+            description: Mã định danh duy nhất của nhân sự.
+            tests:
+              - not_null
+
+          - name: full_name
+            description: Họ và tên nhân sự.
+
+          - name: business_email
+            description: Email công việc của nhân sự.
+
+          - name: hire_date_vcs
+            description: Ngày nhân sự gia nhập VCS.
+
+          - name: resigned_date
+            description: Ngày nghỉ việc của nhân sự nếu có.
+
+          - name: division_n
+            description: Khối hoặc đơn vị cấp cao của nhân sự tại kỳ báo cáo.
+
+          - name: department_n_1
+            description: Đơn vị tổ chức cấp 1 của nhân sự tại kỳ báo cáo.
+
+          - name: department_n_2
+            description: Đơn vị tổ chức cấp 2 của nhân sự tại kỳ báo cáo.
+
+          - name: department_n_3
+            description: Đơn vị tổ chức cấp 3 của nhân sự tại kỳ báo cáo.
+
+          - name: contract_type
+            description: Loại hợp đồng của nhân sự tại kỳ báo cáo.
+
+          - name: resource_type
+            description: Nhóm nguồn lực của nhân sự tại kỳ báo cáo.
+
+          - name: job_level
+            description: Nhóm chức danh hoặc vai trò công việc của nhân sự tại kỳ báo cáo.
+
+          - name: position_level
+            description: Cấp bậc vị trí của nhân sự tại kỳ báo cáo.
+
+          - name: hierarchy_level
+            description: Thứ tự phân cấp của position_level, dùng để sắp xếp cấp bậc nhân sự trong cơ cấu tổ chức.
+
+          - name: competency_zone
+            description: Vùng năng lực hoặc nhóm chuyên môn của nhân sự tại kỳ báo cáo.
+
+          - name: tenure_group
+            description: Nhóm thâm niên làm việc của nhân sự tại kỳ báo cáo.
+
+          - name: gender
+            description: Giới tính của nhân sự.
+
+          - name: employee_type
+            description: Loại nhân sự theo phân loại từ nguồn HR.
+
+          - name: snapshot_is_active
+            description: Trạng thái active của nhân sự theo snapshot nguồn được chọn.
+
+          - name: is_active_month_end
+            description: Cờ xác định nhân sự còn active tại ngày cuối tháng báo cáo.
+
+          - name: is_new_hire_month
+            description: Cờ xác định nhân sự là tuyển mới trong tháng báo cáo.
+
+          - name: is_resigned_month
+            description: Cờ xác định nhân sự nghỉ việc trong tháng báo cáo.
+
+          - name: is_quick_quit_month
+            description: Cờ xác định nhân sự nghỉ việc sớm trong tháng báo cáo, với thời gian từ ngày vào làm đến ngày nghỉ việc nhỏ hơn hoặc bằng 90 ngày.
+
+          - name: is_voluntary_exit
+            description: Cờ xác định nhân sự nghỉ việc tự nguyện.
+
+          - name: is_company_termination
+            description: Cờ xác định nhân sự nghỉ việc hoặc chấm dứt hợp đồng theo quyết định của công ty.
+
+          - name: evaluation_date
+            description: Ngày đánh giá hiệu suất tương ứng với quý của tháng báo cáo. Nếu chưa có dữ liệu đánh giá thực tế, cột được gán ngày cuối quý tương ứng.
+
+          - name: score
+            description: Điểm đánh giá hiệu suất của nhân sự trong kỳ đánh giá.
+
+          - name: performance_result
+            description: Kết quả phân loại hiệu suất của nhân sự. Nếu không có dữ liệu đánh giá thì giá trị là Không đánh giá.
+
+          - name: ki
+            description: Chỉ số KI hoặc thông tin đánh giá bổ sung đi kèm kỳ đánh giá.
+
+          - name: performance_crawled_at_ts
+            description: Thời điểm dữ liệu đánh giá hiệu suất được crawl hoặc ghi nhận từ hệ thống nguồn.
+
+          - name: has_performance_evaluation
+            description: Cờ xác định nhân sự có dữ liệu đánh giá hiệu suất thực tế trong kỳ tương ứng.

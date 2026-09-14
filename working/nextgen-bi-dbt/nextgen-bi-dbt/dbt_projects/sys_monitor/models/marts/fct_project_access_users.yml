@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: fct_project_access_users
+    description: "One row per user-project access relationship derived from project, group, and organization permissions."
+    meta:
+      label: "Project Access Users"
+      group_label: "Observability"
+      metrics:
+        total_project_access_users:
+          type: count_distinct
+          label: "Total Project Access Users"
+          sql: "${user_uuid}"
+        direct_project_members:
+          type: count_distinct
+          label: "Direct Project Members"
+          sql: "CASE WHEN ${access_source} = 'project_membership' THEN ${user_uuid} END"
+        group_project_members:
+          type: count_distinct
+          label: "Group-Based Project Users"
+          sql: "CASE WHEN ${access_source} = 'project_group_access' THEN ${user_uuid} END"
+        organization_project_members:
+          type: count_distinct
+          label: "Organization-Based Project Users"
+          sql: "CASE WHEN ${access_source} = 'organization_membership' THEN ${user_uuid} END"
+        viewer_project_access_users:
+          type: count_distinct
+          label: "Viewer Project Access Users"
+          sql: "CASE WHEN ${access_role} = 'viewer' THEN ${user_uuid} END"
+        interactive_viewer_project_access_users:
+          type: count_distinct
+          label: "Interactive Viewer Project Access Users"
+          sql: "CASE WHEN ${access_role} = 'interactive_viewer' THEN ${user_uuid} END"
+        editor_project_access_users:
+          type: count_distinct
+          label: "Editor Project Access Users"
+          sql: "CASE WHEN ${access_role} = 'editor' THEN ${user_uuid} END"
+        developer_project_access_users:
+          type: count_distinct
+          label: "Developer Project Access Users"
+          sql: "CASE WHEN ${access_role} = 'developer' THEN ${user_uuid} END"
+        admin_project_access_users:
+          type: count_distinct
+          label: "Admin Project Access Users"
+          sql: "CASE WHEN ${access_role} = 'admin' THEN ${user_uuid} END"
+        privileged_project_access_users:
+          type: count_distinct
+          label: "Privileged Project Access Users"
+          sql: "CASE WHEN ${access_role} IN ('editor', 'developer', 'admin') THEN ${user_uuid} END"
+        privileged_project_access_rate:
+          type: number
+          label: "Privileged Project Access Rate"
+          sql: "${privileged_project_access_users} / NULLIF(${total_project_access_users}, 0)"
+    columns:
+      - name: project_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Project UUID"
+      - name: project_name
+        meta:
+          dimension:
+            type: string
+            label: "Project Name"
+      - name: organization_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Organization UUID"
+      - name: user_uuid
+        meta:
+          dimension:
+            type: string
+            label: "User UUID"
+      - name: user_email
+        meta:
+          dimension:
+            type: string
+            label: "User Email"
+      - name: access_role
+        meta:
+          dimension:
+            type: string
+            label: "Access Role"
+      - name: access_source
+        meta:
+          dimension:
+            type: string
+            label: "Access Source"

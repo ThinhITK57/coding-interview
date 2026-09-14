@@ -1,0 +1,41 @@
+
+name: 'nextgen_bi'
+version: '1.0.0'
+config-version: 2
+profile: 'nextgen_bi'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  nextgen_bi:
+    +materialized: "{{ env_var('DBT_MATERIALIZED', 'ephemeral') }}"
+    +schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_gold') }}"
+
+    crm:
+      +tags: ['crm']
+    cx:
+      +tags: ['cx']
+    finance:
+      +tags: ['finance']
+    hr:
+      +tags: ['hr']
+    investment:
+      +tags: ['investment']
+    jira:
+      +tags: ['jira']
+    noc:
+      +tags: ['noc']
+    other:
+      +tags: ['other']
+    +meta:
+      openmetadata:
+        service: nextgen-bi-gold

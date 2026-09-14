@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: fct_dashboard_usage_daily
+    description: "Daily dashboard usage facts derived from dashboard view events."
+    meta:
+      label: "Dashboard Usage Daily"
+      group_label: "Observability"
+      metrics:
+        total_dashboard_views:
+          type: sum
+          label: "Total Dashboard Views"
+          sql: "${dashboard_views}"
+        total_unique_viewers:
+          type: sum
+          label: "Total Unique Viewers"
+          sql: "${unique_viewers}"
+    columns:
+      - name: viewed_date
+        meta:
+          dimension:
+            type: date
+            label: "Viewed Date"
+      - name: dashboard_uuid
+        meta:
+          dimension:
+            type: string
+            label: "Dashboard UUID"
+      - name: dashboard_name
+        meta:
+          dimension:
+            type: string
+            label: "Dashboard Name"
+      - name: dashboard_views
+        meta:
+          dimension:
+            type: number
+            label: "Dashboard Views"
+      - name: unique_viewers
+        meta:
+          dimension:
+            type: number
+            label: "Unique Viewers"

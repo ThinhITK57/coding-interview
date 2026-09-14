@@ -1,0 +1,96 @@
+version: 2
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+  tables:
+  - name: hr_ld_class_list
+    description: >
+      Bảng **hr_ld_class_list** lưu trữ thông tin danh sách các lớp đào tạo trong hệ thống Learning & Development,
+      bao gồm thông tin quản lý lớp học, chương trình đào tạo, hình thức tổ chức, thời gian triển khai,
+      số lượng học viên tham gia, giảng viên phụ trách và các kết quả đánh giá sau đào tạo.
+      Dữ liệu được sử dụng để theo dõi kế hoạch và tình hình triển khai đào tạo, đánh giá hiệu quả các khóa học,
+      quản lý nguồn lực đào tạo và hỗ trợ công tác báo cáo, phân tích hoạt động phát triển năng lực nhân sự.
+
+    columns:
+      - name: sequence_number
+        description: Số thứ tự của lớp đào tạo trong danh sách quản lý
+
+      - name: updated_date
+        description: Thời điểm cập nhật gần nhất của thông tin lớp đào tạo
+
+      - name: organizing_unit
+        description: Đơn vị chịu trách nhiệm tổ chức lớp đào tạo
+
+      - name: pic
+        description: Nhân sự phụ trách hoặc đầu mối quản lý lớp đào tạo
+
+      - name: class_code
+        description: Mã định danh của lớp đào tạo
+
+      - name: class_name
+        description: Tên lớp đào tạo
+
+      - name: course_name
+        description: Tên khóa học được triển khai trong lớp đào tạo
+
+      - name: training_program
+        description: Chương trình đào tạo mà lớp học thuộc về
+
+      - name: training_method
+        description: Phương pháp đào tạo được áp dụng cho lớp học
+
+      - name: program_group
+        description: Nhóm chương trình đào tạo được phân loại theo mục tiêu hoặc nội dung đào tạo
+
+      - name: training_format
+        description: Hình thức tổ chức đào tạo như trực tiếp, trực tuyến hoặc kết hợp
+
+      - name: class_status
+        description: Trạng thái hiện tại của lớp đào tạo
+
+      - name: training_duration
+        description: Thời lượng đào tạo của lớp học
+
+      - name: start_date
+        description: Ngày bắt đầu triển khai lớp đào tạo
+
+      - name: end_date
+        description: Ngày kết thúc lớp đào tạo
+
+      - name: month
+        description: Tháng triển khai lớp đào tạo
+
+      - name: year
+        description: Năm triển khai lớp đào tạo
+
+      - name: planned_learner_count
+        description: Số lượng học viên dự kiến tham gia lớp đào tạo
+
+      - name: actual_learner_count
+        description: Số lượng học viên thực tế tham gia lớp đào tạo
+
+      - name: training_hours
+        description: Tổng số giờ đào tạo được thực hiện trong lớp học
+
+      - name: training_content
+        description: Nội dung hoặc chuyên đề đào tạo được triển khai
+
+      - name: instructor_name
+        description: Họ và tên giảng viên hoặc chuyên gia đào tạo phụ trách lớp học
+
+      - name: organization_rating
+        description: Kết quả đánh giá công tác tổ chức lớp đào tạo
+
+      - name: average_rating
+        description: Điểm đánh giá trung bình của lớp đào tạo từ học viên hoặc các bên liên quan
+
+      - name: level_2_evaluation
+        description: Kết quả đánh giá cấp độ 2 về mức độ tiếp thu kiến thức hoặc kỹ năng sau đào tạo
+
+      - name: pass_rate
+        description: Tỷ lệ học viên đạt yêu cầu hoặc hoàn thành lớp đào tạo
+
+      - name: lxp_status_note
+        description: Ghi chú về trạng thái đồng bộ hoặc xử lý lớp học trên nền tảng Learning Experience Platform (LXP)

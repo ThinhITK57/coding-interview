@@ -1,0 +1,734 @@
+version: 2
+
+models:
+  - name: crm_activity_history
+    description: >
+      Detailed CRM activity history containing normalized CRM activities
+      related to customers, contacts, opportunities, quotations and contracts.
+
+      Grain: one row per CRM activity record.
+
+      This table is the detailed activity and audit layer for AM Dashboard.
+      It should be used to analyze activity volume, activity type, action,
+      category, entity and actor/owner information.
+
+      Important:
+      - activity_count represents CRM activity records, not business outcomes.
+      - is_countable indicates whether an activity should be included in
+        countable activity metrics.
+      - actor_user_id identifies the actual actor when available.
+      - owner_user_id identifies the owner of the CRM record/activity.
+      - am_user_id identifies the AM associated with the activity.
+      - creator_id and updater_id are audit fields and should not automatically
+        be interpreted as the business actor.
+      - Do not use this table to calculate revenue, contract value or pipeline
+        value when dedicated business tables are available.
+      - Do not interpret every UPDATE activity as a meaningful sales activity.
+
+    meta:
+      label: "CRM Activity History"
+      group_label: "AM Dashboard"
+      owner: "huongnv1"
+
+      # ================================================================
+      # SEMANTIC GUIDANCE
+      # ================================================================
+
+      semantic_guidance:
+        source_type: "CRM Activity History"
+        grain: "One row per CRM activity"
+        primary_date: "activity_date"
+        primary_am_dimension: "am_user_name"
+        actor_dimension: "actor_user_name"
+        owner_dimension: "owner_user_name"
+        primary_entity_dimension: "entity_type"
+        primary_action_dimension: "activity_action"
+        primary_type_dimension: "activity_type"
+        primary_category_dimension: "activity_category"
+
+        activity_category:
+          CRM_COMPLIANCE: >
+            CRM data maintenance and compliance activities.
+          SALES_ACTIVITY: >
+            Customer-facing sales activities and interactions.
+          SALES_PROGRESS: >
+            Activities related to sales process progression.
+          BUSINESS_OUTCOME: >
+            Activities representing business outcomes.
+
+        activity_action:
+          CREATE: "Create activity/action"
+          UPDATE: "Update activity/action"
+          DELETE: "Delete activity/action"
+          ACTION: "Other CRM action"
+
+        entity_type:
+          COMPANY: "Customer / Company"
+          CONTACT: "Contact"
+          OPPORTUNITY: "Opportunity / Deal"
+          QUOTATION: "Quotation"
+          CONTRACT: "Contract"
+          OTHER: "Other CRM entity"
+
+        metric_rules:
+          activity_count: >
+            Count of all CRM activity records.
+          countable_activity_count: >
+            Count of CRM activity records where is_countable = true.
+          active_am_count: >
+            Distinct AMs associated with activities.
+          active_actor_count: >
+            Distinct users who actually performed activities when actor
+            information is available.
+          active_customer_count: >
+            Distinct customers/companies associated with activities.
+          active_contact_count: >
+            Distinct contacts associated with activities.
+          active_opportunity_count: >
+            Distinct opportunities/deals associated with activities.
+          active_quotation_count: >
+            Distinct quotations associated with activities.
+          active_contract_count: >
+            Distinct contracts associated with activities.
+
+        restrictions:
+          - >
+            Use activity_date as the default date for activity trend analysis.
+          - >
+            Use actor_user_id/actor_user_name when the question asks who
+            performed the activity.
+          - >
+            Use am_user_id/am_user_name when the question asks about AM
+            ownership or AM performance.
+          - >
+            Do not assume owner_user_id is the actual actor.
+          - >
+            Do not assume creator_id or updater_id is the actual business actor.
+          - >
+            Use is_countable for metrics intended to represent meaningful
+            countable activities.
+          - >
+            Do not use activity_count as a proxy for sales performance,
+            revenue or business outcome.
+          - >
+            Do not calculate revenue, contract value or pipeline value from
+            this table when dedicated business tables are available.
+          - >
+            Do not manually calculate aggregate metrics from returned rows
+            when a database metric can be queried directly.
+
+      # ================================================================
+      # METRICS
+      # ================================================================
+
+      metrics:
+
+        # ------------------------------------------------
+        # ACTIVITY
+        # ------------------------------------------------
+
+        - name: activity_count
+          label: "Tổng hoạt động"
+          description: >
+            Tổng số CRM activity record.
+            Chỉ phản ánh số lượng activity record, không phải hiệu quả
+            bán hàng hoặc business outcome.
+          type: count
+          sql: ${id}
+
+        - name: countable_activity_count
+          label: "Hoạt động được tính"
+          description: >
+            Số CRM activity được đánh dấu is_countable = true.
+            Dùng cho các KPI activity yêu cầu loại bỏ các activity
+            không được tính.
+          type: count
+          sql: |
+            CASE
+              WHEN ${is_countable} = TRUE
+              THEN ${id}
+            END
+
+        - name: unique_activity_count
+          label: "Số hoạt động duy nhất"
+          description: >
+            Số CRM activity duy nhất theo Activity ID.
+          type: count_distinct
+          sql: ${id}
+
+        # ------------------------------------------------
+        # AM
+        # ------------------------------------------------
+
+        - name: active_am_count
+          label: "Số AM có hoạt động"
+          description: >
+            Số AM duy nhất có phát sinh CRM activity.
+          type: count_distinct
+          sql: ${am_user_id}
+
+        - name: active_actor_count
+          label: "Số người thực hiện hoạt động"
+          description: >
+            Số user duy nhất thực tế thực hiện CRM activity,
+            dựa trên actor_user_id.
+          type: count_distinct
+          sql: ${actor_user_id}
+
+        # ------------------------------------------------
+        # CUSTOMER
+        # ------------------------------------------------
+
+        - name: active_customer_count
+          label: "Số KH có hoạt động"
+          description: >
+            Số Customer/Company duy nhất có liên quan đến CRM activity.
+          type: count_distinct
+          sql: ${company_id}
+
+        - name: customer_activity_count
+          label: "Số hoạt động trên KH"
+          description: >
+            Số CRM activity có liên quan đến Customer/Company.
+          type: count
+          sql: |
+            CASE
+              WHEN ${company_id} IS NOT NULL
+              THEN ${id}
+            END
+
+        # ------------------------------------------------
+        # CONTACT
+        # ------------------------------------------------
+
+        - name: active_contact_count
+          label: "Số Contact có hoạt động"
+          description: >
+            Số Contact duy nhất có liên quan đến CRM activity.
+          type: count_distinct
+          sql: ${contact_id}
+
+        - name: contact_activity_count
+          label: "Số hoạt động trên Contact"
+          description: >
+            Số CRM activity có liên quan đến Contact.
+          type: count
+          sql: |
+            CASE
+              WHEN ${contact_id} IS NOT NULL
+              THEN ${id}
+            END
+
+        # ------------------------------------------------
+        # OPPORTUNITY
+        # ------------------------------------------------
+
+        - name: active_opportunity_count
+          label: "Số Opportunity có hoạt động"
+          description: >
+            Số Opportunity/Deal duy nhất có liên quan đến CRM activity.
+          type: count_distinct
+          sql: ${deal_id}
+
+        - name: opportunity_activity_count
+          label: "Số hoạt động trên Opportunity"
+          description: >
+            Số CRM activity có liên quan đến Opportunity/Deal.
+          type: count
+          sql: |
+            CASE
+              WHEN ${deal_id} IS NOT NULL
+              THEN ${id}
+            END
+
+        # ------------------------------------------------
+        # QUOTATION
+        # ------------------------------------------------
+
+        - name: active_quotation_count
+          label: "Số Quotation có hoạt động"
+          description: >
+            Số Quotation duy nhất có liên quan đến CRM activity.
+          type: count_distinct
+          sql: ${quotation_id}
+
+        - name: quotation_activity_count
+          label: "Số hoạt động trên Quotation"
+          description: >
+            Số CRM activity có liên quan đến Quotation.
+          type: count
+          sql: |
+            CASE
+              WHEN ${quotation_id} IS NOT NULL
+              THEN ${id}
+            END
+
+        # ------------------------------------------------
+        # CONTRACT
+        # ------------------------------------------------
+
+        - name: active_contract_count
+          label: "Số Contract có hoạt động"
+          description: >
+            Số Contract duy nhất có liên quan đến CRM activity.
+          type: count_distinct
+          sql: ${contract_id}
+
+        - name: contract_activity_count
+          label: "Số hoạt động trên Contract"
+          description: >
+            Số CRM activity có liên quan đến Contract.
+          type: count
+          sql: |
+            CASE
+              WHEN ${contract_id} IS NOT NULL
+              THEN ${id}
+            END
+
+        # ------------------------------------------------
+        # ACTION
+        # ------------------------------------------------
+
+        - name: create_activity_count
+          label: "Số hoạt động CREATE"
+          description: >
+            Số CRM activity có activity_action = CREATE.
+          type: count
+          sql: |
+            CASE
+              WHEN ${activity_action} = 'CREATE'
+              THEN ${id}
+            END
+
+        - name: update_activity_count
+          label: "Số hoạt động UPDATE"
+          description: >
+            Số CRM activity có activity_action = UPDATE.
+            Đây là activity được phân loại UPDATE, không nhất thiết
+            là một business action có ý nghĩa.
+          type: count
+          sql: |
+            CASE
+              WHEN ${activity_action} = 'UPDATE'
+              THEN ${id}
+            END
+
+        - name: delete_activity_count
+          label: "Số hoạt động DELETE"
+          description: >
+            Số CRM activity có activity_action = DELETE.
+          type: count
+          sql: |
+            CASE
+              WHEN ${activity_action} = 'DELETE'
+              THEN ${id}
+            END
+
+        # ------------------------------------------------
+        # CATEGORY
+        # ------------------------------------------------
+
+        - name: crm_compliance_count
+          label: "CRM Compliance"
+          description: >
+            Số CRM activity thuộc nhóm CRM_COMPLIANCE.
+          type: count
+          sql: |
+            CASE
+              WHEN ${activity_category} = 'CRM_COMPLIANCE'
+              THEN ${id}
+            END
+
+        - name: sales_activity_count
+          label: "Sales Activity"
+          description: >
+            Số CRM activity thuộc nhóm SALES_ACTIVITY.
+          type: count
+          sql: |
+            CASE
+              WHEN ${activity_category} = 'SALES_ACTIVITY'
+              THEN ${id}
+            END
+
+        - name: sales_progress_count
+          label: "Sales Progress"
+          description: >
+            Số CRM activity thuộc nhóm SALES_PROGRESS.
+          type: count
+          sql: |
+            CASE
+              WHEN ${activity_category} = 'SALES_PROGRESS'
+              THEN ${id}
+            END
+
+        - name: business_outcome_count
+          label: "Business Outcome"
+          description: >
+            Số CRM activity thuộc nhóm BUSINESS_OUTCOME.
+          type: count
+          sql: |
+            CASE
+              WHEN ${activity_category} = 'BUSINESS_OUTCOME'
+              THEN ${id}
+            END
+
+        # ------------------------------------------------
+        # RECENCY
+        # ------------------------------------------------
+
+        - name: last_activity_at
+          label: "Hoạt động gần nhất"
+          description: >
+            Thời điểm CRM activity gần nhất dựa trên created_at.
+          type: max
+          sql: ${created_at}
+
+    # ================================================================
+    # COLUMNS / DIMENSIONS
+    # ================================================================
+
+    columns:
+
+      # ------------------------------------------------
+      # ACTIVITY
+      # ------------------------------------------------
+
+      - name: id
+        description: "ID duy nhất của CRM activity."
+        meta:
+          dimension:
+            type: string
+            label: "Activity ID"
+
+      - name: activity_name
+        description: >
+          Tên gốc của CRM activity.
+        meta:
+          dimension:
+            type: string
+            label: "Activity Name"
+
+      - name: activity_subject
+        description: >
+          Chủ đề hoặc tên chuẩn hóa của CRM activity.
+          Dùng để phân tích loại hoạt động ở mức chi tiết.
+        meta:
+          dimension:
+            type: string
+            label: "Activity Subject"
+
+      - name: activity_action
+        description: >
+          Hành động chuẩn hóa của activity.
+          Các giá trị thường gồm CREATE, UPDATE, DELETE và ACTION.
+        meta:
+          dimension:
+            type: string
+            label: "Activity Action"
+
+      - name: activity_type
+        description: >
+          Loại CRM activity ở mức nghiệp vụ.
+          Dùng để phân tích chi tiết loại hoạt động.
+        meta:
+          dimension:
+            type: string
+            label: "Activity Type"
+
+      - name: activity_category
+        description: >
+          Nhóm nghiệp vụ của activity.
+          Các nhóm chính gồm CRM_COMPLIANCE, SALES_ACTIVITY,
+          SALES_PROGRESS và BUSINESS_OUTCOME.
+        meta:
+          dimension:
+            type: string
+            label: "Activity Category"
+
+      - name: is_countable
+        description: >
+          Cho biết CRM activity có được tính vào các KPI activity
+          được đánh dấu countable hay không.
+        meta:
+          dimension:
+            type: boolean
+            label: "Countable Activity"
+
+      - name: entity_type
+        description: >
+          Loại đối tượng CRM mà activity tác động hoặc liên quan.
+          Các giá trị chính gồm COMPANY, CONTACT, OPPORTUNITY,
+          QUOTATION, CONTRACT và OTHER.
+        meta:
+          dimension:
+            type: string
+            label: "Entity Type"
+
+      - name: entity_id
+        description: >
+          ID của đối tượng CRM mà activity tác động hoặc liên quan.
+        meta:
+          dimension:
+            type: string
+            label: "Entity ID"
+
+      # ------------------------------------------------
+      # TIME
+      # ------------------------------------------------
+
+      - name: activity_date
+        description: >
+          Ngày phát sinh CRM activity.
+          Đây là dimension thời gian chính cho phân tích activity.
+        meta:
+          dimension:
+            type: date
+            label: "Ngày hoạt động"
+            time_intervals:
+              - DAY
+              - WEEK
+              - MONTH
+              - QUARTER
+              - YEAR
+
+      - name: created_at
+        description: >
+          Thời điểm CRM activity record được tạo.
+        meta:
+          dimension:
+            type: timestamp
+            label: "Thời gian tạo activity"
+            time_intervals:
+              - HOUR
+              - DAY
+              - WEEK
+              - MONTH
+              - QUARTER
+              - YEAR
+
+      - name: updated_at
+        description: >
+          Thời điểm CRM activity record được cập nhật gần nhất.
+          Không dùng field này để suy ra số lần business UPDATE.
+        meta:
+          dimension:
+            type: timestamp
+            label: "Thời gian cập nhật"
+            time_intervals:
+              - HOUR
+              - DAY
+              - WEEK
+              - MONTH
+              - QUARTER
+              - YEAR
+
+      # ------------------------------------------------
+      # OWNER
+      # ------------------------------------------------
+
+      - name: owner_user_id
+        description: >
+          ID user sở hữu CRM record/activity.
+          Không mặc định là người thực hiện activity.
+        meta:
+          dimension:
+            type: string
+            label: "Owner User ID"
+
+      - name: owner_user_name
+        description: >
+          Tên user sở hữu CRM record/activity.
+        meta:
+          dimension:
+            type: string
+            label: "Owner"
+
+      # ------------------------------------------------
+      # ACTOR
+      # ------------------------------------------------
+
+      - name: actor_user_id
+        description: >
+          ID user thực tế thực hiện CRM activity khi thông tin actor
+          được xác định từ source.
+        meta:
+          dimension:
+            type: string
+            label: "Actor User ID"
+
+      - name: actor_user_name
+        description: >
+          Tên user thực tế thực hiện CRM activity khi thông tin actor
+          được xác định từ source.
+        meta:
+          dimension:
+            type: string
+            label: "Actor"
+
+      # ------------------------------------------------
+      # AM
+      # ------------------------------------------------
+
+      - name: am_user_id
+        description: >
+          ID AM được liên kết với CRM activity.
+          Đây là dimension chính để phân tích activity theo AM.
+        meta:
+          dimension:
+            type: string
+            label: "AM User ID"
+
+      - name: am_user_name
+        description: >
+          Tên AM được liên kết với CRM activity.
+        meta:
+          dimension:
+            type: string
+            label: "AM"
+
+      - name: am_group
+        description: >
+          Nhóm AM được chuẩn hóa.
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm AM"
+
+      - name: am_status
+        description: >
+          Trạng thái của AM tại thời điểm dữ liệu được chuẩn hóa.
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái AM"
+
+      # ------------------------------------------------
+      # CUSTOMER
+      # ------------------------------------------------
+
+      - name: company_id
+        description: >
+          ID Customer/Company liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Customer ID"
+
+      - name: company_name
+        description: >
+          Tên Customer/Company liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Customer"
+
+      # ------------------------------------------------
+      # CONTACT
+      # ------------------------------------------------
+
+      - name: contact_id
+        description: >
+          ID Contact liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Contact ID"
+
+      # ------------------------------------------------
+      # OPPORTUNITY
+      # ------------------------------------------------
+
+      - name: deal_id
+        description: >
+          ID Opportunity/Deal liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Opportunity ID"
+
+      - name: deal_name
+        description: >
+          Tên Opportunity/Deal liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Opportunity"
+
+      # ------------------------------------------------
+      # QUOTATION
+      # ------------------------------------------------
+
+      - name: quotation_id
+        description: >
+          ID Quotation liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Quotation ID"
+
+      # ------------------------------------------------
+      # CONTRACT
+      # ------------------------------------------------
+
+      - name: contract_id
+        description: >
+          ID Contract liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Contract ID"
+
+      # ------------------------------------------------
+      # AUDIT
+      # ------------------------------------------------
+
+      - name: creator_id
+        description: >
+          ID user tạo CRM activity record.
+          Đây là audit field, không mặc định là business actor.
+        meta:
+          dimension:
+            type: string
+            label: "Creator ID"
+
+      - name: updater_id
+        description: >
+          ID user cập nhật CRM activity record gần nhất.
+          Đây là audit field, không mặc định là business actor.
+        meta:
+          dimension:
+            type: string
+            label: "Updater ID"
+
+      # ------------------------------------------------
+      # SOURCE
+      # ------------------------------------------------
+
+      - name: source_owner_id
+        description: >
+          ID owner nguyên bản từ hệ thống nguồn CRM.
+          Dùng để trace và đối soát dữ liệu với source system.
+        meta:
+          dimension:
+            type: string
+            label: "Source Owner ID"
+
+      # ------------------------------------------------
+      # OTHER
+      # ------------------------------------------------
+
+      - name: recent_note
+        description: >
+          Nội dung ghi chú gần nhất của CRM activity.
+        meta:
+          dimension:
+            type: string
+            label: "Recent Note"
+
+      - name: record_type_id
+        description: >
+          ID loại CRM record liên quan đến activity.
+        meta:
+          dimension:
+            type: string
+            label: "Record Type ID"

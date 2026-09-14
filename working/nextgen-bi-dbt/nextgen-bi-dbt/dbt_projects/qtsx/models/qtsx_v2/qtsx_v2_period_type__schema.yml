@@ -1,0 +1,14 @@
+version: 2
+models:
+- name: qtsx_v2_period_type
+  description: "Bảng qtsx_v2_period_type (nguồn Power BI: Period Type)."
+  meta:
+    label: "Period Type"
+    powerbi_source: "Period Type"
+  columns:
+  - name: period
+    description: "Cột Period trong Period Type."
+    meta:
+      dimension:
+        type: string
+        label: "Period"

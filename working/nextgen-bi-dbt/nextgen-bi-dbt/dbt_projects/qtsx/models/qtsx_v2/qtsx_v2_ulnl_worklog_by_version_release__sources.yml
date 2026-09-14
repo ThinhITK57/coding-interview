@@ -1,0 +1,32 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_ulnl_worklog_by_version_release
+    description: "Nguồn Power BI: ULNL_worklog_by_version_release"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_time_spent_with_st
+      description: "Cột ISSUE_TIME_SPENT_WITH_ST"
+    - name: total_effort_excl_reuse
+      description: "Cột Tổng_ULNL_đã_trừ_tái_sử_dụng_13370"
+    - name: version_date_jmcf
+      description: "Cột VersionDate_JMCF_23634"
+    - name: id_version
+      description: "Cột ID_version_23800"
+    - name: issue_project_key
+      description: "Cột ISSUE_PROJECT_KEY"
+    - name: working_days_in_resolved_month
+      description: "Cột Working Days in Resolved Month"
+    - name: ulnl_mm
+      description: "Cột ULNL MM"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: mm_worklog
+      description: "Cột MM Worklog"
+    - name: issue_current_type_name
+      description: "Cột ISSUE_CURRENT_TYPE_NAME"

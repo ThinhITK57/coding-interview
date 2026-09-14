@@ -1,0 +1,42 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_n_5_vvip_prm_incident_management
+    description: "Nguồn Power BI: 5VVIP_PRM_Điều hành sự cố"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: end_date
+      description: "Cột End_Date_11610"
+    - name: customer_jmcf
+      description: "Cột Customer_JMCF_12010"
+    - name: issue_created
+      description: "Cột ISSUE_CREATED"
+    - name: issue_current_status_name
+      description: "Cột ISSUE_CURRENT_STATUS_NAME"
+    - name: issue_current_type_name
+      description: "Cột ISSUE_CURRENT_TYPE_NAME"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_reporter_name
+      description: "Cột ISSUE_REPORTER_NAME"
+    - name: issue_priority
+      description: "Cột ISSUE_PRIORITY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: product_jmcf
+      description: "Cột Sản_Phẩm_JMCF_12011"
+    - name: sla_auto
+      description: "Cột SLA_AUTO_11612"
+    - name: start_date
+      description: "Cột Start_Date_11317"
+    - name: ticket_id
+      description: "Cột Ticket_ID_11604"
+    - name: handling_time
+      description: "Cột Thời gian xử lý"
+    - name: execution_date
+      description: "Cột Ngày thực hiện"

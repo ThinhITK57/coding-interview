@@ -1,0 +1,162 @@
+version: 2
+models:
+- name: production_management_1_mttd_mttr_miss_tan_cong
+  description: "Bảng production_management_1_mttd_mttr_miss_tan_cong (nguồn Power BI: MTTD-MTTR_Miss Tấn công)."
+  meta:
+    label: "MTTD-MTTR_Miss Tấn công"
+    powerbi_source: "MTTD-MTTR_Miss Tấn công"
+    joins:
+    - join: production_management_1_vvip
+      sql_on: "${production_management_1_mttd_mttr_miss_tan_cong.customer} = ${production_management_1_vvip.org_name}"
+      relationship: many-to-many
+    metrics:
+      average_mttd_h:
+        type: average
+        sql: mttd_h
+        label: "(MTTD)(h)"
+        description: "Sinh từ Power BI: average(MTTD-MTTR_Miss Tấn công.(MTTD)(h))"
+      sum_missed_critical_alerts:
+        type: sum
+        sql: missed_critical_alerts
+        label: "MISS TẤN CÔNG NGHIÊM TRỌNG"
+        description: "Sinh từ Power BI: sum(MTTD-MTTR_Miss Tấn công.Số lượng cảnh báo mức NGHIÊM TRỌNG mà hệ thống không phát hiện được)"
+      sum_missed_normal_alerts:
+        type: sum
+        sql: missed_normal_alerts
+        label: "MISS TẤN CÔNG THÔNG THƯỜNG"
+        description: "Sinh từ Power BI: sum(MTTD-MTTR_Miss Tấn công.Số lượng cảnh báo mức THÔNG THƯỜNG mà hệ thống không phát hiện được)"
+      sum_mttr_h:
+        type: sum
+        sql: mttr_h
+        label: "(MTTR)(h)"
+        description: "Sinh từ Power BI: sum(MTTD-MTTR_Miss Tấn công. (MTTR)(h))"
+      sum_total_incident_cases:
+        type: sum
+        sql: total_incident_cases
+        label: "SỐ CASE INCIDENT"
+        description: "Sinh từ Power BI: sum(MTTD-MTTR_Miss Tấn công.Tổng số case incident)"
+  columns:
+  - name: column4
+    description: "Cột Column4 trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Column4"
+        hidden: true
+  - name: column17
+    description: "Cột Column17 trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Column17"
+        hidden: true
+  - name: column18
+    description: "Cột Column18 trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Column18"
+        hidden: true
+  - name: quarter
+    description: "Cột Quý trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Quý"
+  - name: month_value
+    description: "Cột Tháng trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Tháng"
+        hidden: true
+  - name: customer
+    description: "Cột Khách hàng trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Khách hàng"
+  - name: rport_kpi_in_period
+    description: "Cột Rport KPI trong kỳ trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Rport KPI trong kỳ"
+        hidden: true
+  - name: total_incident_cases
+    description: "Cột Tổng số case incident trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "Tổng số case incident"
+        hidden: true
+  - name: mttd_h
+    description: "Cột (MTTD)(h) trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "(MTTD)(h)"
+        hidden: true
+  - name: ctkt_m05_mttd_24h
+    description: "Cột CTKT M05 (MTTD)24h trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "CTKT M05 (MTTD)24h"
+        hidden: true
+  - name: evaluation_mttd
+    description: "Cột Đánh giá (MTTD) trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá (MTTD)"
+        hidden: true
+  - name: mttr_h
+    description: "Cột (MTTR)(h) trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "(MTTR)(h)"
+        hidden: true
+  - name: ctkt_mttr_20h
+    description: "Cột CTKT (MTTR)20h trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "CTKT (MTTR)20h"
+        hidden: true
+  - name: evaluation_m06_mttr
+    description: "Cột Đánh giá M06(MTTR) trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá M06(MTTR)"
+        hidden: true
+  - name: missed_critical_alerts
+    description: "Cột Số lượng cảnh báo mức NGHIÊM TRỌNG mà hệ thống không phát hiện được trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "Số lượng cảnh báo mức NGHIÊM TRỌNG mà hệ thống không phát hiện được"
+        hidden: true
+  - name: ctkt
+    description: "Cột CTKT trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "CTKT"
+        hidden: true
+  - name: evaluation
+    description: "Cột Đánh giá trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: string
+        label: "Đánh giá"
+        hidden: true
+  - name: missed_normal_alerts
+    description: "Cột Số lượng cảnh báo mức THÔNG THƯỜNG mà hệ thống không phát hiện được trong MTTD-MTTR_Miss Tấn công."
+    meta:
+      dimension:
+        type: number
+        label: "Số lượng cảnh báo mức THÔNG THƯỜNG mà hệ thống không phát hiện được"
+        hidden: true

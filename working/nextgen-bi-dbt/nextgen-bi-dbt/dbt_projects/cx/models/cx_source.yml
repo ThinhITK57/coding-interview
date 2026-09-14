@@ -1,0 +1,18 @@
+version: 2
+sources:
+- name: bi_silver__cx
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: cx'
+  tables:
+  - name: cx_sur_question_response
+  - name: cx_sur_mart_question_responses
+  - name: cx_sur_mart_customer_experience
+  # - name: cx_lifecycle_customer_contract_snapshot
+  - name: cx_cso_customer_contract_lifecycle_snapshot
+  - name: cx_lifecycle_customer_product_snapshot
+  - name: cx_lifecycle_customer_snapshot
+  - name: cx_cso_mart_daily_ticket_summary
+  - name: cx_cso_mart_daily_ticket_metrics
+  - name: cx_mixpanel_product_feature
+  - name: cx_mixpanel_product_feature_usage_mart

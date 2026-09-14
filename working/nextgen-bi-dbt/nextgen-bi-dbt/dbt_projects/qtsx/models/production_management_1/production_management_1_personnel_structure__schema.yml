@@ -1,0 +1,43 @@
+version: 2
+models:
+- name: production_management_1_personnel_structure
+  description: "Bảng production_management_1_personnel_structure (nguồn Power BI: Cơ cấu nhân sự)."
+  meta:
+    label: "Cơ cấu nhân sự"
+    powerbi_source: "Cơ cấu nhân sự"
+  columns:
+  - name: project_name
+    description: "Cột Tên dự án trong Cơ cấu nhân sự."
+    meta:
+      dimension:
+        type: string
+        label: "Tên dự án"
+        hidden: true
+  - name: charter_tds
+    description: "Cột Charter TDS trong Cơ cấu nhân sự."
+    meta:
+      dimension:
+        type: number
+        label: "Charter TDS"
+        hidden: true
+  - name: charter_os
+    description: "Cột Charter OS trong Cơ cấu nhân sự."
+    meta:
+      dimension:
+        type: number
+        label: "Charter OS"
+        hidden: true
+  - name: cumulative_5_months_tds
+    description: "Cột LK 5 tháng TDS trong Cơ cấu nhân sự."
+    meta:
+      dimension:
+        type: number
+        label: "LK 5 tháng TDS"
+        hidden: true
+  - name: cumulative_5_months_os
+    description: "Cột LK 5 tháng OS trong Cơ cấu nhân sự."
+    meta:
+      dimension:
+        type: number
+        label: "LK 5 tháng OS"
+        hidden: true

@@ -1,0 +1,26 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_cause
+    description: "Nguồn Power BI: NGUYÊN NHÂN"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_description
+      description: "Cột ISSUE_DESCRIPTION"
+    - name: customer
+      description: "Cột Khách_hàng_12413"
+    - name: spdv
+      description: "Cột SPDV_19000"
+    - name: customer_group
+      description: "Cột Nhóm_khách_hàng_22107"
+    - name: date_value
+      description: "Cột Ngày_21701"
+    - name: cause
+      description: "Cột Nguyên nhân"

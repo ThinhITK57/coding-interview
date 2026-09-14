@@ -1,0 +1,159 @@
+version: 2
+models:
+- name: cx_sur_question_response
+  description: Bảng này lưu trữ các câu trả lời chi tiết của khách hàng trong các khảo sát, bao gồm nội dung trả lời, điểm số, thẻ, và thông tin liên quan đến hành trình, nhóm KPI và danh mục sản phẩm. Dữ liệu được sử dụng để phân tích mức độ hài lòng, đánh giá hiệu suất sản phẩm và hỗ trợ báo cáo KPI theo các phân khúc và điểm chạm khách hàng.
+  meta:
+    label: "Survey Responses"
+    owner: "lyttt3"
+    metrics:
+  columns:
+  - name: collected_date
+    description: Ngày ghi nhận dữ liệu trả lời khảo sát.
+    meta:
+      dimension:
+        type: timestamp
+        label: ngày thu thập
+  - name: survey_id
+    description: Mã định danh của khảo sát mà câu trả lời thuộc về.
+    meta:
+      dimension:
+        type: string
+        label: survey_id
+    tests:
+    - not_null
+  - name: answers_item_index
+    description: Thứ tự nội dung trả lời trong phần Multiple Answers
+  - name: response_id
+    description: Mã định danh duy nhất cho mỗi phản hồi trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: Mã phản hồi
+  - name: cso_ticket_id
+    description: "Mã định danh duy nhất của ticket, nếu data ở dạng số có 5 ký tự (eg: 54123), thì có nghĩa survey này được tạo ra để khảo sát với ticket đã đóng."
+    meta:
+      dimension:
+        type: string
+        label: cso_ticket_id, ticket_id
+  - name: respondent_uuid
+    description: Mã định danh duy nhất của người trả lời khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: mã người trả lời
+  - name: question_id
+    description: Mã định danh duy nhất của câu hỏi trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: mã câu hỏi
+  - name: question_type
+    description: Loại câu hỏi được sử dụng trong khảo sát, mô tả dạng hoặc nhóm câu hỏi.
+    meta:
+      dimension:
+        type: string
+        label: loại câu hỏi
+  - name: choice_id
+    description: Mã định danh của lựa chọn trả lời được khách hàng chọn trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: mã lựa chọn
+  - name: answer_string
+    description: Nội dung câu trả lời dạng văn bản mà khách hàng cung cấp trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: câu trả lời
+  - name: answer_tag
+    description: Nhãn mô tả loại hoặc nhóm câu trả lời trong khảo sát khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: nhãn câu trả lời
+  - name: comment
+    description: Bình luận hoặc nhận xét tự do của khách hàng trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: bình luận
+  - name: choice_content
+    description: Nội dung văn bản của lựa chọn mà khách hàng đã chọn trong câu hỏi khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: nội dung lựa chọn
+  - name: item_content
+    description: Nội dung văn bản của mục câu hỏi trong khảo sát khách hàng.
+    meta:
+      dimension:
+        type: string
+        label: nội dung mục
+  - name: answer_number
+    description: Số thứ tự của câu trả lời trong mỗi bản khảo sát.
+    meta:
+      dimension:
+        type: number
+        label: số câu trả lời
+  - name: item_score_value
+    description: Điểm số dạng số, nếu có; =0 nếu chỉ là đánh giá text
+    meta:
+      dimension:
+        type: number
+        label: điểm mục
+  - name: item_score_label
+    description: Đánh giá dạng text, ví dụ Good/Bad/Medium
+    meta:
+      dimension:
+        type: string
+        label: điểm mục
+  - name: question_clean
+    description: Column question_clean from bi_silver.cx_sur_question_response
+  - name: kpi_type
+    description: Loại Chỉ số đo lường
+    meta:
+      dimension:
+        type: string
+        label: loại KPI
+  - name: journey
+    description: Giai đoạn trải nghiệm
+    meta:
+      dimension:
+        type: string
+        label: hành trình khách hàng
+  - name: customer_touchpoint
+    description: Điểm tiếp xúc của khách hàng trong hành trình tương tác.
+    meta:
+      dimension:
+        type: string
+        label: điểm tiếp xúc khách hàng
+  - name: product_category
+    description: Danh mục sản phẩm dịch vụ trong khảo sát.
+    meta:
+      dimension:
+        type: string
+        label: danh mục sản phẩm
+  - name: kpi_group
+    description: Nhóm KPI mà câu trả lời thuộc về, dùng để phân loại các chỉ tiêu hiệu suất.
+    meta:
+      dimension:
+        type: string
+        label: nhóm KPI
+  - name: customer_nps_score
+    description: Điểm số dạng số thuộc kpt là nps, vÌ survey có thể làm nhiều lần nó là câu trả lời có điểm cao nhất của khách hàng cho câu hỏi
+    meta:
+      dimension:
+        type: number
+        label: điểm mục
+  - name: customer_csat_score
+    description: Điểm số dạng số thuộc kpt là csat, vÌ survey có thể làm nhiều lần nó là câu trả lời có điểm cao nhất của khách hàng cho câu hỏi
+    meta:
+      dimension:
+        type: number
+        label: điểm mục
+  - name: customer_ces_score
+    description: Điểm số dạng số thuộc kpt là ces, vÌ survey có thể làm nhiều lần nó là câu trả lời có điểm cao nhất của khách hàng cho câu hỏi
+    meta:
+      dimension:
+        type: number
+        label: điểm mục

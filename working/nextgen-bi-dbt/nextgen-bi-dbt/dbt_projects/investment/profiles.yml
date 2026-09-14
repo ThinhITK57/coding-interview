@@ -1,0 +1,30 @@
+investment:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+    dev:
+      type: trino
+      method: ldap
+      host: "{{ env_var('DBT_TRINO_HOST', '10.0.247.157') }}"
+      port: "{{ env_var('DBT_TRINO_PORT', 8443) | int }}"
+      user: "{{ env_var('DBT_TRINO_USER', 'admin') }}"
+      password: "{{ env_var('DBT_TRINO_PASSWORD', 'Welcome1') }}"
+      database: "{{ env_var('DBT_TRINO_CATALOG', 'hive') }}"
+      schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_gold') }}"
+      threads: 8
+      verify: false
+      cert: false
+      http_scheme: "{{ env_var('DBT_TRINO_HTTP_SCHEME', 'https') }}"
+
+    staging:
+      type: trino
+      method: ldap
+      host: "{{ env_var('DBT_TRINO_HOST', '10.0.247.157') }}"
+      port: "{{ env_var('DBT_TRINO_PORT', 8443) | int }}"
+      user: "{{ env_var('DBT_TRINO_USER', 'admin') }}"
+      password: "{{ env_var('DBT_TRINO_PASSWORD', 'Welcome1') }}"
+      database: "{{ env_var('DBT_TRINO_CATALOG', 'hive') }}"
+      schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_gold') }}"
+      threads: 8
+      verify: false
+      cert: false
+      http_scheme: "{{ env_var('DBT_TRINO_HTTP_SCHEME', 'https') }}"

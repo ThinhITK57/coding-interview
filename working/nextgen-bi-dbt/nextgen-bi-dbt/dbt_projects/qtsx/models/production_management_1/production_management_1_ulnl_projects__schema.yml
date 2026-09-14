@@ -1,0 +1,40 @@
+version: 2
+models:
+- name: production_management_1_ulnl_projects
+  description: "Bảng production_management_1_ulnl_projects (nguồn Power BI: ULNL Projects)."
+  meta:
+    label: "ULNL Projects"
+    powerbi_source: "ULNL Projects"
+    joins:
+    - join: production_management_1_projects_3
+      sql_on: "${production_management_1_ulnl_projects.project_key} = ${production_management_1_projects_3.project_key}"
+      relationship: one-to-one
+  columns:
+  - name: id
+    description: "Cột Id trong ULNL Projects."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT_NAME trong ULNL Projects."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+        hidden: true
+  - name: project_key
+    description: "Cột PROJECT_KEY trong ULNL Projects."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_KEY"
+        hidden: true
+  - name: k_hoi
+    description: "Cột kHỐI trong ULNL Projects. Cột tính toán, DAX gốc: LOOKUPVALUE('Project vs. Department'[Khối],'Project vs. Department'[ProjectName],'ULNL Projects'[PROJECT_NAME])"
+    meta:
+      dimension:
+        type: string
+        label: "kHỐI"
+        hidden: true

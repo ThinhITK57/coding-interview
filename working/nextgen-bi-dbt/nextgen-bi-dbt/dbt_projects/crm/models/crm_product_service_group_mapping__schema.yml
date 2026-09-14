@@ -1,0 +1,108 @@
+version: 2
+
+models:
+  - name: crm_product_service_group_mapping
+    description: >
+      Bảng mapping chuẩn hóa Product Category (SPDV) , Product Category Code, Product Service Group (Nhóm SPDV)
+      và Business Unit/Business Center (Trung tâm kinh doanh) dùng cho mục đích tìm kiếm và lọc dữ liệu product_category hoặc product_category_code trong GenBI.
+
+      Semantic:
+        - Nếu bảng mục tiêu đã có sẵn các cột product_service_group_vcs , product_service_group, business_unit_n1, business_unit_n1_full_name thì không dùng bảng crm_product_service_group_mapping này.
+        - Nếu bảng mục tiêu không có trực tiếp các cột filter trên, không tự suy diễn; bắt buộc chuyển filter qua product_category / product_category_code.
+        + Các cột product_service_group_vcs , product_service_group, business_unit_n1, business_unit_n1_full_name là filter dimensions theo yêu cầu người dùng.
+        + Khi có giá trị filter, dùng mapping để tìm danh sách giá trị product_category hoặc product_category_code tương ứng , sau đó dùng các giá trị này để filter/join bảng dữ liệu mục tiêu.
+        - Khi hỏi doanh thu/doanh số theo nhóm SDPV (có thể cắt lớp theo thời gian), không chỉ rõ nhóm nào thì mặc định nhóm tập đoàn product_service_group. Nếu tên nhóm có trong product_service_group thì ưu tiên, trừ trường hợp người dùng chỉ định rõ nhóm theo VCS
+
+    meta:
+      label: "CRM Product Group/Business-Unit Mapping"
+      owner: "data-governance"
+
+    columns:
+      - name: product_category
+        description: >
+          Tên Product Category
+        meta:
+          dimension:
+            type: string
+            label: Tên Product Category
+            synonyms:
+            - Sản phẩm/Dịch vụ
+            - SPDV
+
+      - name: product_category_code
+        description: >
+          Mã Product Category (VCSxxx).
+
+      - name: product_service_group_vcs
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm VCS.
+        meta:
+          dimension:
+            type: string
+            label: Nhóm sản phẩm/dịch vụ theo phân nhóm VCS
+            synonyms:
+            - Nhóm SPDV vận hành nội bộ VCS
+            - Nhóm Mass
+            - Nhóm Sản phẩm mới
+            - Nhóm MSS-Hệ sinh thái SOC
+            - Nhóm SP Standalone
+            - Nhóm Telco
+            - Nhóm Professional Services
+            - Nhóm MSS-CA
+            - Nhóm MSS-MDR Service
+            - Nhóm kinh doanh SI
+            - Nhóm SP Standalone-SPDV MỚI
+
+      - name: product_service_group
+        description: >
+          Nhóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ. 
+        meta:
+          dimension:
+            type: string
+            label: hóm sản phẩm/dịch vụ theo phân nhóm nghiệp vụ TĐ
+            synonyms:
+            - Nhóm SPDV báo cáo tập đoàn
+            - SPDV MỚI
+            - SP An ninh Viễn thông
+            - Hệ sinh thái SOC
+            - KHÁC (PC, PM phát sinh)
+            - Dịch vụ ATTT chuyên sâu = Nhóm Professional Services = Dịch vụ ATTT chuyên nghiệp
+
+      - name: business_unit_n1
+        description: >
+          Mã Trung tâm/Business Unit cấp 1 phụ trách sản phẩm/dịch vụ (SDPV).
+        meta:
+          dimension:
+            type: string
+            label: Mã Trung tâm/Business Unit cấp 1
+            synonyms:
+            - Business Center
+            - Trung tâm
+            - Trung tâm kinh doanh
+            - TT PT&CSNC
+            - TT SP Enterprise
+            - TT SP Telco
+            - TTGS
+            - TT SX&CNTT
+            - TT DV ATTT
+            - TT KDMN
+            - SI
+
+      - name: business_unit_n1_full_name
+        description: >
+          Tên đầy đủ của Trung tâm/Business Unit cấp 1. 
+        meta:
+          dimension:
+            type: string
+            label: Tên đầy đủ của Trung tâm/Business Unit cấp 1
+            synonyms:
+            - Business Center
+            - Trung tâm
+            - Trung tâm kinh doanh
+            - Trung tâm Phân tích chia sẻ nguy cơ An ninh mạng
+            - Trung tâm Sản phẩm Enterprise
+            - Trung tâm Sản phẩm Telco
+            - Trung tâm Giám sát & Phản ứng trên Không gian mạng
+            - Trung tâm Sản xuất & Công nghệ thông tin
+            - Trung tâm Dịch vụ An Toàn Thông Tin
+            - Phòng Hợp tác SI

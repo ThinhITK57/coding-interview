@@ -1,0 +1,20 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_done_charter_fix_versions
+    description: "Nguồn Power BI: Done charter_FixVersions"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: fix_version_issue_key
+      description: "Cột FIX_VERSION_ISSUE_KEY"
+    - name: fix_version_release_date
+      description: "Cột FIX_VERSION_RELEASE_DATE"
+    - name: fix_version_name
+      description: "Cột FIX_VERSION_NAME"
+    - name: release_date
+      description: "Cột RELEASE_DATE"

@@ -1,0 +1,123 @@
+version: 2
+models:
+- name: qtsx_v2_dim_date
+  description: "Bảng qtsx_v2_dim_date (nguồn Power BI: Dim_Date)."
+  meta:
+    label: "Dim_Date"
+    powerbi_source: "Dim_Date"
+    metrics:
+      max_date_value:
+        type: max
+        sql: date_value
+        label: "max_date_value"
+        description: "Sinh từ Power BI: max(Dim_Date.Date)"
+      min_date_value:
+        type: min
+        sql: date_value
+        label: "min_date_value"
+        description: "Sinh từ Power BI: min(Dim_Date.Date)"
+      working_days:
+        type: count
+        sql: "CASE WHEN is_working_day = TRUE THEN 1 END"
+        label: "Working Days"
+        description: "DAX: CALCULATE( COUNTROWS('Dim_Date'), 'Dim_Date'[IsWorkingDay] = TRUE() )"
+  columns:
+  - name: date_value
+    description: "Ngày. Dựng lại từ CALENDAR(2024-12-01, 2030-12-31) — xem sql_overrides."
+    meta:
+      dimension:
+        type: date
+        label: "Date"
+  - name: year_value
+    description: "Cột Year trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "Year"
+  - name: month_value
+    description: "Cột Month trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "Month"
+        hidden: true
+  - name: month_name
+    description: "Cột MonthName trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "MonthName"
+        hidden: true
+  - name: quarter
+    description: "Cột Quarter trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "Quarter"
+        hidden: true
+  - name: week_num
+    description: "Cột WeekNum trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "WeekNum"
+        hidden: true
+  - name: week_year
+    description: "Cột WeekYear trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "WeekYear"
+  - name: month_year
+    description: "Cột MonthYear trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "MonthYear"
+        hidden: true
+  - name: quarter_year
+    description: "Cột QuarterYear trong Dim_Date."
+    meta:
+      dimension:
+        type: string
+        label: "QuarterYear"
+  - name: week_start
+    description: "Thứ 2 của tuần chứa ngày này."
+    meta:
+      dimension:
+        type: date
+        label: "WeekStart"
+        hidden: true
+  - name: week_end
+    description: "Chủ nhật của tuần chứa ngày này."
+    meta:
+      dimension:
+        type: date
+        label: "WeekEnd"
+        hidden: true
+  - name: week_display
+    description: "Định dạng \"2024-W48 (25/11 - 01/12)\"."
+    meta:
+      dimension:
+        type: string
+        label: "WeekDisplay"
+  - name: week_label
+    description: "Cột WeekLabel trong Dim_Date. Cột tính toán, DAX gốc: VAR WeekStart = Dim_Date[Date] - WEEKDAY(Dim_Date[Date], 2) + 1 VAR WeekEnd = WeekStart + 6 RETURN YEAR(WeekStart) & \" - W\" & FORMAT(WEEKNUM(WeekStart, 2), \"00\") & \" (\" & FORMAT(WeekStart, \"dd/MM\") & \" - \" & FORMAT(WeekEnd, \"dd/MM\") & \")\""
+    meta:
+      dimension:
+        type: string
+        label: "WeekLabel"
+        hidden: true
+  - name: year_month
+    description: "Định dạng \"2024 - 12\". Khớp cột YearMonth của các bảng fact."
+    meta:
+      dimension:
+        type: string
+        label: "YearMonth"
+  - name: is_working_day
+    description: "WEEKDAY(Date,2) <= 5."
+    meta:
+      dimension:
+        type: boolean
+        label: "IsWorkingDay"
+        hidden: true

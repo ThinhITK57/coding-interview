@@ -1,0 +1,22 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_bug_worklogs
+    description: "Nguồn Power BI: Bug - Worklogs"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: worklog_key
+      description: "Cột WORKLOG_KEY"
+    - name: worklog_user_id
+      description: "Cột WORKLOG_USER_ID"
+    - name: worklog_worklog_date
+      description: "Cột WORKLOG_WORKLOG_DATE"
+    - name: worklog_logged_time
+      description: "Cột WORKLOG_LOGGED_TIME"
+    - name: worklog_username
+      description: "Cột WORKLOG_USERNAME"

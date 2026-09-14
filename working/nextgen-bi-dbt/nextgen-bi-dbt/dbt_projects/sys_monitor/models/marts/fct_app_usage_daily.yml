@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: fct_app_usage_daily
+    description: "Daily app usage facts derived from app view events."
+    meta:
+      label: "App Usage Daily"
+      group_label: "Observability"
+      metrics:
+        total_app_views:
+          type: sum
+          label: "Total App Views"
+          sql: "${app_views}"
+        total_unique_viewers:
+          type: sum
+          label: "Total Unique Viewers"
+          sql: "${unique_viewers}"
+    columns:
+      - name: viewed_date
+        meta:
+          dimension:
+            type: date
+            label: "Viewed Date"
+      - name: app_id
+        meta:
+          dimension:
+            type: string
+            label: "App ID"
+      - name: app_views
+        meta:
+          dimension:
+            type: number
+            label: "App Views"
+      - name: unique_viewers
+        meta:
+          dimension:
+            type: number
+            label: "Unique Viewers"

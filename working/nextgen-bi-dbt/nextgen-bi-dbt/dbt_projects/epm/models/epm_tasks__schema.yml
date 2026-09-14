@@ -1,0 +1,227 @@
+version: 2
+
+models:
+  - name: epm_tasks
+    description: >
+      Bảng lưu trữ thông tin công việc (Tasks). Đặc biệt dùng để quản lý tiến độ 
+      thực hiện Công văn chỉ thị, Kết luận chỉ đạo (CVCT/KLCD) do Ban Giám đốc ban hành 
+      và giao lại cho các Phòng ban, Trung tâm trong năm 2026 (thuộc dự án 2026_CVCT/KLCĐ).
+
+      Grain: Một dòng tương ứng với một công việc hoặc kết luận chỉ đạo.
+    meta:
+      label: "Công việc & CVCT/KLCD (Tasks)"
+      group_label: "EPM Dashboard"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Tasks"
+        grain: "One row per task or directive record"
+        primary_date: "due_date"
+        primary_department_dimension: "c_department"
+        primary_type_dimension: "task_type"
+
+        metric_rules:
+          total_tasks_count: "Tổng số lượng task hoặc công văn chỉ đạo."
+          overdue_tasks_count: "Số lượng task và công văn bị quá hạn (Due Date < Current Date và chưa hoàn thành)."
+
+        restrictions:
+          - "Lọc task_type = 'CVCT' hoặc 'KLCD' để phục vụ báo cáo tiến độ và tỷ lệ Overdue theo yêu cầu của Ban Giám đốc."
+          - "Các CVCT/KLCD của năm 2026 cần lọc theo dự án 2026_CVCT/KLCĐ."
+
+      metrics:
+        - name: total_tasks_count
+          label: "Tổng số công việc / CVCT"
+          description: "Tổng số lượng bản ghi task."
+          type: count
+          sql: ${sysid}
+
+        - name: overdue_tasks_count
+          label: "Số lượng quá hạn (Overdue)"
+          description: "Số lượng task, công văn chưa hoàn thành nhưng đã quá hạn."
+          type: count
+          sql: |
+            CASE
+              WHEN ${due_date} < CURRENT_DATE AND ${percent_completed} < 100
+              THEN ${sysid}
+            END
+
+    columns:
+      - name: sysid
+        description: "Khóa chính duy nhất do hệ thống sinh ra cho Task."
+        tests:
+          - not_null
+          - unique
+        meta:
+          dimension:
+            type: string
+            label: "Task ID"
+
+      - name: name
+        description: "Tên mô tả công việc hoặc Tiêu đề công văn chỉ thị."
+        meta:
+          dimension:
+            type: string
+            label: "Tên công việc"
+
+      - name: task_type
+        description: "Phân loại hình thức công việc (Chuẩn, Tóm tắt, Họp định kỳ, hoặc CVCT / KLCD)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại công việc (Task Type)"
+
+      - name: description
+        description: "Nội dung thuyết minh chi tiết yêu cầu công việc hoặc kết luận chỉ đạo."
+        meta:
+          dimension:
+            type: string
+            label: "Nội dung chi tiết"
+
+      - name: entity_owner
+        description: "Người sở hữu bản ghi trong hệ thống bảo mật."
+        meta:
+          dimension:
+            type: string
+            label: "Chủ sở hữu"
+
+      - name: parent_project
+        description: "Khóa ngoại trỏ đến Dự án cấp cao nhất (Root Project - ví dụ dự án 2026_CVCT/KLCĐ)."
+        meta:
+          dimension:
+            type: string
+            label: "Dự án gốc"
+
+      - name: parent
+        description: "Khóa ngoại trỏ đến đối tượng cha trực tiếp (Task cha hoặc Milestone cha)."
+        meta:
+          dimension:
+            type: string
+            label: "Công việc cha"
+
+      - name: external_id
+        description: "Mã nghiệp vụ từ hệ thống ngoài (mã Jira, số công văn, mã kết luận giao ban)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã ngoài hoặc Số công văn"
+
+      - name: work
+        description: "Tổng số giờ công kế hoạch cần để hoàn thành task."
+        meta:
+          dimension:
+            type: number
+            label: "Số giờ kế hoạch (Work)"
+
+      - name: duration
+        description: "Tổng thời lượng làm việc dự kiến."
+        meta:
+          dimension:
+            type: number
+            label: "Thời lượng (Duration)"
+
+      - name: priority
+        description: "Mức độ ưu tiên của công việc."
+        meta:
+          dimension:
+            type: string
+            label: "Độ ưu tiên"
+
+      - name: start_date
+        description: "Ngày bắt đầu dự kiến theo kế hoạch hiện tại."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày bắt đầu"
+            time_intervals: [DAY, WEEK, MONTH, QUARTER, YEAR]
+
+      - name: due_date
+        description: "Hạn hoàn thành dự kiến (DueDate) dùng để tính toán trạng thái Overdue."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn hoàn thành"
+            time_intervals: [DAY, WEEK, MONTH, QUARTER, YEAR]
+
+      - name: state
+        description: "Trạng thái vòng đời gồm: Draft, Active, Completed, Cancelled)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái vòng đời"
+
+      - name: project
+        description: "Khóa ngoại trỏ trực tiếp đến Dự án trực thuộc chứa Task này."
+        meta:
+          dimension:
+            type: string
+            label: "Dự án trực thuộc"
+
+      - name: percent_completed
+        description: "% hoàn thành tổng thể của công việc."
+        meta:
+          dimension:
+            type: number
+            label: "Tiến độ hoàn thành (%)"
+
+      - name: actual_duration
+        description: "Tổng thời lượng thực tế từ lúc bắt đầu đến khi kết thúc."
+        meta:
+          dimension:
+            type: number
+            label: "Thời lượng thực tế"
+
+      - name: actual_effort
+        description: "Tổng số giờ công thực tế nhân sự đã bỏ ra."
+        meta:
+          dimension:
+            type: number
+            label: "Giờ công thực tế (Effort)"
+
+      - name: actual_start_date
+        description: "Thời điểm thực tế bấm nút bắt đầu công việc."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày bắt đầu thực tế"
+
+      - name: actual_end_date
+        description: "Thời điểm thực tế công việc được xác nhận hoàn thành (100%)."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày kết thúc thực tế"
+
+      - name: track_status
+        description: "Trạng thái sức khỏe nhanh: On Track, At Risk, Off Track."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng thái sức khỏe"
+
+      - name: last_updated_on
+        description: "Watermark thời gian: Căn cứ cốt lõi để cào dữ liệu tăng dần (Incremental)."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày cập nhật"
+
+      - name: created_by
+        description: "Nhân sự tạo mới bản ghi task."
+        meta:
+          dimension:
+            type: string
+            label: "Người tạo"
+
+      - name: created_on
+        description: "Thời điểm tạo bản ghi trong cơ sở dữ liệu."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày tạo bản ghi"
+
+      - name: last_updated_by_system_on
+        description: "Dấu thời gian hệ thống tự động cập nhật số liệu rollup."
+        meta:
+          dimension:
+            type: date
+            label: "Hệ thống cập nhật"

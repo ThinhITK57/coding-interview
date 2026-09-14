@@ -1,0 +1,281 @@
+version: 2
+
+models:
+  - name: hr_ld_trainee
+    description: >
+      Bảng **hr_ld_trainee** lưu trữ thông tin sinh viên thực tập hoặc sinh viên
+      tham gia các chương trình đào tạo nguồn nhân lực, bao gồm thông tin cá nhân,
+      chương trình đào tạo, tiến độ đào tạo thực tế (OJT), kết quả học tập và trạng thái
+      tham gia chương trình. Dữ liệu được sử dụng để theo dõi quá trình đào tạo,
+      đánh giá kết quả học tập, quản lý nguồn nhân lực tiềm năng và hỗ trợ công tác
+      chuyển đổi sinh viên sang nhân viên chính thức.
+
+    meta:
+      label: "Trainee"
+      owner: "tranpth"
+
+      metrics:
+        trainee_count:
+          type: count_distinct
+          sql: ${TABLE}.employee_code
+          description: "Tổng số sinh viên thực tập hoặc sinh viên tham gia chương trình đào tạo."
+          label: "Trainee Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Tổng số sinh viên"
+            - "Số sinh viên"
+            - "Trainee Count"
+
+        trainee_record_count:
+          type: count_distinct
+          sql: ${TABLE}.id
+          description: "Tổng số bản ghi sinh viên trong chương trình đào tạo."
+          label: "Trainee Record Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số bản ghi sinh viên"
+            - "Trainee Record Count"
+
+        active_trainee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN UPPER(${TABLE}.current_status) IN ('ACTIVE', 'ĐANG ĐÀO TẠO', 'ĐANG HỌC')
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng sinh viên đang tham gia chương trình đào tạo hoặc thực tập."
+          label: "Active Trainee Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số sinh viên đang đào tạo"
+            - "Sinh viên active"
+            - "Active Trainee Count"
+
+        theory_trainee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.training_phase = 'Lý thuyết'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng sinh viên đang ở giai đoạn học lý thuyết."
+          label: "Theory Trainee Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số sinh viên đang học lý thuyết"
+            - "Theory Trainee Count"
+
+        ojt_trainee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.training_phase = 'OJT'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng sinh viên đang ở giai đoạn đào tạo thực tế tại công việc (OJT)."
+          label: "OJT Trainee Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số sinh viên đang OJT"
+            - "OJT Trainee Count"
+
+        delayed_trainee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.ojt_progress = 'Chậm tiến độ'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng sinh viên có trạng thái tiến độ OJT là Chậm tiến độ."
+          label: "Delayed Trainee Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số sinh viên chậm tiến độ"
+            - "Delayed Trainee Count"
+
+        on_track_trainee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.ojt_progress = 'Đúng tiến độ'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng sinh viên có trạng thái tiến độ OJT là Đúng tiến độ."
+          label: "On Track Trainee Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số sinh viên đúng hạn"
+            - "Số sinh viên đúng tiến độ"
+            - "On Track Trainee Count"
+
+        ahead_trainee_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.ojt_progress = 'Vượt tiến độ'
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng sinh viên có trạng thái tiến độ OJT là Vượt tiến độ."
+          label: "Ahead Trainee Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số sinh viên vượt tiến độ"
+            - "Ahead Trainee Count"
+
+        avg_trainee_score:
+          type: average
+          sql: ${TABLE}.average_score
+          description: "Điểm trung bình đánh giá kết quả học tập và đào tạo của sinh viên."
+          label: "Average Trainee Score"
+          category: "Learning & Development"
+          synonyms:
+            - "Điểm trung bình sinh viên"
+            - "Average Trainee Score"
+
+        avg_ojt_days:
+          type: average
+          sql: date_diff('day', CAST(${TABLE}.ojt_start_date AS date), CAST(${TABLE}.ojt_end_date AS date))
+          description: "Số ngày OJT trung bình của sinh viên."
+          label: "Average OJT Days"
+          category: "Learning & Development"
+          synonyms:
+            - "Thời gian OJT trung bình"
+            - "Average OJT Days"
+
+        completed_training_result_count:
+          type: count_distinct
+          sql: >
+            CASE
+              WHEN ${TABLE}.training_result_link IS NOT NULL
+                AND TRIM(${TABLE}.training_result_link) <> ''
+              THEN ${TABLE}.employee_code
+            END
+          description: "Số lượng sinh viên có ghi nhận liên kết tài liệu/kết quả đào tạo hợp lệ."
+          label: "Completed Training Result Count"
+          category: "Learning & Development"
+          synonyms:
+            - "Số sinh viên có kết quả đào tạo"
+            - "Completed Training Result Count"
+
+    columns:
+      - name: id
+        description: Khóa định danh duy nhất của bản ghi sinh viên
+        meta:
+          dimension:
+            type: number
+            label: "Trainee Record ID"
+        tests:
+          - not_null
+          - unique
+
+      - name: full_name
+        description: Họ và tên sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Full Name"
+
+      - name: employee_code
+        description: Mã định danh của sinh viên hoặc mã nhân sự được cấp trong chương trình đào tạo
+        meta:
+          dimension:
+            type: string
+            label: "Employee Code"
+
+      - name: training_program
+        description: Tên chương trình đào tạo hoặc chương trình thực tập mà sinh viên tham gia
+        meta:
+          dimension:
+            type: string
+            label: "Training Program"
+
+      - name: training_major
+        description: Chuyên ngành hoặc định hướng đào tạo của sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Training Major"
+
+      - name: training_phase
+        description: Giai đoạn đào tạo hiện tại hoặc đã hoàn thành của sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Training Phase"
+
+      - name: ojt_start_date
+        description: Ngày bắt đầu chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+        meta:
+          dimension:
+            type: timestamp
+            label: "OJT Start Date"
+
+      - name: ojt_end_date
+        description: Ngày kết thúc chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+        meta:
+          dimension:
+            type: timestamp
+            label: "OJT End Date"
+
+      - name: ojt_progress
+        description: Tiến độ thực hiện chương trình đào tạo thực tế tại công việc của sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "OJT Progress"
+
+      - name: average_score
+        description: Điểm trung bình đánh giá kết quả học tập và đào tạo của sinh viên
+        meta:
+          dimension:
+            type: number
+            label: "Average Score"
+
+      - name: classification
+        description: Xếp loại kết quả đào tạo của sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Classification"
+
+      - name: current_status
+        description: Trạng thái hiện tại của sinh viên trong chương trình đào tạo hoặc thực tập
+        meta:
+          dimension:
+            type: string
+            label: "Current Status"
+
+      - name: training_result_link
+        description: Đường dẫn đến tài liệu hoặc hệ thống lưu trữ kết quả đào tạo của sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Training Result Link"
+
+      - name: employment_type
+        description: Loại hình tham gia chương trình của sinh viên, ví dụ thực tập sinh hoặc trainee
+        meta:
+          dimension:
+            type: string
+            label: "Employment Type"
+
+      - name: work_location
+        description: Địa điểm hoặc khu vực thực tập, đào tạo hoặc làm việc của sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Work Location"
+
+      - name: business_email
+        description: Địa chỉ email công việc được cấp cho sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Business Email"
+
+      - name: mentor_email
+        description: Địa chỉ email của mentor hoặc người hướng dẫn sinh viên
+        meta:
+          dimension:
+            type: string
+            label: "Mentor Email"

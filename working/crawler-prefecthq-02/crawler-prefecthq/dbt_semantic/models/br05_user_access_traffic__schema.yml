@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: br05_user_access_traffic
+    description: >
+      Báo cáo Lưu lượng truy cập người dùng hệ thống EPM (BR-05).
+      Theo dõi tần suất đăng nhập, hoạt động của các nhóm phòng ban và chức danh.
+      Bảng vật lý chỉ chứa 7 cột dữ liệu đăng nhập cơ sở.
+      Các chỉ số hoạt động DAU, WAU, MAU, tần suất đăng nhập được định nghĩa trong Semantic Layer.
+
+      Grain: Một dòng tương ứng với một phiên đăng nhập của người dùng trong ngày.
+
+    meta:
+      label: "Báo Cáo Lưu Lượng Truy Cập (BR-05)"
+      group_label: "System Analytics"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Access Audit Log"
+        grain: "One row per user login session"
+        primary_user_dimension: "name"
+        primary_group_dimension: "groups"
+
+        restrictions:
+          - "Bảng vật lý không chứa tổng số phiên gộp hay chỉ số DAU/MAU."
+          - "Dữ liệu được làm mới hàng ngày theo khung giờ T-1."
+
+        derived_measures:
+          - name: "daily_active_users"
+            label: "Người Dùng Hoạt Động (DAU)"
+            formula: "COUNT(DISTINCT name)"
+            description: "Số lượng tài khoản duy nhất đăng nhập trong kỳ được chọn."
+            format: "integer"
+
+          - name: "total_sessions"
+            label: "Tổng Lượt Đăng Nhập"
+            formula: "COUNT(*)"
+            description: "Tổng số phiên đăng nhập ghi nhận."
+            format: "integer"
+
+          - name: "logins_per_user"
+            label: "Tần Suất Đăng Nhập Bình Quân"
+            formula: "COUNT(*) * 1.0 / NULLIF(COUNT(DISTINCT name), 0)"
+            description: "Số lượt đăng nhập trung bình của một người dùng hoạt động."
+            format: "decimal"
+
+    columns:
+      - name: login_date
+        description: "Ngày người dùng thực hiện đăng nhập vào hệ thống."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày Đăng Nhập"
+
+      - name: name
+        description: "Tên tài khoản (username / email định danh)."
+        meta:
+          dimension:
+            type: string
+            label: "Tài Khoản"
+
+      - name: first_name
+        description: "Tên gọi của người dùng."
+        meta:
+          dimension:
+            type: string
+            label: "Tên"
+
+      - name: last_name
+        description: "Họ và tên đệm của người dùng."
+        meta:
+          dimension:
+            type: string
+            label: "Họ"
+
+      - name: groups
+        description: "Nhóm người dùng hoặc phòng ban phân quyền."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm / Phòng Ban"
+
+      - name: direct_manager
+        description: "Cán bộ quản lý trực tiếp của người dùng."
+        meta:
+          dimension:
+            type: string
+            label: "Quản Lý Trực Tiếp"
+
+      - name: job_title
+        description: "Chức danh công việc chuyên môn."
+        meta:
+          dimension:
+            type: string
+            label: "Chức Danh"

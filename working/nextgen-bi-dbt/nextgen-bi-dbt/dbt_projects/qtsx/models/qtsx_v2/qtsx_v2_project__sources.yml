@@ -1,0 +1,18 @@
+version: 2
+sources:
+- name: pbi_silver__qtsx_v2
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: qtsx_v2"
+  tables:
+  - name: qtsx_v2_project
+    description: "Nguồn Power BI: Project"
+    columns:
+    - name: project_key
+      description: "Cột Project Key"
+    - name: project_name
+      description: "Cột Project Name"
+    - name: center
+      description: "Cột Trung tâm"
+    - name: project_group
+      description: "Cột Nhóm project"

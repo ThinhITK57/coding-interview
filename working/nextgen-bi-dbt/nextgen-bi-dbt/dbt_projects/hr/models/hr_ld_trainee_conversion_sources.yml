@@ -1,0 +1,75 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_trainee_conversion
+    description: >
+      Bảng **hr_ld_trainee_conversion** lưu trữ thông tin chuyển đổi của sinh viên
+      sau khi hoàn thành chương trình đào tạo hoặc thực tập sang vị trí làm việc chính thức.
+      Dữ liệu bao gồm thông tin sinh viên, chương trình đào tạo, kết quả đánh giá,
+      thời điểm chuyển đổi, vị trí công việc, đơn vị tiếp nhận và kết quả phỏng vấn.
+      Dữ liệu được sử dụng để theo dõi tỷ lệ chuyển đổi sinh viên thành nhân viên,
+      đánh giá hiệu quả chương trình đào tạo và hỗ trợ công tác phát triển nguồn nhân lực.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi chuyển đổi sinh viên
+      tests:
+        - not_null
+        - unique
+
+    - name: full_name
+      description: Họ và tên sinh viên
+
+    - name: trainee_id
+      description: Mã định danh của sinh viên trong chương trình đào tạo
+
+    - name: employee_code
+      description: Mã định danh nhân viên được cấp sau khi chuyển đổi, nếu có
+
+    - name: training_program
+      description: Tên chương trình đào tạo hoặc chương trình thực tập mà sinh viên tham gia
+
+    - name: conversion_date
+      description: Ngày sinh viên được chuyển đổi sang vị trí hoặc trạng thái làm việc chính thức
+
+    - name: role_base
+      description: Nhóm vai trò hoặc chức danh cơ sở của sinh viên sau khi chuyển đổi
+
+    - name: level_region
+      description: Cấp bậc hoặc nhóm level được áp dụng cho sinh viên sau khi chuyển đổi
+
+    - name: training_phase
+      description: Giai đoạn đào tạo của sinh viên tại thời điểm đánh giá chuyển đổi
+
+    - name: employment_type
+      description: Loại hình tuyển dụng hoặc hình thức làm việc sau khi chuyển đổi
+
+    - name: expected_full_time_date
+      description: Ngày dự kiến trở thành nhân viên chính thức
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của sinh viên
+
+    - name: mentor_email
+      description: Địa chỉ email của mentor hoặc người hướng dẫn sinh viên
+
+    - name: team
+      description: Nhóm hoặc đội ngũ công tác tiếp nhận sinh viên sau chuyển đổi
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 tiếp nhận sinh viên sau chuyển đổi
+
+    - name: interview_round_2_result
+      description: Kết quả đánh giá hoặc phỏng vấn vòng 2 trong quá trình chuyển đổi
+
+    - name: training_result_link
+      description: Đường dẫn đến tài liệu hoặc hệ thống lưu trữ kết quả đào tạo của sinh viên
+
+    - name: training_score
+      description: Điểm đánh giá kết quả đào tạo của sinh viên

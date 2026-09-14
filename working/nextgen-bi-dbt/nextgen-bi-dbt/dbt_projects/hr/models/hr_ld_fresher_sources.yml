@@ -1,0 +1,57 @@
+version: 2
+
+sources:
+- name: bi_silver__hr
+  database: hive
+  schema: bi_silver
+  description: 'Silver layer sources for domain: hr'
+
+  tables:
+  - name: hr_ld_fresher
+    description: >
+      Bảng **hr_ld_fresher** lưu trữ thông tin quá trình đào tạo và phát triển của
+      nhân sự Fresher, bao gồm thông tin cá nhân, lộ trình đào tạo, người hướng dẫn,
+      kết quả học tập, quá trình đào tạo thực tế (OJT) và kết quả đánh giá sau đào tạo.
+      Dữ liệu được sử dụng để theo dõi tiến độ đào tạo, đánh giá chất lượng chương trình
+      Fresher và hỗ trợ công tác phát triển nguồn nhân lực mới.
+
+    columns:
+    - name: id
+      description: Khóa định danh duy nhất của bản ghi đào tạo Fresher
+      tests:
+        - not_null
+    - name: full_name
+      description: Họ và tên của nhân sự Fresher
+
+    - name: employee_code
+      description: Mã định danh của nhân sự Fresher
+
+    - name: onboard_date
+      description: Ngày nhân sự Fresher bắt đầu tham gia chương trình đào tạo hoặc gia nhập công ty
+
+    - name: training_phase
+      description: Giai đoạn đào tạo hiện tại hoặc đã hoàn thành của Fresher
+
+    - name: training_major
+      description: Chuyên ngành hoặc định hướng đào tạo của Fresher
+
+    - name: mentor_name
+      description: Họ và tên người hướng dẫn hoặc mentor phụ trách Fresher
+
+    - name: department_n_2
+      description: Phòng ban cấp 2 tiếp nhận hoặc quản lý Fresher
+
+    - name: average_score
+      description: Điểm trung bình đánh giá kết quả đào tạo của Fresher
+
+    - name: ojt_start_date
+      description: Ngày bắt đầu chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+
+    - name: ojt_end_date
+      description: Ngày kết thúc chương trình đào tạo thực tế tại công việc (On-the-Job Training)
+
+    - name: employment_type
+      description: Loại hình tuyển dụng hoặc hình thức làm việc của Fresher sau đào tạo
+
+    - name: training_result
+      description: Kết quả đánh giá cuối cùng của chương trình đào tạo Fresher

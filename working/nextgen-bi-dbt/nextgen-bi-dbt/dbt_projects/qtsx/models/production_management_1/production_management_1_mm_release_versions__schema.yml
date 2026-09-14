@@ -1,0 +1,153 @@
+version: 2
+models:
+- name: production_management_1_mm_release_versions
+  description: "Bảng production_management_1_mm_release_versions (nguồn Power BI: mmRelease_Versions)."
+  meta:
+    label: "mmRelease_Versions"
+    powerbi_source: "mmRelease_Versions"
+    joins:
+    - join: production_management_1_worklog_issue
+      sql_on: "${production_management_1_mm_release_versions.issue_key} = ${production_management_1_worklog_issue.issue_key}"
+      relationship: many-to-one
+    - join: production_management_1_issues_fix_versions
+      sql_on: "${production_management_1_mm_release_versions.issue_key} = ${production_management_1_issues_fix_versions.issue_key}"
+      relationship: many-to-one
+    - join: production_management_1_mm_qa_fixversion
+      sql_on: "${production_management_1_mm_release_versions.project_name} = ${production_management_1_mm_qa_fixversion.product_service}"
+      relationship: many-to-many
+    metrics:
+      mm_worklog_release:
+        type: sum
+        sql: mm_fixversion_col
+        label: "MM WORKLOG RELEASE"
+        description: "DAX: CALCULATE( SUM('mmRelease_Versions'[mm_fixversion_col]))"
+      mm_worklog_release_bao_tri:
+        type: sum
+        sql: "CASE WHEN custom_field_2 = 'Bảo trì' THEN mm_fixversion_col END"
+        label: "MM WORKLOG RELEASE BẢO TRÌ"
+        description: "DAX: CALCULATE( SUM('mmRelease_Versions'[mm_fixversion_col]), 'mmRelease_Versions'[customField_21500]=\"Bảo trì\" )"
+      mm_worklog_release_nang_cap:
+        type: sum
+        sql: "CASE WHEN custom_field_2 = 'Nâng cấp' THEN mm_fixversion_col END"
+        label: "MM WORKLOG RELEASE NÂNG CẤP"
+        round: 2
+        description: "DAX: CALCULATE( SUM('mmRelease_Versions'[mm_fixversion_col]), 'mmRelease_Versions'[customField_21500]=\"Nâng cấp\" )"
+  columns:
+  - name: project_key
+    description: "Cột projectKey trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "projectKey"
+        hidden: true
+  - name: project_name
+    description: "Cột projectName trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "projectName"
+  - name: issue_key
+    description: "Cột issueKey trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "issueKey"
+        hidden: true
+  - name: parent_issue_key
+    description: "Cột parentIssueKey trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "parentIssueKey"
+        hidden: true
+  - name: summary
+    description: "Cột summary trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "summary"
+        hidden: true
+  - name: author_key
+    description: "Cột authorKey trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "authorKey"
+        hidden: true
+  - name: author_display_name
+    description: "Cột authorDisplayName trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "authorDisplayName"
+        hidden: true
+  - name: author_email
+    description: "Cột authorEmail trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "authorEmail"
+        hidden: true
+  - name: time_spent_seconds
+    description: "Cột timeSpentSeconds trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: number
+        label: "timeSpentSeconds"
+        hidden: true
+  - name: start_date
+    description: "Cột startDate trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: date
+        label: "startDate"
+        hidden: true
+  - name: fix_versions
+    description: "Cột fixVersions trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "fixVersions"
+        hidden: true
+  - name: fix_version_release_dates
+    description: "Cột fixVersionReleaseDates trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: date
+        label: "fixVersionReleaseDates"
+        hidden: true
+  - name: custom_field
+    description: "Cột customField_21000 trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "customField_21000"
+        hidden: true
+  - name: custom_field_2
+    description: "Cột customField_21500 trong mmRelease_Versions."
+    meta:
+      dimension:
+        type: string
+        label: "customField_21500"
+        hidden: true
+  - name: mm_fixversion_col
+    description: "Cột mm_fixversion_col trong mmRelease_Versions. Cột tính toán, DAX gốc: DIVIDE( 'mmRelease_Versions'[timeSpentSeconds] / 3600 / 8, 'mmRelease_Versions'[Số ngày làm việc], 0 )"
+    meta:
+      dimension:
+        type: number
+        label: "mm_fixversion_col"
+        hidden: true
+  - name: end_of_month
+    description: "Cột EndOfMonth trong mmRelease_Versions. Cột tính toán, DAX gốc: EOMONTH('mmRelease_Versions'[fixVersionReleaseDates],0)"
+    meta:
+      dimension:
+        type: date
+        label: "EndOfMonth"
+        hidden: true
+  - name: working_days
+    description: "Cột Số ngày làm việc trong mmRelease_Versions. Cột tính toán, DAX gốc: VAR SelectedDate = mmRelease_Versions[fixVersionReleaseDates] RETURN IF( ISBLANK(SelectedDate), BLANK(), -- hoặc 0 nếu bạn muốn trả về số 0 khi ngày trống VAR StartDate = DATE(YEAR(SelectedDate), MONTH(SelectedDate), 1) VAR EndDate = EOMONTH(SelectedDate, 0) VAR WorkingDays = COUNTX( FILTER( ADDCOLUMNS( CALENDAR(StartDate, EndDate), \"WeekDay\", WEEKDAY([Date], 2) ), [WeekDay] <= 5 ), [Date] ) VAR holidays = COUNTROWS( FILTER('ngày nghỉ', 'ngày nghỉ'[Holiday] >= StartDate && 'ngày nghỉ'[Holiday] <= EndDate ) ) RETURN WorkingDays - holidays )"
+    meta:
+      dimension:
+        type: number
+        label: "Số ngày làm việc"
+        hidden: true

@@ -1,0 +1,28 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_project_name
+    description: "Nguồn Power BI: Project Name"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: project_key
+      description: "Cột PROJECT_KEY"
+    - name: ttsx_product
+      description: "Cột TTSX_PRODUCT"
+    - name: project_name
+      description: "Cột PROJECT_NAME"
+    - name: project_name_last
+      description: "Cột PROJECT_NAME_Last"
+    - name: division
+      description: "Cột Khối"
+    - name: key_value
+      description: "Cột KEY"
+    - name: issueworklog_key
+      description: "Cột ISSUEWORKLOG-KEY"
+    - name: sort_order
+      description: "Cột Sắp xếp"

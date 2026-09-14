@@ -1,0 +1,36 @@
+version: 2
+sources:
+- name: pbi_silver__production_management_1
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'pbi_silver') }}"
+  description: "Silver layer sources for domain: production_management_1"
+  tables:
+  - name: production_management_1_post_acceptance_bug
+    description: "Nguồn Power BI: Bug sau nghiệm thu"
+    columns:
+    - name: id
+      description: "Cột Id"
+    - name: issue_created
+      description: "Cột ISSUE_CREATED"
+    - name: issue_key
+      description: "Cột ISSUE_KEY"
+    - name: issue_summary
+      description: "Cột ISSUE_SUMMARY"
+    - name: issue_priority
+      description: "Cột ISSUE_PRIORITY"
+    - name: issue_project_id
+      description: "Cột ISSUE_PROJECT_ID"
+    - name: order_value
+      description: "Cột Đơn_hàng_13421"
+    - name: defect_weight
+      description: "Cột Hệ số lỗi"
+    - name: end_date_by_order
+      description: "Cột EndDate theo đơn hàng"
+    - name: issue_current_status_name
+      description: "Cột ISSUE_CURRENT_STATUS_NAME"
+    - name: ttsx_product
+      description: "Cột TTSX_PRODUCT_16800"
+    - name: date_created
+      description: "Cột Date_created"
+    - name: severity
+      description: "Cột Severity_11301"

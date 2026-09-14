@@ -1,0 +1,28 @@
+version: 2
+models:
+- name: crm_deal_interested_products
+  description: Bảng này ghi nhận các danh mục sản phẩm mà khách hàng tiềm năng quan tâm trong mỗi giao dịch/cơ hội, hỗ trợ bộ phận kinh doanh nắm bắt nhu cầu và xu hướng mua sắm. Dữ liệu chủ yếu là thông tin về sản phẩm quan tâm kèm thời gian ghi nhận. Thường được dùng để phân tích xu hướng quan tâm, lập báo cáo dự báo nhu cầu và tối ưu chiến lược bán hàng.
+  meta:
+    label: "Deal Interested Products"
+    owner: "huongnv1"
+  columns:
+  - name: deal_id
+    description: Mã định danh duy nhất của giao dịch/cơ hội (deal) trong hệ thống CRM.
+    meta:
+      dimension:
+        type: string
+        label: Mã giao dịch/cơ hội
+    data_tests:
+    - not_null
+  - name: created_at
+    description: Thời điểm mà bản ghi quan tâm sản phẩm được tạo trong hệ thống.
+    meta:
+      dimension:
+        type: timestamp
+        label: Ngày tạo
+  - name: interested_product_category
+    description: Danh mục sản phẩm mà khách hàng quan tâm trong giao dịch/cơ hội.
+    meta:
+      dimension:
+        type: string
+        label: Danh mục sản phẩm quan tâm

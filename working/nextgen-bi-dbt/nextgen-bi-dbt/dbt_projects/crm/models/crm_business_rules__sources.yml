@@ -1,0 +1,71 @@
+version: 2
+sources:
+- name: bi_silver__crm
+  database: hive
+  schema: "{{ env_var('DBT_TRINO_SCHEMA', 'bi_silver') }}"
+  description: 'Silver layer sources for domain: crm'
+  tables:
+  - name: crm_business_rules
+    description: '[CRM] Bảng crm_business_rules lưu trữ các quy tắc nghiệp vụ được cấu hình trong hệ thống CRM,
+        dùng để xác định cách áp dụng logic kinh doanh cho sản phẩm, giá, tỷ lệ phân bổ hoặc quan hệ giữa
+        sản phẩm cha và sản phẩm con. Mỗi bản ghi đại diện cho một business rule có thể được áp dụng
+        theo Account Manager, loại quy tắc, loại giá và trạng thái hiệu lực.
+
+        Bảng được sử dụng để quản lý cấu hình quy tắc kinh doanh, kiểm tra logic phân bổ doanh thu,
+        xác định quan hệ giữa các sản phẩm và hỗ trợ phân tích hoặc kiểm soát các quy tắc đang hoạt động trong CRM.'
+
+    columns:
+      - name: id
+        description: Mã định danh duy nhất của quy tắc nghiệp vụ trong CRM.
+
+      - name: business_rule_name
+        description: Tên của quy tắc nghiệp vụ được cấu hình trong CRM.
+
+      - name: am_user_id
+        description: Mã định danh của Account Manager liên quan đến quy tắc nghiệp vụ.
+
+      - name: rule_type
+        description: Loại quy tắc nghiệp vụ, thể hiện nhóm logic hoặc mục đích áp dụng của rule.
+
+      - name: price_type
+        description: Loại giá được áp dụng trong quy tắc nghiệp vụ.
+
+      - name: parent_product_id
+        description: Mã định danh của sản phẩm cha trong quan hệ hoặc logic áp dụng rule.
+
+      - name: child_product_id
+        description: Mã định danh của sản phẩm con trong quan hệ hoặc logic áp dụng rule.
+
+      - name: ratio_operator
+        description: Toán tử so sánh hoặc điều kiện áp dụng cho giá trị tỷ lệ của quy tắc.
+
+      - name: ratio_value
+        description: Giá trị tỷ lệ được sử dụng trong quy tắc nghiệp vụ.
+
+      - name: ratio_unit
+        description: Đơn vị của giá trị tỷ lệ, ví dụ phần trăm hoặc đơn vị đo lường khác.
+
+      - name: is_active
+        description: True nếu quy tắc nghiệp vụ đang có hiệu lực và được áp dụng trong hệ thống CRM.
+
+      - name: created_at
+        description: Thời điểm quy tắc nghiệp vụ được tạo trong hệ thống CRM.
+
+      - name: creator_id
+        description: Mã định danh của người dùng tạo quy tắc nghiệp vụ.
+
+      - name: updated_at
+        description: Thời điểm quy tắc nghiệp vụ được cập nhật gần nhất.
+
+      - name: updater_id
+        description: Mã định danh của người dùng cập nhật quy tắc nghiệp vụ gần nhất.
+
+      - name: recent_note
+        description: Nội dung ghi chú hoặc cập nhật gần nhất liên quan đến quy tắc nghiệp vụ.
+
+      - name: record_type_id
+        description: Mã loại bản ghi của quy tắc nghiệp vụ trong CRM.
+
+
+
+

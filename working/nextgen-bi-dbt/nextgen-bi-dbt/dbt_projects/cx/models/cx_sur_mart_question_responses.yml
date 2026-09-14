@@ -1,0 +1,138 @@
+version: 2
+
+models:
+  - name: cx_sur_mart_question_responses
+    description: >
+      Bảng lưu trữ dữ liệu khảo sát ở mức chi tiết nhất survey/question/answer score.
+
+      Mỗi dòng tương ứng với một câu trả lời của một câu hỏi trong một phản hồi khảo sát.
+
+      Dữ liệu được sử dụng để phân tích NPS, CSAT, CES theo câu hỏi, hành trình khách hàng,
+      điểm chạm và nhóm sản phẩm.
+
+      QUAN TRỌNG:
+      - Luôn sử dụng collected_date làm mốc thời gian chính.
+      - Nếu câu hỏi đề cập đến tháng, quý hoặc năm thì hãy tính từ collected_date để lọc và phân tích dữ liệu.
+
+    meta:
+      label: "Survey Question (NPS, CES, CSAT) Responses"
+      owner: "lyttt3"
+
+      metrics:
+        no_of_post_resolution_satisfied_customer:
+          type: count_distinct
+          label: "Số khách hàng hài lòng sau khi được giải quyết"
+          description: Số khách hàng có ticket và đánh giá CSAT ở mức 4 hoặc 5 sau khi ticket hoặc yêu cầu đã được xử lý
+          sql: >
+            CASE
+              WHEN LOWER(TRIM(${kpi_group})) like '%csat%'
+              AND TRY_CAST(${item_score_value} AS INTEGER) IN (4, 5)
+              THEN ${respondent_uuid}
+            END        
+
+        no_of_post_resolution_survey_customer:
+          type: count_distinct
+          label: "Tổng khách hàng tham gia đánh giá sau xử lý"
+          description: Tổng số khách hàng có ticket và tham gia đánh giá CSAT sau khi ticket hoặc yêu cầu đã được xử lý
+          sql: >
+            CASE
+              WHEN LOWER(TRIM(${kpi_group})) like '%csat%'
+              THEN ${respondent_uuid}
+            END
+
+        post_resolution_csat_ratio:
+          type: number
+          label: "Tỷ lệ hài lòng sau khi được giải quyết"
+          description: >
+            Tỷ lệ khách hàng chấm CSAT 4 hoặc 5 trên tổng số khách hàng tham gia đánh giá CSAT 
+            sau khi ticket hoặc yêu cầu được xử lý
+          category: "Support Operations"
+          synonyms: ["post resolution csat ratio", "CSAT ở ngữ cảnh khảo sát sau điểm chạm xử lý ticket"]
+          sql: >
+            CASE
+              WHEN ${no_of_post_resolution_survey_customer} = 0 THEN NULL
+              ELSE 1.0 * ${no_of_post_resolution_satisfied_customer} / ${no_of_post_resolution_survey_customer}
+            END
+
+    columns:
+
+      #######################################################################
+      ## Keys
+      #######################################################################
+
+      - name: survey_id
+        description: Mã khảo sát.
+
+      - name: response_id
+        description: Mã phản hồi khảo sát.
+
+      - name: respondent_uuid
+        description: Mã định danh của người trả lời khảo sát.
+
+      - name: question_id
+        description: Mã câu hỏi trong khảo sát.
+
+      #######################################################################
+      ## Dimensions
+      #######################################################################
+
+      - name: response_email
+        description: Email của người trả lời khảo sát.
+
+      - name: cso_ticket_id
+        description: >
+          Mã ticket CSO nếu phản hồi được tạo từ khảo sát sau khi xử lý ticket.
+
+      - name: collected_date
+        description: >
+          Ngày ghi nhận phản hồi khảo sát.
+          Sử dụng trường này để phân tích theo ngày, tháng, quý hoặc năm.
+
+      - name: journey
+        description: >
+          Giai đoạn hành trình khách hàng.
+
+      - name: customer_touchpoint
+        description: >
+          Điểm chạm của khách hàng khi thực hiện khảo sát.
+
+      - name: product_category
+        description: >
+          Nhóm sản phẩm hoặc dịch vụ.
+
+      - name: kpi_group
+        description: >
+          Nhóm KPI của câu hỏi khảo sát, ví dụ NPS, CSAT hoặc CES.
+  
+      - name: customer_name
+        description: >
+          Tên đầy đủ khách hàng/doanh nghiệp.
+
+      - name: customer_group
+        description: >
+          Phân hạng khách hàng theo cấp độ: VVIP, VIP, Growth, Standard.
+
+      - name: customer_segment_level1
+        description: >
+          Phân khúc khách hàng  cấp 1 của giao dịch, thể hiện nhóm thị trường hoặc loại khách hàng chính.
+      
+      - name: customer_segment_level2
+        description: >
+          Mức phân khúc khách hàng cấp 2 của giao dịch, cho biết nhóm khách hàng hoặc ngành nghề chi tiết hơn.
+      
+      - name: customer_segment_level3
+        description: >
+          Phân khúc khách hàng cấp 3 của giao dịch, mô tả chi tiết nhóm khách hàng hoặc thị trường mà cơ hội kinh doanh thuộc về.
+
+      - name: customer_contact_level
+        description: >
+          Cấp bậc khách hàng, mô tả level của chức danh đầu mối liên hệ phía KH
+
+      #######################################################################
+      ## Measure
+      #######################################################################
+
+      - name: item_score_value
+        description: >
+          Điểm số của câu trả lời.
+          Với câu hỏi không có điểm số, giá trị bằng 0.

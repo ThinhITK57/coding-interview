@@ -1,0 +1,22 @@
+version: 2
+models:
+- name: production_management_1_os_project_logwork
+  description: "Bảng production_management_1_os_project_logwork (nguồn Power BI: OS-Project Logwork)."
+  meta:
+    label: "OS-Project Logwork"
+    powerbi_source: "OS-Project Logwork"
+  columns:
+  - name: id
+    description: "Cột Id trong OS-Project Logwork."
+    meta:
+      dimension:
+        type: number
+        label: "Id"
+        hidden: true
+  - name: project_name
+    description: "Cột PROJECT_NAME trong OS-Project Logwork."
+    meta:
+      dimension:
+        type: string
+        label: "PROJECT_NAME"
+        hidden: true
