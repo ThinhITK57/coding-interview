@@ -137,8 +137,31 @@ sh run_job.sh etls/bi_silver/epm/mart_board_objectives.py
 ```
 
 ### Bước 5: Biên dịch & Kiểm thử dbt
+Toàn bộ 12 model dbt (6 staging models + 6 data mart models) và 12 schema YAML tương ứng đã được chuẩn hóa. Các file cũ có tiền tố `br01` - `br06` đã được dọn dẹp triệt để.
+
 ```bash
 cd working/nextgen-bi-dbt/nextgen-bi-dbt/dbt_projects/epm
 dbt compile
 dbt test
 ```
+
+---
+
+## 6. DANH MỤC FILE DBT MODELS ĐÃ HOÀN THIỆN
+
+### Staging Models (Tầng Silver):
+1. `epm_assignments.sql` + `epm_assignments__schema.yml`
+2. `epm_objectives.sql` + `epm_objectives__schema.yml`
+3. `epm_projects.sql` + `epm_projects__schema.yml`
+4. `epm_targets.sql` + `epm_targets__schema.yml`
+5. `epm_tasks.sql` + `epm_tasks__schema.yml`
+6. `epm_user_access_log.sql` + `epm_user_access_log__schema.yml`
+
+### Data Mart Views (Tầng Gold Semantic):
+1. `bsc_yearly.sql` (`vw_bsc_yearly`) + `bsc_yearly__schema.yml`
+2. `cvct_execution_report.sql` (`vw_cvct_execution_report`) + `cvct_execution_report__schema.yml`
+3. `task_report.sql` (`vw_task_report`) + `task_report__schema.yml`
+4. `project_report.sql` (`vw_project_report`) + `project_report__schema.yml`
+5. `user_access_traffic.sql` (`vw_user_access_traffic`) + `user_access_traffic__schema.yml`
+6. `board_objectives.sql` (`vw_board_objectives`) + `board_objectives__schema.yml`
+

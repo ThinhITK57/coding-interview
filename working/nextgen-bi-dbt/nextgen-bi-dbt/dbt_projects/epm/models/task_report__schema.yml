@@ -1,18 +1,18 @@
 version: 2
 
 models:
-  - name: br03_task_report
+  - name: task_report
     description: >
-      Báo cáo chi tiết công việc (Tasks - BR-03).
+      Báo cáo chi tiết công việc (Task Execution Report).
       Phục vụ quản lý điều hành WBS, phân bổ công việc, theo dõi trạng thái tích hợp Jira
       và tiến độ thực thi thực tế của từng nhân sự.
-      Bảng vật lý chỉ chứa đúng 15 cột nghiệp vụ theo quy chuẩn.
+      Bảng bảo toàn các mã ID (assignee, department, parent_project) và bổ sung các cột Tên hiển thị (assignee_name, department_name, project_name).
       Các phép tính năng suất, tồn đọng giờ công (work backlog) thuộc về dbt Semantic Layer.
 
       Grain: Một dòng tương ứng với một Task/Công việc.
 
     meta:
-      label: "Báo Cáo Chi Tiết Task (BR-03)"
+      label: "Báo Cáo Chi Tiết Task (Task Report)"
       group_label: "Operational EPM Reports"
       owner: "data_engineering_team"
 
@@ -43,8 +43,6 @@ models:
             Tiến độ hoàn thành trung bình của các task.
 
         restrictions:
-          - >
-            Bảng vật lý không chứa cột suy diễn như remaining_work hay is_delayed.
           - >
             Số giờ công work và duration được chuẩn hóa theo đơn vị giờ và ngày làm việc.
           - >
@@ -136,14 +134,28 @@ models:
             label: "Loại Task"
 
       - name: assignee
-        description: "Cán bộ nhân viên chịu trách nhiệm thực thi task."
+        description: "Mã Cán bộ nhân viên chịu trách nhiệm thực thi task (ID/Username)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Người Thực Hiện (ID)"
+
+      - name: assignee_name
+        description: "Họ tên Cán bộ nhân viên thực thi hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string
             label: "Người Thực Hiện"
 
       - name: department
-        description: "Phòng ban / Đơn vị tiếp nhận và xử lý task."
+        description: "Mã Phòng ban / Đơn vị tiếp nhận và xử lý task."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Phòng Ban"
+
+      - name: department_name
+        description: "Tên Phòng ban / Đơn vị tiếp nhận hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string
@@ -157,11 +169,18 @@ models:
             label: "Số Lượng Nhân Lực"
 
       - name: parent_project
-        description: "Mã dự án cha quản lý task này."
+        description: "Mã định danh dự án cha quản lý task này (ID)."
         meta:
           dimension:
             type: string
-            label: "Dự Án Trực Thuộc"
+            label: "Mã Dự Án (ID)"
+
+      - name: project_name
+        description: "Tên dự án cha hiển thị (Enriched từ dim_epm_project / Projects)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Dự Án"
 
       - name: jira_status
         description: "Trạng thái công việc đồng bộ từ Jira (To Do, In Progress, Review, Done)."

@@ -1,18 +1,18 @@
 version: 2
 
 models:
-  - name: br06_board_objectives
+  - name: board_objectives
     description: >
-      Báo cáo Mục tiêu Ban Giám đốc (Mục tiêu BG - BR-06).
+      Báo cáo Mục tiêu Ban Giám đốc (Board Strategic Objectives Report).
       Tập trung giám sát tiến độ thực hiện các chỉ tiêu cấp cao nhất của Ban Giám đốc giao ban,
       đối chiếu giá trị cam kết (M/N) và kết quả giải ngân/thực đạt (Result M/N).
-      Bảng vật lý chỉ chứa đúng 17 cột dữ liệu thuần túy theo yêu cầu.
+      Bảng bảo toàn các mã ID và bổ sung các cột Tên hiển thị chuẩn hóa cho Mục tiêu, Dự án, Phòng ban và Nhân sự.
       Toàn bộ công thức tính tỷ lệ hoàn thành Ban Giám đốc và mức chênh lệch GAP nằm tại dbt Semantic Layer.
 
       Grain: Một dòng tương ứng với một chỉ tiêu cấp Ban Giám đốc.
 
     meta:
-      label: "Báo Cáo Mục Tiêu Ban Giám Đốc (BR-06)"
+      label: "Báo Cáo Mục Tiêu Ban Giám Đốc (Board Objectives)"
       group_label: "Executive EPM Reports"
       owner: "data_engineering_team"
 
@@ -44,10 +44,6 @@ models:
             Tỷ lệ hoàn thành tổng thể các chỉ tiêu mốc M Ban Giám đốc giao: (Tổng result_m / Tổng value_m) * 100%.
 
         restrictions:
-          - >
-            Bảng vật lý không chứa các phép chia tính tỷ lệ hoàn thành.
-          - >
-            Các công thức dưới đây phục vụ trực tiếp cho Trợ lý GenBI và Dashboard Ban Giám đốc.
           - >
             Dùng c_assignor để phân loại lãnh đạo phụ trách giao chỉ tiêu.
 
@@ -131,18 +127,32 @@ models:
 
     columns:
       - name: associated_objective
-        description: "Mã mục tiêu chiến lược BSC liên kết."
+        description: "Mã mục tiêu chiến lược BSC liên kết (SYSID của bảng Objectives)."
         meta:
           dimension:
             type: string
-            label: "Mục Tiêu BSC"
+            label: "Mã Mục Tiêu BSC (ID)"
+
+      - name: objective_name
+        description: "Tên mục tiêu chiến lược BSC hiển thị (Enriched từ dim_epm_objective / Objectives)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Mục Tiêu BSC"
 
       - name: associated_item
-        description: "Mã dự án trọng điểm liên kết thực hiện."
+        description: "Mã dự án trọng điểm liên kết thực hiện (SYSID của bảng Projects)."
         meta:
           dimension:
             type: string
-            label: "Dự Án Liên Kết"
+            label: "Mã Dự Án Liên Kết (ID)"
+
+      - name: associated_item_name
+        description: "Tên dự án trọng điểm liên kết hiển thị (Enriched từ dim_epm_project / Projects)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Dự Án Liên Kết"
 
       - name: target_type
         description: "Phân loại chỉ tiêu Ban Giám đốc."
@@ -159,7 +169,14 @@ models:
             label: "Chỉ Tiêu Cha"
 
       - name: c_department
-        description: "Khối / Phòng ban chịu trách nhiệm chính trước Ban Giám đốc."
+        description: "Mã Khối / Phòng ban chịu trách nhiệm chính trước Ban Giám đốc (ID/Code)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Phòng Ban (ID)"
+
+      - name: department_name
+        description: "Tên Khối / Phòng ban chịu trách nhiệm chính hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string
@@ -173,7 +190,14 @@ models:
             label: "Tên Chỉ Tiêu"
 
       - name: c_assignee
-        description: "Cán bộ quản lý được Ban Giám đốc giao nhận nhiệm vụ."
+        description: "Mã Cán bộ quản lý được Ban Giám đốc giao nhận nhiệm vụ (ID/Username)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Người Nhận Việc (ID)"
+
+      - name: assignee_name
+        description: "Họ tên Cán bộ quản lý nhận nhiệm vụ hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string
@@ -243,7 +267,14 @@ models:
             label: "Hiện Trạng"
 
       - name: c_assignor
-        description: "Thành viên Ban Giám đốc giao nhiệm vụ."
+        description: "Mã Thành viên Ban Giám đốc giao nhiệm vụ (ID/Username)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Thành Viên BGĐ Giao Việc (ID)"
+
+      - name: assignor_name
+        description: "Họ tên Thành viên Ban Giám đốc giao nhiệm vụ hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string

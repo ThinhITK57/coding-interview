@@ -42,6 +42,7 @@ df.repartition(1).write \
   .saveAsTable(tgt_table)
 
 # Tạo alias tương thích ngược
+spark.sql(f"CREATE OR REPLACE VIEW bi_silver.epm_mart_cvct_execution_report AS SELECT * FROM {tgt_table}")
 spark.sql(f"CREATE OR REPLACE VIEW bi_silver.epm_mart_dieu_hanh_cvct_klcd AS SELECT * FROM {tgt_table}")
 
 spark.catalog.refreshTable(tgt_table)

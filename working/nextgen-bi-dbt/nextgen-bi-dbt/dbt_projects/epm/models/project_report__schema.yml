@@ -1,18 +1,18 @@
 version: 2
 
 models:
-  - name: br04_project_report
+  - name: project_report
     description: >
-      Báo cáo tổng quan Dự án (BR-04).
+      Báo cáo tổng quan Dự án (Project Portfolio Report).
       Cung cấp thông tin tiến độ, phân loại dự án, ban điều hành dự án (PM, Assignor, Assignee)
       và trạng thái vòng đời.
-      Bảng vật lý chỉ chứa đúng 11 cột chuẩn hóa của nghiệp vụ.
+      Bảng bảo toàn các mã ID ban điều hành và bổ sung các cột Tên hiển thị chuẩn hóa.
       Các chỉ số về sức khỏe dự án, tỷ lệ hoàn thành trung bình thuộc về Semantic Layer.
 
       Grain: Một dòng tương ứng với một Dự án.
 
     meta:
-      label: "Báo Cáo Tổng Quan Dự Án (BR-04)"
+      label: "Báo Cáo Tổng Quan Dự Án (Project Report)"
       group_label: "Executive EPM Reports"
       owner: "data_engineering_team"
 
@@ -42,10 +42,6 @@ models:
             Số lượng Giám đốc dự án (PM) duy nhất đang tham gia quản lý.
 
         restrictions:
-          - >
-            Bảng vật lý không chứa điểm sức khỏe tổng hợp (health score) hay cờ rủi ro.
-          - >
-            Các phép tính tỷ lệ và cờ trễ hạn được xử lý tại tầng dbt Semantic Layer.
           - >
             Dùng due_date làm trục thời gian mặc định khi phân tích tiến độ bàn giao dự án.
 
@@ -157,28 +153,56 @@ models:
             label: "Tiến Độ Hoàn Thành (%)"
 
       - name: department
-        description: "Khối / Phòng ban chủ trì thực hiện dự án."
+        description: "Mã Khối / Phòng ban chủ trì thực hiện dự án (ID/Code)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Phòng Ban (ID)"
+
+      - name: department_name
+        description: "Tên Khối / Phòng ban chủ trì thực hiện dự án (Enriched display name)."
         meta:
           dimension:
             type: string
             label: "Phòng Ban Chủ Trì"
 
       - name: assignor
-        description: "Lãnh đạo phê duyệt / Người giao dự án."
+        description: "Mã Lãnh đạo phê duyệt / Người giao dự án (ID/Username)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Người Giao Dự Án (ID)"
+
+      - name: assignor_name
+        description: "Họ tên Lãnh đạo phê duyệt / Người giao dự án hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string
             label: "Người Giao Dự Án"
 
       - name: assignee
-        description: "Đơn vị hoặc cá nhân đầu mối tiếp nhận dự án."
+        description: "Mã Đơn vị hoặc cá nhân đầu mối tiếp nhận dự án (ID/Username)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Đầu Mối Tiếp Nhận (ID)"
+
+      - name: assignee_name
+        description: "Họ tên Đơn vị hoặc cá nhân đầu mối tiếp nhận dự án hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string
             label: "Đầu Mối Tiếp Nhận"
 
       - name: project_manager
-        description: "Giám đốc dự án (PM - Project Manager) chịu trách nhiệm trực tiếp."
+        description: "Mã Giám đốc dự án (PM - Project Manager) chịu trách nhiệm trực tiếp (ID/Username)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Giám Đốc Dự Án (ID)"
+
+      - name: project_manager_name
+        description: "Họ tên Giám đốc dự án (PM) hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string

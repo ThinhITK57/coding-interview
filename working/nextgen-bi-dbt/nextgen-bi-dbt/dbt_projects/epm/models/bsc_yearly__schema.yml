@@ -1,18 +1,18 @@
 version: 2
 
 models:
-  - name: br01_bsc_yearly
+  - name: bsc_yearly
     description: >
-      Báo cáo BSC trong năm (Business Requirement 1).
+      Báo cáo BSC trong năm (Báo cáo chỉ tiêu chiến lược Balanced Scorecard).
       Cung cấp bức tranh toàn cảnh về tiến độ hoàn thành các chỉ tiêu định lượng (Targets)
       gắn liền với Mục tiêu chiến lược BSC (Objectives) và Dự án (Projects).
-      Bảng vật lý chỉ chứa đúng 17 cột dữ liệu gốc/chuẩn hóa được DA phê duyệt.
-      Mọi chỉ số tính toán suy diễn (Measures/Metrics) được định nghĩa tại tầng Semantic Layer của dbt.
+      Bảng bảo toàn đầy đủ các khóa ID gốc để kiểm tra quan hệ dữ liệu (tests), 
+      đồng thời bổ sung các cột Tên hiển thị chuẩn hóa phục vụ trực quan hóa BI.
 
       Grain: Một dòng tương ứng với một chỉ tiêu định lượng thuộc kỳ đánh giá BSC.
 
     meta:
-      label: "Báo cáo BSC Trong Năm (BR-01)"
+      label: "Báo cáo BSC Trong Năm (BSC Yearly)"
       group_label: "Executive EPM Reports"
       owner: "data_engineering_team"
 
@@ -20,7 +20,7 @@ models:
       # SEMANTIC GUIDANCE
       # ================================================================
       semantic_guidance:
-        source_type: "Targets joined with Objectives & Assignments"
+        source_type: "Targets joined with Objectives, Projects & Assignments"
         grain: "One row per quantitative BSC target"
         primary_date: "target_date_m"
         primary_department_dimension: "c_department"
@@ -44,8 +44,6 @@ models:
             Tổng chênh lệch còn thiếu so với mục tiêu M: Tổng value_m - Tổng result_m.
 
         restrictions:
-          - >
-            Không thực hiện tính toán cột suy diễn trực tiếp trong bảng vật lý.
           - >
             Chỉ tiêu M (Must-have) là chỉ tiêu bắt buộc phải đạt theo cam kết KPI.
           - >
@@ -150,14 +148,28 @@ models:
         meta:
           dimension:
             type: string
-            label: "Mã Mục tiêu BSC"
+            label: "Mã Mục tiêu BSC (ID)"
+
+      - name: objective_name
+        description: "Tên Mục tiêu chiến lược BSC hiển thị (Enriched từ dim_epm_objective / Objectives)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Mục tiêu BSC"
 
       - name: associated_item
         description: "Khóa ngoại trỏ đến Dự án liên kết thực hiện (SYSID của bảng Projects)."
         meta:
           dimension:
             type: string
-            label: "Mã Dự án Liên kết"
+            label: "Mã Dự án Liên kết (ID)"
+
+      - name: associated_item_name
+        description: "Tên Dự án liên kết hiển thị (Enriched từ dim_epm_project / Projects)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Dự án Liên kết"
 
       - name: target_type
         description: "Phân loại chỉ tiêu (Càng cao càng tốt, Càng thấp càng tốt, Duy trì trong ngưỡng)."
@@ -174,11 +186,18 @@ models:
             label: "Chỉ tiêu Cha"
 
       - name: c_department
-        description: "Phòng ban / Đơn vị chịu trách nhiệm thực hiện chỉ tiêu."
+        description: "Mã Phòng ban / Đơn vị chịu trách nhiệm thực hiện chỉ tiêu."
         meta:
           dimension:
             type: string
-            label: "Phòng ban"
+            label: "Mã Phòng ban"
+
+      - name: department_name
+        description: "Tên Phòng ban / Đơn vị hiển thị (Enriched display name)."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Phòng ban"
 
       - name: name
         description: "Tên chỉ tiêu định lượng (ví dụ: Tăng trưởng doanh thu 25%)."
@@ -188,7 +207,14 @@ models:
             label: "Tên Chỉ tiêu"
 
       - name: c_assignee
-        description: "Cán bộ / Nhân sự được giao cam kết thực hiện chỉ tiêu."
+        description: "Mã Cán bộ / Nhân sự được giao cam kết thực hiện chỉ tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Người Thực hiện"
+
+      - name: assignee_name
+        description: "Họ tên Cán bộ / Nhân sự thực hiện hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string
@@ -258,7 +284,14 @@ models:
             label: "Kết quả Thực tế N"
 
       - name: assignor
-        description: "Lãnh đạo / Người giao chỉ tiêu (trích xuất từ PGNV hoặc trường c_assignor)."
+        description: "Mã Lãnh đạo / Người giao chỉ tiêu (trích xuất từ PGNV hoặc c_assignor)."
+        meta:
+          dimension:
+            type: string
+            label: "Mã Người Giao"
+
+      - name: assignor_name
+        description: "Họ tên Lãnh đạo / Người giao chỉ tiêu hiển thị (Enriched display name)."
         meta:
           dimension:
             type: string

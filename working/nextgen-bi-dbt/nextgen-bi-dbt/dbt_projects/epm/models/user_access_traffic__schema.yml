@@ -1,17 +1,17 @@
 version: 2
 
 models:
-  - name: br05_user_access_traffic
+  - name: user_access_traffic
     description: >
-      Báo cáo Lưu lượng truy cập người dùng hệ thống EPM (BR-05).
+      Báo cáo Lưu lượng truy cập người dùng hệ thống EPM (User Access Traffic Report).
       Theo dõi tần suất đăng nhập, hoạt động của các nhóm phòng ban và chức danh.
-      Bảng vật lý chỉ chứa 7 cột dữ liệu đăng nhập cơ sở.
+      Bảng vật lý chứa 7 cột dữ liệu đăng nhập cơ sở.
       Các chỉ số hoạt động DAU, WAU, MAU, tần suất đăng nhập được định nghĩa trong Semantic Layer.
 
       Grain: Một dòng tương ứng với một phiên đăng nhập của người dùng trong ngày.
 
     meta:
-      label: "Báo Cáo Lưu Lượng Truy Cập (BR-05)"
+      label: "Báo Cáo Lưu Lượng Truy Cập (User Access Traffic)"
       group_label: "System Analytics"
       owner: "data_engineering_team"
 
@@ -36,8 +36,6 @@ models:
             Số lượng phòng ban/nhóm có người dùng đăng nhập trong kỳ.
 
         restrictions:
-          - >
-            Bảng vật lý không chứa tổng số phiên gộp hay chỉ số DAU/MAU.
           - >
             Dữ liệu được làm mới hàng ngày theo khung giờ T-1.
           - >

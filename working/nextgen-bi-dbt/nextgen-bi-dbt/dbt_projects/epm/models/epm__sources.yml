@@ -304,3 +304,20 @@ sources:
     - name: last_updated_by_system_on
       description: Dấu thời gian hệ thống tự động cập nhật số liệu rollup. [mô tả
         lấy từ bảng OBJECTIVE]
+  - name: epm_user_access_log
+    description: Bảng nhật ký lưu lượng và tần suất đăng nhập của người dùng EPM.
+    columns:
+    - name: login_date
+      description: Ngày người dùng đăng nhập hệ thống.
+    - name: name
+      description: Tên tài khoản định danh người dùng.
+    - name: first_name
+      description: Tên của nhân sự.
+    - name: last_name
+      description: Họ và tên đệm của nhân sự.
+    - name: groups
+      description: Nhóm phân quyền hoặc vai trò của nhân sự.
+    - name: direct_manager
+      description: Cán bộ quản lý trực tiếp.
+    - name: job_title
+      description: Chức danh công việc của nhân sự.

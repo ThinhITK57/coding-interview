@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: epm_user_access_log
+    description: >
+      Bảng lưu trữ nhật ký lưu lượng và tần suất đăng nhập của người dùng vào hệ thống EPM.
+      Dùng làm cơ sở cho phân tích DAU, WAU, MAU và mức độ tương tác của nhân sự theo phòng ban/nhóm.
+
+      Grain: Một dòng tương ứng với một phiên đăng nhập của người dùng.
+    meta:
+      label: "Nhật Ký Truy Cập Người Dùng (EPM User Access Log)"
+      group_label: "EPM System Analytics"
+      owner: "data_engineering_team"
+
+      semantic_guidance:
+        source_type: "Access Audit Log"
+        grain: "One row per user login event"
+        primary_date: "login_date"
+        primary_user_dimension: "name"
+        primary_group_dimension: "groups"
+
+    columns:
+      - name: login_date
+        description: Ngày người dùng đăng nhập hệ thống.
+        tests:
+          - not_null
+      - name: name
+        description: Tên tài khoản định danh người dùng (username/account).
+        tests:
+          - not_null
+      - name: first_name
+        description: Tên của nhân sự.
+      - name: last_name
+        description: Họ và tên đệm của nhân sự.
+      - name: groups
+        description: Nhóm phân quyền hoặc vai trò của nhân sự trong hệ thống EPM.
+      - name: direct_manager
+        description: Cán bộ quản lý trực tiếp của nhân sự.
+      - name: job_title
+        description: Chức danh công việc / vị trí công tác của nhân sự.

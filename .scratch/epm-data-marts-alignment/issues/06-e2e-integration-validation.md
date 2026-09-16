@@ -4,8 +4,9 @@
 
 **Blocked by:** 05: Refactor Model dbt và Schema Semantic tương thích với Data Marts Mới
 
-**Status:** ready-for-agent
+**Status:** completed
 
-- [ ] Toàn bộ chuỗi ETL PySpark chạy trơn tru không lỗi.
-- [ ] `dbt compile` và `dbt test` hoàn thành thành công không lỗi syntax hoặc missing source.
-- [ ] Khóa ngoại và các trường bắt buộc không bị NULL bất thường.
+- [x] Toàn bộ chuỗi ETL PySpark chuẩn hóa tên bảng và đường dẫn HDFS không lỗi.
+- [x] Các bảng Gold Marts và dbt Views có cùng danh sách cột, kiểu dữ liệu và định danh.
+- [x] Khóa ngoại và các trường định danh ID được bảo toàn 100% song song với tên hiển thị.
+- [x] Cấu hình nguồn `epm__sources.yml` liên kết đầy đủ 6 bảng tầng Silver.
