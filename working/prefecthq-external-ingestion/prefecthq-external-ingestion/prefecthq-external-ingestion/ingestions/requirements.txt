@@ -1,0 +1,11 @@
+python-dotenv
+schedule
+papermill
+pyarrow
+trino
+pymysql
+requests-kerberos
+boto3
+unidecode
+pandas
+orjson

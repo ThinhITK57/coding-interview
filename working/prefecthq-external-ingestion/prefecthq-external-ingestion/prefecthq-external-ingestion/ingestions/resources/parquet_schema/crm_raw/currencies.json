@@ -1,0 +1,61 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "partial",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "is_active",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "currency_code",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "exchange_rate",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "currency_type",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "schedule_info",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

@@ -1,0 +1,311 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "active",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "address",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "description",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "email",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "job_title",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "language",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "mobile",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "phone",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "time_zone",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "twitter_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "custom_fields",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "level",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "language_mail",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "gender",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "contact_segment",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "facebook_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "csat_rating",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "preferred_source",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "company_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "unique_external_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "first_name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "last_name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "visitor_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "org_contact_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "org_contact_id_str",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "other_phone_numbers",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "struct",
+                    "fields": [
+                        {
+                            "name": "label",
+                            "nullable": true,
+                            "dataType": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "nullable": true,
+                            "dataType": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "company",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "id",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "view_all_tickets",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "avatar",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "org_company_id",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "other_companies",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

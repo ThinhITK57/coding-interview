@@ -1,0 +1,131 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "editable_in_signup",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "label",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "position",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "required_for_agents",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "type",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "default",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "customers_can_edit",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "label_for_customers",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "required_for_customers",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "displayed_for_customers",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "choices",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

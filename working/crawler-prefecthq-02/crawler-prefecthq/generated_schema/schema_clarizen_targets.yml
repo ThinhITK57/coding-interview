@@ -1,0 +1,5 @@
+version: 2
+models:
+ - name: "bronze_clarizen_targets"
+     description: "Raw flattened data from clarizentargets API endpoint(API v2.0)"
+     columns:

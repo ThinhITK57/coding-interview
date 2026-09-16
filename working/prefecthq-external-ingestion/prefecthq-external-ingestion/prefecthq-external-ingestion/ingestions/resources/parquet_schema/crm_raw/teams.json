@@ -1,0 +1,85 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "partial",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "team_user_ids",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "long"
+                }
+            }
+        },
+        {
+            "name": "creator_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updater_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

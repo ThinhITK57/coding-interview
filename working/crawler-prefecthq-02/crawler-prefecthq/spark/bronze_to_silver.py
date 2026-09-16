@@ -69,7 +69,7 @@ def process_bronze_to_silver(
 
     # Fallback to local data directories if S3 path does not exist
     if bronze_base_path.startswith("./") or not os.getenv("MINIO_ENDPOINT"):
-        bronze_input = os.path.join(ROOT_DIR, "data", "bronze", "clarizen", table_lower)
+        bronze_input = os.path.join(ROOT_DIR, "data", "bronze", table_lower)
         silver_output = os.path.join(ROOT_DIR, "data", "silver", "epm", f"epm_{table_lower}")
 
     logger.info(f"Input Bronze Path:  {bronze_input}")
@@ -84,7 +84,7 @@ def process_bronze_to_silver(
     except Exception as e:
         logger.warning(f"Could not read from primary path {bronze_input}: {e}")
         # Try local fallback
-        local_path = os.path.join(ROOT_DIR, "data", "bronze", "clarizen", table_lower)
+        local_path = os.path.join(ROOT_DIR, "data", "bronze", table_lower)
         if os.path.exists(local_path):
             logger.info(f"Falling back to local path: {local_path}")
             raw_df = spark.read.parquet(local_path)

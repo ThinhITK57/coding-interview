@@ -1,0 +1,44 @@
+theme: light
+
+server:
+  address: tcp://0.0.0.0:9091/
+
+log:
+  level: debug
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: prefect-external.viettelcyber.com
+      policy: one_factor
+
+session:
+  name: authelia_session
+  secret: /config/secrets/session_secret
+
+  expiration: 1h
+  inactivity: 5m
+
+  cookies:
+    - domain: prefect-external.viettelcyber.com
+      authelia_url: https://auth.prefect-external.viettelcyber.com
+      default_redirection_url: https://prefect-external.viettelcyber.com
+
+storage:
+  encryption_key: /config/secrets/storage_encryption_key
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
+
+
+identity_validation:
+  reset_password:
+    jwt_secret: /config/secrets/reset_password_jwt_secret
+    

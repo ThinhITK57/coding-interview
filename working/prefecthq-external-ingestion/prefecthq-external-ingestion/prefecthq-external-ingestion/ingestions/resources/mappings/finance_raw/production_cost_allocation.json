@@ -1,0 +1,10 @@
+{
+  "Ngày": "date_key",
+  "SPDV": "product_service_name",
+  "Mã SPDV": "product_service_code",
+  "Mã KM phí": "expense_code",
+  "Khoản mục SPDV": "product_service_expense_category",
+  "Data type": "data_type",
+  "Thị trường": "market",
+  "Triệu đồng": "amount_million_vnd"
+}

@@ -1,0 +1,103 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "key",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "projectkey",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "projectname",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "summary",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "issuetype",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "status",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "assignee",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "resolved",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "priority",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "created",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "duedate",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "source_file",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

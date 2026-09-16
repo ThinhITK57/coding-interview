@@ -1,0 +1,13 @@
+{
+  "STT": "sequence_number",
+  "Họ và tên": "full_name",
+  "Mã nhân viên": "employee_code",
+  "Ngày onboard": "onboard_date",
+  "Ngày nghỉ việc": "resigned_date",
+  "Lý do": "resignation_reason",
+  "Giai đoạn đào tạo": "training_phase",
+  "Chuyên ngành đào tạo": "training_major",
+  "Mentor trực tiếp": "mentor_name",
+  "Phòng ban": "department_n_2",
+  "Văn phòng làm việc hiện tại": "current_work_location"
+}

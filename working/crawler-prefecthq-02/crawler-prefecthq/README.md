@@ -1,93 +1,98 @@
-# crawler-prefecthq
+# Planview Clarizen Enterprise Lakehouse Pipeline (`crawler-prefecthq-02`)
 
+> **Hệ thống Thu thập, Làm sạch và Xây dựng Kho Dữ liệu Doanh nghiệp (EPM Data Lakehouse)**  
+> **Môi trường kỹ thuật:** Python 3.7.1 | Apache Spark 2.3.2 | Ambari HDFS (Knox Gateway) | MinIO S3 | Trino / Hive Metastore | dbt Core 1.3+  
+> **Kiến trúc dữ liệu:** Medallion Architecture (Bronze -> Silver Base -> Silver Kimball Dims/Facts -> Gold Marts -> dbt Semantic Layer)
 
+---
 
-## Getting started
+## 1. TỔNG QUAN HỆ THỐNG
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Dự án này chịu trách nhiệm thu thập dữ liệu từ **Planview Clarizen REST API v2.0**, xử lý làm sạch, khử trùng lặp và chuyển đổi qua các tầng dữ liệu:
+* **Bronze Layer:** Lưu trữ Parquet thô kèm audit JSON gốc trên MinIO và Ambari HDFS.
+* **Silver Layer (Base & Kimball):** Làm sạch, ép kiểu contract chuẩn, khử trùng lặp khóa chính `sysid`, và xây dựng 7 Conformed Dimensions cùng 5 Facts Periodic Snapshot theo mô hình Kimball.
+* **Gold Layer (Business Marts):** Xây dựng 6 Bảng dữ liệu nghiệp vụ phục vụ 6 Business Requirements (BR-01 đến BR-06), tuân thủ nguyên tắc không chứa cột tính toán suy diễn.
+* **Semantic Layer (dbt & Lightdash):** Định nghĩa toàn bộ metrics kinh doanh (tỷ lệ hoàn thành M/N, GAP, cờ quá hạn, giờ công tồn đọng, DAU) phục vụ Trợ lý GenBI và Dashboard.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+---
 
-## Add your files
+## 2. TÀI LIỆU KỸ THUẬT & HƯỚNG DẪN CHI TIẾT
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+Toàn bộ tài liệu chi tiết được lưu trữ tại thư mục [`docs/`](docs/):
+* 📖 **[Sổ Tay Kiến Trúc & Vận Hành Toàn Diện (MASTER RUNBOOK)](docs/MASTER_PIPELINE_ARCHITECTURE_AND_RUNBOOK.md):** Hướng dẫn đầy đủ nhất từ crawl, lưu trữ Ambari Knox, luồng xử lý Bronze to Silver, Kimball Dims/Facts, Gold Marts đến dbt Semantic metrics.
+* 📄 **[Hợp Đồng Phân Định Trách Nhiệm DE vs DA](docs/DE_VS_DA_SEMANTIC_CONTRACT.md):** Quy chuẩn về ranh giới dữ liệu vật lý của DE và tầng ngữ nghĩa metrics của DA.
+* ⚙️ **[Đặc Tả Kỹ Thuật Chiến Lược Crawl API](docs/CRAWL_STRATEGY_SPEC.md):** Chi tiết lịch trình, hạn ngạch, phân trang, bộ lọc watermark và cơ chế Checkpoint.
+* 🛠️ **[Sổ Tay Triển Khai Kỹ Thuật (DE Implementation Guide)](docs/DE_IMPLEMENTATION_GUIDE.md):** Chi tiết cấu hình và lệnh chạy CLI.
+
+---
+
+## 3. BẢN ĐỒ CẤU TRÚC MÃ NGUỒN (SOURCE CODE MAP)
 
 ```
-cd existing_repo
-git remote add origin https://gitlab2.viettelcyber.com/epm_crawler/crawler-prefecthq.git
-git branch -M main
-git push -uf origin main
+crawler-prefecthq-02/crawler-prefecthq/
+├── config.json                               # Cấu hình 5 API endpoints, auth, watermark lookback, limits
+├── prefect.yaml                              # Khai báo 8 scheduled deployments độc lập và DAG tổng thể
+├── prefect_flow.py                           # Flow chính Prefect điều phối cào API và lưu checkpoint
+├── common/
+│   ├── ambari_client.py                      # Client HDFS qua Ambari Knox Gateway REST API
+│   └── check_env.py                          # Kiểm tra biến môi trường và kết nối
+├── data_type/                                # Hợp đồng schema cho 5 thực thể Clarizen
+│   ├── task_dataType.sql
+│   ├── project_dataType.sql
+│   ├── target_dataType.sql
+│   ├── objective_dataType.sql
+│   └── c_assignment_dataType.sql
+├── transform/                                # Module xử lý dữ liệu Spark
+│   ├── schema_contract.py                    # Engine nạp contract, ép kiểu và sinh StructType
+│   ├── dedup_engine.py                       # Khử trùng lặp khóa chính sysid + last_updated_on
+│   └── spark_session.py                      # Factory tạo SparkSession cho Ambari YARN / Local
+├── spark/                                    # Các Job ETL cốt lõi
+│   ├── bronze_to_silver.py                   # Job chuyển đổi Bronze thô -> Silver Base conformed
+│   ├── build_silver_dims_facts.py            # Job xây dựng 7 Dims & 5 Facts (Kimball Model)
+│   └── silver_to_gold.py                     # Job tổng hợp 6 Bảng Gold Business Marts
+├── generated_ddl/                            # DDL khởi tạo Views
+│   ├── all_6_business_views_spark.sql        # Views Spark SQL cho Apache Zeppelin
+│   └── all_6_business_views_trino.sql        # Views Trino SQL cho BI Tools
+├── dbt_semantic/models/                      # 6 Mô hình dbt (.sql) & Semantic Schema (.yml)
+│   ├── br01_bsc_yearly.*                     # Báo cáo BSC trong năm & metrics M/N/GAP
+│   ├── br02_dieu_hanh_cvct_klcd.*            # Báo cáo CVCT/KLCĐ & metrics trễ hạn
+│   ├── br03_task_report.*                    # Báo cáo Task & metrics giờ công tồn đọng
+│   ├── br04_project_report.*                 # Báo cáo Dự án & metrics danh mục
+│   ├── br05_user_access_traffic.*            # Báo cáo Lưu lượng truy cập & metrics DAU
+│   └── br06_board_objectives.*               # Báo cáo Mục tiêu Ban Giám đốc & metrics BG
+└── docs/                                     # Toàn bộ tài liệu kỹ thuật dự án
 ```
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://gitlab2.viettelcyber.com/epm_crawler/crawler-prefecthq/-/settings/integrations)
+## 4. HƯỚNG DẪN VẬN HÀNH NHANH (QUICK RUNBOOK)
 
-## Collaborate with your team
+Mở PowerShell tại thư mục dự án và thực hiện tuần tự:
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```powershell
+# 1. Thiết lập môi trường và cấu hình Ambari Knox Gateway
+$env:PYTHONPATH = "D:\dataguystory\coding-interview-university\working\crawler-prefecthq-02\crawler-prefecthq"
+$env:AMBARI_USERNAME = "<your_username>"
+$env:AMBARI_PASSWORD = "<your_password>"
+$env:AMBARI_FILES_API = "https://datalake.viettelcyber.com/gateway/ui/ambari/api/v1/views/FILES/versions/1.0.0/instances/FILES/resources/files"
 
-## Test and Deploy
+# 2. Đẩy cấu hình lập lịch lên Prefect HQ
+prefect deploy --all
 
-Use the built-in continuous integration in GitLab.
+# 3. Kích hoạt cào dữ liệu vào Bronze
+python prefect_flow.py --all --mode incremental --env prod
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+# 4. Chuyển đổi Bronze -> Silver Base (Làm sạch & Khử trùng lặp)
+python spark/bronze_to_silver.py --table all --spark-master "local[4]"
 
-***
+# 5. Xây dựng 7 Dimensions & 5 Facts (Kimball Model - Phương án B)
+python spark/build_silver_dims_facts.py --spark-master "local[4]"
 
-# Editing this README
+# 6. Xây dựng 6 Bảng Gold Business Marts
+python spark/silver_to_gold.py --spark-master "local[4]"
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+# 7. Biên dịch và kiểm thử dbt Semantic Layer
+cd D:\dataguystory\coding-interview-university\working\nextgen-bi-dbt\nextgen-bi-dbt\dbt_projects\epm
+dbt compile
+dbt test --select tag:epm
+```

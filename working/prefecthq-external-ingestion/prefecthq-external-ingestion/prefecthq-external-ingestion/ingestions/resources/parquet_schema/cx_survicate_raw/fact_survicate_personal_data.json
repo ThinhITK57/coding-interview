@@ -1,0 +1,77 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "responses",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "respondents",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "insights_hub",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "authors",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "author_attributes",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "notes",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "notes_attributes",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "total",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "email",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

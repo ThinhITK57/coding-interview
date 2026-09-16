@@ -1,0 +1,324 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "owner_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "custom_field",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "cf_contract_id",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_type",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_signing_method",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_company",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "cf_alias",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_tax_code",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_group",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_segment",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_segment2",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_segment3",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_products_in_contract",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_deployed_products",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_status",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_sign_date",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_fac_date",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_duration",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "double"
+                        }
+                    },
+                    {
+                        "name": "cf_expire_date",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_usd_to_vnd",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "double"
+                        }
+                    },
+                    {
+                        "name": "cf_revenue",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "double"
+                        }
+                    },
+                    {
+                        "name": "cf_currency",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_vat",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "cf_vcs_revenue",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "cf_viettel_revenue",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "cf_partner",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_opportunity",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "cf_bidding_required",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "cf__actual",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "cf__opp_id",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "creator_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updater_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "avatar",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "recent_note",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "links",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "document_associations",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "notes",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "record_type_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

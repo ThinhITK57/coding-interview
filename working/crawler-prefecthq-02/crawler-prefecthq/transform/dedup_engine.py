@@ -12,7 +12,6 @@ class DedupEngine:
         self.default_watermark = watermark_col
         self.default_fallback = fallback_timestamp_col
 
-
     def deduplicate(
             self,
             df,
@@ -47,8 +46,6 @@ class DedupEngine:
             # watermark tu dong bi coi la cu nhat. Khong dung moc
             # "1970-01-01" nua: literal chuoi do ep ca bieu thuc ve string khi
             # watermark la cot DATE, va sap xep sai neu watermark la kieu so.
-            # Dung .desc() thay .desc_nulls_last() de chay duoc ca tren
-            # pyspark 2.3.2 (desc_nulls_last chi co tu 2.4).
             order_cols.append(F.col(wm).desc())
 
         if self.default_fallback in df.columns:
@@ -57,9 +54,7 @@ class DedupEngine:
         if not order_cols:
             order_cols.append(F.col(pk).asc())
 
-
         window_spec = Window.partitionBy(pk).orderBy(*order_cols)
-
         # input_count = df.count()
         deduped_df = (
             df
@@ -72,7 +67,6 @@ class DedupEngine:
         input_count = df.count()
         deduped_count = deduped_df.count()
         duplicates_removed = (input_count - deduped_count)
-
 
         stats = {
             "primary_key": pk,

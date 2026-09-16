@@ -1,0 +1,9 @@
+{
+  "Ngày": "report_date",
+  "Tháng": "report_month",
+  "Sản phẩm/ Dịch vụ": "old_category",
+  "Khoản mục SPDV": "cost_group",
+  "Triệu đồng": "base_currency_amount",
+  "Mã SPDV": "category_code",
+  "Mã KM phí": "km_cost_code"
+}

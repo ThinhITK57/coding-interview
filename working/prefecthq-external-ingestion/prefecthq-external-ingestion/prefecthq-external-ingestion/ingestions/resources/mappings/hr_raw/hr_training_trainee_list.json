@@ -1,0 +1,19 @@
+{
+  "STT": "sequence_number",
+  "Họ và tên": "full_name",
+  "MNV": "employee_code",
+  "Khóa đào tạo": "training_program",
+  "Chuyên ngành đào tạo": "training_major",
+  "Giai đoạn": "training_phase",
+  "Bắt đầu OJT": "ojt_start_date",
+  "Kết thúc OJT": "ojt_end_date",
+  "Tiến độ": "ojt_progress",
+  "Điểm TB": "average_score",
+  "Xếp loại": "classification",
+  "Hiện trạng": "current_status",
+  "Link kết quả đào tạo": "training_result_link",
+  "FT/PT": "employment_type",
+  "Địa điểm": "work_location",
+  "Email": "business_email",
+  "Mentor trực tiếp (Email)": "mentor_email"
+}

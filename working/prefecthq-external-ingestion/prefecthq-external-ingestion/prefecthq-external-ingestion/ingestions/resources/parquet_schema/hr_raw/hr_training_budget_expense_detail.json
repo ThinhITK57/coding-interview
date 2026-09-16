@@ -1,0 +1,103 @@
+{
+  "type": "struct",
+  "fields": [
+    {
+      "name": "sequence_number",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "expense_description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "expense_category",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "quarter",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "proposal_amount",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "accounted_amount",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "amount_difference",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "settlement_date",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "note",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "filename",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "crawled_at_ts",
+      "nullable": true,
+      "dataType": {
+        "type": "long"
+      }
+    },
+    {
+      "name": "settlement_date_ts",
+      "nullable": true,
+      "dataType": {
+        "type": "long"
+      }
+    },
+    {
+        "name": "snapshot_date",
+        "nullable": true,
+        "dataType": {
+            "type": "string"
+        }
+    },
+    {
+        "name": "snapshot_date_ts",
+        "nullable": true,
+        "dataType": {
+            "type": "long"
+        }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+FROM prefecthq/prefect:3-python3.11
+
+USER root
+
+# ---- Build-time proxy only ----
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG http_proxy
+ARG https_proxy
+
+# Prevent apt clean conflicts
+RUN rm -f /etc/apt/apt.conf.d/docker-clean
+
+# Install system packages (proxy only applied at build time)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        krb5-user \
+        libkrb5-dev \
+        iputils-ping \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+ENV HTTP_PROXY=
+ENV HTTPS_PROXY=
+ENV http_proxy=
+ENV https_proxy=
+# COPY . .

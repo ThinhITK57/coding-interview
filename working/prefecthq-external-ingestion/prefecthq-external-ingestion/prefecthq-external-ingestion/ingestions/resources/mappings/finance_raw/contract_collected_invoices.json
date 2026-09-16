@@ -1,0 +1,21 @@
+{
+  "STT": "stt",
+  "CTY": "company",
+  "Mã giao dich nhận tiền": "transaction_code",
+  "Số Hóa đơn": "invoice_number",
+  "Số hợp đồng/Đơn hàng": "contract_order_number",
+  "Mã PMTC": "pmtc_code",
+  "Nội dung": "description",
+  "Tên khách hàng": "customer_name",
+  "Nguyên tệ": "original_currency",
+  "Giá trị phải thu ban đầu": "initial_receivable",
+  "Đã thu": "collected",
+  "Công nợ còn phải thu": "outstanding_receivable",
+  "Ghi chú": "notes",
+  "Ngày lập hóa đơn": "invoice_date",
+  "Deadline thanh toán": "payment_deadline",
+  "Ngày thanh toán": "payment_date",
+  "Số tháng quá hạn thanh toán": "overdue_months",
+  "AM Phụ trách KD": "account_manager",
+  "Thuế VAT": "vat"
+}

@@ -1,0 +1,152 @@
+{
+  "type": "struct",
+  "fields": [
+    {
+      "name": "employee_code",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "full_name",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "business_email",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "instructor_group",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "division_n",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "department_n_2",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "class_code",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "class_name",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "teaching_duration",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "instructor_fee",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "instructor_rating",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "month",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "year",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "filename",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "crawled_at_ts",
+      "nullable": true,
+      "dataType": {
+        "type": "long"
+      }
+    },
+    {
+      "name": "start_date_ts",
+      "nullable": true,
+      "dataType": {
+        "type": "long"
+      }
+    },
+    {
+      "name": "end_date_ts",
+      "nullable": true,
+      "dataType": {
+        "type": "long"
+      }
+    },
+    {
+        "name": "snapshot_date",
+        "nullable": true,
+        "dataType": {
+            "type": "string"
+        }
+    },
+    {
+        "name": "snapshot_date_ts",
+        "nullable": true,
+        "dataType": {
+            "type": "long"
+        }
+    }
+  ]
+}

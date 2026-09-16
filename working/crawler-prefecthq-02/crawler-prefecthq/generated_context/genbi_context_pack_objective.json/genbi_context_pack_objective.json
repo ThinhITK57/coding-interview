@@ -1,0 +1,581 @@
+{
+  "metadata_version": "2.0",
+  "table_name": "objective",
+  "trino_table_ref": "hive.global_clean.objective",
+  "table_description": "",
+  "semantic_layer": {
+    "metrics": [
+      {
+        "name": "c_normalized_score",
+        "data_type": "double",
+        "description": "C Normalized Score (from API field: C_NormalizedScore)",
+        "synonyms": [
+          "c_normalized_score",
+          "c normalized score"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_planned_revenue_m_rollup",
+        "data_type": "double",
+        "description": "C Planned Revenue M Rollup (from API field: C_PlannedRevenueMRollup)",
+        "synonyms": [
+          "c_planned_revenue_m_rollup",
+          "c planned revenue m rollup"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_planned_revenue_n_rollup",
+        "data_type": "double",
+        "description": "C Planned Revenue N Rollup (from API field: C_PlannedRevenueNRollup)",
+        "synonyms": [
+          "c_planned_revenue_n_rollup",
+          "c planned revenue n rollup"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_tot_plan_cont_rollup_m",
+        "data_type": "double",
+        "description": "C Tot Plan Cont Rollup M (from API field: C_TotPlanContRollupM)",
+        "synonyms": [
+          "c_tot_plan_cont_rollup_m",
+          "c tot plan cont rollup m"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_tot_plan_cont_rollup_n",
+        "data_type": "double",
+        "description": "C Tot Plan Cont Rollup N (from API field: C_TotPlanContRollupN)",
+        "synonyms": [
+          "c_tot_plan_cont_rollup_n",
+          "c tot plan cont rollup n"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_planned_objectives_m",
+        "data_type": "double",
+        "description": "C Total Planned Objectives M (from API field: C_TotalPlannedObjectivesM)",
+        "synonyms": [
+          "c_total_planned_objectives_m",
+          "c total planned objectives m"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_planned_objectives_n",
+        "data_type": "double",
+        "description": "C Total Planned Objectives N (from API field: C_TotalPlannedObjectivesN)",
+        "synonyms": [
+          "c_total_planned_objectives_n",
+          "c total planned objectives n"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_planned_target_m",
+        "data_type": "double",
+        "description": "C Total Planned Target M (from API field: C_TotalPlannedTargetM)",
+        "synonyms": [
+          "c_total_planned_target_m",
+          "c total planned target m"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_planned_target_n",
+        "data_type": "double",
+        "description": "C Total Planned Target N (from API field: C_TotalPlannedTargetN)",
+        "synonyms": [
+          "c_total_planned_target_n",
+          "c total planned target n"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_weight_assignments",
+        "data_type": "double",
+        "description": "C Total Weight Assignments (from API field: C_TotalWeightAssignments)",
+        "synonyms": [
+          "c_total_weight_assignments",
+          "c total weight assignments"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_weight_percentage",
+        "data_type": "double",
+        "description": "C Total Weight Percentage (from API field: C_TotalWeightPercentage)",
+        "synonyms": [
+          "c_total_weight_percentage",
+          "c total weight percentage",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_trigger_wfr",
+        "data_type": "double",
+        "description": "C Trigger Wfr (from API field: C_TriggerWFR)",
+        "synonyms": [
+          "c_trigger_wfr",
+          "c trigger wfr"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "attachments_count",
+        "data_type": "double",
+        "description": "Attachments Count (from API field: AttachmentsCount)",
+        "synonyms": [
+          "attachments_count",
+          "attachments count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "emails_count",
+        "data_type": "double",
+        "description": "Emails Count (from API field: EmailsCount)",
+        "synonyms": [
+          "emails_count",
+          "emails count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "notes_count",
+        "data_type": "double",
+        "description": "Notes Count (from API field: NotesCount)",
+        "synonyms": [
+          "notes_count",
+          "notes count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "sub_objectives_count",
+        "data_type": "double",
+        "description": "Sub Objectives Count (from API field: SubObjectivesCount)",
+        "synonyms": [
+          "sub_objectives_count",
+          "sub objectives count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "percent_of_plan",
+        "data_type": "double",
+        "description": "Percent Of Plan (from API field: PercentOfPlan)",
+        "synonyms": [
+          "percent_of_plan",
+          "percent of plan",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_percent",
+        "data_type": "double",
+        "description": "Actual Percent (from API field: ActualPercent)",
+        "synonyms": [
+          "actual_percent",
+          "actual percent",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "planned_percent",
+        "data_type": "double",
+        "description": "Planned Percent (from API field: PlannedPercent)",
+        "synonyms": [
+          "planned_percent",
+          "planned percent",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "weight",
+        "data_type": "double",
+        "description": "Weight (from API field: Weight)",
+        "synonyms": [
+          "weight"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "c_assignee",
+        "data_type": "string",
+        "description": "C Assignee (from API field: C_Assignee)",
+        "synonyms": [
+          "c_assignee",
+          "c assignee",
+          "người phụ trách",
+          "nhân sự",
+          "chủ sở hứu"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_associated_contributions",
+        "data_type": "string",
+        "description": "C Associated Contributions (from API field: C_AssociatedContributions)",
+        "synonyms": [
+          "c_associated_contributions",
+          "c associated contributions"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_associated_departments_portfolio",
+        "data_type": "string",
+        "description": "C Associated Departments Portfolio (from API field: C_AssociatedDepartmentsPortfolio)",
+        "synonyms": [
+          "c_associated_departments_portfolio",
+          "c associated departments portfolio"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_calculate_progress",
+        "data_type": "string",
+        "description": "C Calculate Progress (from API field: C_CalculateProgress)",
+        "synonyms": [
+          "c_calculate_progress",
+          "c calculate progress"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_department",
+        "data_type": "string",
+        "description": "C Department (from API field: C_Department)",
+        "synonyms": [
+          "c_department",
+          "c department"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_description",
+        "data_type": "string",
+        "description": "C Description (from API field: C_Description)",
+        "synonyms": [
+          "c_description",
+          "c description"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_n1_result_response",
+        "data_type": "string",
+        "description": "C N1 Result Response (from API field: C_N1ResultResponse)",
+        "synonyms": [
+          "c_n1_result_response",
+          "c n1 result response"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_objective_progress_m",
+        "data_type": "string",
+        "description": "C Objective Progress M (from API field: C_ObjectiveProgressM)",
+        "synonyms": [
+          "c_objective_progress_m",
+          "c objective progress m"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_objective_progress_n",
+        "data_type": "string",
+        "description": "C Objective Progress N (from API field: C_ObjectiveProgressN)",
+        "synonyms": [
+          "c_objective_progress_n",
+          "c objective progress n"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_objective_type",
+        "data_type": "string",
+        "description": "C Objective Type (from API field: C_ObjectiveType)",
+        "synonyms": [
+          "c_objective_type",
+          "c objective type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_record_type",
+        "data_type": "string",
+        "description": "C Record Type (from API field: C_RecordType)",
+        "synonyms": [
+          "c_record_type",
+          "c record type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_reporter",
+        "data_type": "string",
+        "description": "C Reporter (from API field: C_Reporter)",
+        "synonyms": [
+          "c_reporter",
+          "c reporter"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_trigger_wr",
+        "data_type": "boolean",
+        "description": "C Trigger Wr (from API field: C_TriggerWR)",
+        "synonyms": [
+          "c_trigger_wr",
+          "c trigger wr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "entity_owner",
+        "data_type": "string",
+        "description": "Entity Owner (from API field: EntityOwner)",
+        "synonyms": [
+          "entity_owner",
+          "entity owner",
+          "người phụ trách",
+          "nhân sự",
+          "chủ sở hứu"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "associated_item",
+        "data_type": "string",
+        "description": "Associated Item (from API field: AssociatedItem)",
+        "synonyms": [
+          "associated_item",
+          "associated item"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "created_by",
+        "data_type": "string",
+        "description": "Created By (from API field: CreatedBy)",
+        "synonyms": [
+          "created_by",
+          "created by"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "created_on",
+        "data_type": "date",
+        "description": "Created On (from API field: CreatedOn)",
+        "synonyms": [
+          "created_on",
+          "created on"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "description",
+        "data_type": "string",
+        "description": "Description (from API field: Description)",
+        "synonyms": [
+          "description"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "external_id",
+        "data_type": "string",
+        "description": "External Id (from API field: ExternalID)",
+        "synonyms": [
+          "external_id",
+          "external id",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "sysid",
+        "data_type": "string",
+        "description": "Sysid (from API field: SYSID)",
+        "synonyms": [
+          "sysid",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "entity_type",
+        "data_type": "string",
+        "description": "Entity Type (from API field: EntityType)",
+        "synonyms": [
+          "entity_type",
+          "entity type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "name",
+        "data_type": "string",
+        "description": "Name (from API field: Name)",
+        "synonyms": [
+          "name",
+          "tên",
+          "tiêu đề",
+          "title"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "parent_objective",
+        "data_type": "string",
+        "description": "Parent Objective (from API field: ParentObjective)",
+        "synonyms": [
+          "parent_objective",
+          "parent objective"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "state",
+        "data_type": "string",
+        "description": "State (from API field: State)",
+        "synonyms": [
+          "state",
+          "trạng thái",
+          "giai đoạn",
+          "tình trạng"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "status",
+        "data_type": "string",
+        "description": "Status (from API field: Status)",
+        "synonyms": [
+          "status",
+          "trạng thái",
+          "giai đoạn",
+          "tình trạng"
+        ],
+        "chart_role": "x_axis"
+      }
+    ],
+    "time_dimensions": [
+      {
+        "name": "currency_exchange_date",
+        "data_type": "date",
+        "description": "Currency Exchange Date (from API field: CurrencyExchangeDate)",
+        "synonyms": [
+          "currency_exchange_date",
+          "currency exchange date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "end_date",
+        "data_type": "date",
+        "description": "End Date (from API field: EndDate)",
+        "synonyms": [
+          "end_date",
+          "end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_by",
+        "data_type": "string",
+        "description": "Last Updated By (from API field: LastUpdatedBy)",
+        "synonyms": [
+          "last_updated_by",
+          "last updated by",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_on",
+        "data_type": "date",
+        "description": "Last Updated On (from API field: LastUpdatedOn)",
+        "synonyms": [
+          "last_updated_on",
+          "last updated on",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "start_date",
+        "data_type": "date",
+        "description": "Start Date (from API field: StartDate)",
+        "synonyms": [
+          "start_date",
+          "start date",
+          "Ngày bắt đầu"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_by_system_on",
+        "data_type": "date",
+        "description": "Last Updated By System On (from API field: LastUpdatedBySystemOn)",
+        "synonyms": [
+          "last_updated_by_system_on",
+          "last updated by system on",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      }
+    ]
+  }
+}

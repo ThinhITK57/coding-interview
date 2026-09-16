@@ -1,0 +1,18 @@
+{
+  "batch_id": "20260911_084804_c_assignments",
+  "last_offset": 72,
+  "total_records": 72,
+  "current_page": 2,
+  "paginator_state": {
+    "current_page": 2,
+    "total_records": 72,
+    "current_offset": 72,
+    "has_more": false
+  },
+  "watermark": null,
+  "window_start": null,
+  "window_end": null,
+  "completed": true,
+  "timestamp": "2026-09-11T08:48:09Z",
+  "endpoint": "c_assignments"
+}

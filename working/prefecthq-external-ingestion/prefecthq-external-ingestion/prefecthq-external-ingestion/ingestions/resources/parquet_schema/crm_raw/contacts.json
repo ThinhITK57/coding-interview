@@ -1,0 +1,789 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "first_name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "last_name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "display_name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "avatar",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "job_title",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "city",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "state",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "zipcode",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "country",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "email",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "emails",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "struct",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "nullable": true,
+                            "dataType": {
+                                "type": "long"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "nullable": true,
+                            "dataType": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "is_primary",
+                            "nullable": true,
+                            "dataType": {
+                                "type": "boolean"
+                            }
+                        },
+                        {
+                            "name": "label",
+                            "nullable": true,
+                            "dataType": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "_destroy",
+                            "nullable": true,
+                            "dataType": {
+                                "type": "boolean"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "time_zone",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "work_number",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "mobile_number",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "address",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "last_seen",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "lead_score",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "last_contacted",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "open_deals_amount",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "won_deals_amount",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "links",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "conversations",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "timeline_feeds",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "document_associations",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "notes",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tasks",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "appointments",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "reminders",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "duplicates",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "connections",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "last_contacted_sales_activity_mode",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "custom_field",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "cf_birthday",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_old_birthday",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_sex",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_level_of_interest",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_level_of_support",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_presales",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_partner",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "cf__new_birthday",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf__company",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf__am",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf__activities",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_warm_up_source",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_initial_source",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_center",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_job_title",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "keyword",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "medium",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "last_contacted_mode",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "recent_note",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "won_deals_count",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "last_contacted_via_sales_activity",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "completed_sales_sequences",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "active_sales_sequences",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "web_form_ids",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "open_deals_count",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "last_assigned_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "facebook",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "twitter",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "linkedin",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "is_deleted",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "team_user_ids",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "long"
+                }
+            }
+        },
+        {
+            "name": "external_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "work_email",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "subscription_status",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "subscription_types",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "unsubscription_reason",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "other_unsubscription_reason",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "customer_fit",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "record_type_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "whatsapp_subscription_status",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "sms_subscription_status",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "last_seen_chat",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "first_seen_chat",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "locale",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "total_sessions",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "system_tags",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "name": "first_campaign",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "first_medium",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "first_source",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "last_campaign",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "last_medium",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "last_source",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "latest_campaign",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "latest_medium",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "latest_source",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "mcr_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "description",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "amb_subscription_status",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "phone_numbers",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "name": "tags",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "name": "sales_account_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "owner_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "contact_status_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "last_assigned_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "last_contacted_via_sales_activity_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "last_contacted_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

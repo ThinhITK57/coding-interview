@@ -43,4 +43,12 @@ Thumbs.db
 
 # Local Pipeline Data
 storage_data/
-checkpoints/
+# checkpoints/
+
+# Spark / Hadoop temporary files
+*.crc
+_SUCCESS
+._SUCCESS.crc
+spark_test_output/
+spark_test_parquet/
+data/warehouse/dlq/

@@ -1,0 +1,28 @@
+{
+  "type": "struct",
+  "fields": [
+    { "name": "sequence_number", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "full_name", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "employee_code", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "training_program", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "training_major", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "training_phase", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "ojt_start_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "ojt_end_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "ojt_progress", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "average_score", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "classification", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "current_status", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "training_result_link", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "employment_type", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "work_location", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "business_email", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "mentor_email", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "filename", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "crawled_at_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "ojt_start_date_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "ojt_end_date_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "snapshot_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "snapshot_date_ts", "nullable": true, "dataType": { "type": "long" } }
+  ]
+}
