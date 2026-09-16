@@ -2,8 +2,8 @@
     config(
         materialized='view',
         schema='bi_gold',
-        alias='vw_br06_board_objectives',
-        tags=['epm', 'gold', 'br06', 'board']
+        alias='vw_board_objectives',
+        tags=['epm', 'gold', 'board', 'strategic']
     )
 }}
 

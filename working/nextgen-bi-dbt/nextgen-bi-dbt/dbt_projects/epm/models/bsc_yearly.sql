@@ -2,8 +2,8 @@
     config(
         materialized='view',
         schema='bi_gold',
-        alias='vw_br01_bsc_yearly',
-        tags=['epm', 'gold', 'br01', 'bsc']
+        alias='vw_bsc_yearly',
+        tags=['epm', 'gold', 'bsc', 'yearly']
     )
 }}
 
