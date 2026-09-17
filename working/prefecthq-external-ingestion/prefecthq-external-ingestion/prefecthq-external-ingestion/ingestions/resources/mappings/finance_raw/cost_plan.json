@@ -1,7 +1,0 @@
-{
-  "Ngày": "date_key",
-  "Mã KM phí": "expense_code",
-  "Data type": "data_type",
-  "Khoản mục cấp 2": "expense_category_level_2",
-  "Triệu đồng": "amount_million_vnd"
-}
