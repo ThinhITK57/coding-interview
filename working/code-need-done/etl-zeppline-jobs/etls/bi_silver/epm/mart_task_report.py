@@ -1,7 +1,7 @@
-%livy.pyspark
+# %livy.pyspark
 
-tgt_table = "bi_gold.task_report"
-tgt_path  = "/opt/datasets/crawlers/vcs_silver/bi_gold/data/task_report"
+tgt_table = "bi_silver.epm_mart_task_report"
+tgt_path  = "/opt/datasets/crawlers/vcs_silver/bi_silver/data/epm_mart_task_report"
 
 spark.sql("REFRESH TABLE bi_silver.fact_epm_task_execution_snapshot")
 spark.sql("REFRESH TABLE bi_silver.dim_epm_department")
@@ -61,9 +61,6 @@ df.repartition(1).write \
   .format("parquet") \
   .option("path", tgt_path) \
   .saveAsTable(tgt_table)
-
-# Tạo alias tương thích ngược
-spark.sql(f"CREATE OR REPLACE VIEW bi_silver.epm_mart_task_report AS SELECT * FROM {tgt_table}")
 
 spark.catalog.refreshTable(tgt_table)
 print(f"DONE: {tgt_table}")

@@ -1,4 +1,4 @@
-%livy.pyspark
+# %livy.pyspark
 
 spark.sql("REFRESH TABLE bi_silver.epm_targets")
 spark.sql("REFRESH TABLE bi_silver.epm_assignments")
@@ -17,7 +17,7 @@ SELECT
     ABS(HASH(t.sysid)) AS target_key,
     CAST(t.sysid AS STRING) AS target_id,
 
-    -- Foreign Keys trỏ sang các Dimension
+    -- Foreign Keys trỏ sang các Dimension (Fixed missing FK bug)
     ABS(HASH(t.associated_objective)) AS objective_key,
     ABS(HASH(t.associated_item))      AS project_key,
     ABS(HASH(t.c_department))         AS department_key,

@@ -1,8 +1,7 @@
 # %livy.pyspark
 
-# Khởi tạo các cơ sở dữ liệu cho hệ sinh thái EPM
+# Khởi tạo các cơ sở dữ liệu tầng Silver cho Data Lake (Phạm vi Spark Engine)
 spark.sql("CREATE DATABASE IF NOT EXISTS bi_silver")
 spark.sql("CREATE DATABASE IF NOT EXISTS epm_silver")
-spark.sql("CREATE DATABASE IF NOT EXISTS bi_gold")
 
-print("Initialized bi_silver, epm_silver, bi_gold databases successfully.")
+print("Initialized bi_silver and epm_silver databases successfully.")

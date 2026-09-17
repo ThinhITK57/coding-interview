@@ -1,4 +1,4 @@
-%livy.pyspark
+# %livy.pyspark
 
 from pyspark.sql import functions as F
 from functools import reduce

@@ -1,9 +1,9 @@
-%livy.pyspark
+# %livy.pyspark
 
 from pyspark.sql.types import StructType, StructField, StringType, DateType
 
-tgt_table = "bi_gold.user_access_traffic"
-tgt_path  = "/opt/datasets/crawlers/vcs_silver/bi_gold/data/user_access_traffic"
+tgt_table = "bi_silver.epm_mart_user_access_traffic"
+tgt_path  = "/opt/datasets/crawlers/vcs_silver/bi_silver/data/epm_mart_user_access_traffic"
 
 # Kiểm tra nếu bảng user_access_log tồn tại, nếu chưa có tạo bảng rỗng đúng schema contract
 if spark.catalog.tableExists("bi_silver", "epm_user_access_log"):
@@ -37,9 +37,6 @@ df.repartition(1).write \
   .format("parquet") \
   .option("path", tgt_path) \
   .saveAsTable(tgt_table)
-
-# Tạo alias tương thích ngược
-spark.sql(f"CREATE OR REPLACE VIEW bi_silver.epm_mart_user_access_traffic AS SELECT * FROM {tgt_table}")
 
 spark.catalog.refreshTable(tgt_table)
 print(f"DONE: {tgt_table}")
