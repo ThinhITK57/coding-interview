@@ -160,13 +160,19 @@ chúng tôi chỉ ra **7 issues cốt lõi (Issues gốc)** dẫn đến tình t
 
 ---
 
-### ❌ Issue Gốc 7: Bất Đồng Quy Ước Materialization Giữa Spark Mart và dbt View
-* **Hiện trạng:**
-  - Spark Mart ghi bảng vật lý Parquet vào Hive: `bi_gold.<mart>`.
-  - dbt lại cố gắng tái hiện lại câu lệnh query thô bằng Trino View: `bi_gold.vw_<mart>`.
-  - Điều này dẫn đến 2 luồng xử lý bị phân mảnh (Split-brain): Nếu Spark tính một đằng (có Fallback `COALESCE(c_update_description, overview)`), còn Trino/dbt tính một nẻo thì số liệu giữa báo cáo PySpark và báo cáo dbt sẽ bị lệch nhau.
+### ❌ Issue Gốc 7: Nhầm Lẫn Ranh Giới Kiến Trúc Giữa Spark Engine (Silver) và dbt (Gold)
+* **Hiện trạng sai lệch phân tầng:**
+  - Trong tầng số 2 (`bi-datalake-infra` và `etl-zeppline-jobs`), các script được đặt trong thư mục `jobs/bi_silver/epm/` nhưng lại cố tình ghi đè bảng vật lý vào `bi_gold.<mart>` và chạy `CREATE DATABASE IF NOT EXISTS bi_gold` trong `_init.py`.
+  - Trong khi đó, toàn bộ cấu trúc thư mục của Data Lake Infra **chỉ có `bi_silver` và `epm_silver`**, hoàn toàn **không có folder `bi_gold`**.
+  - Việc này dẫn tới xung đột trách nhiệm nghiêm trọng: Spark ở Tầng 2 "nhảy cóc" sang Gold, trong khi tầng Gold (`bi_gold`) thực chất thuộc về **Tầng 4: dbt (`nextgen-bi-dbt`) trên nền Trino**.
+* **Phân định rõ ranh giới 3 Databases:**
+  1. **`epm_silver`**: Tầng Silver riêng của domain EPM, nơi lưu trữ các bảng thô đã deduplicate từ crawler (`tasks`, `projects`, `assignments`, `objectives`, `targets`, `user_access_log`).
+  2. **`bi_silver`**: Tầng Silver chuẩn hóa chung cấp doanh nghiệp (Enterprise Conformed Silver Data Lake). Đây là **ĐÍCH ĐẾN CUỐI CÙNG của Spark Engine** (chứa `bi_silver.epm_*`, `bi_silver.dim_*`, `bi_silver.fact_*`, và các bảng summary cấp Silver `bi_silver.epm_mart_*`).
+  3. **`bi_gold`**: Tầng Data Marts và Semantic Layer phục vụ báo cáo BI/Dashboard, **thuộc quyền sở hữu độc quyền của dbt (`nextgen-bi-dbt`) và Trino**.
 * **Cách xử lý chuẩn hóa:**
-  - Chuẩn hóa đồng nhất 100% các biểu thức logic: Cùng dùng chung quy tắc ép kiểu (`CAST`), cùng logic Fallback (`COALESCE`), và cùng danh sách 22/9/18/15/7/22 cột giữa Spark Data Marts và dbt Views.
+  - Đã loại bỏ hoàn toàn lệnh `CREATE DATABASE bi_gold` khỏi `_init.py` của Spark.
+  - Toàn bộ các script PySpark mart trong `bi_silver/epm/` chỉ ghi vào phạm vi `bi_silver` (`tgt_table = "bi_silver.epm_mart_*"`).
+  - Tầng `bi_gold` được giải phóng hoàn toàn cho dbt biên dịch từ nguồn `bi_silver`.
 
 ---
 
