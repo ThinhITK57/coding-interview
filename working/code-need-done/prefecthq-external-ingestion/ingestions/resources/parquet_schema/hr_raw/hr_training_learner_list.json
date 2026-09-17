@@ -1,0 +1,26 @@
+{
+  "type": "struct",
+  "fields": [
+    { "name": "employee_code", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "full_name", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "employee_object", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "division_n", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "department_n_2", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "class_code", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "class_name", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "course_name", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "learning_result", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "learning_duration_hours", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "start_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "end_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "month", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "year", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "lxp_status_note", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "filename", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "crawled_at_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "start_date_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "end_date_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "snapshot_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "snapshot_date_ts", "nullable": true, "dataType": { "type": "long" } }
+  ]
+}

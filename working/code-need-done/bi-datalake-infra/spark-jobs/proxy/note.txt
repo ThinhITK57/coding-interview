@@ -1,0 +1,17 @@
+curl -k --proxy http://10.255.249.100:3128  https://dlcdn.apache.org/maven/maven-3/3.9.14/binaries/apache-maven-3.9.14-bin.tar.gz -o apache-maven-3.9.14-bin.tar.gz
+curl -k --proxy http://10.255.249.100:3128  https://download.oracle.com/java/21/archive/jdk-21.0.9_linux-x64_bin.tar.gz -o jdk-21.0.9_linux-x64_bin.tar.gz
+curl -k --proxy http://10.255.249.100:3128  https://archive.apache.org/dist/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz -o spark-3.5.1-bin-hadoop3.tgz
+
+Linux/macOS: ~/.m2/settings.xml
+
+Windows: C:\Users\YourUser\.m2\settings.xml
+
+Docker: Nếu bạn chạy trong Docker, bạn cần mount file này vào /root/.m2/settings.xml.
+
+
+# Trong Dockerfile
+RUN mvn clean package \
+    -DproxySet=true \
+    -DproxyHost=proxy.your-company.com \
+    -DproxyPort=8080 \
+    -DnonProxyHosts="localhost|minio|hive-metastore"

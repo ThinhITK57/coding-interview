@@ -1,0 +1,136 @@
+version: 2
+
+models:
+  - name: user_access_traffic
+    description: >
+      Báo cáo Lưu lượng truy cập người dùng hệ thống EPM.
+      Theo dõi tần suất đăng nhập, hoạt động của các nhóm phòng ban và chức danh.
+      Bảng vật lý chỉ chứa 7 cột dữ liệu đăng nhập cơ sở.
+      Các chỉ số hoạt động DAU, WAU, MAU, tần suất đăng nhập được định nghĩa trong Semantic Layer.
+
+      Grain: Một dòng tương ứng với một phiên đăng nhập của người dùng trong ngày.
+
+    meta:
+      label: "Báo Cáo Lưu Lượng Truy Cập"
+      group_label: "System Analytics"
+      owner: "data_engineering_team"
+
+      # ================================================================
+      # SEMANTIC GUIDANCE
+      # ================================================================
+      semantic_guidance:
+        source_type: "Access Audit Log"
+        grain: "One row per user login session"
+        primary_date: "login_date"
+        primary_user_dimension: "name"
+        primary_group_dimension: "groups"
+
+        metric_rules:
+          daily_active_users: >
+            Số lượng tài khoản duy nhất đăng nhập trong ngày (DAU).
+          total_sessions_count: >
+            Tổng số phiên đăng nhập được ghi nhận.
+          logins_per_user: >
+            Tần suất đăng nhập bình quân trên mỗi người dùng.
+          active_groups_count: >
+            Số lượng phòng ban/nhóm có người dùng đăng nhập trong kỳ.
+
+        restrictions:
+          - >
+            Bảng vật lý không chứa tổng số phiên gộp hay chỉ số DAU/MAU.
+          - >
+            Dữ liệu được làm mới hàng ngày theo khung giờ T-1.
+          - >
+            Sử dụng login_date làm trục thời gian chính để tính DAU/WAU/MAU.
+
+      # ================================================================
+      # METRICS (LIGHTDASH / DBT METRIC SPECIFICATION)
+      # ================================================================
+      metrics:
+        # ------------------------------------------------
+        # USER ACTIVITY & SESSIONS
+        # ------------------------------------------------
+        - name: daily_active_users
+          label: "Người dùng hoạt động (DAU)"
+          description: "Số lượng tài khoản duy nhất đăng nhập trong ngày."
+          type: count_distinct
+          sql: ${name}
+
+        - name: total_sessions_count
+          label: "Tổng lượt đăng nhập"
+          description: "Tổng số phiên đăng nhập được ghi nhận trong kỳ."
+          type: count
+          sql: ${name}
+
+        - name: logins_per_user
+          label: "Lượt đăng nhập bình quân / User"
+          description: "Số lượt đăng nhập trung bình của một người dùng hoạt động."
+          type: number
+          sql: |
+            CASE
+              WHEN COUNT(DISTINCT ${name}) > 0
+              THEN COUNT(${name}) * 1.0 / COUNT(DISTINCT ${name})
+              ELSE 0.0
+            END
+
+        - name: active_groups_count
+          label: "Số nhóm/phòng ban đăng nhập"
+          description: "Số lượng nhóm hoặc phòng ban duy nhất có người dùng đăng nhập."
+          type: count_distinct
+          sql: ${groups}
+
+        - name: unique_job_titles_count
+          label: "Số chức danh hoạt động"
+          description: "Số lượng chức danh công việc duy nhất phát sinh truy cập hệ thống."
+          type: count_distinct
+          sql: ${job_title}
+
+    columns:
+      - name: login_date
+        description: "Ngày người dùng thực hiện đăng nhập vào hệ thống."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày Đăng Nhập"
+
+      - name: name
+        description: "Tên tài khoản (username / email định danh)."
+        meta:
+          dimension:
+            type: string
+            label: "Tài Khoản"
+
+      - name: first_name
+        description: "Tên gọi của người dùng."
+        meta:
+          dimension:
+            type: string
+            label: "Tên"
+
+      - name: last_name
+        description: "Họ và tên đệm của người dùng."
+        meta:
+          dimension:
+            type: string
+            label: "Họ"
+
+      - name: groups
+        description: "Nhóm người dùng hoặc phòng ban phân quyền."
+        meta:
+          dimension:
+            type: string
+            label: "Nhóm / Phòng Ban"
+
+      - name: direct_manager
+        description: "Cán bộ quản lý trực tiếp của người dùng."
+        meta:
+          dimension:
+            type: string
+            label: "Quản Lý Trực Tiếp"
+
+      - name: job_title
+        description: "Chức danh công việc chuyên môn."
+        meta:
+          dimension:
+            type: string
+            label: "Chức Danh"

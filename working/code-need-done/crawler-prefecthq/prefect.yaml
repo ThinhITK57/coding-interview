@@ -1,0 +1,167 @@
+deployments:
+  # TASKS: INCREMENTAL SYNC EVERY 2 HOURS (BUSINESS HOURS : 08:00 - 18:00 , mon-fri) 
+  - name: epm-tasks-incremental-2h
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: tasks
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "0 8-18/2 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Incremental crawl for Tasks every 2 hours during business hours (08:00 - 18:00)"
+
+  # TASKS: WEEKLY FULL RECONCILIATION SYNC (sunday night 23:00)
+  - name: epm-tasks-full-weekly
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: tasks
+      env: prod
+      mode: full
+      spark_master: "local[4]"
+    schedule:
+      cron: "0 23 * * 0"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Full sync weekly for Tasks on sunday 23:00 to cactch any silent deletes / modifications."
+
+  # PROJECTS & TARGETS: INCREMENTAL 2X PER DAY (MIDDAY 12:00 & END-OF-DAY 18:30)
+  - name: epm-projects-targets-midday
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: projects
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "0 12 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Midday incremental sysn for Projects at 12:00 (Mon-Fri)."
+
+  - name: epm-targets-midday
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: targets
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "15 12 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Midday incremental sync for  Targets at 12:15 (Mon-Fri)"
+
+  - name: epm-projects-targets-evening
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: projects
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "30 18 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Evening incremental sync for Projects at 18:30 (Mon-Fri)."
+  
+  - name: epm-targets-evening
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: targets
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "45 18 * * 1-5"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Evening incremental sync for targets at 18:45 (Mon-Fri)"
+
+  # OBJECTIVES AND ASSIGNMENTS : FULL SYNC DAILY (OVERNIGHT : 01:00 & 01:30 AM)
+  - name: epm-objectives-full-daily
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: objectives
+      env: prod
+      mode: full
+      spark_master: "local[4]"
+    schedule:
+      cron: "0 1 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Full daily sync for objectives (BSC) at 01:00 AM (low-volumne, hierarchy consistency)."
+
+  - name: epm-assignments-full-daily
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: c_assignments
+      env: prod
+      mode: full
+      spark_master: "local[4]"
+    schedule:
+      cron: "30 1 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Full daily sync for Assignments at 01:30 AM (hierarchy & weight integrity)."
+
+  # USER ACCESS LOG: DAILY INCREMENTAL SYNC (T - 1) (OVERNIGHT: 02:00 AM)
+  - name: epm-access-log-daily
+    entrypoint: prefect_flow.py:api_ingestion_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      endpoint_name: use_access_log
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "0 2 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Daily sync for User access log for T-1 at 02:00 AM."
+
+  # MASTER DAG ORCHESTRATION PIPELINE (run all 5 endpoints in dependancy waves)
+  - name: epm-all-endpoints-dag-master
+    entrypoint: prefect_flow.py:api_ingestion_dag_pipeline
+    work_pool:
+      name: epm-pool
+      work_queue_name: default
+    parameters:
+      config_path: config.json
+      env: prod
+      mode: incremental
+      spark_master: "local[4]"
+    schedule:
+      cron: "0 3 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    description: "Master DAG daily reconciliation pipeline orchestrating all endpoints in dependancy waves at 03:00 AM"
+
+

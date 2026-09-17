@@ -52,3 +52,11 @@ _SUCCESS
 spark_test_output/
 spark_test_parquet/
 data/warehouse/dlq/
+
+# Database & runtime files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+prefect_data/

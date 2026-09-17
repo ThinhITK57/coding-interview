@@ -1,0 +1,110 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "key",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "summary",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "quarterly_kpi_result",
+            "nullable": true,
+            "dataType": {
+                "type": "double"
+            }
+        },
+        {
+            "name": "monthly_accumulated_result",
+            "nullable": true,
+            "dataType": {
+                "type": "double"
+            }
+        },
+        {
+            "name": "execution_result",
+            "nullable": true,
+            "dataType": {
+                "type": "double"
+            }
+        },
+        {
+            "name": "reporting_date",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "unit_of_measure",
+            "nullable": true,
+            "dataType": {
+                "type": "double"
+            }
+        },
+        {
+            "name": "target",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "service_product",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "condition",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "source_file",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "reporting_date_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

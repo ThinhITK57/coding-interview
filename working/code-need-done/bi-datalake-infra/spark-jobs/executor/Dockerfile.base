@@ -1,0 +1,58 @@
+FROM eclipse-temurin:11-jre-jammy
+
+# ===== Versions =====
+ARG TRINO_VERSION=438
+# 3.5.1
+ARG SPARK_VERSION=3.5.1
+ARG HADOOP_VERSION=3
+# 3.3.4, 3.4.1
+ARG HADOOP_FULL_VERSION=3.3.4
+# 2.25.16, 
+ARG AWS_VERSION=1.12.262
+ARG POSGRESQL_VERSION=42.7.2
+
+
+# ===== ENV =====
+ENV SPARK_HOME=/opt/spark
+ENV PATH=$SPARK_HOME/bin:$PATH
+
+
+ENV http_proxy=http://10.255.249.100:3128
+ENV https_proxy=http://10.255.249.100:3128
+
+RUN echo "Acquire::http::Proxy \"${http_proxy}\";" > /etc/apt/apt.conf.d/01proxy && \
+    echo "Acquire::https::Proxy \"${https_proxy}\";" >> /etc/apt/apt.conf.d/01proxy && \
+    echo "Acquire::https::Verify-Peer \"false\";" >> /etc/apt/apt.conf.d/01proxy && \
+    echo "Acquire::https::Verify-Host \"false\";" >> /etc/apt/apt.conf.d/01proxy
+
+
+
+# ===== Install dependencies (Ubuntu, không phải Alpine) =====
+RUN apt-get -o Acquire::https::Verify-Peer=false update && apt-get -o Acquire::https::Verify-Peer=false install -y \
+    bash \
+    curl \
+    python3 \
+    python3-pip \
+    ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+# ===== Config pip (proxy + ignore SSL) =====
+RUN pip config set global.proxy ${http_proxy} && \
+    pip config set global.trusted-host "pypi.org files.pythonhosted.org" && \
+    pip config set global.cert false
+    
+
+RUN pip install --no-cache-dir psutil schedule papermill trino python-dotenv psycopg2-binary prefect==3.6.11 sqlglot
+
+# ===== Cleanup proxy & config =====
+RUN rm -f /etc/apt/apt.conf.d/01proxy && \
+    pip config unset global.proxy || true && \
+    pip config unset global.trusted-host || true && \
+    pip config unset global.cert || true && \
+    unset http_proxy && unset https_proxy
+
+ENV http_proxy=""
+ENV https_proxy=""
+ENV no_proxy=""
+ENV NO_PROXY=localhost,127.0.0.1,.internal,.svc,10.0.0.0/8,10.255.245.150,*.viettelcyber.com
+RUN ls -l /etc/apt/apt.conf.d

@@ -1,0 +1,18 @@
+{
+  "batch_id": "20260911_085846_projects",
+  "last_offset": 198,
+  "total_records": 198,
+  "current_page": 4,
+  "paginator_state": {
+    "current_page": 4,
+    "total_records": 198,
+    "current_offset": 198,
+    "has_more": false
+  },
+  "watermark": null,
+  "window_start": null,
+  "window_end": null,
+  "completed": true,
+  "timestamp": "2026-09-11T08:58:55Z",
+  "endpoint": "projects"
+}

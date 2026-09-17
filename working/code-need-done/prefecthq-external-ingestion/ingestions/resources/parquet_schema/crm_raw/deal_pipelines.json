@@ -1,0 +1,203 @@
+{
+    "type": "struct",
+    "fields": 
+    [ 
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "partial",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "position",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        },
+        {
+            "name": "is_default",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "rotting_days",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        },
+        {
+            "name": "configs",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "array",
+                "elementType": 
+                {
+                    "type": "struct",
+                    "fields": 
+                    [
+                        {
+                            "name": "field_name",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "position",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "long"
+                            }
+                        },
+                        {
+                            "name": "highlight",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "boolean"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "aggregated_field",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "deal_stages",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "array",
+                "elementType": 
+                {
+                    "type": "struct",
+                    "fields": 
+                    [
+                        {
+                            "name": "id",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "long"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "name",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "position",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "long"
+                            }
+                        },
+                        {
+                            "name": "forecast_type",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "deal_pipeline_id",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "long"
+                            }
+                        },
+                        {
+                            "name": "choice_type",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "long"
+                            }
+                        },
+                        {
+                            "name": "is_deleted",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "boolean"
+                            }
+                        },
+                        {
+                            "name": "probability",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "long"
+                            }
+                        },
+                        {
+                            "name": "updated_at",
+                            "nullable": true,
+                            "dataType": 
+                            {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

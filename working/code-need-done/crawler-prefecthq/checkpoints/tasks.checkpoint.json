@@ -1,0 +1,18 @@
+{
+  "batch_id": "20260916_065945_tasks",
+  "last_offset": 1990,
+  "total_records": 1990,
+  "current_page": 8,
+  "paginator_state": {
+    "current_page": 8,
+    "total_records": 1990,
+    "current_offset": 1990,
+    "has_more": false
+  },
+  "watermark": null,
+  "window_start": null,
+  "window_end": null,
+  "completed": true,
+  "timestamp": "2026-09-16T07:00:17Z",
+  "endpoint": "tasks"
+}

@@ -1,0 +1,170 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "owner_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "custom_field",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "cf_category",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_version",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_max_discount",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    },
+                    {
+                        "name": "cf_item_type",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cf_active",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "cf_market",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "creator_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updater_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "avatar",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "recent_note",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "links",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "document_associations",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "notes",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "record_type_id",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

@@ -1,0 +1,162 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "description",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "escalate_to",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "unassigned_for",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "agent_ids",
+            "nullable": true,
+            "dataType": {
+                "type": "array",
+                "elementType": {
+                    "type": "long"
+                }
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "allow_agents_to_change_availability",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "agent_availability_status",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "business_calendar_id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "type",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "automatic_agent_assignment",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "enabled",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "settings",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "array",
+                            "elementType": {
+                                "type": "struct",
+                                "fields": [
+                                    {
+                                        "name": "channel",
+                                        "nullable": true,
+                                        "dataType": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "assignment_type",
+                                        "nullable": true,
+                                        "dataType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

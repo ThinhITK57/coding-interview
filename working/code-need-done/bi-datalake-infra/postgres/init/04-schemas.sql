@@ -1,0 +1,8 @@
+\c n8n;
+
+CREATE SCHEMA workflow AUTHORIZATION n8n;
+CREATE SCHEMA audit AUTHORIZATION n8n;
+CREATE SCHEMA analytics AUTHORIZATION analytics;
+
+CREATE SCHEMA hive_metastore;
+CREATE SCHEMA prefect AUTHORIZATION prefect;

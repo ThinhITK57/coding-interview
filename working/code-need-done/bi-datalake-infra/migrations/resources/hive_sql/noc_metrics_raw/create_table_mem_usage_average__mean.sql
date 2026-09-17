@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS noc_metrics_raw.mem_usage_average__mean (
+          name STRING,
+  customer STRING,
+  host STRING,
+  project STRING,
+  tags STRUCT<name:STRING>,
+  time STRING,
+  mean DOUBLE,
+  time_ts BIGINT,
+  crawled_at_ts BIGINT
+        )
+        USING PARQUET
+        LOCATION '/opt/datasets/crawlers/vcs/noc_metrics/data/mem_usage_average__mean'

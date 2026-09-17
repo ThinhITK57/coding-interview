@@ -1,0 +1,89 @@
+version: "3.9"
+# docker network create  authelia-proxy-internal
+networks:
+  # authelia-proxy-internal:
+  #   external: true
+  workflow_authelia-proxy-internal:
+    external: true
+
+# ================= COMMON CONFIG =================
+x-common-service: &common-service
+  
+  image: flow-external-ingestion-minio:latest
+  restart: always
+  volumes:
+    - .:/app
+  env_file: .env.minio
+  environment:
+    PREFECT_API_URL: http://prefect-server:4200/api
+    HTTP_PROXY: 
+    HTTPS_PROXY: 
+    http_proxy: 
+    https_proxy: 
+  extra_hosts: &common-hosts
+    # - "prefect-server:10.255.245.150"
+    - "datalake.viettelcyber.com:10.255.244.100"
+    - "datalake-s3.viettelcyber.com:10.255.244.100"
+    - "nocodb.viettelcyber.com:10.255.244.100"
+    - "trino.viettelcyber.com:10.255.244.100"
+    - "secagi.viettelcyber.com:10.255.244.100"
+  networks:
+    - workflow_authelia-proxy-internal
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "50m"
+      max-file: "10"
+
+
+# ================= SERVICES =================
+services:
+
+  minio-freshworks-crawler:
+    <<: *common-service
+    container_name: minio-freshworks-crawler
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+    command: >
+      bash -c "
+        python freshworks_crawler_flow.py
+      "
+
+  minio-cx-survicate-crawler:
+    <<: *common-service
+    container_name: minio-cx-survicate-crawler
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+    command: >
+      bash -c "
+        python cx_survicate_crawler_flow.py
+      "
+
+  minio-cx-cso-crawler:
+    <<: *common-service
+    container_name: minio-cx-cso-crawler
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+    command: >
+      bash -c "
+        python cx_cso_crawler_flow.py
+      "
+
+  minio-vcs-raw-backup-table:
+    <<: *common-service
+    container_name: minio-vcs-raw-backup-table
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+    command: >
+      bash -c "
+        python vcs_raw_backup_minio_flow.py
+      "
+  minio-csv-manual-crawler:
+    <<: *common-service
+    container_name: minio-csv-manual-crawler
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+    command: >
+      bash -c "
+        python csv_manual_crawler_flow.py
+      "

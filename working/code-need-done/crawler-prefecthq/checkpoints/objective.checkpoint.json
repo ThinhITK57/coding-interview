@@ -1,0 +1,18 @@
+{
+  "batch_id": "20260916_060250_objective",
+  "last_offset": 45,
+  "total_records": 45,
+  "current_page": 1,
+  "paginator_state": {
+    "current_page": 1,
+    "total_records": 45,
+    "current_offset": 45,
+    "has_more": false
+  },
+  "watermark": null,
+  "window_start": null,
+  "window_end": null,
+  "completed": true,
+  "timestamp": "2026-09-16T06:02:53Z",
+  "endpoint": "objective"
+}

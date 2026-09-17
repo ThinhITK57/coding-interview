@@ -1,0 +1,44 @@
+@baseUrl=https://datalake.viettelcyber.com/gateway/ui/zeppelin
+@username=namtv40-datamining
+@password=
+@notebookId=2MHJTMU7J
+
+### Login
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "userName": "{{username}}",
+  "password": "{{password}}"
+}
+
+### Run notebook
+POST {{baseUrl}}/api/notebook/job/{{notebookId}}
+Content-Type: application/json
+Cookie: JSESSIONID={{login.response.headers.Set-Cookie}}
+
+{
+  "params": {
+    "code": "df = spark.range(5)\ndf.show()"
+  }
+}
+### Run Zeppelin Notebook with params
+POST {{baseUrl}}/api/notebook/job/{{notebookId}}
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "params": {
+    "code": "df = spark.range(5)\ndf.show()"
+  }
+}
+### Run notebook with session cookie
+POST {{baseUrl}}/api/notebook/job/{{notebookId}}
+Content-Type: application/json
+Cookie: JSESSIONID=ABCDEF123456...
+
+{
+  "params": {
+    "code": "df = spark.range(5)\ndf.show()"
+  }
+}

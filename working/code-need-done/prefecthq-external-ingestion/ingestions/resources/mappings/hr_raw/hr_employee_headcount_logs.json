@@ -1,0 +1,109 @@
+{
+  "idx": "row_index",
+  " ": "n_a",
+
+  "Dinh_bien": "headcount_plan",
+  "Định biên": "headcount_plan",
+
+  "Hien_trang_dinh_bien": "headcount_status",
+  "Hiện trạng": "headcount_status",
+
+  "Khoi_N": "division_n",
+  "Khối (N)": "division_n",
+
+  "Don_vi_N-1": "unit_n_1",
+  "Đơn vị (N-1)": "unit_n_1",
+
+  "Bo_phan_N-2": "department_n_2",
+  "Bộ phận (N-2)": "department_n_2",
+
+  "Bo_phan_N-3": "department_n_3",
+  "Bộ phận (N-3)": "department_n_3",
+
+  "Chi_nhanh": "branch",
+  "Chi nhánh": "branch",
+
+  "Vi_tri_cong_viec": "role_base",
+  "Role Base": "role_base",
+
+  "Mang_chuyen_huong": "specialization",
+  "Mảng phụ trách chuyên hướng": "specialization",
+
+  "Level_yeu_cau": "required_level",
+  "Level cần có": "required_level",
+
+  "Trang_thai_vi_tri": "position_status",
+
+  "Trạng thái nhân sự": "employee_status",
+
+  "Ho_ten": "full_name",
+  "Họ tên": "full_name",
+
+  "Ma_nhan_vien": "employee_code",
+  "Mã nhân viên": "employee_code",
+
+  "Dien_doi_tuong": "employee_object",
+  "Đối tượng": "employee_object",
+
+  "Dien_hop_dong": "contract_type",
+  "Diện hợp đồng": "contract_type",
+  "Diện hợp đồng\n(công ty độc lập)": "contract_type",
+  "Diện hợp đồng (công ty độc lập)": "contract_type",
+
+  "Ngay_gia_nhap_VCS": "hire_date_vcs",
+  "Hire Date VCS": "hire_date_vcs",
+
+  "Level": "level",
+
+  "Vung": "region",
+  "Vùng": "region",
+
+  "Phan_cap": "management_level",
+  "Phân cấp": "management_level",
+
+  "Email": "business_email",
+  "Business Email": "business_email",
+
+  "Job Family": "job_family",
+
+  "SPDV chủ lực": "core_service_group",
+
+  "Portfolio SPDV": "service_portfolio",
+
+  "Nhom_Loi_Khung": "job_framework_position",
+  "Vị trí khung": "job_framework_position",
+
+  "Nhom_Loi_Khung_2": "job_framework_position_2",
+
+  "Nhom_SPDV": "service_group",
+  "Nhom_SPDV_moi": "service_group_new",
+
+  "Nhom_AI": "is_ai_group",
+  "Bo_may_AI": "is_ai_org",
+
+  "Thi_truong_Phil_Nhat": "is_philippines_japan_market",
+
+  "Bo_may_kinh_doanh_trong_nuoc": "is_domestic_business",
+  "Bo_may_kinh_doanh_quoc_te": "is_international_business",
+
+  "Bo_may_R&D": "is_rnd",
+
+  "Nhom_gian_tiep": "is_indirect_group",
+  "Nhom_ho_tro_kinh_doanh": "is_business_support",
+
+  "NHÂN SỰ TĂNG MỚI_\nTHÁNG 7/2025": "new_headcount_2025_07",
+  "NHÂN SỰ TĂNG MỚI_ THÁNG 7/2025": "new_headcount_2025_07",
+
+  "NHÂN SỰ TĂNG MỚI_\nTHÁNG 8/2025": "new_headcount_2025_08",
+  "NHÂN SỰ TĂNG MỚI_ THÁNG 8/2025": "new_headcount_2025_08",
+
+  "NHÂN SỰ TĂNG MỚI_\nTHÁNG 9/2025": "new_headcount_2025_09",
+  "NHÂN SỰ TĂNG MỚI_ THÁNG 9/2025": "new_headcount_2025_09",
+
+  "PHƯƠNG ÁN ĐẢM BẢO NGUỒN LỰC TIẾP THEO": "next_resource_plan",
+
+  "UV TUYỂN NGOÀI_ CHỜ ONBOARD": "external_candidate_waiting_onboard",
+  "UV TUYỂN NGOÀI_ ĐANG OFFER": "external_candidate_offering",
+
+  "ỨNG VIÊN NỘI BỘ_ PHÁT TRIỂN CP/SV/FRESHER": "internal_candidate_development"
+}

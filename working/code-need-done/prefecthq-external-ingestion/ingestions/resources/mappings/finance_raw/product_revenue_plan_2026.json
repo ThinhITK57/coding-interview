@@ -1,0 +1,15 @@
+{
+  "Tên nhóm KH": "customer_group_name",
+  "Phân nhóm KH": "customer_subgroup_name",
+  "Nhóm": "group_name",
+  "Phân nhóm": "subgroup_name",
+  "Mã SPDV": "service_code",
+  "Sản phẩm": "service_name",
+  "Đơn vị tính": "amount_unit",
+  "Must": "priority_must",
+  "Should": "priority_should",
+  "Nice": "priority_nice",
+  "Tháng": "report_month",
+  "Năm": "report_year",
+  "Ngày tháng": "report_date"
+}

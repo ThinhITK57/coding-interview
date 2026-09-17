@@ -1,0 +1,63 @@
+{
+    "catalogs": [
+        {
+            "user": "admin|giangnth46",
+            "catalog": ".*",
+            "allow": "all"
+        },
+        {
+            "user": "mcp_trino|dg_report",
+            "catalog": ".*",
+            "allow": "read-only"
+        },
+        {
+            "user": "spark_etl",
+            "catalog": "postgresql",
+            "allow": "all"
+        },
+        {
+            "user": "spark_etl",
+            "catalog": "(?!postgresql).*",
+            "allow": "read-only"
+        }
+    ],
+    "schemas": [
+        {
+            "user": "admin",
+            "catalog": ".*",
+            "schema": ".*",
+            "owner": true
+        },
+        {
+            "user": "spark_etl",
+            "catalog": "postgresql",
+            "schema": ".*",
+            "owner": true
+        }
+    ],
+    "tables": [
+        {
+            "user": "admin|giangnth46",
+            "privileges": ["SELECT", "INSERT", "DELETE", "UPDATE", "OWNERSHIP", "GRANT_SELECT"]
+        },
+        {
+            "user": "spark_etl",
+            "catalog": "postgresql",
+            "privileges": ["SELECT", "INSERT", "DELETE", "UPDATE", "OWNERSHIP"]
+        },
+        {
+            "user": "mcp_trino|dg_report|spark_etl",
+            "privileges": ["SELECT"]
+        }
+    ],
+    "queries": [
+        {
+            "user": "admin|giangnth46",
+            "allow": ["execute", "kill", "view"]
+        },
+        {
+            "user": ".*",
+            "allow": ["execute"]
+        }
+    ]
+}

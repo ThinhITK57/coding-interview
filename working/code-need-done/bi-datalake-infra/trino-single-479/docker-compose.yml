@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  trino:
+    image: trinodb/trino:479
+    container_name: trino
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - ./etc:/etc/trino
+      - /u01/data/bi-trino-479:/u01/data/bi-trino-479
+    restart: unless-stopped
+    networks:
+      - platform-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpus: 4
+
+networks:
+  platform-net:
+    external: true

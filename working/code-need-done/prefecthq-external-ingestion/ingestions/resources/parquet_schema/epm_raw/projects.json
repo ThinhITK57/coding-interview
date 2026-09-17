@@ -1,0 +1,2553 @@
+{
+  "type": "struct",
+  "fields": [
+    {
+      "name": "c_audit_qty",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_edr_qty",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_hunting_qty",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_latitude",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_longitude",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_must_have",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_nice_to_have",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_opportunity_amount",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "c_opportunity_amount_numeric",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_opportunity_probability",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_pen_test_qty",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_should_have",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_siem_qty",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_soar_qty",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_soc_qty",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_strategic_alignment",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_value_m",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_target_value_n",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_target_value_s",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_software_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "all_user_resources_and_placeholders_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "all_user_resources_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "attachments_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "issues_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "customer_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "children_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "emails_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "likes_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "notes_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "predecessors_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "resources_and_placeholders_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "child_shortcut_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "successors_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "user_resources_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "posts_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "percent_completed",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "labor_cost_percent_complete",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "completness_definition",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "percent_invested",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "percent_profitability",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "actual_third_party_nlr_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_third_party_nlr_billable_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_billable_hours",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "actual_net_profitability",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "actual_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_cost_capex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_cost_lr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_labor_and_third_party_nlr_non_billable_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_cost_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_cost_nlr_capex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_cost_nlr_opex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_cost_opex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_duration",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "actual_effort",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "actual_third_party_nlr_non_billable_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_non_billable_hours",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "aggregated_stopwatches_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "alignment",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "baseline_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "baseline_costs_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "baseline_duration",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "baseline_duration_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "baseline_work",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "baseline_work_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "budget_third_party_nlr_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_third_party_nlr_billable_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_cost_capex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "capex_budget_ytd",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_cost_lr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_labor_and_third_party_nlr_non_billable_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_cost_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_cost_opex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "opex_budget_ytd",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_third_party_nlr_non_billable_costs",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_status",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "budget_summary",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "budget_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budget_variance_percent",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "planned_amount",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "planned_budget",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "budgeted_hours",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "charged_amount",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "conflicts",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "cost_balance",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "cost_currency_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "cost_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "cpi",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "default_integration_path",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "duration",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "duration_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "priority",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "estimated_duration",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "executable",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "expected_progress",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "expected_roi",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "financial_end",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "financial_start",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "fixed_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fixed_price",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_budgeted_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_budgeted_cost_capex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_budgeted_cost_lr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_budgeted_cost_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_budgeted_cost_opex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_forecastat_completion_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_forecast_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_forecast_cost_capex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_forecast_cost_opex",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "labor_budget",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "on_critical_path",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "planned_net_profitability",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "planned_margin",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "project_capex_forecastat_completion_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "project_forecastat_completion_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "project_opex_forecastat_completion_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "rate_card",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "remaining_budget",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "remaining_effort",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "remaining_forecast_cost_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "risks_rate",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "risks_total_score",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "rpi",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "rtcpi",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "set_by_leveling",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "spi",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "stopwatches_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "target_margin",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "tcpi",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "total_estimated_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "work",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "work_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_action_departments",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_action_resources",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_approval_status",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_assignee",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_associated_objective",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_complexity",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_current_phase",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_customer_name",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_department",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_department_do_not_use",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_gantt_url",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_gate_phase",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_idea_place_url",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_internal_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_main_customer",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_map_address",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_msn_classification",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_next_gate",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_opportunity_id",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_opportunity_stage",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_overall_gate_status_assessment",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_product",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_region",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_roadmap_url",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_description_m",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_description_n",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_description_s",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_value_m_operator",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_value_n_operator",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_value_s_operator",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_unit",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_unit_scale",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_unit_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_url",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_use_case",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_work_item_changed_trigger",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_work_item_picture",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "active_stopwatch",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "actual_billed_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_net_profit",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "capex_actual_ytd",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "opex_actual_ytd",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_net_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "actual_revenue_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "additional_comments",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "object_alias",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "allocation",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "allow_reporting_on_sub_items",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "manager",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "baseline_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "baseline_revenue_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "benefit",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "billable",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "billing_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "business_alignment",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "business_impact",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "calculate_completeness_based_on_efforts",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "calculate_financials",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "charged",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "closing_notes",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "commit_level",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "conflict_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "scheduling_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "contract",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "contract_purchase_order",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "country",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "created_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "deliverable",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "deliverable_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "direct_actual_billed_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "direct_actual_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "direct_planned_billed_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "direct_planned_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "direct_projected_billed_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "direct_projected_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "currency_eac",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "earned_value",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "entity_owner",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "currency_etc",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "expected_business_value",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "expected_net_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "planned_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "expected_revenue_lr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "expense_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "external_id",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "fte_project_assignment",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "funding",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "funding_available",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "funding_gap",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "funding_remaining",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "funding_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_expected_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_expected_revenue_lr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_forecast_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "fy_planned_profit",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "geographical_region",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "goals_achieved",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "holding_notes",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "sysid",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "ignore_resource_calendars",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "image_url",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "importance",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "imported_from",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "individual_reporting",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "internal_id",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "internal_status",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "investment_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "entity_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "justification",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "last_project_calculation",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "task_reporting_policy",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "mitigation",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "name",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "order_id",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "overall_summary",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "overview",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "overview1",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "overview2",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "overview3",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "overview4",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "overview5",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "parent",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "parent_project",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "pending",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "permission_inheritance_for_external_users",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "phase",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "planned_billed_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "planned_net_profit",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "planned_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "planned_profit",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "planned_revenue_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "planned_savings",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "is_portfolio",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "risks",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "profitability",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "program",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "project",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "project_goals",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "project_manager",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "project_size",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "project_sponsor",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "project_tagging",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "project_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "projected_billed_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "projected_expenses",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "remaining_forecast_revenue_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "reportable",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "created_by",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "required",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "resource_utilization_category",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "revenue_balance",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "revenue_currency_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "currency_reac",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "currency_retc",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "revenue_earned_value",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "risks_impact",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "rollup_financial_and_effort_data_from_shortcut",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "schedule_summary",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "sku",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "current_financial_period_start",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "state",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "state_province",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "track_status",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "status_changed_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "sub_allocation",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "suggested_actual_net_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "suggested_actual_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "suggested_actual_revenue_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "suggested_net_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "suggested_revenue_nlr",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "suggested_revenue",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "template",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "floating_task",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "total_allocation",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "score",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "unallocated",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "unused_allocation",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "work_policy",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_opportunity_close_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "c_runtime_id",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_sentiment_result",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_target_date_m",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "c_target_date_n",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "c_target_date_s",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "c_update_description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "actual_effort_updated_from_timesheets",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "actual_end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "actual_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "currency_exchange_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "baseline_creation_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "baseline_due_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "baseline_due_date_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "baseline_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "baseline_start_date_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "committed_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "due_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "due_date_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "earliest_end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "earliest_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "estimated_end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "estimated_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "financial_old_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "forecast_using_date_effective_rates",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "last_fp_calculation_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "last_replanning_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "last_updated_by",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "last_updated_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "latest_end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "latest_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "pending_time_tracking_effort",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "progress_update_frequency",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "reportable_end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "reportable_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "reporting_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "resource_rate_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "rollup_progress_and_dates_from_shortcut",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "sentiment_calculated",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "sentiment_changed",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "sentiment_latest",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "sentiment_score",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "sentiment_status",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "current_financial_period_start_updated",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "start_date_variance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "last_updated_by_system_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "time_approval",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "time_tracking_billing",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "time_tracking_cost",
+      "nullable": true,
+      "dataType": {
+        "type": "decimal(18,2)"
+      }
+    },
+    {
+      "name": "time_tracking_effort",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "update_forecast_default",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    }
+  ]
+}

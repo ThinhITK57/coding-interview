@@ -1,0 +1,35 @@
+prefect deployment build prefect_flow.py:api_ingestion_pipeline `
+  --name epm-tasks-hourly `
+  --pool epm-pool `
+  --work-queue default `
+  --cron "0 8-18 * * 1-5" `
+  --timezone "Asia/Ho_Chi_Minh" `
+  --param config_path=config.json `
+  --param endpoint_name=tasks `
+  --param env=prod `
+  --param mode=incremental `
+  --override env.MINIO_ENDPOINT="http://127.0.0.1:9000" `
+  --override env.MINIO_ACCESS_KEY="minioadmin" `
+  --override env.MINIO_SECRET_KEY="minioadmin123" `
+  --override env.MINIO_BUCKET="lakehouse" `
+  --override env.NO_PROXY="127.0.0.1,localhost" `
+  --override env.no_proxy="127.0.0.1,localhost" `
+  --apply
+  
+ prefect deployment build prefect_flow.py:api_ingestion_pipeline `
+  --name epm-projects-hourly `
+  --pool epm-pool `
+  --work-queue default `
+  --cron "0 8-18 * * 1-5" `
+  --timezone "Asia/Ho_Chi_Minh" `
+  --param config_path=config.json `
+  --param endpoint_name=projects `
+  --param env=prod `
+  --param mode=incremental `
+  --override env.MINIO_ENDPOINT="http://127.0.0.1:9000" `
+  --override env.MINIO_ACCESS_KEY="minioadmin" `
+  --override env.MINIO_SECRET_KEY="minioadmin123" `
+  --override env.MINIO_BUCKET="lakehouse" `
+  --override env.NO_PROXY="127.0.0.1,localhost" `
+  --override env.no_proxy="127.0.0.1,localhost" `
+  --apply

@@ -1,0 +1,303 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "ae247973",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from dotenv import load_dotenv\n",
+    "\n",
+    "load_dotenv()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "8e1143fa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "from trino.dbapi import connect\n",
+    "from trino.auth import BasicAuthentication\n",
+    "import datetime\n",
+    "import os"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "12a6fdd3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "trino_catalog = \"hive\"\n",
+    "trino_schema = \"bi_silver\"\n",
+    "\n",
+    "# --- 1. CẤU HÌNH HỆ THỐNG ---\n",
+    "CONFIG = {\n",
+    "    'host': os.getenv(\"VCS_TRINO_HOST\"),\n",
+    "    'port': int(os.getenv(\"VCS_TRINO_PORT\")),\n",
+    "    'user': os.getenv(\"VCS_TRINO_USER\"),\n",
+    "    'catalog': trino_catalog,\n",
+    "    'schema': trino_schema,  # Schema mục tiêu\n",
+    "    'password': os.getenv(\"VCS_TRINO_PASSWORD\"),\n",
+    "}\n",
+    "\n",
+    "\n",
+    "def get_connection():\n",
+    "    return connect(\n",
+    "        host=CONFIG['host'],\n",
+    "        port=CONFIG['port'],\n",
+    "        user=CONFIG['user'],\n",
+    "        catalog=CONFIG['catalog'],\n",
+    "        http_scheme='http',\n",
+    "        auth=BasicAuthentication(CONFIG['user'], CONFIG['password']),\n",
+    "    )\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3223da18",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "ff9f6bee",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# --- 2. BUILD SQL DQ (FIXED FOR PARQUET METADATA) ---\n",
+    "def build_dq_query(table_path, columns_df):\n",
+    "    # Sử dụng TRY_CAST ngay cả trong lệnh COUNT để tránh lỗi Unsupported Type từ Parquet\n",
+    "    sql_parts = [\"COUNT(*) as total_rows\"]\n",
+    "    \n",
+    "    for idx, row in columns_df.iterrows():\n",
+    "        raw_col = row['Column']\n",
+    "        quoted_col = f\"\\\"{raw_col}\\\"\"\n",
+    "        dtype = row['Type'].lower()\n",
+    "        p = f\"c{idx}\" \n",
+    "        \n",
+    "        # FIX: Dùng TRY_CAST cho mọi lệnh COUNT để an toàn tuyệt đối với Parquet\n",
+    "        safe_count_col = f\"TRY_CAST({quoted_col} AS VARCHAR)\" if 'timestamp' in dtype else quoted_col\n",
+    "        \n",
+    "        sql_parts.append(f\"\"\"\n",
+    "                         CASE\n",
+    "        WHEN COUNT(DISTINCT {safe_count_col}) < 50\n",
+    "            THEN array_join(array_agg(DISTINCT CAST({safe_count_col} AS VARCHAR)), ', ')\n",
+    "        ELSE NULL\n",
+    "    END AS {p}_result_text\n",
+    "                         \"\"\")\n",
+    "        sql_parts.append(f\"COUNT({safe_count_col}) AS {p}_nonnull\")\n",
+    "        sql_parts.append(f\"APPROX_DISTINCT({safe_count_col}) AS {p}_unique\")\n",
+    "        \n",
+    "        if 'varchar' in dtype or 'char' in dtype:\n",
+    "            safe_col = f\"TRY_CAST({quoted_col} AS VARCHAR)\"\n",
+    "            sql_parts.append(f\"SUM(CASE WHEN {safe_col} != TRIM({safe_col}) THEN 1 ELSE 0 END) AS {p}_ws\")\n",
+    "            sql_parts.append(f\"SUM(CASE WHEN {safe_col} = '' THEN 1 ELSE 0 END) AS {p}_empty\")\n",
+    "            \n",
+    "            if not any(x in raw_col.lower() for x in ['id', 'code', 'email', 'url', 'key', 'timestamp']):\n",
+    "                sql_parts.append(f\"SUM(CASE WHEN REGEXP_LIKE({safe_col}, '[0-9!@#$%^&*()]') THEN 1 ELSE 0 END) AS {p}_worderr\")\n",
+    "            else:\n",
+    "                sql_parts.append(f\"0 AS {p}_worderr\")\n",
+    "                \n",
+    "            sql_parts.append(f\"SUM(CASE WHEN TRY_CAST({safe_col} AS DOUBLE) IS NOT NULL AND {safe_col} != '' THEN 1 ELSE 0 END) AS {p}_isnum\")\n",
+    "            sql_parts.append(f\"SUM(CASE WHEN TRY_CAST({safe_col} AS TIMESTAMP) IS NOT NULL THEN 1 ELSE 0 END) AS {p}_isdate\")\n",
+    "            sql_parts.append(f\"SUM(CASE WHEN REGEXP_LIKE({safe_col}, '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{{2,}}$') THEN 1 ELSE 0 END) AS {p}_isemail\")\n",
+    "\n",
+    "        elif any(t in dtype for t in ['int', 'decimal', 'double', 'real', 'bigint']):\n",
+    "            sql_parts.append(f\"SUM(CASE WHEN {quoted_col} < 0 THEN 1 ELSE 0 END) AS {p}_neg\")\n",
+    "            sql_parts.append(f\"APPROX_PERCENTILE({quoted_col}, 0.25) AS {p}_q25\")\n",
+    "            sql_parts.append(f\"APPROX_PERCENTILE({quoted_col}, 0.50) AS {p}_q50\")\n",
+    "            sql_parts.append(f\"APPROX_PERCENTILE({quoted_col}, 0.75) AS {p}_q75\")\n",
+    "            sql_parts.append(f\"APPROX_PERCENTILE({quoted_col}, 0.95) AS {p}_q95\")\n",
+    "        else:\n",
+    "            # Case an toàn cho Timestamp bị lỗi định dạng file\n",
+    "            sql_parts.extend([f\"0 AS {p}_ws\", f\"0 AS {p}_empty\", f\"0 AS {p}_worderr\", f\"0 AS {p}_isnum\", f\"0 AS {p}_isdate\", f\"0 AS {p}_isemail\"])\n",
+    "\n",
+    "    return f\"SELECT {', '.join(sql_parts)} FROM {table_path}\"\n",
+    "\n",
+    "# --- 3. RUN AUDIT ---\n",
+    "def run_data_quality_audit(output_dir):\n",
+    "    if not os.path.exists(output_dir):\n",
+    "        os.makedirs(output_dir)\n",
+    "\n",
+    "    # Format thời gian đầy đủ YYYYMMDD_HHMMSS\n",
+    "    time_str = datetime.datetime.now().strftime(\"%Y%m%d_%H%M%S\")\n",
+    "    file_path = os.path.join(output_dir, f\"DQ_Master_Report_{time_str}.xlsx\")\n",
+    "\n",
+    "    conn = get_connection()\n",
+    "    cursor = conn.cursor()\n",
+    "    cursor.execute(f\"SELECT table_name FROM hive.information_schema.tables WHERE table_schema = '{trino_schema}'\")\n",
+    "    tables = [row[0] for row in cursor.fetchall()]\n",
+    "    \n",
+    "    summary_data = []\n",
+    "\n",
+    "    with pd.ExcelWriter(file_path, engine='openpyxl') as writer:\n",
+    "        for table_name in tables:\n",
+    "            print(f\"--> Analyzing table: {table_name}\")\n",
+    "            full_path = f\"{trino_catalog}.{trino_schema}.\\\"{table_name}\\\"\"\n",
+    "            \n",
+    "            try:\n",
+    "                cols_df = pd.read_sql_query(f\"SHOW COLUMNS FROM {full_path}\", conn)\n",
+    "                dq_sql = build_dq_query(full_path, cols_df)\n",
+    "                # print(\"=================dq_sql\\n\\n\")\n",
+    "                # print(dq_sql)\n",
+    "                # print(\"=================dq_sql\\n\\n\")\n",
+    "                res = pd.read_sql_query(dq_sql, conn)\n",
+    "                \n",
+    "                total = res['total_rows'][0]\n",
+    "                table_details = []\n",
+    "                for i, row in cols_df.iterrows():\n",
+    "                    p = f\"c{i}\"\n",
+    "                    non_null = res[f\"{p}_nonnull\"][0]\n",
+    "                    \n",
+    "                    is_num = res.get(f\"{p}_isnum\", [0])[0]\n",
+    "                    is_date = res.get(f\"{p}_isdate\", [0])[0]\n",
+    "                    suggestion = \"Giữ nguyên\"\n",
+    "                    if total > 0 and non_null > 0 and 'varchar' in row['Type'].lower():\n",
+    "                        if is_num == non_null: suggestion = \"Nên đổi sang NUMBER\"\n",
+    "                        elif is_date == non_null: suggestion = \"Nên đổi sang DATE/TIMESTAMP\"\n",
+    "\n",
+    "                    table_details.append({\n",
+    "                        'Cột': row['Column'], 'Kiểu': row['Type'], 'Null': total - non_null,\n",
+    "                        'Khoảng trắng': res.get(f\"{p}_ws\", [0])[0], 'Dòng rỗng': res.get(f\"{p}_empty\", [0])[0],\n",
+    "                        'Ký tự lạ': res.get(f\"{p}_worderr\", [0])[0], 'Email hợp lệ': res.get(f\"{p}_isemail\", [0])[0],\n",
+    "                        'Lỗi âm': res.get(f\"{p}_neg\", [0])[0], 'Q25': res.get(f\"{p}_q25\", [None])[0],\n",
+    "                        'Q50': res.get(f\"{p}_q50\", [None])[0], 'Q75': res.get(f\"{p}_q75\", [None])[0],\n",
+    "                        'Q95': res.get(f\"{p}_q95\", [None])[0], 'GỢI Ý': suggestion, \n",
+    "                        'enums': res.get(f\"{p}_result_text\", [None])[0],\n",
+    "                    })\n",
+    "                \n",
+    "                sheet_name = table_name[:31]\n",
+    "                pd.DataFrame(table_details).to_excel(writer, sheet_name=sheet_name, index=False)\n",
+    "\n",
+    "                # Format cột: Tăng độ rộng thêm 50%\n",
+    "                ws = writer.sheets[sheet_name]\n",
+    "                for col in ws.columns:\n",
+    "                    max_length = 0\n",
+    "                    for cell in col:\n",
+    "                        try:\n",
+    "                            if len(str(cell.value)) > max_length: max_length = len(str(cell.value))\n",
+    "                        except: pass\n",
+    "                    ws.column_dimensions[col[0].column_letter].width = (max_length + 2) * 1.5\n",
+    "\n",
+    "                summary_data.append({'Bảng': table_name, 'Dòng': total, 'Trạng thái': 'OK'})\n",
+    "                \n",
+    "            except Exception as e:\n",
+    "                print(f\"❌ Error at {table_name}: {e}\")\n",
+    "\n",
+    "        if summary_data:\n",
+    "            pd.DataFrame(summary_data).to_excel(writer, sheet_name='DASHBOARD', index=False)\n",
+    "\n",
+    "    print(f\"\\n✅ Done! File: {file_path}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "4de4cfe3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "--> Analyzing table: crm_deals_allocation\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\namtv40\\AppData\\Local\\Temp\\ipykernel_10812\\3347723271.py:73: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.\n",
+      "  cols_df = pd.read_sql_query(f\"SHOW COLUMNS FROM {full_path}\", conn)\n",
+      "C:\\Users\\namtv40\\AppData\\Local\\Temp\\ipykernel_10812\\3347723271.py:78: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.\n",
+      "  res = pd.read_sql_query(dq_sql, conn)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "--> Analyzing table: hr_employee_resigned\n",
+      "--> Analyzing table: biz_business_results\n",
+      "--> Analyzing table: hr_employee_onboard\n",
+      "--> Analyzing table: jira_task_operation\n",
+      "--> Analyzing table: crm_payment_records\n",
+      "--> Analyzing table: biz_actual_cost\n",
+      "--> Analyzing table: noc_metrics\n",
+      "--> Analyzing table: crm_deals\n",
+      "--> Analyzing table: crm_deal_interested_products\n",
+      "--> Analyzing table: crm_deal_reasons\n",
+      "--> Analyzing table: biz_finance_plan\n",
+      "--> Analyzing table: jira_msn\n",
+      "--> Analyzing table: crm_deal_quotation_products\n",
+      "--> Analyzing table: crm_pricebook\n",
+      "--> Analyzing table: crm_sales_accounts\n",
+      "--> Analyzing table: noc_entities\n",
+      "--> Analyzing table: biz_production_cost_allocation\n",
+      "--> Analyzing table: crm_contracts\n",
+      "--> Analyzing table: biz_cost_plan\n",
+      "--> Analyzing table: crm_deal_quotations\n",
+      "--> Analyzing table: cx_cso_tickets\n",
+      "--> Analyzing table: crm_partners\n",
+      "--> Analyzing table: cx_cso_ticket_tags\n",
+      "\n",
+      "✅ Done! File: C:\\Users\\namtv40\\Data\\DQ-Bitu-Silver-Data\\DQ_Master_Report_20260206_185249.xlsx\n"
+     ]
+    }
+   ],
+   "source": [
+    "run_data_quality_audit(r\"C:\\Users\\namtv40\\Data\\DQ-Bitu-Silver-Data\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "eef84eb8",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "base",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

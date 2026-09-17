@@ -1,0 +1,42 @@
+# docker network create platform-net
+
+version: '3.8'
+
+services:
+  hive-metastore:
+    image: apache/hive:4.2.0
+    container_name: hive-metastore
+    env_file:
+      - .env
+    # depends_on:
+    #   - hive-postgres
+    environment:
+      SERVICE_NAME: metastore
+      DB_DRIVER: postgres
+      HIVE_METASTORE_DB_TYPE: postgres
+      HIVE_METASTORE_USER: admin
+      HIVE_METASTORE_PASSWORD: Welcome1
+      HADOOP_CLASSPATH: /opt/hive/lib/hadoop-aws-3.4.1.jar:/opt/hive/lib/aws-bundle-2.25.16.jar
+      # HADOOP_OPTS: "-Djava.net.preferIPv4Stack=true"
+      # JAVA_OPTS: "-Xmx256m -Xms256m"
+      AWS_ACCESS_KEY_ID: xxx
+      AWS_SECRET_ACCESS_KEY: xxx
+    ports:
+      - "9083:9083"
+    volumes:
+      - ./hive-site.xml:/opt/hive/conf/hive-site.xml
+      - ./postgresql-42.7.2.jar:/opt/hive/lib/postgresql-jdbc.jar
+      - ./hadoop-aws-3.4.1.jar:/opt/hive/lib/hadoop-aws-3.4.1.jar
+      - ./aws-bundle-2.25.16.jar:/opt/hive/lib/aws-bundle-2.25.16.jar
+    networks:
+      - platform-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    restart: unless-stopped
+
+networks:
+  platform-net:
+    external: true

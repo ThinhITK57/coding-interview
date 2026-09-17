@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  spark-client:
+    build: .
+    container_name: spark-client
+    env_file:
+      - .env.prod
+    volumes:
+      - ./jobs:/workspace/jobs
+      - ./framework:/workspace/framework
+      - ./jars:/opt/spark/jars_extra
+      - ./downloads/spark-3.5.1-bin-hadoop3:/opt/spark/
+      - ./entrypoint.sh:/entrypoint.sh
+    command: tail -f /dev/null
+    restart: unless-stopped
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpus: 4

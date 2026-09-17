@@ -1,0 +1,57 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Virtual Environments ---
+.env
+.venv
+env/
+venv/
+ENV/
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+# Nếu bạn muốn lưu notebook nhưng không lưu kết quả chạy (output), 
+# hãy dùng pre-commit bên dưới thay vì ignore hoàn toàn file .ipynb
+
+# --- Golang ---
+/bin/
+/out/
+/pkg/
+*.test
+*.exe
+*.dll
+*.so
+*.dylib
+
+# --- Hệ điều hành & IDE ---
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+tmp/**
+tmp
+output/**
+output
+Dockerfile
+docker-compose.yaml

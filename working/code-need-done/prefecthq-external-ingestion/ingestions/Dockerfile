@@ -1,0 +1,3 @@
+FROM ingestions:latest
+
+COPY . .

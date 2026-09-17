@@ -1,0 +1,20 @@
+{
+  "STT": "sequence_number",
+  "Họ và tên": "full_name",
+  "Khóa đào tạo": "training_program",
+  "ID": "trainee_id",
+  "Ngày chuyển diện": "conversion_date",
+  "Vị trí": "role_base",
+  "Level - Vùng": "level_region",
+  "Mã nhân viên": "employee_code",
+  "Giai đoạn đào tạo": "training_phase",
+  "FT/PT": "employment_type",
+  "Full time dự kiến": "expected_full_time_date",
+  "Chuyên ngành đào tạo": "training_major",
+  "Mentor trực tiếp (Email)": "mentor_email",
+  "Team": "team",
+  "Phòng ban": "department_n_2",
+  "Kết quả pv Vòng 2": "interview_round_2_result",
+  "Link kết quả đào tạo": "training_result_link",
+  "Điểm đào tạo": "training_score"
+}

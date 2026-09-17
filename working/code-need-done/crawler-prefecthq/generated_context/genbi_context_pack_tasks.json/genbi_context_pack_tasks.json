@@ -1,0 +1,2918 @@
+{
+  "metadata_version": "2.0",
+  "table_name": "tasks",
+  "trino_table_ref": "hive.global_clean.tasks",
+  "table_description": "",
+  "semantic_layer": {
+    "metrics": [
+      {
+        "name": "all_user_resources_and_placeholders_count",
+        "data_type": "double",
+        "description": "All User Resources And Placeholders Count (from API field: AllUserResourcesAndPlaceholdersCount)",
+        "synonyms": [
+          "all_user_resources_and_placeholders_count",
+          "all user resources and placeholders count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "all_user_resources_count",
+        "data_type": "double",
+        "description": "All User Resources Count (from API field: AllUserResourcesCount)",
+        "synonyms": [
+          "all_user_resources_count",
+          "all user resources count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "attachments_count",
+        "data_type": "double",
+        "description": "Attachments Count (from API field: AttachmentsCount)",
+        "synonyms": [
+          "attachments_count",
+          "attachments count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "issues_count",
+        "data_type": "double",
+        "description": "Issues Count (from API field: IssuesCount)",
+        "synonyms": [
+          "issues_count",
+          "issues count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "children_count",
+        "data_type": "double",
+        "description": "Children Count (from API field: ChildrenCount)",
+        "synonyms": [
+          "children_count",
+          "children count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "emails_count",
+        "data_type": "double",
+        "description": "Emails Count (from API field: EmailsCount)",
+        "synonyms": [
+          "emails_count",
+          "emails count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "likes_count",
+        "data_type": "double",
+        "description": "Likes Count (from API field: LikesCount)",
+        "synonyms": [
+          "likes_count",
+          "likes count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "notes_count",
+        "data_type": "double",
+        "description": "Notes Count (from API field: NotesCount)",
+        "synonyms": [
+          "notes_count",
+          "notes count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "predecessors_count",
+        "data_type": "double",
+        "description": "Predecessors Count (from API field: PredecessorsCount)",
+        "synonyms": [
+          "predecessors_count",
+          "predecessors count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "resources_and_placeholders_count",
+        "data_type": "double",
+        "description": "Resources And Placeholders Count (from API field: ResourcesAndPlaceholdersCount)",
+        "synonyms": [
+          "resources_and_placeholders_count",
+          "resources and placeholders count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "child_shortcut_count",
+        "data_type": "double",
+        "description": "Child Shortcut Count (from API field: ChildShortcutCount)",
+        "synonyms": [
+          "child_shortcut_count",
+          "child shortcut count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "successors_count",
+        "data_type": "double",
+        "description": "Successors Count (from API field: SuccessorsCount)",
+        "synonyms": [
+          "successors_count",
+          "successors count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "user_resources_count",
+        "data_type": "double",
+        "description": "User Resources Count (from API field: UserResourcesCount)",
+        "synonyms": [
+          "user_resources_count",
+          "user resources count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "posts_count",
+        "data_type": "double",
+        "description": "Posts Count (from API field: PostsCount)",
+        "synonyms": [
+          "posts_count",
+          "posts count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "percent_completed",
+        "data_type": "double",
+        "description": "Percent Completed (from API field: PercentCompleted)",
+        "synonyms": [
+          "percent_completed",
+          "percent completed",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "labor_cost_percent_complete",
+        "data_type": "double",
+        "description": "Labor Cost Percent Complete (from API field: LaborCostPercentComplete)",
+        "synonyms": [
+          "labor_cost_percent_complete",
+          "labor cost percent complete",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "completness_definition",
+        "data_type": "double",
+        "description": "Completness Definition (from API field: CompletnessDefinition)",
+        "synonyms": [
+          "completness_definition",
+          "completness definition"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "percent_invested",
+        "data_type": "double",
+        "description": "Percent Invested (from API field: PercentInvested)",
+        "synonyms": [
+          "percent_invested",
+          "percent invested",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "percent_profitability",
+        "data_type": "double",
+        "description": "Percent Profitability (from API field: PercentProfitability)",
+        "synonyms": [
+          "percent_profitability",
+          "percent profitability",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_third_party_nlr_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Third Party Nlr Costs (from API field: ActualThirdPartyNLRCosts)",
+        "synonyms": [
+          "actual_third_party_nlr_costs",
+          "actual third party nlr costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_third_party_nlr_billable_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Third Party Nlr Billable Costs (from API field: ActualThirdPartyNLRBillableCosts)",
+        "synonyms": [
+          "actual_third_party_nlr_billable_costs",
+          "actual third party nlr billable costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_billable_hours",
+        "data_type": "double",
+        "description": "Actual Billable Hours (from API field: ActualBillableHours)",
+        "synonyms": [
+          "actual_billable_hours",
+          "actual billable hours",
+          "thời lượng",
+          "số giờ"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_net_profitability",
+        "data_type": "double",
+        "description": "Actual Net Profitability (from API field: ActualNetProfitability)",
+        "synonyms": [
+          "actual_net_profitability",
+          "actual net profitability"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Cost (from API field: ActualCost)",
+        "synonyms": [
+          "actual_cost",
+          "actual cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_cost_capex",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Cost Capex (from API field: ActualCostCAPEX)",
+        "synonyms": [
+          "actual_cost_capex",
+          "actual cost capex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_cost_lr",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Cost Lr (from API field: ActualCostLR)",
+        "synonyms": [
+          "actual_cost_lr",
+          "actual cost lr",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_labor_and_third_party_nlr_non_billable_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Labor And Third Party Nlr Non Billable Costs (from API field: ActualLaborAndThirdPartyNLRNonBillableCosts)",
+        "synonyms": [
+          "actual_labor_and_third_party_nlr_non_billable_costs",
+          "actual labor and third party nlr non billable costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_cost_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Cost Nlr (from API field: ActualCostNLR)",
+        "synonyms": [
+          "actual_cost_nlr",
+          "actual cost nlr",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_cost_nlr_capex",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Cost Nlr Capex (from API field: ActualCostNLRCapex)",
+        "synonyms": [
+          "actual_cost_nlr_capex",
+          "actual cost nlr capex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_cost_nlr_opex",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Cost Nlr Opex (from API field: ActualCostNLROpex)",
+        "synonyms": [
+          "actual_cost_nlr_opex",
+          "actual cost nlr opex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_cost_opex",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Cost Opex (from API field: ActualCostOPEX)",
+        "synonyms": [
+          "actual_cost_opex",
+          "actual cost opex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_duration",
+        "data_type": "double",
+        "description": "Actual Duration (from API field: ActualDuration)",
+        "synonyms": [
+          "actual_duration",
+          "actual duration",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_effort",
+        "data_type": "double",
+        "description": "Actual Effort (from API field: ActualEffort)",
+        "synonyms": [
+          "actual_effort",
+          "actual effort"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_third_party_nlr_non_billable_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Third Party Nlr Non Billable Costs (from API field: ActualThirdPartyNLRNonBillableCosts)",
+        "synonyms": [
+          "actual_third_party_nlr_non_billable_costs",
+          "actual third party nlr non billable costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "actual_non_billable_hours",
+        "data_type": "double",
+        "description": "Actual Non Billable Hours (from API field: ActualNonBillableHours)",
+        "synonyms": [
+          "actual_non_billable_hours",
+          "actual non billable hours",
+          "thời lượng",
+          "số giờ"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "aggregated_stopwatches_count",
+        "data_type": "double",
+        "description": "Aggregated Stopwatches Count (from API field: AggregatedStopwatchesCount)",
+        "synonyms": [
+          "aggregated_stopwatches_count",
+          "aggregated stopwatches count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "baseline_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Baseline Cost (from API field: BaselineCost)",
+        "synonyms": [
+          "baseline_cost",
+          "baseline cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "baseline_costs_variance",
+        "data_type": "decimal(18,2)",
+        "description": "Baseline Costs Variance (from API field: BaselineCostsVariance)",
+        "synonyms": [
+          "baseline_costs_variance",
+          "baseline costs variance",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "baseline_duration",
+        "data_type": "double",
+        "description": "Baseline Duration (from API field: BaselineDuration)",
+        "synonyms": [
+          "baseline_duration",
+          "baseline duration",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "baseline_duration_variance",
+        "data_type": "double",
+        "description": "Baseline Duration Variance (from API field: BaselineDurationVariance)",
+        "synonyms": [
+          "baseline_duration_variance",
+          "baseline duration variance",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "baseline_work",
+        "data_type": "double",
+        "description": "Baseline Work (from API field: BaselineWork)",
+        "synonyms": [
+          "baseline_work",
+          "baseline work"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "baseline_work_variance",
+        "data_type": "double",
+        "description": "Baseline Work Variance (from API field: BaselineWorkVariance)",
+        "synonyms": [
+          "baseline_work_variance",
+          "baseline work variance"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_third_party_nlr_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Third Party Nlr Costs (from API field: BudgetThirdPartyNLRCosts)",
+        "synonyms": [
+          "budget_third_party_nlr_costs",
+          "budget third party nlr costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_third_party_nlr_billable_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Third Party Nlr Billable Costs (from API field: BudgetThirdPartyNLRBillableCosts)",
+        "synonyms": [
+          "budget_third_party_nlr_billable_costs",
+          "budget third party nlr billable costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_cost_capex",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Cost Capex (from API field: BudgetCostCAPEX)",
+        "synonyms": [
+          "budget_cost_capex",
+          "budget cost capex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "capex_budget_ytd",
+        "data_type": "decimal(18,2)",
+        "description": "Capex Budget Ytd (from API field: CapexBudgetYTD)",
+        "synonyms": [
+          "capex_budget_ytd",
+          "capex budget ytd",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_cost_lr",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Cost Lr (from API field: BudgetCostLR)",
+        "synonyms": [
+          "budget_cost_lr",
+          "budget cost lr",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_labor_and_third_party_nlr_non_billable_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Labor And Third Party Nlr Non Billable Costs (from API field: BudgetLaborAndThirdPartyNLRNonBillableCosts)",
+        "synonyms": [
+          "budget_labor_and_third_party_nlr_non_billable_costs",
+          "budget labor and third party nlr non billable costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_cost_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Cost Nlr (from API field: BudgetCostNLR)",
+        "synonyms": [
+          "budget_cost_nlr",
+          "budget cost nlr",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_cost_opex",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Cost Opex (from API field: BudgetCostOPEX)",
+        "synonyms": [
+          "budget_cost_opex",
+          "budget cost opex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "opex_budget_ytd",
+        "data_type": "decimal(18,2)",
+        "description": "Opex Budget Ytd (from API field: OpexBudgetYTD)",
+        "synonyms": [
+          "opex_budget_ytd",
+          "opex budget ytd",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_third_party_nlr_non_billable_costs",
+        "data_type": "decimal(18,2)",
+        "description": "Budget Third Party Nlr Non Billable Costs (from API field: BudgetThirdPartyNLRNonBillableCosts)",
+        "synonyms": [
+          "budget_third_party_nlr_non_billable_costs",
+          "budget third party nlr non billable costs",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budget_status",
+        "data_type": "string",
+        "description": "Budget Status (from API field: BudgetStatus)",
+        "synonyms": [
+          "budget_status",
+          "budget status",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "planned_amount",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Amount (from API field: PlannedAmount)",
+        "synonyms": [
+          "planned_amount",
+          "planned amount",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "planned_budget",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Budget (from API field: PlannedBudget)",
+        "synonyms": [
+          "planned_budget",
+          "planned budget",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "budgeted_hours",
+        "data_type": "double",
+        "description": "Budgeted Hours (from API field: BudgetedHours)",
+        "synonyms": [
+          "budgeted_hours",
+          "budgeted hours",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "charged_amount",
+        "data_type": "decimal(18,2)",
+        "description": "Charged Amount (from API field: ChargedAmount)",
+        "synonyms": [
+          "charged_amount",
+          "charged amount",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "conflicts",
+        "data_type": "double",
+        "description": "Conflicts (from API field: Conflicts)",
+        "synonyms": [
+          "conflicts"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "cost_balance",
+        "data_type": "decimal(18,2)",
+        "description": "Cost Balance (from API field: CostBalance)",
+        "synonyms": [
+          "cost_balance",
+          "cost balance",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "cost_currency_type",
+        "data_type": "string",
+        "description": "Cost Currency Type (from API field: CostCurrencyType)",
+        "synonyms": [
+          "cost_currency_type",
+          "cost currency type",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "cost_variance",
+        "data_type": "decimal(18,2)",
+        "description": "Cost Variance (from API field: CostVariance)",
+        "synonyms": [
+          "cost_variance",
+          "cost variance",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "cpi",
+        "data_type": "double",
+        "description": "Cpi (from API field: CPI)",
+        "synonyms": [
+          "cpi"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "duration",
+        "data_type": "double",
+        "description": "Duration (from API field: Duration)",
+        "synonyms": [
+          "duration",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "duration_variance",
+        "data_type": "double",
+        "description": "Duration Variance (from API field: DurationVariance)",
+        "synonyms": [
+          "duration_variance",
+          "duration variance",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "priority",
+        "data_type": "double",
+        "description": "Priority (from API field: Priority)",
+        "synonyms": [
+          "priority"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "estimated_duration",
+        "data_type": "double",
+        "description": "Estimated Duration (from API field: EstimatedDuration)",
+        "synonyms": [
+          "estimated_duration",
+          "estimated duration",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "executable",
+        "data_type": "double",
+        "description": "Executable (from API field: Executable)",
+        "synonyms": [
+          "executable"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "expected_progress",
+        "data_type": "double",
+        "description": "Expected Progress (from API field: ExpectedProgress)",
+        "synonyms": [
+          "expected_progress",
+          "expected progress"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "financial_end",
+        "data_type": "double",
+        "description": "Financial End (from API field: FinancialEnd)",
+        "synonyms": [
+          "financial_end",
+          "financial end"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "financial_start",
+        "data_type": "double",
+        "description": "Financial Start (from API field: FinancialStart)",
+        "synonyms": [
+          "financial_start",
+          "financial start"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fixed_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Fixed Cost (from API field: FixedCost)",
+        "synonyms": [
+          "fixed_cost",
+          "fixed cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fixed_price",
+        "data_type": "decimal(18,2)",
+        "description": "Fixed Price (from API field: FixedPrice)",
+        "synonyms": [
+          "fixed_price",
+          "fixed price",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_budgeted_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Budgeted Cost (from API field: FYBudgetedCost)",
+        "synonyms": [
+          "fy_budgeted_cost",
+          "fy budgeted cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_budgeted_cost_capex",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Budgeted Cost Capex (from API field: FYBudgetedCostCapex)",
+        "synonyms": [
+          "fy_budgeted_cost_capex",
+          "fy budgeted cost capex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_budgeted_cost_lr",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Budgeted Cost Lr (from API field: FYBudgetedCostLR)",
+        "synonyms": [
+          "fy_budgeted_cost_lr",
+          "fy budgeted cost lr",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_budgeted_cost_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Budgeted Cost Nlr (from API field: FYBudgetedCostNLR)",
+        "synonyms": [
+          "fy_budgeted_cost_nlr",
+          "fy budgeted cost nlr",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_budgeted_cost_opex",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Budgeted Cost Opex (from API field: FYBudgetedCostOpex)",
+        "synonyms": [
+          "fy_budgeted_cost_opex",
+          "fy budgeted cost opex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_forecastat_completion_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Forecastat Completion Cost (from API field: FYForecastatCompletionCost)",
+        "synonyms": [
+          "fy_forecastat_completion_cost",
+          "fy forecastat completion cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_forecast_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Forecast Cost (from API field: FYForecastCost)",
+        "synonyms": [
+          "fy_forecast_cost",
+          "fy forecast cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_forecast_cost_capex",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Forecast Cost Capex (from API field: FYForecastCostCapex)",
+        "synonyms": [
+          "fy_forecast_cost_capex",
+          "fy forecast cost capex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "fy_forecast_cost_opex",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Forecast Cost Opex (from API field: FYForecastCostOpex)",
+        "synonyms": [
+          "fy_forecast_cost_opex",
+          "fy forecast cost opex",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "instance_number",
+        "data_type": "double",
+        "description": "Instance Number (from API field: InstanceNumber)",
+        "synonyms": [
+          "instance_number",
+          "instance number"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "occurence_duration",
+        "data_type": "double",
+        "description": "Occurence Duration (from API field: OccurenceDuration)",
+        "synonyms": [
+          "occurence_duration",
+          "occurence duration",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "occurrences",
+        "data_type": "double",
+        "description": "Occurrences (from API field: Occurrences)",
+        "synonyms": [
+          "occurrences"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "on_critical_path",
+        "data_type": "double",
+        "description": "On Critical Path (from API field: OnCriticalPath)",
+        "synonyms": [
+          "on_critical_path",
+          "on critical path"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "recurrence_interval",
+        "data_type": "double",
+        "description": "Recurrence Interval (from API field: RecurrenceInterval)",
+        "synonyms": [
+          "recurrence_interval",
+          "recurrence interval"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "planned_net_profitability",
+        "data_type": "double",
+        "description": "Planned Net Profitability (from API field: PlannedNetProfitability)",
+        "synonyms": [
+          "planned_net_profitability",
+          "planned net profitability"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "planned_margin",
+        "data_type": "double",
+        "description": "Planned Margin (from API field: PlannedMargin)",
+        "synonyms": [
+          "planned_margin",
+          "planned margin"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "project_capex_forecastat_completion_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Project Capex Forecastat Completion Cost (from API field: ProjectCapexForecastatCompletionCost)",
+        "synonyms": [
+          "project_capex_forecastat_completion_cost",
+          "project capex forecastat completion cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "project_forecastat_completion_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Project Forecastat Completion Cost (from API field: ProjectForecastatCompletionCost)",
+        "synonyms": [
+          "project_forecastat_completion_cost",
+          "project forecastat completion cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "project_opex_forecastat_completion_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Project Opex Forecastat Completion Cost (from API field: ProjectOpexForecastatCompletionCost)",
+        "synonyms": [
+          "project_opex_forecastat_completion_cost",
+          "project opex forecastat completion cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "recurrence_day_of_month",
+        "data_type": "double",
+        "description": "Recurrence Day Of Month (from API field: RecurrenceDayOfMonth)",
+        "synonyms": [
+          "recurrence_day_of_month",
+          "recurrence day of month"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "remaining_effort",
+        "data_type": "double",
+        "description": "Remaining Effort (from API field: RemainingEffort)",
+        "synonyms": [
+          "remaining_effort",
+          "remaining effort"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "remaining_forecast_cost_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Remaining Forecast Cost Nlr (from API field: RemainingForecastCostNLR)",
+        "synonyms": [
+          "remaining_forecast_cost_nlr",
+          "remaining forecast cost nlr",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "rpi",
+        "data_type": "double",
+        "description": "Rpi (from API field: RPI)",
+        "synonyms": [
+          "rpi"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "rtcpi",
+        "data_type": "double",
+        "description": "Rtcpi (from API field: RTCPI)",
+        "synonyms": [
+          "rtcpi"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "set_by_leveling",
+        "data_type": "double",
+        "description": "Set By Leveling (from API field: SetByLeveling)",
+        "synonyms": [
+          "set_by_leveling",
+          "set by leveling"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "spi",
+        "data_type": "double",
+        "description": "Spi (from API field: SPI)",
+        "synonyms": [
+          "spi"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "stopwatches_count",
+        "data_type": "double",
+        "description": "Stopwatches Count (from API field: StopwatchesCount)",
+        "synonyms": [
+          "stopwatches_count",
+          "stopwatches count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "target_margin",
+        "data_type": "double",
+        "description": "Target Margin (from API field: TargetMargin)",
+        "synonyms": [
+          "target_margin",
+          "target margin"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "tcpi",
+        "data_type": "double",
+        "description": "Tcpi (from API field: TCPI)",
+        "synonyms": [
+          "tcpi"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "total_estimated_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Total Estimated Cost (from API field: TotalEstimatedCost)",
+        "synonyms": [
+          "total_estimated_cost",
+          "total estimated cost",
+          "ngân sách",
+          "chi phí",
+          "tiền"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "week_days",
+        "data_type": "double",
+        "description": "Week Days (from API field: WeekDays)",
+        "synonyms": [
+          "week_days",
+          "week days"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "work",
+        "data_type": "double",
+        "description": "Work (from API field: Work)",
+        "synonyms": [
+          "work"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "work_variance",
+        "data_type": "double",
+        "description": "Work Variance (from API field: WorkVariance)",
+        "synonyms": [
+          "work_variance",
+          "work variance"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "active_stopwatch",
+        "data_type": "string",
+        "description": "Active Stopwatch (from API field: ActiveStopwatch)",
+        "synonyms": [
+          "active_stopwatch",
+          "active stopwatch"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "actual_billed_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Billed Expenses (from API field: ActualBilledExpenses)",
+        "synonyms": [
+          "actual_billed_expenses",
+          "actual billed expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "actual_net_profit",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Net Profit (from API field: ActualNetProfit)",
+        "synonyms": [
+          "actual_net_profit",
+          "actual net profit"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "capex_actual_ytd",
+        "data_type": "decimal(18,2)",
+        "description": "Capex Actual Ytd (from API field: CapexActualYTD)",
+        "synonyms": [
+          "capex_actual_ytd",
+          "capex actual ytd"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "opex_actual_ytd",
+        "data_type": "decimal(18,2)",
+        "description": "Opex Actual Ytd (from API field: OpexActualYTD)",
+        "synonyms": [
+          "opex_actual_ytd",
+          "opex actual ytd"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "actual_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Expenses (from API field: ActualExpenses)",
+        "synonyms": [
+          "actual_expenses",
+          "actual expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "actual_net_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Net Revenue (from API field: ActualNetRevenue)",
+        "synonyms": [
+          "actual_net_revenue",
+          "actual net revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "actual_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Revenue (from API field: ActualRevenue)",
+        "synonyms": [
+          "actual_revenue",
+          "actual revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "actual_revenue_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Actual Revenue Nlr (from API field: ActualRevenueNLR)",
+        "synonyms": [
+          "actual_revenue_nlr",
+          "actual revenue nlr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "object_alias",
+        "data_type": "string",
+        "description": "Object Alias (from API field: ObjectAlias)",
+        "synonyms": [
+          "object_alias",
+          "object alias"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "allocation",
+        "data_type": "decimal(18,2)",
+        "description": "Allocation (from API field: Allocation)",
+        "synonyms": [
+          "allocation"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "allow_reporting_on_sub_items",
+        "data_type": "boolean",
+        "description": "Allow Reporting On Sub Items (from API field: AllowReportingOnSubItems)",
+        "synonyms": [
+          "allow_reporting_on_sub_items",
+          "allow reporting on sub items"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "manager",
+        "data_type": "string",
+        "description": "Manager (from API field: Manager)",
+        "synonyms": [
+          "manager",
+          "người phụ trách",
+          "nhân sự",
+          "chủ sở hứu"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "baseline_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Baseline Revenue (from API field: BaselineRevenue)",
+        "synonyms": [
+          "baseline_revenue",
+          "baseline revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "baseline_revenue_variance",
+        "data_type": "decimal(18,2)",
+        "description": "Baseline Revenue Variance (from API field: BaselineRevenueVariance)",
+        "synonyms": [
+          "baseline_revenue_variance",
+          "baseline revenue variance"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "billable",
+        "data_type": "boolean",
+        "description": "Billable (from API field: Billable)",
+        "synonyms": [
+          "billable"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "calculate_completeness_based_on_efforts",
+        "data_type": "boolean",
+        "description": "Calculate Completeness Based On Efforts (from API field: CalculateCompletenessBasedOnEfforts)",
+        "synonyms": [
+          "calculate_completeness_based_on_efforts",
+          "calculate completeness based on efforts"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "charged",
+        "data_type": "string",
+        "description": "Charged (from API field: Charged)",
+        "synonyms": [
+          "charged"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "commit_level",
+        "data_type": "string",
+        "description": "Commit Level (from API field: CommitLevel)",
+        "synonyms": [
+          "commit_level",
+          "commit level"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "conflict_type",
+        "data_type": "string",
+        "description": "Conflict Type (from API field: ConflictType)",
+        "synonyms": [
+          "conflict_type",
+          "conflict type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "scheduling_type",
+        "data_type": "string",
+        "description": "Scheduling Type (from API field: SchedulingType)",
+        "synonyms": [
+          "scheduling_type",
+          "scheduling type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "contract",
+        "data_type": "string",
+        "description": "Contract (from API field: Contract)",
+        "synonyms": [
+          "contract"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "contract_purchase_order",
+        "data_type": "string",
+        "description": "Contract Purchase Order (from API field: ContractPurchaseOrder)",
+        "synonyms": [
+          "contract_purchase_order",
+          "contract purchase order"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "country",
+        "data_type": "string",
+        "description": "Country (from API field: Country)",
+        "synonyms": [
+          "country"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "created_on",
+        "data_type": "date",
+        "description": "Created On (from API field: CreatedOn)",
+        "synonyms": [
+          "created_on",
+          "created on"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "workdays_only",
+        "data_type": "boolean",
+        "description": "Workdays Only (from API field: WorkdaysOnly)",
+        "synonyms": [
+          "workdays_only",
+          "workdays only"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "deliverable",
+        "data_type": "boolean",
+        "description": "Deliverable (from API field: Deliverable)",
+        "synonyms": [
+          "deliverable"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "deliverable_type",
+        "data_type": "string",
+        "description": "Deliverable Type (from API field: DeliverableType)",
+        "synonyms": [
+          "deliverable_type",
+          "deliverable type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "description",
+        "data_type": "string",
+        "description": "Description (from API field: Description)",
+        "synonyms": [
+          "description"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "direct_actual_billed_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Direct Actual Billed Expenses (from API field: DirectActualBilledExpenses)",
+        "synonyms": [
+          "direct_actual_billed_expenses",
+          "direct actual billed expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "direct_actual_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Direct Actual Expenses (from API field: DirectActualExpenses)",
+        "synonyms": [
+          "direct_actual_expenses",
+          "direct actual expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "direct_planned_billed_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Direct Planned Billed Expenses (from API field: DirectPlannedBilledExpenses)",
+        "synonyms": [
+          "direct_planned_billed_expenses",
+          "direct planned billed expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "direct_planned_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Direct Planned Expenses (from API field: DirectPlannedExpenses)",
+        "synonyms": [
+          "direct_planned_expenses",
+          "direct planned expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "direct_projected_billed_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Direct Projected Billed Expenses (from API field: DirectProjectedBilledExpenses)",
+        "synonyms": [
+          "direct_projected_billed_expenses",
+          "direct projected billed expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "direct_projected_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Direct Projected Expenses (from API field: DirectProjectedExpenses)",
+        "synonyms": [
+          "direct_projected_expenses",
+          "direct projected expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "currency_eac",
+        "data_type": "decimal(18,2)",
+        "description": "Currency Eac (from API field: CurrencyEAC)",
+        "synonyms": [
+          "currency_eac",
+          "currency eac"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "earned_value",
+        "data_type": "decimal(18,2)",
+        "description": "Earned Value (from API field: EarnedValue)",
+        "synonyms": [
+          "earned_value",
+          "earned value"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "entity_owner",
+        "data_type": "string",
+        "description": "Entity Owner (from API field: EntityOwner)",
+        "synonyms": [
+          "entity_owner",
+          "entity owner",
+          "người phụ trách",
+          "nhân sự",
+          "chủ sở hứu"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "currency_etc",
+        "data_type": "decimal(18,2)",
+        "description": "Currency Etc (from API field: CurrencyETC)",
+        "synonyms": [
+          "currency_etc",
+          "currency etc"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "expected_net_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Expected Net Revenue (from API field: ExpectedNetRevenue)",
+        "synonyms": [
+          "expected_net_revenue",
+          "expected net revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "planned_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Revenue (from API field: PlannedRevenue)",
+        "synonyms": [
+          "planned_revenue",
+          "planned revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "expected_revenue_lr",
+        "data_type": "decimal(18,2)",
+        "description": "Expected Revenue Lr (from API field: ExpectedRevenueLR)",
+        "synonyms": [
+          "expected_revenue_lr",
+          "expected revenue lr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "expense_type",
+        "data_type": "string",
+        "description": "Expense Type (from API field: ExpenseType)",
+        "synonyms": [
+          "expense_type",
+          "expense type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "external_id",
+        "data_type": "string",
+        "description": "External Id (from API field: ExternalID)",
+        "synonyms": [
+          "external_id",
+          "external id",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "funding",
+        "data_type": "decimal(18,2)",
+        "description": "Funding (from API field: Funding)",
+        "synonyms": [
+          "funding"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "funding_available",
+        "data_type": "decimal(18,2)",
+        "description": "Funding Available (from API field: FundingAvailable)",
+        "synonyms": [
+          "funding_available",
+          "funding available"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "funding_gap",
+        "data_type": "decimal(18,2)",
+        "description": "Funding Gap (from API field: FundingGap)",
+        "synonyms": [
+          "funding_gap",
+          "funding gap"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "funding_remaining",
+        "data_type": "decimal(18,2)",
+        "description": "Funding Remaining (from API field: FundingRemaining)",
+        "synonyms": [
+          "funding_remaining",
+          "funding remaining"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "funding_variance",
+        "data_type": "decimal(18,2)",
+        "description": "Funding Variance (from API field: FundingVariance)",
+        "synonyms": [
+          "funding_variance",
+          "funding variance"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "fy_expected_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Expected Revenue (from API field: FYExpectedRevenue)",
+        "synonyms": [
+          "fy_expected_revenue",
+          "fy expected revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "fy_expected_revenue_lr",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Expected Revenue Lr (from API field: FYExpectedRevenueLR)",
+        "synonyms": [
+          "fy_expected_revenue_lr",
+          "fy expected revenue lr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "fy_forecast_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Forecast Revenue (from API field: FYForecastRevenue)",
+        "synonyms": [
+          "fy_forecast_revenue",
+          "fy forecast revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "fy_planned_profit",
+        "data_type": "decimal(18,2)",
+        "description": "Fy Planned Profit (from API field: FYPlannedProfit)",
+        "synonyms": [
+          "fy_planned_profit",
+          "fy planned profit"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "geographical_region",
+        "data_type": "string",
+        "description": "Geographical Region (from API field: GeographicalRegion)",
+        "synonyms": [
+          "geographical_region",
+          "geographical region"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "sysid",
+        "data_type": "string",
+        "description": "Sysid (from API field: SYSID)",
+        "synonyms": [
+          "sysid",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "image_url",
+        "data_type": "string",
+        "description": "Image Url (from API field: ImageUrl)",
+        "synonyms": [
+          "image_url",
+          "image url"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "importance",
+        "data_type": "string",
+        "description": "Importance (from API field: Importance)",
+        "synonyms": [
+          "importance"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "imported_from",
+        "data_type": "string",
+        "description": "Imported From (from API field: ImportedFrom)",
+        "synonyms": [
+          "imported_from",
+          "imported from"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "individual_reporting",
+        "data_type": "boolean",
+        "description": "Individual Reporting (from API field: IndividualReporting)",
+        "synonyms": [
+          "individual_reporting",
+          "individual reporting"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "internal_id",
+        "data_type": "string",
+        "description": "Internal Id (from API field: InternalId)",
+        "synonyms": [
+          "internal_id",
+          "internal id",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "internal_status",
+        "data_type": "string",
+        "description": "Internal Status (from API field: InternalStatus)",
+        "synonyms": [
+          "internal_status",
+          "internal status",
+          "trạng thái",
+          "giai đoạn",
+          "tình trạng"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "entity_type",
+        "data_type": "string",
+        "description": "Entity Type (from API field: EntityType)",
+        "synonyms": [
+          "entity_type",
+          "entity type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "task_reporting_policy",
+        "data_type": "string",
+        "description": "Task Reporting Policy (from API field: TaskReportingPolicy)",
+        "synonyms": [
+          "task_reporting_policy",
+          "task reporting policy"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "recurrence_month_of_year",
+        "data_type": "string",
+        "description": "Recurrence Month Of Year (from API field: RecurrenceMonthOfYear)",
+        "synonyms": [
+          "recurrence_month_of_year",
+          "recurrence month of year"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "name",
+        "data_type": "string",
+        "description": "Name (from API field: Name)",
+        "synonyms": [
+          "name",
+          "tên",
+          "tiêu đề",
+          "title"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "order_id",
+        "data_type": "string",
+        "description": "Order Id (from API field: OrderID)",
+        "synonyms": [
+          "order_id",
+          "order id",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "overview",
+        "data_type": "string",
+        "description": "Overview (from API field: Overview)",
+        "synonyms": [
+          "overview"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "overview1",
+        "data_type": "string",
+        "description": "Overview1 (from API field: Overview1)",
+        "synonyms": [
+          "overview1"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "overview2",
+        "data_type": "string",
+        "description": "Overview2 (from API field: Overview2)",
+        "synonyms": [
+          "overview2"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "overview3",
+        "data_type": "string",
+        "description": "Overview3 (from API field: Overview3)",
+        "synonyms": [
+          "overview3"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "overview4",
+        "data_type": "string",
+        "description": "Overview4 (from API field: Overview4)",
+        "synonyms": [
+          "overview4"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "overview5",
+        "data_type": "string",
+        "description": "Overview5 (from API field: Overview5)",
+        "synonyms": [
+          "overview5"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "parent",
+        "data_type": "string",
+        "description": "Parent (from API field: Parent)",
+        "synonyms": [
+          "parent"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "milestone",
+        "data_type": "string",
+        "description": "Milestone (from API field: Milestone)",
+        "synonyms": [
+          "milestone"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "parent_project",
+        "data_type": "string",
+        "description": "Parent Project (from API field: ParentProject)",
+        "synonyms": [
+          "parent_project",
+          "parent project"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "pending",
+        "data_type": "string",
+        "description": "Pending (from API field: Pending)",
+        "synonyms": [
+          "pending"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "phase",
+        "data_type": "string",
+        "description": "Phase (from API field: Phase)",
+        "synonyms": [
+          "phase",
+          "trạng thái",
+          "giai đoạn",
+          "tình trạng"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "planned_billed_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Billed Expenses (from API field: PlannedBilledExpenses)",
+        "synonyms": [
+          "planned_billed_expenses",
+          "planned billed expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "planned_net_profit",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Net Profit (from API field: PlannedNetProfit)",
+        "synonyms": [
+          "planned_net_profit",
+          "planned net profit"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "planned_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Expenses (from API field: PlannedExpenses)",
+        "synonyms": [
+          "planned_expenses",
+          "planned expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "planned_profit",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Profit (from API field: PlannedProfit)",
+        "synonyms": [
+          "planned_profit",
+          "planned profit"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "planned_revenue_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Planned Revenue Nlr (from API field: PlannedRevenueNLR)",
+        "synonyms": [
+          "planned_revenue_nlr",
+          "planned revenue nlr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "profitability",
+        "data_type": "decimal(18,2)",
+        "description": "Profitability (from API field: Profitability)",
+        "synonyms": [
+          "profitability"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "project",
+        "data_type": "string",
+        "description": "Project (from API field: Project)",
+        "synonyms": [
+          "project"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "projected_billed_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Projected Billed Expenses (from API field: ProjectedBilledExpenses)",
+        "synonyms": [
+          "projected_billed_expenses",
+          "projected billed expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "projected_expenses",
+        "data_type": "decimal(18,2)",
+        "description": "Projected Expenses (from API field: ProjectedExpenses)",
+        "synonyms": [
+          "projected_expenses",
+          "projected expenses"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "recurrence_type",
+        "data_type": "string",
+        "description": "Recurrence Type (from API field: RecurrenceType)",
+        "synonyms": [
+          "recurrence_type",
+          "recurrence type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "remaining_forecast_revenue_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Remaining Forecast Revenue Nlr (from API field: RemainingForecastRevenueNLR)",
+        "synonyms": [
+          "remaining_forecast_revenue_nlr",
+          "remaining forecast revenue nlr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "reportable",
+        "data_type": "boolean",
+        "description": "Reportable (from API field: Reportable)",
+        "synonyms": [
+          "reportable"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "created_by",
+        "data_type": "string",
+        "description": "Created By (from API field: CreatedBy)",
+        "synonyms": [
+          "created_by",
+          "created by"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "resource_utilization_category",
+        "data_type": "string",
+        "description": "Resource Utilization Category (from API field: ResourceUtilizationCategory)",
+        "synonyms": [
+          "resource_utilization_category",
+          "resource utilization category"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "revenue_balance",
+        "data_type": "decimal(18,2)",
+        "description": "Revenue Balance (from API field: RevenueBalance)",
+        "synonyms": [
+          "revenue_balance",
+          "revenue balance"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "revenue_currency_type",
+        "data_type": "string",
+        "description": "Revenue Currency Type (from API field: RevenueCurrencyType)",
+        "synonyms": [
+          "revenue_currency_type",
+          "revenue currency type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "currency_reac",
+        "data_type": "decimal(18,2)",
+        "description": "Currency Reac (from API field: CurrencyREAC)",
+        "synonyms": [
+          "currency_reac",
+          "currency reac"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "currency_retc",
+        "data_type": "decimal(18,2)",
+        "description": "Currency Retc (from API field: CurrencyRETC)",
+        "synonyms": [
+          "currency_retc",
+          "currency retc"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "revenue_earned_value",
+        "data_type": "decimal(18,2)",
+        "description": "Revenue Earned Value (from API field: RevenueEarnedValue)",
+        "synonyms": [
+          "revenue_earned_value",
+          "revenue earned value"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "sku",
+        "data_type": "string",
+        "description": "Sku (from API field: SKU)",
+        "synonyms": [
+          "sku"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "state",
+        "data_type": "string",
+        "description": "State (from API field: State)",
+        "synonyms": [
+          "state",
+          "trạng thái",
+          "giai đoạn",
+          "tình trạng"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "state_province",
+        "data_type": "string",
+        "description": "State Province (from API field: StateProvince)",
+        "synonyms": [
+          "state_province",
+          "state province",
+          "trạng thái",
+          "giai đoạn",
+          "tình trạng"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "track_status",
+        "data_type": "string",
+        "description": "Track Status (from API field: TrackStatus)",
+        "synonyms": [
+          "track_status",
+          "track status",
+          "trạng thái",
+          "giai đoạn",
+          "tình trạng"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "status_changed_on",
+        "data_type": "date",
+        "description": "Status Changed On (from API field: StatusChangedOn)",
+        "synonyms": [
+          "status_changed_on",
+          "status changed on"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "sub_allocation",
+        "data_type": "decimal(18,2)",
+        "description": "Sub Allocation (from API field: SubAllocation)",
+        "synonyms": [
+          "sub_allocation",
+          "sub allocation"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "suggested_actual_net_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Suggested Actual Net Revenue (from API field: SuggestedActualNetRevenue)",
+        "synonyms": [
+          "suggested_actual_net_revenue",
+          "suggested actual net revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "suggested_actual_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Suggested Actual Revenue (from API field: SuggestedActualRevenue)",
+        "synonyms": [
+          "suggested_actual_revenue",
+          "suggested actual revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "suggested_actual_revenue_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Suggested Actual Revenue Nlr (from API field: SuggestedActualRevenueNLR)",
+        "synonyms": [
+          "suggested_actual_revenue_nlr",
+          "suggested actual revenue nlr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "suggested_net_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Suggested Net Revenue (from API field: SuggestedNetRevenue)",
+        "synonyms": [
+          "suggested_net_revenue",
+          "suggested net revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "suggested_revenue_nlr",
+        "data_type": "decimal(18,2)",
+        "description": "Suggested Revenue Nlr (from API field: SuggestedRevenueNLR)",
+        "synonyms": [
+          "suggested_revenue_nlr",
+          "suggested revenue nlr"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "suggested_revenue",
+        "data_type": "decimal(18,2)",
+        "description": "Suggested Revenue (from API field: SuggestedRevenue)",
+        "synonyms": [
+          "suggested_revenue",
+          "suggested revenue"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "task_type",
+        "data_type": "string",
+        "description": "Task Type (from API field: TaskType)",
+        "synonyms": [
+          "task_type",
+          "task type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "template",
+        "data_type": "string",
+        "description": "Template (from API field: Template)",
+        "synonyms": [
+          "template"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "floating_task",
+        "data_type": "boolean",
+        "description": "Floating Task (from API field: FloatingTask)",
+        "synonyms": [
+          "floating_task",
+          "floating task"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "total_allocation",
+        "data_type": "decimal(18,2)",
+        "description": "Total Allocation (from API field: TotalAllocation)",
+        "synonyms": [
+          "total_allocation",
+          "total allocation"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "unallocated",
+        "data_type": "decimal(18,2)",
+        "description": "Unallocated (from API field: Unallocated)",
+        "synonyms": [
+          "unallocated"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "unused_allocation",
+        "data_type": "decimal(18,2)",
+        "description": "Unused Allocation (from API field: UnusedAllocation)",
+        "synonyms": [
+          "unused_allocation",
+          "unused allocation"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "work_policy",
+        "data_type": "string",
+        "description": "Work Policy (from API field: WorkPolicy)",
+        "synonyms": [
+          "work_policy",
+          "work policy"
+        ],
+        "chart_role": "dimension"
+      }
+    ],
+    "time_dimensions": [
+      {
+        "name": "actual_effort_updated_from_timesheets",
+        "data_type": "boolean",
+        "description": "Actual Effort Updated From Timesheets (from API field: ActualEffortUpdatedFromTimesheets)",
+        "synonyms": [
+          "actual_effort_updated_from_timesheets",
+          "actual effort updated from timesheets",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "actual_end_date",
+        "data_type": "date",
+        "description": "Actual End Date (from API field: ActualEndDate)",
+        "synonyms": [
+          "actual_end_date",
+          "actual end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "actual_start_date",
+        "data_type": "date",
+        "description": "Actual Start Date (from API field: ActualStartDate)",
+        "synonyms": [
+          "actual_start_date",
+          "actual start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "currency_exchange_date",
+        "data_type": "date",
+        "description": "Currency Exchange Date (from API field: CurrencyExchangeDate)",
+        "synonyms": [
+          "currency_exchange_date",
+          "currency exchange date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "baseline_creation_date",
+        "data_type": "date",
+        "description": "Baseline Creation Date (from API field: BaselineCreationDate)",
+        "synonyms": [
+          "baseline_creation_date",
+          "baseline creation date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "baseline_due_date",
+        "data_type": "date",
+        "description": "Baseline Due Date (from API field: BaselineDueDate)",
+        "synonyms": [
+          "baseline_due_date",
+          "baseline due date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "baseline_due_date_variance",
+        "data_type": "double",
+        "description": "Baseline Due Date Variance (from API field: BaselineDueDateVariance)",
+        "synonyms": [
+          "baseline_due_date_variance",
+          "baseline due date variance",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "baseline_start_date",
+        "data_type": "date",
+        "description": "Baseline Start Date (from API field: BaselineStartDate)",
+        "synonyms": [
+          "baseline_start_date",
+          "baseline start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "baseline_start_date_variance",
+        "data_type": "double",
+        "description": "Baseline Start Date Variance (from API field: BaselineStartDateVariance)",
+        "synonyms": [
+          "baseline_start_date_variance",
+          "baseline start date variance",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "committed_date",
+        "data_type": "date",
+        "description": "Committed Date (from API field: CommittedDate)",
+        "synonyms": [
+          "committed_date",
+          "committed date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "due_date",
+        "data_type": "date",
+        "description": "Due Date (from API field: DueDate)",
+        "synonyms": [
+          "due_date",
+          "due date",
+          "hạn chót",
+          "deadline"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "due_date_variance",
+        "data_type": "double",
+        "description": "Due Date Variance (from API field: DueDateVariance)",
+        "synonyms": [
+          "due_date_variance",
+          "due date variance",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "earliest_end_date",
+        "data_type": "date",
+        "description": "Earliest End Date (from API field: EarliestEndDate)",
+        "synonyms": [
+          "earliest_end_date",
+          "earliest end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "earliest_start_date",
+        "data_type": "date",
+        "description": "Earliest Start Date (from API field: EarliestStartDate)",
+        "synonyms": [
+          "earliest_start_date",
+          "earliest start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "recurrence_end_date",
+        "data_type": "date",
+        "description": "Recurrence End Date (from API field: RecurrenceEndDate)",
+        "synonyms": [
+          "recurrence_end_date",
+          "recurrence end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "estimated_end_date",
+        "data_type": "date",
+        "description": "Estimated End Date (from API field: EstimatedEndDate)",
+        "synonyms": [
+          "estimated_end_date",
+          "estimated end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "estimated_start_date",
+        "data_type": "date",
+        "description": "Estimated Start Date (from API field: EstimatedStartDate)",
+        "synonyms": [
+          "estimated_start_date",
+          "estimated start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "financial_old_start_date",
+        "data_type": "date",
+        "description": "Financial Old Start Date (from API field: FinancialOldStartDate)",
+        "synonyms": [
+          "financial_old_start_date",
+          "financial old start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_replanning_date",
+        "data_type": "date",
+        "description": "Last Replanning Date (from API field: LastReplanningDate)",
+        "synonyms": [
+          "last_replanning_date",
+          "last replanning date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_by",
+        "data_type": "string",
+        "description": "Last Updated By (from API field: LastUpdatedBy)",
+        "synonyms": [
+          "last_updated_by",
+          "last updated by",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_on",
+        "data_type": "date",
+        "description": "Last Updated On (from API field: LastUpdatedOn)",
+        "synonyms": [
+          "last_updated_on",
+          "last updated on",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "latest_end_date",
+        "data_type": "date",
+        "description": "Latest End Date (from API field: LatestEndDate)",
+        "synonyms": [
+          "latest_end_date",
+          "latest end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "latest_start_date",
+        "data_type": "date",
+        "description": "Latest Start Date (from API field: LatestStartDate)",
+        "synonyms": [
+          "latest_start_date",
+          "latest start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "occurrence_start_date",
+        "data_type": "date",
+        "description": "Occurrence Start Date (from API field: OccurrenceStartDate)",
+        "synonyms": [
+          "occurrence_start_date",
+          "occurrence start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "pending_time_tracking_effort",
+        "data_type": "double",
+        "description": "Pending Time Tracking Effort (from API field: PendingTimeTrackingEffort)",
+        "synonyms": [
+          "pending_time_tracking_effort",
+          "pending time tracking effort",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "reportable_end_date",
+        "data_type": "date",
+        "description": "Reportable End Date (from API field: ReportableEndDate)",
+        "synonyms": [
+          "reportable_end_date",
+          "reportable end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "reportable_start_date",
+        "data_type": "date",
+        "description": "Reportable Start Date (from API field: ReportableStartDate)",
+        "synonyms": [
+          "reportable_start_date",
+          "reportable start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "reporting_start_date",
+        "data_type": "date",
+        "description": "Reporting Start Date (from API field: ReportingStartDate)",
+        "synonyms": [
+          "reporting_start_date",
+          "reporting start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "resource_rate_date",
+        "data_type": "date",
+        "description": "Resource Rate Date (from API field: ResourceRateDate)",
+        "synonyms": [
+          "resource_rate_date",
+          "resource rate date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "recurrence_start_date",
+        "data_type": "date",
+        "description": "Recurrence Start Date (from API field: RecurrenceStartDate)",
+        "synonyms": [
+          "recurrence_start_date",
+          "recurrence start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "start_date",
+        "data_type": "date",
+        "description": "Start Date (from API field: StartDate)",
+        "synonyms": [
+          "start_date",
+          "start date",
+          "Ngày bắt đầu"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "start_date_variance",
+        "data_type": "double",
+        "description": "Start Date Variance (from API field: StartDateVariance)",
+        "synonyms": [
+          "start_date_variance",
+          "start date variance",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_by_system_on",
+        "data_type": "date",
+        "description": "Last Updated By System On (from API field: LastUpdatedBySystemOn)",
+        "synonyms": [
+          "last_updated_by_system_on",
+          "last updated by system on",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "time_tracking_billing",
+        "data_type": "decimal(18,2)",
+        "description": "Time Tracking Billing (from API field: TimeTrackingBilling)",
+        "synonyms": [
+          "time_tracking_billing",
+          "time tracking billing"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "time_tracking_cost",
+        "data_type": "decimal(18,2)",
+        "description": "Time Tracking Cost (from API field: TimeTrackingCost)",
+        "synonyms": [
+          "time_tracking_cost",
+          "time tracking cost"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "time_tracking_effort",
+        "data_type": "double",
+        "description": "Time Tracking Effort (from API field: TimeTrackingEffort)",
+        "synonyms": [
+          "time_tracking_effort",
+          "time tracking effort"
+        ],
+        "chart_role": "x_axis"
+      }
+    ]
+  }
+}

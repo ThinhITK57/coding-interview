@@ -1,0 +1,362 @@
+{
+  "type": "struct",
+  "fields": [
+    {
+      "name": "c_normalized_score",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_planned_revenue_m_rollup",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_planned_revenue_n_rollup",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_tot_plan_cont_rollup_m",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_tot_plan_cont_rollup_n",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_planned_objectives_m",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_planned_objectives_n",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_planned_target_m",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_planned_target_n",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_weight_assignments",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_weight_percentage",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_trigger_wfr",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "attachments_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "emails_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "notes_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "sub_objectives_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "percent_of_plan",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "actual_percent",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "planned_percent",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "weight",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_assignee",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_associated_contributions",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_associated_departments_portfolio",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_calculate_progress",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_department",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_n1_result_response",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_objective_progress_m",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_objective_progress_n",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_objective_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_record_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_reporter",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_trigger_wr",
+      "nullable": true,
+      "dataType": {
+        "type": "boolean"
+      }
+    },
+    {
+      "name": "entity_owner",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "associated_item",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "created_by",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "created_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "external_id",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "sysid",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "entity_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "name",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "parent_objective",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "state",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "status",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "currency_exchange_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "last_updated_by",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "last_updated_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "last_updated_by_system_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    }
+  ]
+}

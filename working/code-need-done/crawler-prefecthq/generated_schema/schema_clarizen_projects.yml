@@ -1,0 +1,5 @@
+version: 2
+models:
+ - name: "bronze_clarizen_projects"
+     description: "Raw flattened data from clarizenprojects API endpoint(API v2.0)"
+     columns:

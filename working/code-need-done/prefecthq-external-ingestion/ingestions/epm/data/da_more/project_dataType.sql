@@ -1,0 +1,23 @@
+(
+    SYSID STRING,
+    Name STRING,
+    ProjectType STRING,
+    TrackStatus STRING,
+    PercentCompleted DOUBLE,
+    C_Department STRING,
+    C_Assignee STRING,
+    CreatedBy STRING,
+    ProjectManager STRING,
+    C_ActionResources STRING,
+    State STRING,
+    Parent STRING,
+    ParentProject STRING,
+    Manager STRING,
+    C_AssociatedObjective STRING,
+    LastUpdatedOn DATE,
+    LastUpdatedBySystemOn DATE,
+    CreatedOn DATE,
+    EntityOwner STRING,
+    ExternalID STRING,
+    EntityType STRING
+)

@@ -1,0 +1,278 @@
+{
+  "type": "struct",
+  "fields": [
+    {
+      "name": "c_countof_sub_assignments",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_achievement_rate",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_essential_weight_total_percent",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_sum_target_weight_percent",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_sum_target_result_weight_all",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_sum_target_w_result_compliance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_assignment_weight_result",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_total_weight",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_weight_bonus",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_weight_collaboration",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_weight_collaboration_description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_weight_compliance",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "c_weight_policy",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "emails_count",
+      "nullable": true,
+      "dataType": {
+        "type": "double"
+      }
+    },
+    {
+      "name": "default_integration_path",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_assignee",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_assignment_number",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_assignor",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_department",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_parent_assignment",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_reporter",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_weight_bonus_description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_weight_policy_description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "created_by",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "created_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "external_id",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "sysid",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "image_url",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "entity_type",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "name",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "entity_owner",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "c_end_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "c_start_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "c_update_description",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "currency_exchange_date",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "last_updated_by",
+      "nullable": true,
+      "dataType": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "last_updated_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    },
+    {
+      "name": "last_updated_by_system_on",
+      "nullable": true,
+      "dataType": {
+        "type": "date"
+      }
+    }
+  ]
+}

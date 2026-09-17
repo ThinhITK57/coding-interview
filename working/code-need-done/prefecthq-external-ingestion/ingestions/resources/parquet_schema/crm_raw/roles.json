@@ -1,0 +1,126 @@
+{
+    "type": "struct",
+    "fields": 
+    [
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "created_by",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_by",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "default_role",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "addons",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "array",
+                "elementType": 
+                {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "name": "internal_name",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "string"
+            }
+        },
+        {
+            "name": "licensed_users_count",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        },
+        {
+            "name": "user_ids",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "array",
+                "elementType": 
+                {
+                    "type": "long"
+                }
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": 
+            {
+                "type": "long"
+            }
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+CREATE USER n8n WITH PASSWORD 'n8n';
+CREATE USER readonly WITH PASSWORD 'readonly';
+CREATE USER analytics WITH PASSWORD 'analytics';
+CREATE USER hive WITH PASSWORD 'hive';
+CREATE USER prefect WITH PASSWORD 'prefect';

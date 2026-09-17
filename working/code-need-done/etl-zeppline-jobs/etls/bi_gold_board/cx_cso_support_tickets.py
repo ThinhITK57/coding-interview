@@ -1,0 +1,85 @@
+%livy.pyspark
+spark.sql("""
+CREATE OR REPLACE VIEW bi_gold.cx_cso_support_tickets AS
+select
+	UPPER(action_program) as action_program,
+UPPER(assigned_to) as assigned_to,
+UPPER(call_reminder) as call_reminder,
+UPPER(issue_category) as issue_category,
+closed_at,
+UPPER(communication_effectiveness) as communication_effectiveness,
+UPPER(company_alias) as company_alias,
+UPPER(company_name) as company_name,
+created_at,
+UPPER(customer_entry_channel) as customer_entry_channel,
+customer_respond_date,
+customer_satisfaction_rating,
+UPPER(customer_group) as customer_group,
+first_responded_at,
+first_response_time_minutes,
+imported_ticket_date,
+imported_ticket_due_date,
+incident_root_cause,
+is_duplicated_ticket,
+is_overdue,
+is_vcs,
+UPPER(issues_type) as issues_type,
+l1,
+l1_time_actual_minutes,
+l1_time_allowed_minutes,
+l1_violated,
+l2,
+l2_time_actual_minutes,
+l2_time_allowed_minutes,
+l2_violated,
+l3,
+l3_time_actual_minutes,
+l3_time_allowed_minutes,
+l3_violated,
+l4,
+l4_time_actual_minutes,
+l4_time_allowed_minutes,
+l4_violated,
+UPPER(note) as note,
+is_notification,
+number_of_due_date_changes,
+old_due_date,
+is_one_day_before_due,
+is_one_hour_before_due,
+UPPER(priority_level) as priority_level,
+UPPER(urgency_level) as urgency_level,
+UPPER(reason) as reason,
+related_ticket,
+is_reminder_update,
+UPPER(requester_name) as requester_name,
+resolution_time_minutes,
+resolved_at,
+response_time_minutes,
+UPPER(sentiment) as sentiment,
+UPPER(severity_level) as severity_level,
+UPPER(spam_type) as spam_type,
+UPPER(status_name) as status_name,
+UPPER(subject) as subject,
+UPPER(support_category) as support_category,
+is_third_four_time,
+is_reopened_by_cx,
+ticket_id,
+time_to_response_minutes,
+ttr_overdue,
+updated_at,
+assigned_agent_stage,
+UPPER(customer_segment_l1) as customer_segment_l1,
+    UPPER(customer_segment_l2) as customer_segment_l2,
+    UPPER(customer_segment_l3) as customer_segment_l3,
+violated_level
+
+    
+FROM bi_silver.cx_cso_support_tickets
+""")
+
+# -- Truy vấn kiểm tra kết quả
+spark.sql("""
+    SELECT count(*)
+    FROM bi_gold.cx_cso_support_tickets
+    LIMIT 1
+""").show(truncate=False)

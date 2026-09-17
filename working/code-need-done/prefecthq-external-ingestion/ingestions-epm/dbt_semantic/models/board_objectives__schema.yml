@@ -1,0 +1,250 @@
+version: 2
+
+models:
+  - name: br06_board_objectives
+    description: >
+      Báo cáo Mục tiêu Ban Giám đốc (Mục tiêu BG).
+      Tập trung giám sát tiến độ thực hiện các chỉ tiêu cấp cao nhất của Ban Giám đốc giao ban,
+      đối chiếu giá trị cam kết (M/N) và kết quả giải ngân/thực đạt (Result M/N).
+      Bảng vật lý chỉ chứa đúng 17 cột dữ liệu thuần túy theo yêu cầu.
+      Toàn bộ công thức tính tỷ lệ hoàn thành Ban Giám đốc và mức chênh lệch GAP nằm tại dbt Semantic Layer.
+
+      Grain: Một dòng tương ứng với một chỉ tiêu cấp Ban Giám đốc.
+
+    meta:
+      label: "Báo Cáo Mục Tiêu Ban Giám Đốc"
+      group_label: "Executive EPM Reports"
+      owner: "data_engineering_team"
+
+      # ================================================================
+      # SEMANTIC GUIDANCE
+      # ================================================================
+      semantic_guidance:
+        source_type: "Board Targets"
+        grain: "One row per board quantitative target"
+        primary_date: "c_target_date_m"
+        primary_department_dimension: "c_department"
+        primary_assignee_dimension: "c_assignee"
+        primary_assignor_dimension: "c_assignor"
+
+        metric_rules:
+          total_bg_targets_count: >
+            Tổng số lượng chỉ tiêu do Ban Giám đốc giao ban điều hành.
+          achieved_bg_m_count: >
+            Số lượng chỉ tiêu đã đạt cam kết tối thiểu M của Ban Giám đốc.
+          achieved_bg_n_count: >
+            Số lượng chỉ tiêu đã đạt cam kết nâng cao N của Ban Giám đốc.
+          total_bg_value_m: >
+            Tổng giá trị cam kết định lượng mốc M của Ban Giám đốc.
+          total_bg_result_m: >
+            Tổng giá trị kết quả thực tế giải ngân/đạt được mốc M.
+          total_bg_gap_m: >
+            Tổng khoảng cách chênh lệch còn thiếu so với mục tiêu M của Ban Giám đốc.
+          bg_overall_achievement_rate_m: >
+            Tỷ lệ hoàn thành tổng thể các chỉ tiêu mốc M Ban Giám đốc giao: (Tổng result_m / Tổng value_m) * 100%.
+
+        restrictions:
+          - >
+            Bảng vật lý không chứa các phép chia tính tỷ lệ hoàn thành.
+          - >
+            Các công thức dưới đây phục vụ trực tiếp cho Trợ lý GenBI và Dashboard Ban Giám đốc.
+          - >
+            Dùng c_assignor để phân loại lãnh đạo phụ trách giao chỉ tiêu.
+
+      # ================================================================
+      # METRICS (LIGHTDASH / DBT METRIC SPECIFICATION)
+      # ================================================================
+      metrics:
+        # ------------------------------------------------
+        # TARGET COUNTS & MILESTONES
+        # ------------------------------------------------
+        - name: total_bg_targets_count
+          label: "Tổng số chỉ tiêu BG"
+          description: "Tổng số lượng chỉ tiêu cấp Ban Giám đốc."
+          type: count
+          sql: ${name}
+
+        - name: achieved_bg_m_count
+          label: "Số chỉ tiêu đạt mốc M"
+          description: "Số lượng chỉ tiêu đã đạt hoặc vượt cam kết tối thiểu M của Ban Giám đốc."
+          type: count
+          sql: |
+            CASE
+              WHEN ${c_target_result_m} >= ${c_target_value_m} AND ${c_target_value_m} > 0
+              THEN ${name}
+            END
+
+        - name: achieved_bg_n_count
+          label: "Số chỉ tiêu đạt mốc N"
+          description: "Số lượng chỉ tiêu đã đạt cam kết nâng cao N của Ban Giám đốc."
+          type: count
+          sql: |
+            CASE
+              WHEN ${c_target_result_n} >= ${c_target_value_n} AND ${c_target_value_n} > 0
+              THEN ${name}
+            END
+
+        # ------------------------------------------------
+        # VALUE & GAP METRICS
+        # ------------------------------------------------
+        - name: total_bg_value_m
+          label: "Tổng giá trị mục tiêu M (BG)"
+          description: "Tổng giá trị định lượng cam kết bắt buộc M của Ban Giám đốc."
+          type: sum
+          sql: ${c_target_value_m}
+
+        - name: total_bg_result_m
+          label: "Tổng kết quả thực đạt M (BG)"
+          description: "Tổng kết quả thực tế đạt được ở mốc M của Ban Giám đốc."
+          type: sum
+          sql: ${c_target_result_m}
+
+        - name: total_bg_gap_m
+          label: "Tổng khoảng cách GAP M (BG)"
+          description: "Tổng chênh lệch còn thiếu so với mốc M của Ban Giám đốc."
+          type: number
+          sql: |
+            SUM(COALESCE(${c_target_value_m}, 0.0)) - SUM(COALESCE(${c_target_result_m}, 0.0))
+
+        - name: bg_overall_achievement_rate_m
+          label: "Tỷ lệ đạt mục tiêu M toàn diện (%)"
+          description: "Tỷ lệ hoàn thành mức tối thiểu M toàn bộ danh mục chỉ tiêu Ban Giám đốc."
+          type: number
+          sql: |
+            CASE
+              WHEN SUM(COALESCE(${c_target_value_m}, 0.0)) > 0
+              THEN (SUM(COALESCE(${c_target_result_m}, 0.0)) * 100.0) / SUM(COALESCE(${c_target_value_m}, 0.0))
+              ELSE NULL
+            END
+
+        - name: unique_bg_assignor_count
+          label: "Số thành viên BGĐ giao việc"
+          description: "Số lượng thành viên Ban Giám đốc duy nhất tham gia giao chỉ tiêu."
+          type: count_distinct
+          sql: ${c_assignor}
+
+        - name: unique_departments_count
+          label: "Số phòng ban cam kết"
+          description: "Số lượng phòng ban/đơn vị nhận chỉ tiêu trực tiếp từ Ban Giám đốc."
+          type: count_distinct
+          sql: ${c_department}
+
+    columns:
+      - name: associated_objective
+        description: "Mã mục tiêu chiến lược BSC liên kết."
+        meta:
+          dimension:
+            type: string
+            label: "Mục Tiêu BSC"
+
+      - name: associated_item
+        description: "Mã dự án trọng điểm liên kết thực hiện."
+        meta:
+          dimension:
+            type: string
+            label: "Dự Án Liên Kết"
+
+      - name: target_type
+        description: "Phân loại chỉ tiêu Ban Giám đốc."
+        meta:
+          dimension:
+            type: string
+            label: "Loại Chỉ Tiêu"
+
+      - name: parent_target
+        description: "Chỉ tiêu cha cấp trên (nếu có)."
+        meta:
+          dimension:
+            type: string
+            label: "Chỉ Tiêu Cha"
+
+      - name: c_department
+        description: "Khối / Phòng ban chịu trách nhiệm chính trước Ban Giám đốc."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng Ban"
+
+      - name: name
+        description: "Tên chỉ tiêu Ban Giám đốc giao."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Chỉ Tiêu"
+
+      - name: c_assignee
+        description: "Cán bộ quản lý được Ban Giám đốc giao nhận nhiệm vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Người Nhận Việc"
+
+      - name: unit
+        description: "Đơn vị tính chỉ tiêu."
+        meta:
+          dimension:
+            type: string
+            label: "Đơn Vị Tính"
+
+      - name: c_target_date_m
+        description: "Hạn chốt cam kết hoàn thành mức M của Ban Giám đốc."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Chốt M"
+
+      - name: c_target_date_n
+        description: "Hạn chốt cam kết hoàn thành mức N của Ban Giám đốc."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Chốt N"
+
+      - name: c_target_value_m
+        description: "Giá trị cam kết mức tối thiểu Ban Giám đốc giao (M)."
+        meta:
+          dimension:
+            type: number
+            label: "Giá Trị Mục Tiêu M"
+
+      - name: c_target_value_n
+        description: "Giá trị cam kết mức nâng cao Ban Giám đốc giao (N)."
+        meta:
+          dimension:
+            type: number
+            label: "Giá Trị Mục Tiêu N"
+
+      - name: c_target_result_m
+        description: "Kết quả thực tế ghi nhận mức M."
+        meta:
+          dimension:
+            type: number
+            label: "Kết Quả Thực Đạt M"
+
+      - name: c_target_result_n
+        description: "Kết quả thực tế ghi nhận mức N."
+        meta:
+          dimension:
+            type: number
+            label: "Kết Quả Thực Đạt N"
+
+      - name: state
+        description: "Trạng thái vòng đời (Active, Completed)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng Thái Vòng Đời"
+
+      - name: status
+        description: "Đánh giá tình trạng thực hiện hiện tại."
+        meta:
+          dimension:
+            type: string
+            label: "Hiện Trạng"
+
+      - name: c_assignor
+        description: "Thành viên Ban Giám đốc giao nhiệm vụ."
+        meta:
+          dimension:
+            type: string
+            label: "Thành Viên BGĐ Giao Việc"

@@ -1,0 +1,19 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  
+  <proxies>
+    <proxy>
+      <id>vcs-proxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>10.255.249.100:</host>
+      <port>3128</port>
+      <!-- <username>namtv</username> -->
+      <!-- <password>your_password</password> -->
+      <nonProxyHosts>localhost|127.0.0.1|minio|hive-metastore|*.vcs.vn|*.viettelcyber.com</nonProxyHosts>
+    </proxy>
+  </proxies>
+
+</settings>

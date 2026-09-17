@@ -1,0 +1,5 @@
+version: 2
+models:
+ - name: "bronze_clarizen_c_assignments"
+     description: "Raw flattened data from clarizenc_assignments API endpoint(API v2.0)"
+     columns:

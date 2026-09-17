@@ -1,0 +1,192 @@
+version: 2
+
+models:
+  - name: project_report
+    description: >
+      Báo cáo tổng quan Dự án.
+      Cung cấp thông tin tiến độ, phân loại dự án, ban điều hành dự án (PM, Assignor, Assignee)
+      và trạng thái vòng đời.
+      Bảng vật lý chỉ chứa đúng 11 cột chuẩn hóa của nghiệp vụ.
+      Các chỉ số về sức khỏe dự án, tỷ lệ hoàn thành trung bình thuộc về Semantic Layer.
+
+      Grain: Một dòng tương ứng với một Dự án.
+
+    meta:
+      label: "Báo Cáo Tổng Quan Dự Án"
+      group_label: "Executive EPM Reports"
+      owner: "data_engineering_team"
+
+      # ================================================================
+      # SEMANTIC GUIDANCE
+      # ================================================================
+      semantic_guidance:
+        source_type: "Project Portfolio"
+        grain: "One row per project"
+        primary_date: "due_date"
+        primary_department_dimension: "department"
+        primary_pm_dimension: "project_manager"
+        primary_state_dimension: "state"
+
+        metric_rules:
+          total_projects_count: >
+            Tổng số lượng dự án trong danh mục quản lý (Portfolio).
+          active_projects_count: >
+            Số lượng dự án đang trong trạng thái Active hoạt động.
+          overdue_projects_count: >
+            Số lượng dự án đã quá hạn kết thúc kế hoạch mà chưa hoàn thành 100%.
+          completed_projects_count: >
+            Số lượng dự án đã hoàn thành (percent_completed >= 100%).
+          portfolio_avg_progress: >
+            Tiến độ hoàn thành bình quân của toàn bộ danh mục dự án.
+          unique_pm_count: >
+            Số lượng Giám đốc dự án (PM) duy nhất đang tham gia quản lý.
+
+        restrictions:
+          - >
+            Bảng vật lý không chứa điểm sức khỏe tổng hợp (health score) hay cờ rủi ro.
+          - >
+            Các phép tính tỷ lệ và cờ trễ hạn được xử lý tại tầng dbt Semantic Layer.
+          - >
+            Dùng due_date làm trục thời gian mặc định khi phân tích tiến độ bàn giao dự án.
+
+      # ================================================================
+      # METRICS (LIGHTDASH / DBT METRIC SPECIFICATION)
+      # ================================================================
+      metrics:
+        # ------------------------------------------------
+        # PROJECT COUNTS & LIFECYCLE
+        # ------------------------------------------------
+        - name: total_projects_count
+          label: "Tổng số dự án"
+          description: "Tổng số lượng dự án thuộc danh mục."
+          type: count
+          sql: ${name}
+
+        - name: active_projects_count
+          label: "Số dự án đang hoạt động"
+          description: "Số lượng dự án có trạng thái /State/Active."
+          type: count
+          sql: |
+            CASE
+              WHEN ${state} = '/State/Active'
+              THEN ${name}
+            END
+
+        - name: overdue_projects_count
+          label: "Số dự án quá hạn"
+          description: "Số lượng dự án đã quá hạn chốt (due_date) mà chưa hoàn thành 100%."
+          type: count
+          sql: |
+            CASE
+              WHEN ${due_date} < CURRENT_DATE AND (COALESCE(${percent_completed}, 0.0) < 100.0)
+              THEN ${name}
+            END
+
+        - name: completed_projects_count
+          label: "Số dự án hoàn thành"
+          description: "Số lượng dự án đã đạt 100% khối lượng công việc."
+          type: count
+          sql: |
+            CASE
+              WHEN ${percent_completed} >= 100.0
+              THEN ${name}
+            END
+
+        # ------------------------------------------------
+        # PORTFOLIO PROGRESS & MANAGEMENT
+        # ------------------------------------------------
+        - name: portfolio_avg_progress
+          label: "Tiến độ danh mục trung bình (%)"
+          description: "Tiến độ hoàn thành bình quân của danh mục dự án được lọc."
+          type: average
+          sql: ${percent_completed}
+
+        - name: unique_pm_count
+          label: "Số Giám đốc dự án (PM)"
+          description: "Số lượng PM duy nhất chịu trách nhiệm điều hành dự án."
+          type: count_distinct
+          sql: ${project_manager}
+
+        - name: unique_departments_count
+          label: "Số phòng ban chủ trì"
+          description: "Số lượng phòng ban chủ trì thực hiện dự án."
+          type: count_distinct
+          sql: ${department}
+
+    columns:
+      - name: name
+        description: "Tên dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Dự Án"
+
+      - name: project_type
+        description: "Phân loại dự án (Nội bộ, Khách hàng, Nghiên cứu, Chuyển đổi số)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại Dự Án"
+
+      - name: due_date
+        description: "Hạn chót kết thúc toàn bộ dự án."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày Kết Thúc Kế Hoạch"
+
+      - name: state
+        description: "Trạng thái vòng đời (/State/Draft, /State/Active, /State/Completed, /State/Canceled)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng Thái Vòng Đời"
+
+      - name: status
+        description: "Hiện trạng tiến độ đánh giá bởi PM (On Track, At Risk, Critical)."
+        meta:
+          dimension:
+            type: string
+            label: "Tình Trạng Tiến Độ"
+
+      - name: percent_completed
+        description: "Tỷ lệ % hoàn thành toàn bộ khối lượng công việc của dự án."
+        meta:
+          dimension:
+            type: number
+            label: "Tiến Độ Hoàn Thành (%)"
+
+      - name: department
+        description: "Khối / Phòng ban chủ trì thực hiện dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng Ban Chủ Trì"
+
+      - name: assignor
+        description: "Lãnh đạo phê duyệt / Người giao dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Người Giao Dự Án"
+
+      - name: assignee
+        description: "Đơn vị hoặc cá nhân đầu mối tiếp nhận dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Đầu Mối Tiếp Nhận"
+
+      - name: project_manager
+        description: "Giám đốc dự án (PM - Project Manager) chịu trách nhiệm trực tiếp."
+        meta:
+          dimension:
+            type: string
+            label: "Giám Đốc Dự Án (PM)"
+
+      - name: resources
+        description: "Nhân sự và danh sách đơn vị tham gia dự án."
+        meta:
+          dimension:
+            type: string
+            label: "Nguồn Lực Dự Án"

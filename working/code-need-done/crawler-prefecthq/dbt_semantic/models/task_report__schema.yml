@@ -1,0 +1,234 @@
+version: 2
+
+models:
+  - name: task_report
+    description: >
+      Báo cáo chi tiết công việc (Tasks - BR-03).
+      Phục vụ quản lý điều hành WBS, phân bổ công việc, theo dõi trạng thái tích hợp Jira
+      và tiến độ thực thi thực tế của từng nhân sự.
+      Bảng vật lý chỉ chứa đúng 15 cột nghiệp vụ theo quy chuẩn.
+      Các phép tính năng suất, tồn đọng giờ công (work backlog) thuộc về dbt Semantic Layer.
+
+      Grain: Một dòng tương ứng với một Task/Công việc.
+
+    meta:
+      label: "Báo Cáo Chi Tiết Task"
+      group_label: "Operational EPM Reports"
+      owner: "data_engineering_team"
+
+      # ================================================================
+      # SEMANTIC GUIDANCE
+      # ================================================================
+      semantic_guidance:
+        source_type: "Task Execution"
+        grain: "One row per task"
+        primary_date: "due_date"
+        primary_department_dimension: "department"
+        primary_assignee_dimension: "assignee"
+        primary_project_dimension: "parent_project"
+        primary_status_dimension: "jira_status"
+
+        metric_rules:
+          total_tasks_count: >
+            Tổng số lượng công việc/task trong hệ thống.
+          overdue_tasks_count: >
+            Số lượng task đã quá hạn giao mà chưa hoàn thành 100%.
+          completed_tasks_count: >
+            Số lượng task đã kết thúc hoàn toàn (percent_completed >= 100%).
+          total_planned_work_hours: >
+            Tổng số giờ công kế hoạch được phân bổ.
+          total_remaining_work_hours: >
+            Tổng số giờ công ước lượng còn phải thực hiện (Backlog).
+          avg_task_progress: >
+            Tiến độ hoàn thành trung bình của các task.
+
+        restrictions:
+          - >
+            Bảng vật lý không chứa cột suy diễn như remaining_work hay is_delayed.
+          - >
+            Số giờ công work và duration được chuẩn hóa theo đơn vị giờ và ngày làm việc.
+          - >
+            Dùng department và parent_project làm các chiều phân tích WBS chính.
+
+      # ================================================================
+      # METRICS (LIGHTDASH / DBT METRIC SPECIFICATION)
+      # ================================================================
+      metrics:
+        # ------------------------------------------------
+        # TASK VOLUME & STATUS
+        # ------------------------------------------------
+        - name: total_tasks_count
+          label: "Tổng số task"
+          description: "Tổng số lượng công việc WBS."
+          type: count
+          sql: ${name}
+
+        - name: overdue_tasks_count
+          label: "Số task quá hạn"
+          description: "Số lượng task đã quá hạn chốt (due_date) mà chưa hoàn tất 100%."
+          type: count
+          sql: |
+            CASE
+              WHEN ${due_date} < CURRENT_DATE AND (COALESCE(${percent_completed}, 0.0) < 100.0)
+              THEN ${name}
+            END
+
+        - name: completed_tasks_count
+          label: "Số task hoàn thành"
+          description: "Số lượng task đã đạt 100% tiến độ."
+          type: count
+          sql: |
+            CASE
+              WHEN ${percent_completed} >= 100.0
+              THEN ${name}
+            END
+
+        - name: in_progress_tasks_count
+          label: "Số task đang triển khai"
+          description: "Số lượng task đang thực hiện (tiến độ từ 0% đến dưới 100%)."
+          type: count
+          sql: |
+            CASE
+              WHEN ${percent_completed} > 0.0 AND ${percent_completed} < 100.0
+              THEN ${name}
+            END
+
+        # ------------------------------------------------
+        # WORKLOAD & EFFORT METRICS
+        # ------------------------------------------------
+        - name: total_planned_work_hours
+          label: "Tổng giờ công kế hoạch"
+          description: "Tổng số giờ công kế hoạch được phê duyệt của danh mục task."
+          type: sum
+          sql: ${work}
+
+        - name: total_remaining_work_hours
+          label: "Tổng giờ công còn lại (Backlog)"
+          description: "Tổng khối lượng giờ công tồn đọng cần xử lý để hoàn thành các task."
+          type: number
+          sql: |
+            SUM(COALESCE(${work}, 0.0) * (1.0 - (COALESCE(${percent_completed}, 0.0) / 100.0)))
+
+        - name: avg_task_progress
+          label: "Tiến độ task trung bình (%)"
+          description: "Tiến độ bình quân của toàn bộ các task được lọc."
+          type: average
+          sql: ${percent_completed}
+
+        - name: active_assignee_count
+          label: "Số nhân sự thực hiện"
+          description: "Số lượng nhân sự duy nhất được giao thực thi task."
+          type: count_distinct
+          sql: ${assignee}
+
+        - name: active_projects_count
+          label: "Số dự án liên quan"
+          description: "Số lượng dự án duy nhất có task phát sinh."
+          type: count_distinct
+          sql: ${parent_project}
+
+    columns:
+      - name: task_type
+        description: "Phân loại công việc (Milestone, Task chuẩn, Deliverable, Bug fix)."
+        meta:
+          dimension:
+            type: string
+            label: "Loại Task"
+
+      - name: assignee
+        description: "Cán bộ nhân viên chịu trách nhiệm thực thi task."
+        meta:
+          dimension:
+            type: string
+            label: "Người Thực Hiện"
+
+      - name: department
+        description: "Phòng ban / Đơn vị tiếp nhận và xử lý task."
+        meta:
+          dimension:
+            type: string
+            label: "Phòng Ban"
+
+      - name: resources
+        description: "Tổng số nhân sự được phân bổ tham gia thực hiện."
+        meta:
+          dimension:
+            type: string
+            label: "Số Lượng Nhân Lực"
+
+      - name: parent_project
+        description: "Mã dự án cha quản lý task này."
+        meta:
+          dimension:
+            type: string
+            label: "Dự Án Trực Thuộc"
+
+      - name: jira_status
+        description: "Trạng thái công việc đồng bộ từ Jira (To Do, In Progress, Review, Done)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng Thái Jira"
+
+      - name: name
+        description: "Tiêu đề công việc."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Task"
+
+      - name: description
+        description: "Thuyết minh chi tiết yêu cầu công việc."
+        meta:
+          dimension:
+            type: string
+            label: "Mô Tả"
+
+      - name: work
+        description: "Tổng số giờ công kế hoạch được phê duyệt."
+        meta:
+          dimension:
+            type: number
+            label: "Giờ Công Kế Hoạch"
+
+      - name: duration
+        description: "Tổng thời lượng tính theo ngày làm việc."
+        meta:
+          dimension:
+            type: number
+            label: "Thời Lượng (Ngày)"
+
+      - name: epm_default
+        description: "Đường dẫn tích hợp mặc định hoặc mã quy chuẩn hệ thống EPM."
+        meta:
+          dimension:
+            type: string
+            label: "EPM Mặc Định"
+
+      - name: start_date
+        description: "Ngày bắt đầu thực hiện theo kế hoạch."
+        meta:
+          dimension:
+            type: date
+            label: "Ngày Bắt Đầu"
+
+      - name: due_date
+        description: "Hạn chót kết thúc công việc."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Kết Thúc"
+
+      - name: percent_completed
+        description: "Tỷ lệ % hoàn thành hiện tại."
+        meta:
+          dimension:
+            type: number
+            label: "Tiến Độ (%)"
+
+      - name: update_description
+        description: "Giải trình, cập nhật tiến độ mới nhất từ nhân sự."
+        meta:
+          dimension:
+            type: string
+            label: "Nội Dung Cập Nhật"

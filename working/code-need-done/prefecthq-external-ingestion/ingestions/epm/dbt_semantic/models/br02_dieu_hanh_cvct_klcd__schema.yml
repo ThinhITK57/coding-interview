@@ -1,0 +1,180 @@
+version: 2
+
+models:
+  - name: br02_dieu_hanh_cvct_klcd
+    description: >
+      Báo cáo điều hành Công việc trọng tâm / Khối lượng công việc (CVCT/KLCĐ - BR-02).
+      Theo dõi tiến độ cam kết và rủi ro chậm hạn của các đầu việc quan trọng.
+      Bảng vật lý chỉ chứa 8 cột chuẩn hóa của nghiệp vụ.
+      Mọi suy luận về hạn chót, quá hạn, mức độ cấp bách thuộc về tầng Semantic Layer.
+
+      Grain: Một dòng tương ứng với một hạng mục công việc/chỉ tiêu trọng tâm.
+
+    meta:
+      label: "Báo cáo Điều hành CVCT/KLCĐ (BR-02)"
+      group_label: "Executive EPM Reports"
+      owner: "data_engineering_team"
+
+      # ================================================================
+      # SEMANTIC GUIDANCE
+      # ================================================================
+      semantic_guidance:
+        source_type: "Targets / Key Task Execution"
+        grain: "One row per key work item"
+        primary_date: "due_date"
+        primary_assignee_dimension: "assignee"
+        primary_status_dimension: "status"
+
+        metric_rules:
+          total_cvct_count: >
+            Tổng số lượng hạng mục CVCT/KLCĐ được giao điều hành.
+          overdue_cvct_count: >
+            Số lượng đầu việc đã quá hạn giao (due_date < CURRENT_DATE) mà chưa đạt 100% tiến độ.
+          completed_cvct_count: >
+            Số lượng đầu việc đã hoàn thành (percent_completed >= 100%).
+          in_progress_cvct_count: >
+            Số lượng đầu việc đang trong tiến độ thực hiện (0 < percent_completed < 100%).
+          avg_completion_pct: >
+            Tỷ lệ hoàn thành trung bình của danh mục công việc điều hành.
+          active_assignee_count: >
+            Số lượng nhân sự phụ trách duy nhất có nhận đầu việc CVCT/KLCĐ.
+
+        restrictions:
+          - >
+            Bảng vật lý không chứa cờ quá hạn hay khoảng cách ngày.
+          - >
+            Các chỉ số dưới đây được sinh tự động khi truy vấn qua GenBI hoặc semantic layer.
+          - >
+            Sử dụng due_date làm trục thời gian mặc định khi phân tích xu hướng chậm hạn.
+
+      # ================================================================
+      # METRICS (LIGHTDASH / DBT METRIC SPECIFICATION)
+      # ================================================================
+      metrics:
+        # ------------------------------------------------
+        # WORK ITEM COUNTS & STATUS
+        # ------------------------------------------------
+        - name: total_cvct_count
+          label: "Tổng số CVCT/KLCĐ"
+          description: "Tổng số hạng mục công việc trọng tâm / khối lượng công việc."
+          type: count
+          sql: ${name}
+
+        - name: overdue_cvct_count
+          label: "Số công việc quá hạn"
+          description: "Số lượng công việc đã quá hạn chốt (due_date) mà chưa hoàn thành 100%."
+          type: count
+          sql: |
+            CASE
+              WHEN ${due_date} < CURRENT_DATE AND (COALESCE(${percent_completed}, 0.0) < 100.0)
+              THEN ${name}
+            END
+
+        - name: completed_cvct_count
+          label: "Số công việc đã hoàn thành"
+          description: "Số lượng công việc đã đạt 100% tiến độ."
+          type: count
+          sql: |
+            CASE
+              WHEN ${percent_completed} >= 100.0
+              THEN ${name}
+            END
+
+        - name: in_progress_cvct_count
+          label: "Số công việc đang thực hiện"
+          description: "Số lượng công việc đang triển khai (tiến độ từ 0% đến dưới 100%)."
+          type: count
+          sql: |
+            CASE
+              WHEN ${percent_completed} > 0.0 AND ${percent_completed} < 100.0
+              THEN ${name}
+            END
+
+        # ------------------------------------------------
+        # PROGRESS & EFFICIENCY METRICS
+        # ------------------------------------------------
+        - name: avg_completion_pct
+          label: "Tiến độ hoàn thành trung bình (%)"
+          description: "Tiến độ bình quân của danh mục công việc được lọc."
+          type: average
+          sql: ${percent_completed}
+
+        - name: overdue_ratio_pct
+          label: "Tỷ lệ quá hạn (%)"
+          description: "Tỷ lệ phần trăm công việc bị trễ hạn trên tổng số việc được giao."
+          type: number
+          sql: |
+            CASE
+              WHEN COUNT(${name}) > 0
+              THEN (COUNT(CASE WHEN ${due_date} < CURRENT_DATE AND (COALESCE(${percent_completed}, 0.0) < 100.0) THEN ${name} END) * 100.0) / COUNT(${name})
+              ELSE 0.0
+            END
+
+        - name: active_assignee_count
+          label: "Số nhân sự phụ trách"
+          description: "Số lượng cán bộ/nhân sự duy nhất đang đảm nhiệm CVCT/KLCĐ."
+          type: count_distinct
+          sql: ${assignee}
+
+        - name: total_target_value_m
+          label: "Tổng giá trị mục tiêu M"
+          description: "Tổng giá trị định lượng mục tiêu M gắn với CVCT."
+          type: sum
+          sql: ${target_value_m}
+
+    columns:
+      - name: assignee
+        description: "Cán bộ / Nhân sự chịu trách nhiệm chính về đầu việc."
+        meta:
+          dimension:
+            type: string
+            label: "Người Thực Hiện"
+
+      - name: resources
+        description: "Tổng số nhân sự phối hợp và vị trí giữ chỗ."
+        meta:
+          dimension:
+            type: string
+            label: "Nhân Lực"
+
+      - name: name
+        description: "Tiêu đề công việc trọng tâm / chỉ tiêu cam kết."
+        meta:
+          dimension:
+            type: string
+            label: "Tên Công Việc"
+
+      - name: status
+        description: "Trạng thái đánh giá hiện tại (Đang thực hiện, Tạm hoãn, Hoàn thành)."
+        meta:
+          dimension:
+            type: string
+            label: "Trạng Thái"
+
+      - name: due_date
+        description: "Hạn chót hoàn thành công việc theo kế hoạch phê duyệt."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Hoàn Thành"
+
+      - name: percent_completed
+        description: "Tỷ lệ % khối lượng công việc đã thực hiện được."
+        meta:
+          dimension:
+            type: number
+            label: "Tiến Độ Hoàn Thành (%)"
+
+      - name: target_value_m
+        description: "Mục tiêu định lượng bắt buộc (Must-have)."
+        meta:
+          dimension:
+            type: number
+            label: "Mục Tiêu M"
+
+      - name: target_date_m
+        description: "Hạn chốt cam kết theo mốc M."
+        meta:
+          dimension:
+            type: date
+            label: "Hạn Chốt M"

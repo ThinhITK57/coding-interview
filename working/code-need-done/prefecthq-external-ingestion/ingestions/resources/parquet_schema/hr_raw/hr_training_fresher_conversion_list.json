@@ -1,0 +1,22 @@
+{
+  "type": "struct",
+  "fields": [
+    { "name": "sequence_number", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "full_name", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "employee_code", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "onboard_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "conversion_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "role_base", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "level_region", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "department_n_2", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "current_work_location", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "interview_result", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "interview_result_file", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "filename", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "crawled_at_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "onboard_date_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "conversion_date_ts", "nullable": true, "dataType": { "type": "long" } },
+    { "name": "snapshot_date", "nullable": true, "dataType": { "type": "string" } },
+    { "name": "snapshot_date_ts", "nullable": true, "dataType": { "type": "long" } }
+  ]
+}

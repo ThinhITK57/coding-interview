@@ -1,0 +1,460 @@
+{
+  "metadata_version": "2.0",
+  "table_name": "c_assignments",
+  "trino_table_ref": "hive.global_clean.c_assignments",
+  "table_description": "",
+  "semantic_layer": {
+    "metrics": [
+      {
+        "name": "c_countof_sub_assignments",
+        "data_type": "double",
+        "description": "C Countof Sub Assignments (from API field: C_CountofSubAssignments)",
+        "synonyms": [
+          "c_countof_sub_assignments",
+          "c countof sub assignments"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_achievement_rate",
+        "data_type": "double",
+        "description": "C Achievement Rate (from API field: C_AchievementRate)",
+        "synonyms": [
+          "c_achievement_rate",
+          "c achievement rate",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_essential_weight_total_percent",
+        "data_type": "double",
+        "description": "C Essential Weight Total Percent (from API field: C_EssentialWeightTotalPercent)",
+        "synonyms": [
+          "c_essential_weight_total_percent",
+          "c essential weight total percent",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_sum_target_weight_percent",
+        "data_type": "double",
+        "description": "C Sum Target Weight Percent (from API field: C_SumTargetWeightPercent)",
+        "synonyms": [
+          "c_sum_target_weight_percent",
+          "c sum target weight percent",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_sum_target_result_weight_all",
+        "data_type": "double",
+        "description": "C Sum Target Result Weight All (from API field: C_SumTargetResultWeightAll)",
+        "synonyms": [
+          "c_sum_target_result_weight_all",
+          "c sum target result weight all"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_sum_target_w_result_compliance",
+        "data_type": "double",
+        "description": "C Sum Target W Result Compliance (from API field: C_SumTargetWResultCompliance)",
+        "synonyms": [
+          "c_sum_target_w_result_compliance",
+          "c sum target w result compliance"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_assignment_weight_result",
+        "data_type": "double",
+        "description": "C Total Assignment Weight Result (from API field: C_TotalAssignmentWeightResult)",
+        "synonyms": [
+          "c_total_assignment_weight_result",
+          "c total assignment weight result"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_total_weight",
+        "data_type": "double",
+        "description": "C Total Weight (from API field: C_TotalWeight)",
+        "synonyms": [
+          "c_total_weight",
+          "c total weight"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_weight_bonus",
+        "data_type": "double",
+        "description": "C Weight Bonus (from API field: C_WeightBonus)",
+        "synonyms": [
+          "c_weight_bonus",
+          "c weight bonus"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_weight_collaboration",
+        "data_type": "double",
+        "description": "C Weight Collaboration (from API field: C_WeightCollaboration)",
+        "synonyms": [
+          "c_weight_collaboration",
+          "c weight collaboration",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_weight_collaboration_description",
+        "data_type": "string",
+        "description": "C Weight Collaboration Description (from API field: C_WeightCollaborationDescription)",
+        "synonyms": [
+          "c_weight_collaboration_description",
+          "c weight collaboration description",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_weight_compliance",
+        "data_type": "double",
+        "description": "C Weight Compliance (from API field: C_WeightCompliance)",
+        "synonyms": [
+          "c_weight_compliance",
+          "c weight compliance"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "c_weight_policy",
+        "data_type": "double",
+        "description": "C Weight Policy (from API field: C_WeightPolicy)",
+        "synonyms": [
+          "c_weight_policy",
+          "c weight policy"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "emails_count",
+        "data_type": "double",
+        "description": "Emails Count (from API field: EmailsCount)",
+        "synonyms": [
+          "emails_count",
+          "emails count"
+        ],
+        "aggregation_type": "sum",
+        "chart_role": "y_axis"
+      },
+      {
+        "name": "default_integration_path",
+        "data_type": "string",
+        "description": "Default Integration Path (from API field: DefaultIntegrationPath)",
+        "synonyms": [
+          "default_integration_path",
+          "default integration path",
+          "tiến độ",
+          "tỷ lệ",
+          "completion rate"
+        ],
+        "aggregation_type": "avg",
+        "chart_role": "y_axis"
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "c_assignee",
+        "data_type": "string",
+        "description": "C Assignee (from API field: C_Assignee)",
+        "synonyms": [
+          "c_assignee",
+          "c assignee",
+          "người phụ trách",
+          "nhân sự",
+          "chủ sở hứu"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_assignment_number",
+        "data_type": "string",
+        "description": "C Assignment Number (from API field: C_AssignmentNumber)",
+        "synonyms": [
+          "c_assignment_number",
+          "c assignment number"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_assignor",
+        "data_type": "string",
+        "description": "C Assignor (from API field: C_Assignor)",
+        "synonyms": [
+          "c_assignor",
+          "c assignor"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_department",
+        "data_type": "string",
+        "description": "C Department (from API field: C_Department)",
+        "synonyms": [
+          "c_department",
+          "c department"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_parent_assignment",
+        "data_type": "string",
+        "description": "C Parent Assignment (from API field: C_ParentAssignment)",
+        "synonyms": [
+          "c_parent_assignment",
+          "c parent assignment"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_reporter",
+        "data_type": "string",
+        "description": "C Reporter (from API field: C_Reporter)",
+        "synonyms": [
+          "c_reporter",
+          "c reporter"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_weight_bonus_description",
+        "data_type": "string",
+        "description": "C Weight Bonus Description (from API field: C_WeightBonusDescription)",
+        "synonyms": [
+          "c_weight_bonus_description",
+          "c weight bonus description"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "c_weight_policy_description",
+        "data_type": "string",
+        "description": "C Weight Policy Description (from API field: C_WeightPolicyDescription)",
+        "synonyms": [
+          "c_weight_policy_description",
+          "c weight policy description"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "created_by",
+        "data_type": "string",
+        "description": "Created By (from API field: CreatedBy)",
+        "synonyms": [
+          "created_by",
+          "created by"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "created_on",
+        "data_type": "date",
+        "description": "Created On (from API field: CreatedOn)",
+        "synonyms": [
+          "created_on",
+          "created on"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "description",
+        "data_type": "string",
+        "description": "Description (from API field: Description)",
+        "synonyms": [
+          "description"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "external_id",
+        "data_type": "string",
+        "description": "External Id (from API field: ExternalID)",
+        "synonyms": [
+          "external_id",
+          "external id",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "sysid",
+        "data_type": "string",
+        "description": "Sysid (from API field: SYSID)",
+        "synonyms": [
+          "sysid",
+          "mã",
+          "định danh",
+          "Identifier"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "image_url",
+        "data_type": "string",
+        "description": "Image Url (from API field: ImageUrl)",
+        "synonyms": [
+          "image_url",
+          "image url"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "entity_type",
+        "data_type": "string",
+        "description": "Entity Type (from API field: EntityType)",
+        "synonyms": [
+          "entity_type",
+          "entity type"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "name",
+        "data_type": "string",
+        "description": "Name (from API field: Name)",
+        "synonyms": [
+          "name",
+          "tên",
+          "tiêu đề",
+          "title"
+        ],
+        "chart_role": "dimension"
+      },
+      {
+        "name": "entity_owner",
+        "data_type": "string",
+        "description": "Entity Owner (from API field: EntityOwner)",
+        "synonyms": [
+          "entity_owner",
+          "entity owner",
+          "người phụ trách",
+          "nhân sự",
+          "chủ sở hứu"
+        ],
+        "chart_role": "dimension"
+      }
+    ],
+    "time_dimensions": [
+      {
+        "name": "c_end_date",
+        "data_type": "date",
+        "description": "C End Date (from API field: C_EndDate)",
+        "synonyms": [
+          "c_end_date",
+          "c end date",
+          "hạn chót",
+          "deadline",
+          "due date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "c_start_date",
+        "data_type": "date",
+        "description": "C Start Date (from API field: C_StartDate)",
+        "synonyms": [
+          "c_start_date",
+          "c start date",
+          "Ngày bắt đầu",
+          "start date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "c_update_description",
+        "data_type": "string",
+        "description": "C Update Description (from API field: C_UpdateDescription)",
+        "synonyms": [
+          "c_update_description",
+          "c update description"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "currency_exchange_date",
+        "data_type": "date",
+        "description": "Currency Exchange Date (from API field: CurrencyExchangeDate)",
+        "synonyms": [
+          "currency_exchange_date",
+          "currency exchange date"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_by",
+        "data_type": "string",
+        "description": "Last Updated By (from API field: LastUpdatedBy)",
+        "synonyms": [
+          "last_updated_by",
+          "last updated by",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_on",
+        "data_type": "date",
+        "description": "Last Updated On (from API field: LastUpdatedOn)",
+        "synonyms": [
+          "last_updated_on",
+          "last updated on",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      },
+      {
+        "name": "last_updated_by_system_on",
+        "data_type": "date",
+        "description": "Last Updated By System On (from API field: LastUpdatedBySystemOn)",
+        "synonyms": [
+          "last_updated_by_system_on",
+          "last updated by system on",
+          "Ngày cập nhật",
+          "last modified"
+        ],
+        "chart_role": "x_axis"
+      }
+    ]
+  }
+}

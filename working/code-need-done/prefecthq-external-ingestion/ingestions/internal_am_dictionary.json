@@ -1,0 +1,512 @@
+[
+    {
+        "company_alias": "VTNet",
+        "am_username": "trangpn1",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTT",
+        "am_username": "trangpn1",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTS",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Ban CNTT",
+        "am_username": "trangnth53",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291822",
+        "am_full_name": "Phạm Như Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VIC",
+        "am_username": "trangnth53",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291822",
+        "am_full_name": "Phạm Như Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VAI",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VSI",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VHT",
+        "am_username": "trangpn1",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTX",
+        "am_username": "trangpn1",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VSS",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VAM",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTAca",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Các Ban TĐ",
+        "am_username": "trangpn1",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "customer_segment_l1 = 'Nội bộ' and am_username = 'Nguyễn Thị Huyền Trang'",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "IDC",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTPost",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VCM",
+        "am_username": "trangpn1",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VCC",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTM",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTIT",
+        "am_username": "trangpn1",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VMC",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTK",
+        "am_username": "trangpn1",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VDS",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTSport",
+        "am_username": "trangpn1",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VCX",
+        "am_username": "thuyntm8",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VDTC",
+        "am_username": "trangpn1",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "XMCP",
+        "am_username": "trangpn1",
+        "internal_am_group": "Độc lập",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VTG",
+        "am_username": "trangnth53",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291822",
+        "am_full_name": "Phạm Như Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "9 thị trường",
+        "am_username": "trangnth53",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291822",
+        "am_full_name": "Phạm Như Trang",
+        "org_name": "",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT HCM",
+        "am_username": "sonta5@viettel.com.vn",
+        "internal_am_group": "Kênh bán ",
+        "am_user_id": "50000291830",
+        "am_full_name": "Tống Anh Sơn",
+        "org_name": "VT HCM - Viettel Thành phố Hồ Chí Minh",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VIDC",
+        "am_username": "trangpn1@viettel.com.vn",
+        "internal_am_group": "Kênh bán nếu chọn Channel/ còn HĐ trực tiếp là độc lập ",
+        "am_user_id": "50000291822",
+        "am_full_name": "Phạm Như Trang",
+        "org_name": "CÔNG TY TNHH VIETTEL-CHT (VIETTEL IDC)",
+        "note": "Cùng là một công ty",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "IDC",
+        "am_username": "thuyntm8@viettel.com.vn",
+        "internal_am_group": "Kênh bán nếu chọn Channel/ còn HĐ trực tiếp là độc lập ",
+        "am_user_id": "50000291818",
+        "am_full_name": "Nguyễn Thị Minh Thùy",
+        "org_name": "Công ty TNHH Viettel-CHT",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Mytel",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Telecom International Myanmar (MytelPay)",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Viettel",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Phụ thuộc",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Ban CNTT - Tập đoàn",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Peru",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Bitel (Peru)",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Myanmar",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Telecom International Myanmar Co., Ltd.",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "METFONE",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Viettel (Cambodia) PTE Ltd.",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Star Telecom",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Star Telecom Co. Ltd",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Movitel",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Movitel S.A",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Tanzania",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Halotel",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "Natcom",
+        "am_username": "trangnth53@os.viettel.com.vn",
+        "internal_am_group": "Thị trường",
+        "am_user_id": "50000291823",
+        "am_full_name": "Nguyễn Thị Huyền Trang",
+        "org_name": "Natcom S.A",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "TBV",
+        "am_username": "tannv15@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000292996",
+        "am_full_name": "Nguyễn Văn Tần",
+        "org_name": "Chuyển ĐỨC_CHI nhánh viettel Thái Bình",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT DAKLAK",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL DAKLAK",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT HUẾ",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL THỪA THIÊN HUẾ",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT HAIDUONG",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL HẢI DƯƠNG",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT QUANGNGAI",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL QUẢNG NGÃI",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT LAOCAI",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL LÀO CAI",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT CANTHO",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL CẦN THƠ",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT BINHDUONG",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL BÌNH DƯƠNG",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT ĐỒNG THÁP",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL ĐỒNG THÁP",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT PHUTHO",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL PHÚ THỌ",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    },
+    {
+        "company_alias": "VT NGHỆ AN",
+        "am_username": "chinhnv46@viettel.com.vn",
+        "internal_am_group": "Kênh bán",
+        "am_user_id": "50000291815",
+        "am_full_name": "Nguyễn Văn Chính",
+        "org_name": "VIETTEL NGHỆ AN",
+        "note": "",
+        "source_file": "Forms\\Danh sach AM noi bo - KH .xlsx"
+    }
+]

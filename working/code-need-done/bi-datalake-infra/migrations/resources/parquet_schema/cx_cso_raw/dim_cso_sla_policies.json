@@ -1,0 +1,398 @@
+{
+    "type": "struct",
+    "fields": [
+        {
+            "name": "id",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "name",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "description",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "active",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "sla_target",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "priority_4",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "resolve_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "next_respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "business_hours",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                {
+                                    "name": "escalation_enabled",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "priority_3",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "resolve_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "next_respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "business_hours",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                {
+                                    "name": "escalation_enabled",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "priority_2",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "resolve_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "next_respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "business_hours",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                {
+                                    "name": "escalation_enabled",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "priority_1",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "resolve_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "next_respond_within",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                },
+                                {
+                                    "name": "business_hours",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                {
+                                    "name": "escalation_enabled",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "applicable_to",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "ticket_types",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "array",
+                            "elementType": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "_dummy_",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "long"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "is_default",
+            "nullable": true,
+            "dataType": {
+                "type": "boolean"
+            }
+        },
+        {
+            "name": "position",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "created_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "updated_at",
+            "nullable": true,
+            "dataType": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "escalation",
+            "nullable": true,
+            "dataType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "reminder_response",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "_dummy_",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "reminder_resolution",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "_dummy_",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "response",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "_dummy_",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "resolution",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "_dummy_",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "reminder_next_response",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "_dummy_",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "next_response",
+                        "nullable": true,
+                        "dataType": {
+                            "type": "struct",
+                            "fields": [
+                                {
+                                    "name": "_dummy_",
+                                    "nullable": true,
+                                    "dataType": {
+                                        "type": "long"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "created_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "updated_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        },
+        {
+            "name": "crawled_at_ts",
+            "nullable": true,
+            "dataType": {
+                "type": "long"
+            }
+        }
+    ]
+}

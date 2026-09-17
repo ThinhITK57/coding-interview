@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS csv_finance_raw.raw_doanh_thu_cong_ty_t8_2025_shared (
+          ngay_xuat_hoa_on STRING,
+  thang BIGINT,
+  xuat_hoa_on_hd_tam_tinh_tt STRING,
+  noi_dung_e_nghi_tt_theo_chung_tu_goc STRING,
+  doanh_thu DOUBLE,
+  chia_se DOUBLE,
+  doanh_thu_cuoi DOUBLE,
+  vat STRING,
+  tien_hang_a_bao_gom_vat DOUBLE,
+  dt_dong_tien_eu_dt_len_1_lan STRING,
+  phan_loai_sp_dv STRING,
+  noi_bo_ngoai_qte_thi_truong STRING,
+  phan_loai_kh STRING,
+  kenh_khach_hang STRING,
+  khach_hang STRING,
+  segment STRING,
+  phong STRING,
+  nhom_khach_hang STRING,
+  am STRING,
+  presale DOUBLE,
+  spdv_cu_the STRING,
+  phan_loai_dt_cu_moi STRING,
+  phan_loai_soc_soc_va_non_soc STRING,
+  dt_chia_se_tu_mss STRING,
+  thi_truong STRING,
+  ma_spdv STRING
+        )
+        USING PARQUET
+        LOCATION '/opt/datasets/crawlers/vcs/excels/data/doanh_thu_cong_ty_t8_2025_shared'

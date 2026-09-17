@@ -1,0 +1,491 @@
+{
+    "deals": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "deals/view/50003503714",
+        "query_params": 
+        {
+            "per_page": 100,
+            "include": "territory,industry_type,owner,sales_account,deal_stage,deal_type,deal_reason,currency,deal_payment_status,business_type,cm_contract"
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "deals",
+        "schema_file": "deals.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "contacts": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "contacts/view/50003503702",
+        "query_params": 
+        {
+            "per_page": 100,
+            "include": "sales_account,owner,contact_status"
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "contacts",
+        "schema_file": "contacts.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "sales_accounts": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "sales_accounts/view/50003503729",
+        "query_params": 
+        {
+            "per_page": 100,
+            "include": "business_type,industry_type"
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "sales_accounts",
+        "schema_file": "sales_accounts.json",
+        "enable_state": true,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "cm_contracts": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "custom_module/cm_contracts/view/50004037898",
+        "query_params": 
+        {
+            "per_page": 100,
+            "include": "owner"
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "cm_contracts",
+        "schema_file": "cm_contracts.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "cm_partners": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "custom_module/cm_partners/view/50004037903",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "cm_partners",
+        "schema_file": "cm_partners.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "cm_pricebook": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "custom_module/cm_pricebook/view/50004157971",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "cm_pricebook",
+        "schema_file": "cm_pricebook.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "cm_catalog": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "custom_module/cm_catalog/view/50004157966",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "cm_catalog",
+        "schema_file": "cm_catalog.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "deal_stages": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/deal_stages",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "deal_stages",
+        "schema_file": "deal_stages.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "currencies": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/currencies",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "currencies",
+        "schema_file": "currencies.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "users": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/owners",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "users",
+        "schema_file": "users.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "deal_reasons": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/deal_reasons",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "deal_reasons",
+        "schema_file": "deal_reasons.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "deal_types": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/deal_types",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "deal_types",
+        "schema_file": "deal_types.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "deal_pipelines": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/deal_pipelines",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "deal_pipelines",
+        "schema_file": "deal_pipelines.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "deal_payment_statuses": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/deal_payment_statuses",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "deal_payment_statuses",
+        "schema_file": "deal_payment_statuses.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "territories": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/territories",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "territories",
+        "schema_file": "territories.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "business_types": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/business_types",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "business_types",
+        "schema_file": "business_types.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "industry_types": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/industry_types",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "industry_types",
+        "schema_file": "industry_types.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "contact_statuses": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "selector/contact_statuses",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "contact_statuses",
+        "schema_file": "contact_statuses.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "cm_kpi": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "custom_module/cm_kpi",
+        "query_params": 
+        {
+            "per_page": 100,
+            "segment_id": "50004335103"
+        },
+        "hive_db": "cm_kpi",
+        "hive_table": "cm_kpi",
+        "schema_file": "cm_kpi.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "roles": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales",
+        "resource_url": "settings/roles",
+        "result_json_key": "roles",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "roles",
+        "hive_table": "roles",
+        "schema_file": "roles.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "st_users": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "settings/users",
+        "result_json_key": "users",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "st_users",
+        "hive_table": "st_users",
+        "schema_file": "st_users.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    },
+    "cm_business_rules": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "custom_module/cm_business_rules/view/50004428346",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "cm_business_rules",
+        "schema_file": "cm_business_rules.json",
+        "enable_state": true,
+        "enable_hive": true,
+        "crawl_mode": "modified_and_new"
+    },
+    "cm_activity_history": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales/api",
+        "resource_url": "custom_module/cm_activity_history/view/50004441727",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "cm_activity_history",
+        "schema_file": "cm_activity_history.json",
+        "enable_state": true,
+        "enable_hive": true,
+        "crawl_mode": "modified_and_new"
+    },
+    "teams": 
+    {
+        "api_key_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_key.txt",
+        "api_cookie_path": "/opt/datasets/crawlers/vcs/freshworks/envs/api_cookie_key.txt",
+        "hdfs_base": "/opt/datasets/crawlers/vcs/freshworks/data",
+        "state_path": "/opt/datasets/crawlers/vcs/freshworks/state",
+        "schema_dir": "/opt/datasets/crawlers/vcs/freshworks/schemas",
+        "base_url": "https://crm.viettelsecurity.com/crm/sales",
+        "resource_url": "settings/teams",
+        "result_json_key": "teams",
+        "query_params": 
+        {
+            "per_page": 100
+        },
+        "hive_db": "crm_raw",
+        "hive_table": "teams",
+        "schema_file": "teams.json",
+        "enable_state": false,
+        "enable_hive": true,
+        "crawl_mode": "static"
+    }
+
+}

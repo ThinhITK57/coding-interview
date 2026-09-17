@@ -1,0 +1,6 @@
+FROM prefecthq/prefect:3-python3.13
+
+WORKDIR /app
+COPY requirements-ambari.txt .
+RUN pip install -r requirements-ambari.txt --proxy http://192.168.5.8:3128
+# COPY . .
