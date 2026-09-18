@@ -1,0 +1,116 @@
+networks:
+  epm-net:
+    driver: bridge
+
+volumes:
+  prefect-data:
+  minio-data:
+
+# ================= CONFIG DÙNG CHUNG CHO CÁC SERVICE CRAWLER =================
+x-crawler-common: &crawler-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: epm-crawler:lightweight-py312
+  volumes:
+    - .:/app
+    - ./state:/app/state
+    - ./data:/app/data
+    - ./epm/config.json:/app/epm/config.json:ro
+  env_file: .env.epm
+  environment:
+    PREFECT_API_URL: "http://prefect-server:4200/api"
+    MINIO_ENDPOINT: "${MINIO_ENDPOINT:-http://host.docker.internal:9000}"
+    MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY:-minioadmin}"
+    MINIO_SECRET_KEY: "${MINIO_SECRET_KEY:-minioadmin123}"
+    MINIO_BUCKET: "${MINIO_BUCKET:-lakehouse}"
+    PROJECT_API_KEY: "${PROJECT_API_KEY}"
+    TZ: "Asia/Ho_Chi_Minh"
+    NO_PROXY: "localhost,127.0.0.1,prefect-server,host.docker.internal"
+    no_proxy: "localhost,127.0.0.1,prefect-server,host.docker.internal"
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  networks:
+    - epm-net
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "50m"
+      max-file: "10"
+
+# ================= SERVICES =================
+services:
+  # Prefect 3 Server: Quản lý API và Dashboard UI (http://localhost:4200)
+  prefect-server:
+    image: prefecthq/prefect:3-python3.12
+    container_name: epm-prefect-server
+    restart: unless-stopped
+    command: prefect server start --host 0.0.0.0
+    environment:
+      PREFECT_SERVER_API_HOST: "0.0.0.0"
+      PREFECT_UI_API_URL: "http://localhost:4200/api"
+      PREFECT_HOME: "/root/.prefect"
+      PREFECT_API_DATABASE_CONNECTION_URL: "sqlite+aiosqlite:////root/.prefect/prefect.db"
+      TZ: "Asia/Ho_Chi_Minh"
+      NO_PROXY: "localhost,127.0.0.1"
+      no_proxy: "localhost,127.0.0.1"
+    ports:
+      - "4200:4200"
+    volumes:
+      - prefect-data:/root/.prefect
+    networks:
+      - epm-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:4200/api/health',timeout=5).status==200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  # Service Crawler chính: Chạy serve() các deployment theo đúng CRAWL-DATA-PLAN.md
+  epm-crawler:
+    <<: *crawler-common
+    container_name: epm-crawler
+    restart: unless-stopped
+    depends_on:
+      prefect-server:
+        condition: service_healthy
+    command: ["serve"]
+
+  # Service chạy thủ công ad-hoc (chỉ kích hoạt khi gọi `docker compose run --rm epm-adhoc ...`)
+  # Ví dụ:
+  #   docker compose run --rm epm-adhoc adhoc --endpoint tasks --mode incremental
+  #   docker compose run --rm epm-adhoc adhoc --dag --mode full
+  #   docker compose run --rm epm-adhoc adhoc --backfill
+  #   docker compose run --rm epm-adhoc adhoc --status
+  epm-adhoc:
+    <<: *crawler-common
+    container_name: epm-adhoc
+    profiles: ["manual"]
+    depends_on:
+      prefect-server:
+        condition: service_healthy
+    command: ["adhoc", "--help"]
+
+  # Service MinIO (Tùy chọn: khởi động khi chạy kèm profile `with-minio`)
+  minio:
+    image: minio/minio:latest
+    container_name: epm-minio
+    restart: unless-stopped
+    profiles: ["with-minio"]
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ACCESS_KEY:-minioadmin}"
+      MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY:-minioadmin123}"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - epm-net

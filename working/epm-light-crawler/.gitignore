@@ -1,0 +1,22 @@
+# Virtual Environment
+.venv/
+env/
+venv/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.log
+
+# Sensitive Credentials
+.env
+.env.epm
+.env.local
+
+# Runtime Data & Persistent State
+state/*.db*
+data/buffer/
+data/audit/
+data/warehouse/
